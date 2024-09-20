@@ -1,0 +1,20 @@
+<div class="header-container">
+  <div class="logo-container">
+    <a (click)="toggleSidebar()" href="#" class="sidebar-toggle">
+      <nb-icon icon="menu-2-outline"></nb-icon>
+    </a>
+    <a class="logo" href="/pages/home" >
+      <img class="icone-info-plan" src="assets/images/app/icone-info-plan.png" alt="">
+    </a>
+  </div>
+</div>
+
+<div class="header-container">
+  <nb-actions size="small">
+    <nb-action class="user-action" *nbIsGranted="['view', 'user']" >
+      <nb-user [nbContextMenu]="userMenu"
+               [name]="user?.name">
+      </nb-user>
+    </nb-action>
+  </nb-actions>
+</div>

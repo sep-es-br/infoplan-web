@@ -1,0 +1,30 @@
+:host {
+  $auth-layout-padding: 2.5rem;
+
+  nb-card {
+    margin: 0;
+    height: calc(100vh - 2 * #{$auth-layout-padding});
+  }
+
+}
+
+.card-body{
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.login-btn {
+    margin-top: 20px;
+}
+
+.btn-lg {
+    padding: 10px 20px;
+    font-weight: bold;
+    background-color: #aeb8c7;
+}
+
+h2{
+    margin-top: 1rem;
+}
+

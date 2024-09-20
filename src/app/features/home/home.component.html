@@ -1,0 +1,25 @@
+<div class="container">
+  <div class="align-content-center">
+    <div class="row mt-5 mb-5 justify-content-center">
+      <ng-container *ngFor="let menuItem of menulinks">
+        <div class=" col-9 col-xl-4 col-lg-6 col-md-6 col-sm-9 mt-4 menu-card" [ngClass]="{'unavaliable': !menuItem.status}"  (click)="handleClick(menuItem.id)" >
+          <div class="row bg-menu rounded p-3 pointer">
+            <div class="col-3 col-md-3 col-sm-3 col-is-3 align-content-center card-logo">
+              <div class="card rounded bg-danger iconText">
+                <div class="card-body p-0">
+                  <div class="card-text text-center iconText p-0">
+                    <img [src]="'assets/images/app/' + menuItem.icon" alt="{{menuItem.name}} Icon" class="icon-image">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-9 col-md-9 col-sm-9 col-is-9 card-title-subtitle">
+                <p class="title">{{menuItem.name}}</p>
+                <p class="subtitle"  [tooltip]="!menuItem.status ? '': menuItem.src " >Fonte: {{menuItem.src}}</p>
+            </div>
+          </div>
+        </div>
+      </ng-container >
+    </div>
+  </div>
+</div>

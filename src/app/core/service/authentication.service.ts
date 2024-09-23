@@ -9,13 +9,9 @@ import { environment } from '../../../environments/environment';
 })
 export class AuthenticationService {
   private _url = `${environment.apiUrl}/oauth2/authorization/acessocidadao`;
-  
+
 
   constructor(private _http: HttpClient, private router: Router) {}
-
-  public mockSignIn() {
-    this.router.navigateByUrl('/pages/home');
-  }
 
   public acessoCidadaoSignIn() {
     document.location.href = this._url;

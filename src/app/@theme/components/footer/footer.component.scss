@@ -30,14 +30,14 @@
 
   .gov-logo {
     text-align: left;
-    img{
+    img {
         width: 150px;
     }
   }
   
   @media (max-width: 500px) {
     justify-content: space-around;
-    .created-by{
+    .created-by {
       display: none;
     }
 }

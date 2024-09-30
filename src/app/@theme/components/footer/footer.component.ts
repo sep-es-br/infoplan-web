@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 
 @Component({
@@ -13,7 +13,7 @@ import { NbThemeService } from '@nebular/theme';
     </div>
   `,
 })
-export class FooterComponent {
+export class FooterComponent implements OnInit{
   imageSrc: string;
 
   constructor(private themeService: NbThemeService) { }

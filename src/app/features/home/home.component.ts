@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { menulinks } from '../../@core/utils/menuLinks';
 
@@ -7,14 +7,11 @@ import { menulinks } from '../../@core/utils/menuLinks';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent  {
 
   public menulinks = menulinks;
 
   constructor(private router: Router) { 
-  }
-
-  ngOnInit(): void {
   }
 
   handleClick(id: number) {

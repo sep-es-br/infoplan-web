@@ -9,7 +9,7 @@ import { tap } from 'rxjs/operators';
 
 
 @Component({
-  selector: 'infoplan-auth-redirect',
+  selector: 'ngx-infoplan-auth-redirect',
   standalone: false,
   templateUrl: './auth-redirect.component.html',
 })

@@ -3,7 +3,7 @@ import { menulinks } from '../@core/utils/menuLinks';
 
 const dynamicMenuItems: NbMenuItem[] = menulinks.map(menu => ({
   title: menu.name,
-  icon: menu.menuIcon || undefined, 
+  icon: menu.menuIcon || 'monitor-outline', 
   link: menu.link || undefined,
   url: menu.url || undefined,
   target: menu.url ? '_blank' : undefined, 

@@ -7,7 +7,7 @@ const dynamicMenuItems: NbMenuItem[] = menulinks.map(menu => ({
   link: menu.link || undefined,
   url: menu.url || undefined,
   target: menu.url ? '_blank' : undefined, 
-  hidden: !menu.status, 
+  hidden: !menu.status,
 }));
 
 export const MENU_ITEMS: NbMenuItem[] = [

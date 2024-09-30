@@ -15,4 +15,9 @@
       }
     }
   }
+  ::ng-deep{
+    .menu-item a:hover, .menu-item a.active, .menu-item a.active .menu-icon, .menu-item a:hover .menu-icon{
+      color: #DC3545;
+    }
+  } 
 }

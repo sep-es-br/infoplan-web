@@ -10,13 +10,13 @@ import { DataRowChartComponent } from './data-row-chart.component';
 
 @Component({
   selector: 'ngx-chart-with-value',
-  template: '<ip-chart-with-value-row ' + 
+  template: '<ngx-chart-with-value-row ' + 
               "*ngFor='let item of data'  " +
               'label={{item.label}} ' + 
              'value={{item.value}} ' +
               'max-value={{maxValue}} ' +
               "value-label=\"{{(item.value | shortNumber)}}\" " + 
-              'color={{color}} ></ip-chart-with-value-row>',
+              'color={{color}} ></ngx-chart-with-value-row>',
   styles: ['ip-chart-with-value-row {display:block; padding-top:0.2rem; padding-bottom: 0.2rem; border-bottom: lightgray 0.1rem solid}'],
   standalone: true,
   imports: [CommonModule, DataRowChartComponent, ShortNumberPipe]

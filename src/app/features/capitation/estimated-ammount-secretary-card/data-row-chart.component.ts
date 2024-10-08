@@ -20,11 +20,11 @@ export class DataRowChartComponent implements OnDestroy, AfterViewInit{
 
     @ViewChild('item') item : ElementRef;
 
-    @Input() label : string;
-    @Input() value : number;
-    @Input() maxValue : number;
-    @Input() valueLabel : string;
-    @Input() color : string;
+    @Input('label') label : string;
+    @Input('value') value : number;
+    @Input('max-value') maxValue : number;
+    @Input('value-label') valueLabel : string;
+    @Input('color') color : string;
 
     constructor(private theme: NbThemeService,
                 private capitationService : CapitationService

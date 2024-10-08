@@ -32,9 +32,9 @@ import { BarChartComponent } from './bar-chart.component';
 export class ChartComponent {
     
     
-    @Input() public data : DataList[];
-    @Input() public barColor: string;
-    @Input() public maxValue: number;
+    @Input('data') public data : DataList[];
+    @Input('bar-color') public barColor: string;
+    @Input('max-value') public maxValue: number;
    
         
 }

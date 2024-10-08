@@ -21,24 +21,16 @@ import { DataRowChartComponent } from './data-row-chart.component';
   standalone: true,
   imports: [CommonModule, DataRowChartComponent, ShortNumberPipe]
 })
-export class DataChartComponent implements OnDestroy, AfterViewInit{
-    themeSubscription: any;
-
+export class DataChartComponent{
+   
     @ViewChild('chart') item : ElementRef;
 
-    @Input() data : {label, value};
-    @Input() maxValue : number;
-    @Input() color : string;
+    @Input('data') data : {label, value};
+    @Input('max-value') maxValue : number;
+    @Input('color') color : string;
 
     constructor(private theme: NbThemeService,
                 private capitationService : CapitationService
     ) {}
 
-    ngAfterViewInit(): void {
-        
-    }
-
-  ngOnDestroy(): void {
-    this.themeSubscription.unsubscribe();
-  }
 }

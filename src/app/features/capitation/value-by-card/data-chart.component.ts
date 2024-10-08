@@ -9,7 +9,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { DataRowChartComponent } from './data-row-chart.component';
 
 @Component({
-  selector: 'ip-chart-with-value',
+  selector: 'ngx-chart-with-value',
   template: '<ip-chart-with-value-row ' + 
               "*ngFor='let item of data'  " +
               'label={{item.label}} ' + 
@@ -26,9 +26,9 @@ export class DataChartComponent implements OnDestroy, AfterViewInit{
 
     @ViewChild('chart') item : ElementRef;
 
-    @Input('data') data : {label, value};
-    @Input('max-value') maxValue : number;
-    @Input('color') color : string;
+    @Input() data : {label, value};
+    @Input() maxValue : number;
+    @Input() color : string;
 
     constructor(private theme: NbThemeService,
                 private capitationService : CapitationService

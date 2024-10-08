@@ -14,7 +14,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxEchartsModule } from 'ngx-echarts';
 
 @Component({
-  selector: 'bar-chart',
+  selector: 'ngx-bar-chart',
   template: '<div #bar> </div>',
   standalone: true,
   imports: [ CommonModule, ShortNumberPipe]
@@ -23,14 +23,14 @@ export class BarChartComponent implements AfterViewInit{
 
   @ViewChild('bar') barra: ElementRef;
   
-  @Input('label') public label: string;
-  @Input('value-label') public valueLabel: string;
-  @Input('full-value-label') public fullValueLabel : string;
-  @Input('value') public value: number;
-  @Input('max-value') public maxVal: number;
-  @Input('min-w') public minWidth : number;
-  @Input('w') public width : string;
-  @Input('bar-color') public barColor: string;
+  @Input() public label: string;
+  @Input() public valueLabel: string;
+  @Input() public fullValueLabel : string;
+  @Input() public value: number;
+  @Input() public maxVal: number;
+  @Input() public minWidth : number;
+  @Input() public width : string;
+  @Input() public barColor: string;
 
   constructor(private theme: NbThemeService,
               private capitationService : CapitationService

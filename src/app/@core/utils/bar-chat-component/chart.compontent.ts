@@ -15,8 +15,8 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { BarChartComponent } from './bar-chart.component';
 
 @Component({
-  selector: 'ip-chart',
-  template: '<bar-chart *ngFor="let d of data" '+
+  selector: 'ngx-chart',
+  template: '<ngx-bar-chart *ngFor="let d of data" '+
             'label="{{d.label}}" ' +
                 'full-value-label="{{(d.value | currency: \'BRL\').replaceAll(\'.\', \'x\').replaceAll(\',\', \'.\').replaceAll(\'x\', \',\')}}"' +
                 ' value-label="{{d.value | shortNumber}}"' + 
@@ -24,17 +24,17 @@ import { BarChartComponent } from './bar-chart.component';
                 ' max-value="{{maxValue}}"' + 
                 ' min-w="10" '+
                 ' w="100%"'+
-                ' bar-color="{{barColor}}"></bar-chart>',
-    styles: ['bar-chart {display: block; margin-bottom: 0.5rem}'],
+                ' bar-color="{{barColor}}"></ngx-bar-chart>',
+    styles: ['ngx-bar-chart {display: block; margin-bottom: 0.5rem}'],
   standalone: true,
   imports: [ CommonModule, ShortNumberPipe, BarChartComponent]
 })
 export class ChartComponent {
     
     
-    @Input('data') public data : DataList[];
-    @Input('bar-color') public barColor: string;
-    @Input('max-value') public maxValue: number;
+    @Input() public data : DataList[];
+    @Input() public barColor: string;
+    @Input() public maxValue: number;
    
         
 }

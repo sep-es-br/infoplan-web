@@ -8,7 +8,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxEchartsModule } from 'ngx-echarts';
 
 @Component({
-  selector: 'ip-chart-with-value-row2',
+  selector: 'ngx-chart-with-value-row2',
   template: '<div #item class="d-flex flex-row"></div>',
   styleUrls: ['./value-by-card.component.scss'],
   standalone: true,
@@ -20,11 +20,11 @@ export class DataRowChartComponent implements OnDestroy, AfterViewInit{
 
     @ViewChild('item') item : ElementRef;
 
-    @Input('label') label : string;
-    @Input('value') value : number;
-    @Input('max-value') maxValue : number;
-    @Input('value-label') valueLabel : string;
-    @Input('color') color : string;
+    @Input() label : string;
+    @Input() value : number;
+    @Input() maxValue : number;
+    @Input() valueLabel : string;
+    @Input() color : string;
 
     constructor(private theme: NbThemeService,
                 private capitationService : CapitationService

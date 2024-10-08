@@ -1,0 +1,10 @@
+<nb-card class="h-100">
+  <nb-card-body>
+    <p>Valores por 
+    <select id="type">
+      <option value="project">Projeto</option>
+      <option value="program">Programa</option>
+    </select></p>
+    <ip-chart-with-value [data]="data" max-value="{{maxValue}}" color="rgba(16, 127, 207, 1)"></ip-chart-with-value>
+  </nb-card-body>
+</nb-card>

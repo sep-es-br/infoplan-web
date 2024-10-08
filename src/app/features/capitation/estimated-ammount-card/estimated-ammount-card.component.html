@@ -1,0 +1,10 @@
+<nb-card>
+  <nb-card-body>
+    <p>Valores estimados por 
+    <select id="micro">
+      <option value="microregion">Microrregião</option>
+      <option value="city">Cidade</option>
+    </select></p>
+    <ip-chart [data]="data" max-value="{{maxValue}}"  bar-color="rgba(252, 185, 0, 1)"></ip-chart>
+  </nb-card-body>
+</nb-card>

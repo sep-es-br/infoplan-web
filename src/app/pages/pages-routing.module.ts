@@ -6,6 +6,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ECommerceComponent } from './e-commerce/e-commerce.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
 import { HomeComponent } from '../features/home/home.component';
+import { CapitationComponent } from '../features/capitation/capitation.component';
 
 const routes: Routes = [{
   path: '',
@@ -15,6 +16,13 @@ const routes: Routes = [{
       path: 'home',
       component: HomeComponent,
     },
+    {
+      path: 'capitation',
+      component: CapitationComponent,
+    },
+
+
+
     {
       path: 'dashboard',
       component: ECommerceComponent,

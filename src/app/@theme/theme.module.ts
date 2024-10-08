@@ -28,6 +28,7 @@ import {
   RoundPipe,
   TimingPipe,
   NumberWithCommasPipe,
+  ShortNumberPipe,
 } from './pipes';
 import {
   OneColumnLayoutComponent,
@@ -52,6 +53,7 @@ const NB_MODULES = [
   NbSelectModule,
   NbIconModule,
   NbEvaIconsModule,
+  ShortNumberPipe,
 ];
 const COMPONENTS = [
   HeaderComponent,

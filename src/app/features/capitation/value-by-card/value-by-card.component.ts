@@ -18,7 +18,6 @@ import { DataChartComponent } from './data-chart.component';
 @Component({
   selector: 'ngx-value-by-card',
   templateUrl: './value-by-card.component.html',
-  styleUrls: ['./value-by-card.component.scss'],
   standalone: true,
   imports: [ DataChartComponent, NbCardModule, CommonModule, ShortNumberPipe,
     NgxEchartsModule,

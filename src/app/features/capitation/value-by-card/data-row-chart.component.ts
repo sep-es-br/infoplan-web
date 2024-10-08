@@ -10,7 +10,6 @@ import { NgxEchartsModule } from 'ngx-echarts';
 @Component({
   selector: 'ngx-chart-with-value-row',
   template: '<div #item class="d-flex flex-row"></div>',
-  styleUrls: ['./value-by-card.component.scss'],
   standalone: true,
   imports: [CommonModule]
 })

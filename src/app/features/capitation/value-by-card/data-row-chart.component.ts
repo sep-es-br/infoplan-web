@@ -13,9 +13,8 @@ import { NgxEchartsModule } from 'ngx-echarts';
   standalone: true,
   imports: [CommonModule]
 })
-export class DataRowChartComponent implements OnDestroy, AfterViewInit{
+export class DataRowChartComponent implements AfterViewInit{
     data: any;
-    themeSubscription: any;
 
     @ViewChild('item') item : ElementRef;
 
@@ -70,9 +69,6 @@ export class DataRowChartComponent implements OnDestroy, AfterViewInit{
 
     }
 
-  ngOnDestroy(): void {
-    this.themeSubscription.unsubscribe();
-  }
 
   private random() {
     return Math.round(Math.random() * 100);

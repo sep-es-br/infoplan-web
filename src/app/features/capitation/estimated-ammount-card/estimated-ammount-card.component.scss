@@ -1,2 +1,7 @@
 @import '../../../@theme/styles/themes';
 
+ngx-chart {
+    display: block;
+    max-height: 30rem;
+    overflow-y: auto;
+}

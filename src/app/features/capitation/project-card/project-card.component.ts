@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { menulinks } from '../../../@core/utils/menuLinks';
 import { NbCardComponent, NbCardModule } from '@nebular/theme';
-import { ShortNumberPipe } from '../../../@theme/pipes';
+import { CustomCurrencyPipe, ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
 
@@ -11,7 +11,7 @@ import { CapitationService } from '../../../core/service/capitation.service';
   templateUrl: './project-card.component.html',
   styleUrls: ['./project-card.component.scss'],
   standalone: true,
-  imports: [NbCardModule, CommonModule, ShortNumberPipe],
+  imports: [NbCardModule, CommonModule, ShortNumberPipe, CustomCurrencyPipe],
   providers: []
 })
 export class ProjectCardComponent implements OnInit {

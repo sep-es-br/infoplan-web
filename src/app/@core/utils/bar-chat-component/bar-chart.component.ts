@@ -5,7 +5,6 @@ import { NbCardComponent, NbCardModule, NbMediaBreakpoint, NbMediaBreakpointsSer
 import { ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
-import { MicroregionAmmount } from '../../../@core/data/microregionAmmout';
 import { takeWhile } from 'rxjs/operators';
 import { LayoutService } from '../../../@core/utils';
 import { CountryOrderData } from '../../../@core/data/country-order';
@@ -40,7 +39,8 @@ export class BarChartComponent implements AfterViewInit{
   }
 
   gerarBarra() : void {
-    let divBarra = this.barra.nativeElement;
+    let divBarra = this.barra.nativeElement as HTMLElement;
+    divBarra.style.fontSize = '12px';
     divBarra.innerHTML = '';
     
     divBarra.style.padding = 'padding', '0.5rem';
@@ -58,6 +58,7 @@ export class BarChartComponent implements AfterViewInit{
 
     let labelElem = document.createElement('div');
     labelElem.textContent = this.label;
+    labelElem.style.marginRight = '1rem';
     infoDiv.appendChild(labelElem);
 
     let valor = document.createElement('div');
@@ -69,7 +70,7 @@ export class BarChartComponent implements AfterViewInit{
     }
     infoDiv.appendChild(valor);
     infoDiv.style.width = propValue + '%';
-    infoDiv.style.minWidth = '11rem'
+    infoDiv.style.minWidth = 'fit-content'
 
     barraContent.appendChild(infoDiv);
 

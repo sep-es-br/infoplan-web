@@ -1,10 +1,12 @@
-<nb-card class="h-100">
+<nb-card>
   <nb-card-body>
-    <p>Valores por 
-    <select id="type">
-      <option value="project">Projeto</option>
-      <option value="program">Programa</option>
-    </select></p>
+    <form [formGroup]="form">
+      <p>Valores por 
+      <select id="type" formControlName="type">
+        <option ngValue="project">Projeto</option>
+        <option ngValue="program">Programa</option>
+      </select></p>
+    </form>
     <ngx-chart-with-value [data]="data" max-value="{{maxValue}}" color="rgba(16, 127, 207, 1)"></ngx-chart-with-value>
   </nb-card-body>
 </nb-card>

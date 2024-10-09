@@ -1,6 +1,7 @@
 @import '../../../@theme/styles/themes';
 
-nb-card {
-    max-height: 60%;
-    overflow-y: scroll;
+ngx-chart-with-value  {
+    display: block;
+    max-height: 15rem;
+    overflow-y: auto;
 }

@@ -1,40 +1,49 @@
-import { Component, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { Router } from '@angular/router';
-import { menulinks } from '../../../@core/utils/menuLinks';
-import { NbCardComponent, NbCardModule, NbMediaBreakpoint, NbMediaBreakpointsService, NbThemeService } from '@nebular/theme';
+import { AfterViewInit, Component, OnDestroy} from '@angular/core';
+import { NbCardModule, NbThemeService } from '@nebular/theme';
 import { ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
-import { MicroregionAmmount } from '../../../@core/data/microregionAmmout';
-import { takeWhile } from 'rxjs/operators';
-import { LayoutService } from '../../../@core/utils';
-import { CountryOrderData } from '../../../@core/data/country-order';
 import { ChartModule } from 'angular2-chartjs';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { DataRowChartComponent } from './data-row-chart.component';
 import { DataChartComponent } from './data-chart.component';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'ngx-value-by-card',
   templateUrl: './value-by-card.component.html',
+  styleUrls: ['./value-by-card.component.scss'],
   standalone: true,
-  imports: [ DataChartComponent, NbCardModule, CommonModule, ShortNumberPipe,
+  imports: [ ReactiveFormsModule, DataChartComponent, NbCardModule, CommonModule, ShortNumberPipe,
     NgxEchartsModule,
     NgxChartsModule,
     ChartModule,], 
   providers: []
 })
-export class ValueByCardComponent implements OnDestroy{
+export class ValueByCardComponent implements OnDestroy, AfterViewInit{
   data: any;
   maxValue: number;
   themeSubscription: any;
+
+  form = new FormGroup({
+    type : new FormControl('project')
+  })
 
   constructor(private theme: NbThemeService,
               private capitationService : CapitationService
   ) {
 
-    this.capitationService.getValueBy(null).then( value => {
+  }
+
+  ngAfterViewInit(): void {
+      this.reloadChart();
+      this.form.get('type').valueChanges.subscribe(value => {
+        this.reloadChart();
+      })
+  }
+
+  reloadChart() : void {
+    this.capitationService.getValueBy(this.form.get('type').value).then( value => {
       this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
 
         const colors: any = config.variables;
@@ -53,8 +62,6 @@ export class ValueByCardComponent implements OnDestroy{
   
       });
     });
-
-    
   }
 
   ngOnDestroy(): void {

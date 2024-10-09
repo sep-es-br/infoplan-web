@@ -1,4 +1,4 @@
-export class MicroregionAmmount {
+export class NameAmmount {
     name : string;
     ammount : number;
 

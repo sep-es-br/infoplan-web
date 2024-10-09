@@ -32,6 +32,6 @@ export class ShortNumberPipe implements PipeTransform {
                 break;
             }
         }
-        return (isNegative ? '-' : '') + abs + ' ' + key;
+        return (isNegative ? '-' : '') + String(abs).replace('.', ',') + ' ' + key;
     }
 }

@@ -22,6 +22,7 @@ export class DataRowChartComponent implements AfterViewInit{
     @Input('value') value : number;
     @Input('max-value') maxValue : number;
     @Input('value-label') valueLabel : string;
+    @Input('full-value-label') fullValueLabel : string;
     @Input('color') color : string;
 
     constructor(private theme: NbThemeService,
@@ -42,6 +43,7 @@ export class DataRowChartComponent implements AfterViewInit{
 
         let divValueLabel = document.createElement('div');
         divValueLabel.textContent = this.valueLabel;
+        divValueLabel.title = this.fullValueLabel;
         divValueLabel.style.width = '20%';
         divValueLabel.classList.add('h-100');
         divValueLabel.classList.add('d-flex');

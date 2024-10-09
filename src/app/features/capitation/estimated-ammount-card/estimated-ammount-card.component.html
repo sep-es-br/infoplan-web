@@ -1,10 +1,12 @@
 <nb-card>
   <nb-card-body>
-    <p>Valores estimados por 
-    <select id="micro">
-      <option value="microregion">Microrregião</option>
-      <option value="city">Cidade</option>
-    </select></p>
-    <ngx-chart [data]="data" max-value="{{maxValue}}"  bar-color="rgba(252, 185, 0, 1)"></ngx-chart>
+    <form [formGroup]="form">
+      <p>Valores estimados por 
+      <select id="micro" formControlName="type">
+        <option ngValue="microregion">Microrregião</option>
+        <option ngValue="city">Cidade</option>
+      </select></p>
+  </form>
+    <ngx-chart [data]="data" [max-value]="maxValue"  bar-color="rgba(252, 185, 0, 1)"></ngx-chart>
   </nb-card-body>
 </nb-card>

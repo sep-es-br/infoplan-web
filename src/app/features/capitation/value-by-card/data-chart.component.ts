@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { NbCardModule, NbThemeService } from '@nebular/theme';
-import { ShortNumberPipe } from '../../../@theme/pipes';
+import { CustomCurrencyPipe, ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
 import { ChartModule } from 'angular2-chartjs';
@@ -15,11 +15,12 @@ import { DataRowChartComponent } from './data-row-chart.component';
               'label={{item.label}} ' + 
              'value={{item.value}} ' +
               'max-value={{maxValue}} ' +
-              "value-label=\"{{(item.value | shortNumber)}}\" " + 
+              'value-label="{{item.value | shortNumber}}" ' + 
+              'full-value-label="{{item.value | customCurrency}}" '+ 
               'color={{color}} ></ngx-chart-with-value-row>',
   styles: ['ip-chart-with-value-row {display:block; padding-top:0.2rem; padding-bottom: 0.2rem; border-bottom: lightgray 0.1rem solid}'],
   standalone: true,
-  imports: [CommonModule, DataRowChartComponent, ShortNumberPipe]
+  imports: [CommonModule, DataRowChartComponent, ShortNumberPipe, CustomCurrencyPipe]
 })
 export class DataChartComponent{
    

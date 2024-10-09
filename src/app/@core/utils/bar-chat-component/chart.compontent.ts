@@ -2,10 +2,10 @@ import { AfterViewInit, Component, Inject, Input, OnChanges, OnDestroy, OnInit, 
 import { Router } from '@angular/router';
 import { menulinks } from '../../../@core/utils/menuLinks';
 import { NbCardComponent, NbCardModule, NbMediaBreakpoint, NbMediaBreakpointsService, NbThemeService } from '@nebular/theme';
-import { ShortNumberPipe } from '../../../@theme/pipes';
+import { CustomCurrencyPipe, ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
-import { MicroregionAmmount } from '../../../@core/data/microregionAmmout';
+import { NameAmmount } from '../../../@core/data/nameAmmount';
 import { takeWhile } from 'rxjs/operators';
 import { LayoutService } from '../../../@core/utils';
 import { CountryOrderData } from '../../../@core/data/country-order';
@@ -18,28 +18,23 @@ import { BarChartComponent } from './bar-chart.component';
   selector: 'ngx-chart',
   template: '<ngx-bar-chart *ngFor="let d of data" '+
             'label="{{d.label}}" ' +
-                'full-value-label="{{(d.value | currency: \'BRL\').replaceAll(\'.\', \'x\').replaceAll(\',\', \'.\').replaceAll(\'x\', \',\')}}"' +
+                'full-value-label="{{d.value | customCurrency}}"' +
                 ' value-label="{{d.value | shortNumber}}"' + 
                 ' value="{{d.value}}" ' +
                 ' max-value="{{maxValue}}"' + 
-                ' min-w="10" '+
+                ' min-w="1" '+
                 ' w="100%"'+
                 ' bar-color="{{barColor}}"></ngx-bar-chart>',
     styles: ['ngx-bar-chart {display: block; margin-bottom: 0.5rem}'],
   standalone: true,
-  imports: [ CommonModule, ShortNumberPipe, BarChartComponent]
+  imports: [ CommonModule, ShortNumberPipe, BarChartComponent, CustomCurrencyPipe]
 })
 export class ChartComponent {
     
     
-    @Input('data') public data : DataList[];
+    @Input('data') public data : {label: string, value: number}[];
     @Input('bar-color') public barColor: string;
     @Input('max-value') public maxValue: number;
    
         
-}
-
-class DataList {
-    label : string;
-    value : number;
 }

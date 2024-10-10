@@ -1,7 +1,6 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { menulinks } from '../../../@core/utils/menuLinks';
-import { NbCardComponent, NbCardModule } from '@nebular/theme';
+import { NbCardModule } from '@nebular/theme';
 import { CustomCurrencyPipe, ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
@@ -18,15 +17,15 @@ export class ProgramCardComponent implements OnInit {
 
   public programAmmout : Number
 
-  constructor (private capitationService : CapitationService) {
+  constructor (private capitationService : CapitationService,
+              private router : Router
+  ) {
 
   }
 
   ngOnInit() {
-      this.capitationService.getProgramAmmount().then(resp => {
+      this.capitationService.getProgramAmmount(resp => {
         this.programAmmout = resp;
-      }).catch (err => {
-        console.log(err);
       });
   }
 

@@ -1,16 +1,8 @@
-import { AfterViewInit, Component, ElementRef, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
-import { Router } from '@angular/router';
-import { menulinks } from '../../../@core/utils/menuLinks';
-import { NbCardComponent, NbCardModule, NbMediaBreakpoint, NbMediaBreakpointsService, NbThemeService } from '@nebular/theme';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { NbThemeService } from '@nebular/theme';
 import { ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
-import { takeWhile } from 'rxjs/operators';
-import { LayoutService } from '../../../@core/utils';
-import { CountryOrderData } from '../../../@core/data/country-order';
-import { ChartModule } from 'angular2-chartjs';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { NgxEchartsModule } from 'ngx-echarts';
 
 @Component({
   selector: 'ngx-bar-chart',

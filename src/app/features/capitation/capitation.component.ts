@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { menulinks } from '../../@core/utils/menuLinks';
 import { ProgramCardComponent } from './program-card/program-card.component';
 import { ProjectCardComponent } from './project-card/project-card.component';
 import { EstimatedAmmountCardComponent } from './estimated-ammount-card/estimated-ammount-card.component';
@@ -16,20 +14,7 @@ import { EstimatedAmmountSecretaryCardComponent } from './estimated-ammount-secr
 })
 export class CapitationComponent  {
 
-  public menulinks = menulinks;
-
-  constructor(private router: Router) { 
-  }
-
-  handleClick(id: number) {
-    const menuClicked = menulinks[id-1];
-    if(menuClicked.link != ''){
-      this.router.navigate([menuClicked.link]);
-    }else{
-      if(menuClicked.url != ''){
-        window.open(menuClicked.url, '_blank');
-      }
-    }
+  constructor() { 
   }
 
 }

@@ -8,6 +8,8 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { ChartComponent } from '../../../@core/utils/bar-chat-component/chart.compontent';
 import { DataChartComponent } from './data-chart.component';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -33,9 +35,10 @@ export class EstimatedAmmountSecretaryCardComponent implements OnDestroy {
   
 
   constructor(private theme: NbThemeService,
-              private capitationService : CapitationService
+              private capitationService : CapitationService,
+              private router : Router
   ) {
-    this.capitationService.getEstimatedAmmountSecretary().then( value => {
+    this.capitationService.getEstimatedAmmountSecretary(value => {
       this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
 
         const colors: any = config.variables;
@@ -61,7 +64,7 @@ export class EstimatedAmmountSecretaryCardComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.themeSubscription.unsubscribe();
+    if(this.themeSubscription) this.themeSubscription.unsubscribe();
   }
 
   private random() {

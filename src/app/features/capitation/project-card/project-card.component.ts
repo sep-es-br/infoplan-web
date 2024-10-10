@@ -5,6 +5,7 @@ import { NbCardComponent, NbCardModule } from '@nebular/theme';
 import { CustomCurrencyPipe, ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 
 @Component({
   selector: 'ngx-project-card',
@@ -18,15 +19,15 @@ export class ProjectCardComponent implements OnInit {
 
   public projectAmmout : Number
 
-  constructor (private capitationService : CapitationService) {
+  constructor (private capitationService : CapitationService,
+              private router : Router
+  ) {
 
   }
 
   ngOnInit() {
-      this.capitationService.getProjectAmmount().then(resp => {
+      this.capitationService.getProjectAmmount(resp => {
         this.projectAmmout = resp;
-      }).catch (err => {
-        console.log(err);
       });
   }
 

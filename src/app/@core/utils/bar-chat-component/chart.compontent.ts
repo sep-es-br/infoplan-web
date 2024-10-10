@@ -1,22 +1,12 @@
-import { AfterViewInit, Component, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { Router } from '@angular/router';
-import { menulinks } from '../../../@core/utils/menuLinks';
-import { NbCardComponent, NbCardModule, NbMediaBreakpoint, NbMediaBreakpointsService, NbThemeService } from '@nebular/theme';
+import { Component, Input } from '@angular/core';
 import { CustomCurrencyPipe, ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
-import { CapitationService } from '../../../core/service/capitation.service';
-import { NameAmmount } from '../../../@core/data/nameAmmount';
-import { takeWhile } from 'rxjs/operators';
-import { LayoutService } from '../../../@core/utils';
-import { CountryOrderData } from '../../../@core/data/country-order';
-import { ChartModule } from 'angular2-chartjs';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { NgxEchartsModule } from 'ngx-echarts';
 import { BarChartComponent } from './bar-chart.component';
 
 @Component({
   selector: 'ngx-chart',
-  template: '<ngx-bar-chart *ngFor="let d of data" '+
+  template: '<div class="m-0 p-0" *ngIf="data && data.length > 0; else noDataWarning">' +
+            '<ngx-bar-chart *ngFor="let d of data" '+
             'label="{{d.label}}" ' +
                 'full-value-label="{{d.value | customCurrency}}"' +
                 ' value-label="{{d.value | shortNumber}}"' + 
@@ -24,7 +14,8 @@ import { BarChartComponent } from './bar-chart.component';
                 ' max-value="{{maxValue}}"' + 
                 ' min-w="1" '+
                 ' w="100%"'+
-                ' bar-color="{{barColor}}"></ngx-bar-chart>',
+                ' bar-color="{{barColor}}"></ngx-bar-chart></div>' + 
+                '<ng-template #noDataWarning>Sem Dados</ng-template>',
     styles: ['ngx-bar-chart {display: block; margin-bottom: 0.5rem}'],
   standalone: true,
   imports: [ CommonModule, ShortNumberPipe, BarChartComponent, CustomCurrencyPipe]
@@ -32,9 +23,9 @@ import { BarChartComponent } from './bar-chart.component';
 export class ChartComponent {
     
     
-    @Input('data') public data : {label: string, value: number}[];
-    @Input('bar-color') public barColor: string;
-    @Input('max-value') public maxValue: number;
+    @Input('data') data : {label: string, value: number}[];
+    @Input('bar-color') barColor: string = 'green';
+    @Input('max-value') maxValue: number = 10;
    
         
 }

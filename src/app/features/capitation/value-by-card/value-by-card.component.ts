@@ -8,6 +8,8 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { DataChartComponent } from './data-chart.component';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 
 @Component({
   selector: 'ngx-value-by-card',
@@ -30,7 +32,8 @@ export class ValueByCardComponent implements OnDestroy, AfterViewInit{
   })
 
   constructor(private theme: NbThemeService,
-              private capitationService : CapitationService
+              private capitationService : CapitationService,
+              private router : Router
   ) {
 
   }
@@ -43,7 +46,7 @@ export class ValueByCardComponent implements OnDestroy, AfterViewInit{
   }
 
   reloadChart() : void {
-    this.capitationService.getValueBy(this.form.get('type').value).then( value => {
+    this.capitationService.getValueBy(this.form.get('type').value, value => {
       this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
 
         const colors: any = config.variables;
@@ -61,14 +64,10 @@ export class ValueByCardComponent implements OnDestroy, AfterViewInit{
 
   
       });
-    });
+    })
   }
 
   ngOnDestroy(): void {
-    this.themeSubscription.unsubscribe();
-  }
-
-  private random() {
-    return Math.round(Math.random() * 100);
+    if(this.themeSubscription) this.themeSubscription.unsubscribe();
   }
 }

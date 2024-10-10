@@ -2,7 +2,8 @@
   <nb-card-body class="d-flex flex-row justify-content-between">
     <div class="d-flex flex-column">
       <p id="title">Projetos</p>
-      <p id="value" title="{{projectAmmout | customCurrency}}">{{projectAmmout | shortNumber}}</p>
+      <p class="value" *ngIf="!!projectAmmout; else noDataWarning" title="{{projectAmmout | customCurrency}}">{{projectAmmout | shortNumber}}</p>
+      <ng-template #noDataWarning><p class="value">Sem Dados</p></ng-template>
       <p id="subtitle">Valor estimado em reais</p>
     </div>
     <img src="../../../../assets/images/projectIcon.png" />

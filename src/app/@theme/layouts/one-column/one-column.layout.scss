@@ -7,3 +7,16 @@
     padding-top: nb-theme(layout-padding-top);
   }
 }
+
+::ng-deep nb-layout-column > [class] {
+  height: 100%;
+}
+
+::ng-deep nb-layout-footer {
+  box-shadow: none !important;
+}
+
+::ng-deep nb-layout-footer nav {
+  background-color: transparent !important;
+  padding: 0 !important;
+}

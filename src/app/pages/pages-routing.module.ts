@@ -19,6 +19,7 @@ const routes: Routes = [{
     {
       path: 'capitation',
       component: CapitationComponent,
+      data: {dataSource: 'Sistema de Captação de Recursos - SISCAP'}
     },
 
 

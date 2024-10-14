@@ -12,6 +12,7 @@ export class HomeComponent  {
   public menulinks = menulinks;
 
   constructor(private router: Router) { 
+    this.menulinks = this.menulinks.filter(item => item.status);
   }
 
   handleClick(id: number) {

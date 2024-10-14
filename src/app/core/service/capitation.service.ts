@@ -53,6 +53,8 @@ export class CapitationService {
         console.log(err);
         if((err as HttpErrorResponse).status == HttpStatusCode.Unauthorized) {
             router.navigate(['pages/home']);
+        } else if((err as HttpErrorResponse).status == HttpStatusCode.Forbidden) {
+            router.navigate(['login']);
         }
         if(callback) callback(err);
     }

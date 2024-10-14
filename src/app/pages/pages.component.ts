@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 
 import { MENU_ITEMS } from './pages-menu';
-import { NbIconLibraries } from '@nebular/theme';
+import { NbIconLibraries, NbMenuComponent, NbThemeService } from '@nebular/theme';
 import { menulinks } from '../@core/utils/menuLinks';
 
 @Component({
@@ -14,18 +14,65 @@ import { menulinks } from '../@core/utils/menuLinks';
     </ngx-one-column-layout>
   `,
 })
-export class PagesComponent{
+export class PagesComponent {
   
+  @ViewChild('menuElem')
+  menuElem: ElementRef;
 
+  iconColor : string;
+  
+  private rebounce = false;
+  
+  menu = MENU_ITEMS;
 
-  constructor (private iconsLibrary: NbIconLibraries
+  
+  constructor (private iconsLibrary: NbIconLibraries,
+                private themeService : NbThemeService
   ) {
+    this.themeService.onThemeChange().subscribe(theme => {
+      this.rebounce = true;
+      this.updateMenuIcons(theme);
+    });
+
     menulinks.map(item => item.icon).forEach(iconFile => {
-      this.iconsLibrary.getPack("eva").icons.set(iconFile.split('.')[0], '<img src="assets/images/app/cinza-' + iconFile + '" width="25px" />');
-    })
+      
+      if(iconFile.split('.')[1] == 'svg'){
+        fetch("assets/images/app/" + iconFile).then(value => {
+          let resp : Response = value;
+
+          resp.text().then(innerText => {
+            this.iconsLibrary.getPack("eva").icons.set(iconFile.split('.')[0], innerText);
+            let nbIcon = document.querySelector('nb-menu nb-icon[ng-reflect-config="' + iconFile.split('.')[0] + '"]');
+            nbIcon ? nbIcon.innerHTML = innerText : null;
+            let elem = nbIcon ? nbIcon.querySelector('svg') : null;
+            elem ? elem.setAttribute('width', '20px') : null;
+            elem ? elem.setAttribute('height', '20px') : null;
+            elem = elem ? nbIcon.querySelector('[fill]') : null;
+            elem ? elem.setAttribute('fill', 'currentColor') : null;
+
+          }).catch(reason => console.error(reason));
+
+        }, reason => console.error(reason));
+      } else {
+        this.iconsLibrary.getPack("eva").icons.set(iconFile.split('.')[0], '<img src="assets/images/app/' + iconFile.split('.')[0] + '.png" width="20px" />');
+      }
+    });
+    
+  }
+
+  updateMenuIcons(theme : any) : void {
+    
+    // let itens = document.getElementsByTagName('nb-menu');
+    // if(itens.length > 0) {
+    //   itens = itens[0].getElementsByTagName('object');
+    // }
+
+    // this.rebounce = itens.length == 0;
+    // if(this.rebounce) this.updateMenuIcons(theme);
+
+    // console.log(itens)
 
   }
 
-  menu = MENU_ITEMS;
 
 }

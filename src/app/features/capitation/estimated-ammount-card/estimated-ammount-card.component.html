@@ -6,7 +6,13 @@
         <option ngValue="microregion">Microrregião</option>
         <option ngValue="city">Cidade</option>
       </select></p>
+
+      <!-- <select formControlName="testeFilter">
+          <option ngValue="">Nulo</option>
+          <option *ngFor="let opt of data" [ngValue]="opt.id">{{opt.name}}</option>
+      </select> -->
   </form>
+
     <ngx-chart [data]="data" [max-value]="maxValue"  bar-color="rgba(252, 185, 0, 1)"></ngx-chart>
   </nb-card-body>
 </nb-card>

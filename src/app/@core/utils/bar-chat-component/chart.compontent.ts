@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CustomCurrencyPipe, ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { BarChartComponent } from './bar-chart.component';
+import { NameAmmount } from '../../data/nameAmmount';
 
 @Component({
   selector: 'ngx-chart',
@@ -11,8 +12,10 @@ import { BarChartComponent } from './bar-chart.component';
                 'full-value-label="{{d.value | customCurrency}}"' +
                 ' value-label="{{d.value | shortNumber}}"' + 
                 ' value="{{d.value}}" ' +
-                ' max-value="{{maxValue}}"' + 
+                ' max-value="{{maxValue}}" ' + 
+                ' [data-value]="d.id" ' +
                 ' min-w="1" '+
+                ' w="100%"'+
                 ' w="100%"'+
                 ' bar-color="{{barColor}}"></ngx-bar-chart></div>' + 
                 '<ng-template #noDataWarning>Sem Dados</ng-template>',
@@ -23,9 +26,10 @@ import { BarChartComponent } from './bar-chart.component';
 export class ChartComponent {
     
     
-    @Input('data') data : {label: string, value: number}[];
+    @Input('data') data : {id: number, label: string, value: number}[];
     @Input('bar-color') barColor: string = 'green';
     @Input('max-value') maxValue: number = 10;
+    
    
         
 }

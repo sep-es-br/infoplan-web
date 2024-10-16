@@ -9,6 +9,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { ChartComponent } from '../../../@core/utils/bar-chat-component/chart.compontent';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { CapitacaoFilter } from '../../../@core/data/capitacaoFilter';
 
 
 @Component({
@@ -28,7 +29,8 @@ export class EstimatedAmmountCardComponent implements OnDestroy, AfterViewInit{
   maxValue: number;
 
   form = new FormGroup({
-    type: new FormControl('microregion')
+    type: new FormControl('microregion'),
+    testeFilter: new FormControl()
   });
 
 
@@ -47,13 +49,18 @@ export class EstimatedAmmountCardComponent implements OnDestroy, AfterViewInit{
   }
 
   reloadChart() {
-    this.capitationService.getEstimatedAmmout(this.form.get('type').value, value => {
+
+    let filter : CapitacaoFilter = {
+      ano: '2024',
+      idMicrorregiao: this.form.get('testeFilter').value
+    };
+
+    this.capitationService.getEstimatedAmmout(this.form.get('type').value, filter, value => {
       this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
-
-
 
         this.data = value.map(v => {
           return {
+              id: v.id,
               label: v.name,
               value: v.ammount
           }

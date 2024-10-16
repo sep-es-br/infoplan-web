@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams, HttpStatusCode } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { NameAmmount } from '../../@core/data/nameAmmount';
-import { SecretaryAmmount } from '../../@core/data/secretaryAmmount';
+import { CapitacaoFilter } from '../../@core/data/capitacaoFilter';
 
 
 @Injectable({
@@ -31,8 +31,12 @@ export class CapitationService {
         .catch(err => this.handleError(err, this.router, callbackFail));
     }
 
-    public getEstimatedAmmout(type : string, callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
-        this.http.get<Array<NameAmmount>>(this._urlBase + "valores-estimado", {params: { 'tipo': type}}).toPromise()
+    public getEstimatedAmmout(type : string, filter : CapitacaoFilter, callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
+                
+        this.http.get<Array<NameAmmount>>(this._urlBase + "valores-estimado", {params: { 
+            tipo: type, 
+            filterJson: JSON.stringify(filter)
+        }}).toPromise()
         .then(callbackSuccess)
         .catch(err => this.handleError(err, this.router, callbackFail));
     }

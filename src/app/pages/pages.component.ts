@@ -21,18 +21,12 @@ export class PagesComponent {
 
   iconColor : string;
   
-  private rebounce = false;
   
   menu = MENU_ITEMS;
 
   
-  constructor (private iconsLibrary: NbIconLibraries,
-                private themeService : NbThemeService
+  constructor (private iconsLibrary: NbIconLibraries
   ) {
-    this.themeService.onThemeChange().subscribe(theme => {
-      this.rebounce = true;
-      this.updateMenuIcons(theme);
-    });
 
     menulinks.map(item => item.icon).forEach(iconFile => {
       
@@ -60,19 +54,6 @@ export class PagesComponent {
     
   }
 
-  updateMenuIcons(theme : any) : void {
-    
-    // let itens = document.getElementsByTagName('nb-menu');
-    // if(itens.length > 0) {
-    //   itens = itens[0].getElementsByTagName('object');
-    // }
-
-    // this.rebounce = itens.length == 0;
-    // if(this.rebounce) this.updateMenuIcons(theme);
-
-    // console.log(itens)
-
-  }
 
 
 }

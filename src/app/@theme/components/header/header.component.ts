@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NbMediaBreakpointsService, NbMenuComponent, NbMenuItem, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
-import { UserData } from '../../../@core/data/users';
 import { LayoutService } from '../../../@core/utils';
 import { filter, map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';

@@ -3,6 +3,7 @@ import { NbThemeService } from '@nebular/theme';
 import { ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
+import { keyframes } from '@angular/animations';
 
 @Component({
   selector: 'ngx-bar-chart',
@@ -22,6 +23,7 @@ export class BarChartComponent implements AfterViewInit{
   @Input('min-w') public minWidth : number;
   @Input('w') public width : string;
   @Input('bar-color') public barColor: string;
+  @Input('dataValue') public dataValue: any;  
 
   constructor(private theme: NbThemeService,
               private capitationService : CapitationService
@@ -67,6 +69,7 @@ export class BarChartComponent implements AfterViewInit{
     barraContent.appendChild(infoDiv);
 
     let barraFill = document.createElement('div');
+    barraFill.classList.add('testeBarra')
     barraFill.style.height = '1rem';
     barraFill.style.width = Math.max(propValue, this.minWidth)  + '%';
     barraFill.style.display = 'block';
@@ -74,9 +77,20 @@ export class BarChartComponent implements AfterViewInit{
     
 
     barraContent.appendChild(barraFill);
+    this.animarBarra(barraFill);
+    this.animarBarra(infoDiv);
 
     divBarra.appendChild(barraContent);
+
   }
 
+
+  animarBarra(barraFill : HTMLDivElement) : void {
+        
+    let keyframes : Keyframe[] = [{width: 0}, {width: barraFill.style.width}];
+
+    barraFill.animate(keyframes, {duration: 1000, easing: "ease-out"} )
+    
+  }
     
 }

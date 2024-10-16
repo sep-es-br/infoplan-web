@@ -6,10 +6,10 @@ import { CapitationService } from '../../../core/service/capitation.service';
 import { ChartModule } from 'angular2-chartjs';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { DataChartComponent } from './data-chart.component';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { DataChartComponent } from './data-chart/data-chart.component';
 
 @Component({
   selector: 'ngx-value-by-card',

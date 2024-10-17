@@ -19,14 +19,18 @@ export class CapitationService {
         this.router = _router;
     }
 
-    public getProgramAmmount(callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
-        this.http.get<Number>(this._urlBase + "programAmmount").toPromise()
+    public getProgramAmmount(filter : CapitacaoFilter, callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
+        this.http.get<Number>(this._urlBase + "programAmmount", {params: {
+            filterJson: JSON.stringify(filter)
+        } }).toPromise()
         .then(callbackSuccess)
         .catch(err => this.handleError(err, this.router, callbackFail));
     }
 
-    public getProjectAmmount(callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
-        this.http.get<Number>(this._urlBase + "projectAmmount").toPromise()
+    public getProjectAmmount(filter : CapitacaoFilter, callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
+        this.http.get<Number>(this._urlBase + "projectAmmount", {params: {
+            filterJson: JSON.stringify(filter)
+        } }).toPromise()
         .then(callbackSuccess)
         .catch(err => this.handleError(err, this.router, callbackFail));
     }
@@ -41,14 +45,19 @@ export class CapitationService {
         .catch(err => this.handleError(err, this.router, callbackFail));
     }
 
-    public getValueBy(type : string, callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
-        this.http.get<Array<NameAmmount>>(this._urlBase + "valores-por", {params: { 'tipo': type}}).toPromise()
+    public getValueBy(type : string, filtro : CapitacaoFilter , callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
+        this.http.get<Array<NameAmmount>>(this._urlBase + "valores-por", {params: {
+                tipo: type,
+                filterJson: JSON.stringify(filtro)
+            }}).toPromise()
         .then(callbackSuccess)
         .catch(err => this.handleError(err, this.router, callbackFail));
     }
 
-    public getEstimatedAmmountSecretary(callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
-        this.http.get<Array<NameAmmount>>(this._urlBase + "valores-estimado-secretaria").toPromise()
+    public getEstimatedAmmountSecretary(filter : CapitacaoFilter, callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
+        this.http.get<Array<NameAmmount>>(this._urlBase + "valores-estimado-secretaria", {params: {
+            filterJson: JSON.stringify(filter) 
+        }}).toPromise()
         .then(callbackSuccess)
         .catch(err => this.handleError(err, this.router, callbackFail));
     }

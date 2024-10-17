@@ -4,6 +4,7 @@ import { ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
 import { keyframes } from '@angular/animations';
+import { ControlValueAccessor } from '@angular/forms';
 
 @Component({
   selector: 'ngx-bar-chart',
@@ -11,7 +12,7 @@ import { keyframes } from '@angular/animations';
   standalone: true,
   imports: [ CommonModule, ShortNumberPipe]
 })
-export class BarChartComponent implements AfterViewInit{
+export class BarChartComponent implements AfterViewInit, ControlValueAccessor{
 
   @ViewChild('bar') barra: ElementRef;
   
@@ -23,11 +24,28 @@ export class BarChartComponent implements AfterViewInit{
   @Input('min-w') public minWidth : number;
   @Input('w') public width : string;
   @Input('bar-color') public barColor: string;
-  @Input('dataValue') public dataValue: any;  
+  @Input('data-value') public dataValue: any;  
 
   constructor(private theme: NbThemeService,
               private capitationService : CapitationService
   ) { }
+  writeValue(obj: any): void {
+    
+    this.dataValue = obj;
+    
+  }
+  registerOnChange(fn: any): void {
+    throw new Error('Method not implemented.');
+  }
+  registerOnTouched(fn: any): void {
+    throw new Error('Method not implemented.');
+  }
+  setDisabledState?(isDisabled: boolean): void {
+    let barraElem = this.barra.nativeElement as HTMLElement
+    let barraFillElem = barraElem.getElementsByClassName('barraFill')[0] as HTMLElement;
+    
+    barraFillElem.style.backgroundColor = isDisabled ? 'gray' : this.barColor;
+  }
   ngAfterViewInit(): void {
     this.gerarBarra();
   }
@@ -69,7 +87,7 @@ export class BarChartComponent implements AfterViewInit{
     barraContent.appendChild(infoDiv);
 
     let barraFill = document.createElement('div');
-    barraFill.classList.add('testeBarra')
+    barraFill.classList.add('barraFill')
     barraFill.style.height = '1rem';
     barraFill.style.width = Math.max(propValue, this.minWidth)  + '%';
     barraFill.style.display = 'block';

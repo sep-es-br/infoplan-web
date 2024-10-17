@@ -1,18 +1,28 @@
 <nb-card>
   <nb-card-body>
     <form [formGroup]="form">
-      <p>Valores por 
+      <p>
+        <nb-icon icon="arrow-back-outline" class="mr-1" *ngIf="(form.get('type').value == 'microregion' && this.parent.filtro.idMicrorregiao != -1)
+      || (form.get('type').value == 'city' && this.parent.filtro.idCidade != -1)" (click)="applyFilter(-1)" ></nb-icon>
+        Valores por 
       <select id="micro" formControlName="type">
         <option ngValue="microregion">Microrregião</option>
         <option ngValue="city">Cidade</option>
       </select></p>
-
-      <!-- <select formControlName="testeFilter">
-          <option ngValue="">Nulo</option>
-          <option *ngFor="let opt of data" [ngValue]="opt.id">{{opt.name}}</option>
-      </select> -->
   </form>
 
-    <ngx-chart [data]="data" [max-value]="maxValue"  bar-color="rgba(252, 185, 0, 1)"></ngx-chart>
+  <div class="m-0 p-0" *ngIf="data && data.length > 0; else noDataWarning">
+  <ngx-bar-chart *ngFor="let d of data" 
+       label="{{d.label}}" 
+      full-value-label="{{d.value | customCurrency}}"
+       value-label="{{d.value | shortNumber}}"
+       value="{{d.value}}" 
+       max-value="{{maxValue}}" 
+       [data-value]="d.id" 
+      min-w="1" 
+       w="100%"
+       w="100%"
+       bar-color="rgba(252, 185, 0, 1)" (click)="applyFilter(d.id)"></ngx-bar-chart></div>
+      <ng-template #noDataWarning>Sem Dados</ng-template>
   </nb-card-body>
 </nb-card>

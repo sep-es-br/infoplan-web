@@ -1,0 +1,7 @@
+<svg *ngFor="let cor of cores" viewBox="0 0 100 100" width="100" height="100">
+    <g id="coracao"  style="fill: {{cor}}" (click)="coracao(cor)">
+        <circle cx="25" cy="33" r="25" />
+        <circle cx="75" cy="33" r="25" />
+        <path d="M 2,42 L 25,33 75,33 98,42 50,100 Z"/>
+    </g>
+</svg>

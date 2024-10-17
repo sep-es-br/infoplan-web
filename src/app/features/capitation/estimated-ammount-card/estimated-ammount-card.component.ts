@@ -1,15 +1,17 @@
-import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Input, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { NbCardModule, NbThemeService } from '@nebular/theme';
-import { ShortNumberPipe } from '../../../@theme/pipes';
+import { NbCardModule, NbIconModule, NbThemeService } from '@nebular/theme';
+import { CustomCurrencyPipe, ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
 import { ChartModule } from 'angular2-chartjs';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { ChartComponent } from '../../../@core/utils/bar-chat-component/chart.compontent';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CapitacaoFilter } from '../../../@core/data/capitacaoFilter';
+import { ChartItemComponent } from "../../../@core/utils/bar-chat-component/chart-item.component";
+import { BarChartComponent } from '../../../@core/utils/bar-chat-component/bar-chart.component';
+import { CapitationComponent } from '../capitation.component';
 
 
 @Component({
@@ -17,26 +19,53 @@ import { CapitacaoFilter } from '../../../@core/data/capitacaoFilter';
   templateUrl: './estimated-ammount-card.component.html',
   styleUrls: ['./estimated-ammount-card.component.scss'],
   standalone: true,
-  imports: [ReactiveFormsModule, ChartComponent, NbCardModule, CommonModule, ShortNumberPipe, NgxEchartsModule,
+  imports: [NbIconModule, ShortNumberPipe, BarChartComponent, CustomCurrencyPipe, ReactiveFormsModule, NbCardModule, CommonModule, ShortNumberPipe, NgxEchartsModule,
     NgxChartsModule,
-    ChartModule,], 
+    ChartModule, ChartItemComponent], 
   providers: []
 })
-export class EstimatedAmmountCardComponent implements OnDestroy, AfterViewInit{
+export class EstimatedAmmountCardComponent implements AfterViewInit{
   data: any;
   themeSubscription: any;
 
   maxValue: number;
+  @Input() parent : CapitationComponent;
+
 
   form = new FormGroup({
-    type: new FormControl('microregion'),
-    testeFilter: new FormControl()
+    type: new FormControl('microregion')
   });
 
 
-  constructor(private theme: NbThemeService,
-              private capitationService : CapitationService,
-              private router : Router
+  applyFilter(id : number) : void {
+    if(id != -1 && !this.checarValorSetado()) return;
+    let type = this.form.get('type').value;
+    switch(type) {
+      case 'microregion':
+        this.parent.filtro.idMicrorregiao = id;
+        if(this.parent.filtro.idCidade == -1) this.form.get('type').setValue('city');
+        break;
+      case 'city':
+        this.parent.filtro.idCidade = id;
+        if(this.parent.filtro.idMicrorregiao == -1) this.form.get('type').setValue('microregion');
+        break;
+    }
+    
+
+    this.parent.updateDashboard();
+ }
+
+ checarValorSetado() {
+  let type = this.form.get('type').value;
+
+
+  return (type == 'microregion' && this.parent.filtro.idMicrorregiao == -1)
+      || (type == 'city' && this.parent.filtro.idCidade == -1);
+  
+ }
+
+  constructor(private capitationService : CapitationService,
+              private changeDetector : ChangeDetectorRef
   ) {
     
   }
@@ -50,13 +79,7 @@ export class EstimatedAmmountCardComponent implements OnDestroy, AfterViewInit{
 
   reloadChart() {
 
-    let filter : CapitacaoFilter = {
-      ano: '2024',
-      idMicrorregiao: this.form.get('testeFilter').value
-    };
-
-    this.capitationService.getEstimatedAmmout(this.form.get('type').value, filter, value => {
-      this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
+    this.capitationService.getEstimatedAmmout(this.form.get('type').value, this.parent.filtro, value => {
 
         this.data = value.map(v => {
           return {
@@ -69,14 +92,10 @@ export class EstimatedAmmountCardComponent implements OnDestroy, AfterViewInit{
         this.maxValue = Math.max(...this.data.map(d => d.value));
         
   
-      });
     });
 
 
   }
 
-  ngOnDestroy(): void {
-    if(this.themeSubscription) this.themeSubscription.unsubscribe();
-  }
 
 }

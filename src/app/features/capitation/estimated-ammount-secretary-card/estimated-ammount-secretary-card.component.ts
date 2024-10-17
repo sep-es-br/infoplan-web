@@ -1,15 +1,16 @@
 import { Component, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { NbCardComponent, NbCardModule, NbMediaBreakpoint, NbMediaBreakpointsService, NbThemeService } from '@nebular/theme';
-import { ShortNumberPipe } from '../../../@theme/pipes';
+import { NbCardComponent, NbCardModule, NbIconModule, NbMediaBreakpoint, NbMediaBreakpointsService, NbThemeService } from '@nebular/theme';
+import { CustomCurrencyPipe, ShortNumberPipe } from '../../../@theme/pipes';
 import { CommonModule } from '@angular/common';
 import { CapitationService } from '../../../core/service/capitation.service';
 import { ChartModule } from 'angular2-chartjs';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { ChartComponent } from '../../../@core/utils/bar-chat-component/chart.compontent';
 import { DataChartComponent } from './data-chart.component';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { CapitationComponent } from '../capitation.component';
+import { DataRowChartComponent } from './data-row-chart.component';
 
 
 @Component({
@@ -17,13 +18,11 @@ import { Router } from '@angular/router';
   templateUrl: './estimated-ammount-secretary-card.component.html',
   styleUrls: ['./estimated-ammount-secretary-card.component.scss'],
   standalone: true,
-  imports: [ DataChartComponent, ChartComponent, NbCardModule, CommonModule, ShortNumberPipe,
-    NgxEchartsModule,
-    NgxChartsModule,
-    ChartModule,], 
+  imports: [DataRowChartComponent, NbCardModule, CommonModule, ShortNumberPipe,
+    ShortNumberPipe, CustomCurrencyPipe, NbIconModule], 
   providers: []
 })
-export class EstimatedAmmountSecretaryCardComponent implements OnDestroy {
+export class EstimatedAmmountSecretaryCardComponent implements OnInit{
   data: any;
 
 
@@ -31,43 +30,39 @@ export class EstimatedAmmountSecretaryCardComponent implements OnDestroy {
   themeSubscription: any;
 
   maxValue: number;
+  @Input() parent : CapitationComponent;
 
-  
-
-  constructor(private theme: NbThemeService,
-              private capitationService : CapitationService,
-              private router : Router
-  ) {
-    this.capitationService.getEstimatedAmmountSecretary(value => {
-      this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
-
-        const colors: any = config.variables;
-        const chartjs: any = config.variables.chartjs;
-        
-        let labels = value.map(v => v.name);
-        let numbers = value.map(v => v.ammount);
-
-        this.data = value.map(v => {
-          return {
-              label: v.name,
-              value: v.ammount
-          }
-        })
-
-        this.maxValue = Math.max(...this.data.map(d => d.value));
-        
-
-      });
-    });
-
+  applyFilter(id : number) : void {
+    if(id != -1 && this.parent.filtro.idSecretaria != -1) return;
     
-  }
+    this.parent.filtro.idSecretaria = id;
+    
+    this.parent.updateDashboard();
+ }
 
-  ngOnDestroy(): void {
-    if(this.themeSubscription) this.themeSubscription.unsubscribe();
-  }
+ updateChart() {
+  this.capitationService.getEstimatedAmmountSecretary(this.parent.filtro, value => {
 
-  private random() {
-    return Math.round(Math.random() * 100);
-  }
+    this.data = value.map(v => {
+      return {
+          id: v.id,
+          label: v.name,
+          value: v.ammount
+      }
+    })
+
+    this.maxValue = Math.max(...this.data.map(d => d.value));
+      
+
+  });
+
+ }
+
+ ngOnInit(): void {
+  this.updateChart()
+ }
+
+  constructor(private capitationService : CapitationService
+  ) {}
+
 }

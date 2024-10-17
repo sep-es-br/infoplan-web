@@ -1,12 +1,23 @@
 <nb-card>
   <nb-card-body>
     <form [formGroup]="form">
-      <p>Valores por 
+      <p><nb-icon icon="arrow-back-outline" class="mr-1" *ngIf="(form.get('type').value == 'project' && this.parent.filtro.idProjeto != -1)
+      || (form.get('type').value == 'program' && this.parent.filtro.idPrograma != -1)" (click)="applyFilter(-1)" ></nb-icon>
+      Valores por 
       <select id="type" formControlName="type">
         <option ngValue="project">Projeto</option>
         <option ngValue="program">Programa</option>
       </select></p>
     </form>
-    <ngx-chart-with-value [data]="data" max-value="{{maxValue}}" color="rgba(16, 127, 207, 1)"></ngx-chart-with-value>
+    <div *ngIf="data && data.length > 0; else noDataWarning">
+      <ngx-chart-with-value-row 
+      *ngFor='let item of data'  
+      label={{item.label}} 
+      value={{item.value}} 
+      max-value={{maxValue}} 
+      value-label="{{item.value | shortNumber}}" 
+      full-value-label="{{item.value | customCurrency}}" 
+      color="rgba(16, 127, 207, 1)"  (click)="applyFilter(item.id)"></ngx-chart-with-value-row></div>
+      <ng-template #noDataWarning><p>Sem Dados</p></ng-template>
   </nb-card-body>
 </nb-card>

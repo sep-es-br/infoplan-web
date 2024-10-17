@@ -43,11 +43,11 @@ export class EstimatedAmmountCardComponent implements AfterViewInit{
     switch(type) {
       case 'microregion':
         this.parent.filtro.idMicrorregiao = id;
-        if(this.parent.filtro.idCidade == -1) this.form.get('type').setValue('city');
+        if(id != -1 && this.parent.filtro.idCidade == -1) this.form.get('type').setValue('city');
         break;
       case 'city':
         this.parent.filtro.idCidade = id;
-        if(this.parent.filtro.idMicrorregiao == -1) this.form.get('type').setValue('microregion');
+        if(id != -1 && this.parent.filtro.idMicrorregiao == -1) this.form.get('type').setValue('microregion');
         break;
     }
     

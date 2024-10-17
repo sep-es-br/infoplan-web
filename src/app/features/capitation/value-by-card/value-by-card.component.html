@@ -1,8 +1,8 @@
 <nb-card>
   <nb-card-body>
     <form [formGroup]="form">
-      <p><nb-icon icon="arrow-back-outline" class="mr-1" *ngIf="(form.get('type').value == 'project' && this.parent.filtro.idProjeto != -1)
-      || (form.get('type').value == 'program' && this.parent.filtro.idPrograma != -1)" (click)="applyFilter(-1)" ></nb-icon>
+      <p><nb-icon icon="arrow-back-outline" class="mr-1" *ngIf="(form.get('type').value === 'project' && this.parent.filtro.idProjeto !== -1)
+      || (form.get('type').value === 'program' && this.parent.filtro.idPrograma !== -1)" (click)="applyFilter(-1)" ></nb-icon>
       Valores por 
       <select id="type" formControlName="type">
         <option ngValue="project">Projeto</option>

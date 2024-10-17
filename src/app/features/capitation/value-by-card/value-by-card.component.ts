@@ -39,9 +39,11 @@ export class ValueByCardComponent implements OnDestroy, AfterViewInit{
     switch(type) {
       case 'project':
         this.parent.filtro.idProjeto = id;
+        if(id != -1 && this.parent.filtro.idPrograma == -1) this.form.get('type').setValue('program');
         break;
       case 'program':
         this.parent.filtro.idPrograma = id;
+        if(id != -1 && this.parent.filtro.idProjeto == -1) this.form.get('type').setValue('project');
         break;
     }
     

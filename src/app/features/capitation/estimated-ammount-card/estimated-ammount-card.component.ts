@@ -9,7 +9,6 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CapitacaoFilter } from '../../../@core/data/capitacaoFilter';
-import { ChartItemComponent } from "../../../@core/utils/bar-chat-component/chart-item.component";
 import { BarChartComponent } from '../../../@core/utils/bar-chat-component/bar-chart.component';
 import { CapitationComponent } from '../capitation.component';
 
@@ -21,7 +20,7 @@ import { CapitationComponent } from '../capitation.component';
   standalone: true,
   imports: [NbIconModule, ShortNumberPipe, BarChartComponent, CustomCurrencyPipe, ReactiveFormsModule, NbCardModule, CommonModule, ShortNumberPipe, NgxEchartsModule,
     NgxChartsModule,
-    ChartModule, ChartItemComponent], 
+    ChartModule], 
   providers: []
 })
 export class EstimatedAmmountCardComponent implements AfterViewInit{
@@ -75,6 +74,31 @@ export class EstimatedAmmountCardComponent implements AfterViewInit{
       this.reloadChart();
     })
 
+  }
+
+  getSelectedValue() : {nome, valor} {
+    let type = this.form.get('type').value;
+    let selectedValue;
+
+    switch(type) {
+      case 'microregion':
+        selectedValue = this.data.filter(d => d.id === this.parent.filtro.idMicrorregiao)[0];
+
+        return {
+          nome: selectedValue.label,
+          valor: selectedValue.value
+        }
+
+      case 'city':
+        selectedValue = this.data.filter(d => d.id === this.parent.filtro.idCidade)[0];
+
+        return {
+          nome: selectedValue.label,
+          valor: selectedValue.value
+        }
+    }
+
+    return {nome: 'N/D', valor: -1}
   }
 
   reloadChart() {

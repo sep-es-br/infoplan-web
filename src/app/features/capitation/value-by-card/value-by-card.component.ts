@@ -21,10 +21,9 @@ import { DataRowChartComponent } from './data-chart/data-row-chart.component';
     ChartModule, DataRowChartComponent, CustomCurrencyPipe], 
   providers: []
 })
-export class ValueByCardComponent implements OnDestroy, AfterViewInit{
+export class ValueByCardComponent implements AfterViewInit{
   data: any;
   maxValue: number;
-  themeSubscription: any;
 
   @Input() parent : CapitationComponent;
 
@@ -60,9 +59,7 @@ export class ValueByCardComponent implements OnDestroy, AfterViewInit{
   
  }
 
-  constructor(private theme: NbThemeService,
-              private capitationService : CapitationService,
-              private router : Router
+  constructor( private capitationService : CapitationService
   ) {
 
   }
@@ -76,28 +73,45 @@ export class ValueByCardComponent implements OnDestroy, AfterViewInit{
 
   reloadChart() : void {
     this.capitationService.getValueBy(this.form.get('type').value, this.parent.filtro, value => {
-      this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
 
-        const colors: any = config.variables;
-        const chartjs: any = config.variables.chartjs;
         
+      this.data = value.map(v => {
+        return {
+          id: v.id,
+          label: v.name,
+          value: v.ammount
+        }
+      });
 
-        this.data = value.map(v => {
-          return {
-            id: v.id,
-            label: v.name,
-            value: v.ammount
-          }
-        });
-
-        this.maxValue = Math.max(...this.data.map(d => d.value));
+      this.maxValue = Math.max(...this.data.map(d => d.value));
 
   
-      });
     })
   }
 
-  ngOnDestroy(): void {
-    if(this.themeSubscription) this.themeSubscription.unsubscribe();
+  getSelectedValue() : {nome, valor} {
+    let type = this.form.get('type').value;
+    let selectedValue;
+
+    switch(type) {
+      case 'project':
+        selectedValue = this.data.filter(d => d.id === this.parent.filtro.idProjeto)[0];
+
+        return {
+          nome: selectedValue.label,
+          valor: selectedValue.value
+        }
+
+      case 'program':
+        selectedValue = this.data.filter(d => d.id === this.parent.filtro.idPrograma)[0];
+
+        return {
+          nome: selectedValue.label,
+          valor: selectedValue.value
+        }
+    }
+
+    return {nome: 'N/D', valor: -1}
   }
+
 }

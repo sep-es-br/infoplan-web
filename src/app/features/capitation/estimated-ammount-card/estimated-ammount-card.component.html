@@ -12,17 +12,27 @@
   </form>
 
   <div class="m-0 p-0" *ngIf="data && data.length > 0; else noDataWarning">
-  <ngx-bar-chart *ngFor="let d of data" 
-       label="{{d.label}}" 
-      full-value-label="{{d.value | customCurrency}}"
-       value-label="{{d.value | shortNumber}}"
-       value="{{d.value}}" 
-       max-value="{{maxValue}}" 
-       [data-value]="d.id" 
-      min-w="1" 
-       w="100%"
-       w="100%"
-       bar-color="rgba(252, 185, 0, 1)" (click)="applyFilter(d.id)"></ngx-bar-chart></div>
-      <ng-template #noDataWarning>Sem Dados</ng-template>
+      <div *ngIf="(form.get('type').value === 'microregion' && parent.filtro.idMicrorregiao === -1)
+               || (form.get('type').value === 'city' && parent.filtro.idCidade === -1); else oneData">
+        <ngx-bar-chart *ngFor="let d of data" 
+          label="{{d.label}}" 
+          full-value-label="{{d.value | customCurrency}}"
+          value-label="{{d.value | shortNumber}}"
+          value="{{d.value}}" 
+          max-value="{{maxValue}}" 
+          [data-value]="d.id" 
+          min-w="1" 
+          w="100%"
+          w="100%"
+          bar-color="rgba(252, 185, 0, 1)" (click)="applyFilter(d.id)"></ngx-bar-chart>
+      </div>
+      <ng-template #oneData>
+        <div id="oneData" class="m-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+          <h1 class="d-block" title="{{getSelectedValue().valor | customCurrency}}" >{{getSelectedValue().valor | shortNumber }}</h1>
+          <h2 class="d-block" >{{getSelectedValue().nome}}</h2>
+        </div>
+      </ng-template>
+  </div>
+  <ng-template #noDataWarning>Sem Dados</ng-template>
   </nb-card-body>
 </nb-card>

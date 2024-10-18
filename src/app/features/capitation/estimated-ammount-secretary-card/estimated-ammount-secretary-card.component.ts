@@ -58,6 +58,17 @@ export class EstimatedAmmountSecretaryCardComponent implements OnInit{
 
  }
 
+ getSelectedValue() : {nome, valor} {
+  let selectedValue;
+
+  selectedValue = this.data.filter(d => d.id === this.parent.filtro.idSecretaria)[0];
+
+  return {
+    nome: selectedValue.label,
+    valor: selectedValue.value
+  }
+
+}
  ngOnInit(): void {
   this.updateChart()
  }

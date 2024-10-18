@@ -10,6 +10,8 @@
       </select></p>
     </form>
     <div *ngIf="data && data.length > 0; else noDataWarning">
+      <div *ngIf="(form.get('type').value === 'project' && parent.filtro.idProjeto === -1)
+               || (form.get('type').value === 'program' && parent.filtro.idPrograma === -1); else oneData">
       <ngx-chart-with-value-row 
       *ngFor='let item of data'  
       label={{item.label}} 
@@ -17,7 +19,15 @@
       max-value={{maxValue}} 
       value-label="{{item.value | shortNumber}}" 
       full-value-label="{{item.value | customCurrency}}" 
-      color="rgba(16, 127, 207, 1)"  (click)="applyFilter(item.id)"></ngx-chart-with-value-row></div>
+      color="rgba(16, 127, 207, 1)"  (click)="applyFilter(item.id)"></ngx-chart-with-value-row>
+    </div>
+    <ng-template #oneData>
+      <div id="oneData" class="m-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+        <h1 class="d-block" title="{{getSelectedValue().valor | customCurrency}}" >{{getSelectedValue().valor | shortNumber }}</h1>
+        <h2 class="d-block" >{{getSelectedValue().nome}}</h2>
+      </div>
+    </ng-template>
+  </div>
       <ng-template #noDataWarning><p>Sem Dados</p></ng-template>
   </nb-card-body>
 </nb-card>

@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NbMediaBreakpointsService, NbMenuComponent, NbMenuItem, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
-import { UserData } from '../../../@core/data/users';
 import { LayoutService } from '../../../@core/utils';
 import { filter, map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -16,6 +15,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
   userPictureOnly: boolean = false;
   user: { name: string; email: string };
+  imageLogoSrc: string;
 
   themes = [
     {
@@ -77,6 +77,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentTheme = this.themeService.currentTheme;
+    this.setImageForTheme(this.currentTheme);
 
     const userData = sessionStorage.getItem('user-profile'); 
     if (userData) {
@@ -96,7 +97,30 @@ export class HeaderComponent implements OnInit, OnDestroy {
         map(({ name }) => name),
         takeUntil(this.destroy$),
       )
-      .subscribe(themeName => this.currentTheme = themeName);
+      .subscribe(themeName => {
+        this.currentTheme = themeName
+        this.setImageForTheme(themeName)
+      });
+  }
+  
+
+  setImageForTheme(themeName: string): void {
+    switch (themeName) {
+      case 'default':
+        this.imageLogoSrc = 'assets/images/app/icone-info-plan.png';
+        break;
+      case 'dark':
+        this.imageLogoSrc = 'assets/images/app/icone-info-plan-cinza.png';
+        break;
+      case 'cosmic':
+        this.imageLogoSrc = 'assets/images/app/icone-info-plan-cinza.png';
+        break;
+      case 'corporate':
+        this.imageLogoSrc = 'assets/images/app/icone-info-plan.png';
+        break;
+      default:
+        this.imageLogoSrc = 'assets/images/app/icone-info-plan-cinza.png';
+    }
   }
 
   ngOnDestroy() {

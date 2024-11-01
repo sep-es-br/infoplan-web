@@ -2,44 +2,19 @@
 @import '@nebular/theme/styles/global/breakpoints';
 @import 'bootstrap/scss/mixins/breakpoints';
 
+
+#footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 @include nb-install-component() {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  .socials {
-    font-size: 2rem;
-
-    a {
-      padding: 0.4rem;
-      color: nb-theme(text-hint-color);
-      transition: color ease-out 0.1s;
-
-      &:hover {
-        color: nb-theme(text-basic-color);
-      }
-    }
-  }
-
-  @include media-breakpoint-down(is) {
-    .socials {
-      font-size: 1.5rem;
-    }
-  }
-
-  .gov-logo {
-    text-align: left;
-    img {
-        width: 150px;
-    }
-  }
-  
-  @media (max-width: 500px) {
-    justify-content: space-around;
-    .created-by {
-      display: none;
-    }
-}
-
 }

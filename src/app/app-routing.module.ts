@@ -6,7 +6,7 @@ import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
-    title: 'Painel de Indicadores',
+    title: 'InfoPlan',
     path: 'pages',
     loadChildren: () => import('./pages/pages.module')
       .then(m => m.PagesModule),
@@ -18,7 +18,7 @@ export const routes: Routes = [
     component: AuthRedirectComponent,
   },
   {
-    title: 'Painel de Indicadores',
+    title: 'InfoPlan - Login',
     path: 'login',
     component: LoginComponent,
   },

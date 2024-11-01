@@ -1,7 +1,30 @@
+import { environment } from "../../../environments/environment";
+
+type userInfo = {
+  name: string, 
+  email: string,
+  role: string[]
+}
+
+let token = sessionStorage.getItem('token');
+
+function checkRoles(allowedRole: string) : boolean {
+    let userInfos : userInfo = JSON.parse(sessionStorage.getItem('user-profile'));
+
+    //if(userInfos.role.find(value => value == environment.allowedRoles.geral))
+      //return true;
+
+    if(userInfos.role.find(value => value == allowedRole))
+        return true;
+
+    return false;
+}
+
+
 export const menulinks = [
-  { id: 1, status: true, name: 'Indicadores', link: '', url: 'http://indicadores.sep.local/', icon: 'menu-icone-indicadores.png', src: 'SEP', menuIcon: '', color:'#0098DA' },
-  { id: 2, status: false, name: 'Projetos Estratégicos', link: '', url: '', icon: 'menu-icone-openpmo.png', src: 'OpenPMO', menuIcon:'', color:'#44B39B'},
-  { id: 3, status: false, name: 'Captação de Recursos', icon: 'menu-icone-siscap.png', link: '', url: '', src: 'Siscap', menuIcon:'', color:'#F09BBE'},
-  { id: 4, status: false, name: 'Gestão Fiscal', icon: 'menu-icone-gestao-fiscal.png', link: '/pages/gfiscal', url: '', src: 'Sigefes/BI SEP', menuIcon: '', color:'red' },
-  { id: 5, status: false, name: 'Orçamento - Sigefes', link: '', url: '', icon: 'menu-icone-orcamento-sigefes.png', src: 'Sigefes/SAS Sefaz', menuIcon:'', color:'red' },
+  { id: 1, status: checkRoles(environment.allowedRoles.indicadores), name: 'Indicadores', link: '', url: 'https://indicadores.es.gov.br/home?urlToken=' + token, icon: 'menu-icone-indicadores.svg', src: 'SEP', menuIcon: '', color:'rgb(8 49 127)  ' },
+  { id: 2, status: checkRoles(environment.allowedRoles.capitacao), name: 'Captação de Recursos', icon: 'menu-icone-siscap.svg', link: '/pages/capitation', url: '', src: 'Siscap', menuIcon:'', color:'#F09BBE'},
+  { id: 3, status: checkRoles(environment.allowedRoles.sas), name: 'Painéis SAS(Sigefes)', link: '', url: 'https://bi.sefaz.es.gov.br/links/resources/report?uri=%2Freports%2Freports%2F492af986-c3ed-4b67-95f5-29697d7fce81&page=vi700', icon: 'menu-icone-sas.svg', src: 'Sigefes/SAS Sefaz', menuIcon:'', color:'#0478ce' },
+  { id: 4, status: checkRoles(environment.allowedRoles.projetosEstrategicos), name: 'Projetos Estratégicos', link: '', url: '', icon: 'menu-icone-openpmo.svg', src: 'OpenPMO', menuIcon:'', color:'#44B39B'},
+  { id: 5, status: checkRoles(environment.allowedRoles.gestaoFiscal), name: 'Gestão Fiscal', icon: 'menu-icone-gestao-fiscal.svg', link: '/pages/gfiscal', url: '', src: 'Sigefes/BI SEP', menuIcon: '', color:'red' },
 ];

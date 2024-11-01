@@ -1,49 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { ImplicitReceiver } from '@angular/compiler';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NbThemeService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-footer',
   styleUrls: ['./footer.component.scss'],
   template: `
-    <span class="created-by">
-      Central de Informações de Planejamento
-    </span>
-    <div class="gov-logo">
-      <img class="logo-gov" [src]="imageSrc" alt="">
+    <div id="footer">
+      <p>Central de Informações de Planejamento</p>
+      <p class="font-italic">Fonte: {{dataSrc}}</p>
     </div>
   `,
 })
-export class FooterComponent implements OnInit{
-  imageSrc: string;
+export class FooterComponent{
 
-  constructor(private themeService: NbThemeService) { }
+  dataSrc : string;
 
-  ngOnInit(): void {
-    this.themeService.onThemeChange()
-      .subscribe(theme => {
-        this.setImageForTheme(theme.name);
-      });
-
-    const currentTheme = this.themeService.currentTheme;
-    this.setImageForTheme(currentTheme);
+  constructor(private route : ActivatedRoute) {  
+    this.dataSrc = this.route.snapshot.data['dataSource'];
   }
 
-  setImageForTheme(themeName: string): void {
-    switch (themeName) {
-      case 'default':
-        this.imageSrc = 'assets/images/app/logo-gov.png';
-        break;
-      case 'dark':
-        this.imageSrc = 'assets/images/app/logo-gov-branco.png';
-        break;
-      case 'cosmic':
-        this.imageSrc = 'assets/images/app/logo-gov-branco.png';
-        break;
-      case 'corporate':
-        this.imageSrc = 'assets/images/app/logo-gov.png';
-        break;
-      default:
-        this.imageSrc = 'assets/images/app/logo-gov-branco.png';
-    }
-  }
+
 }

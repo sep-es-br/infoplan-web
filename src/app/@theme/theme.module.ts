@@ -19,7 +19,6 @@ import { NbSecurityModule } from '@nebular/security';
 import {
   FooterComponent,
   HeaderComponent,
-  SearchInputComponent,
   TinyMCEComponent,
 } from './components';
 import {
@@ -28,6 +27,7 @@ import {
   RoundPipe,
   TimingPipe,
   NumberWithCommasPipe,
+  ShortNumberPipe,
 } from './pipes';
 import {
   OneColumnLayoutComponent,
@@ -52,11 +52,11 @@ const NB_MODULES = [
   NbSelectModule,
   NbIconModule,
   NbEvaIconsModule,
+  ShortNumberPipe,
 ];
 const COMPONENTS = [
   HeaderComponent,
   FooterComponent,
-  SearchInputComponent,
   TinyMCEComponent,
   OneColumnLayoutComponent,
   ThreeColumnsLayoutComponent,

@@ -1,0 +1,11 @@
+<nb-card>
+  <nb-card-body class="d-flex flex-row justify-content-between">
+    <div class="d-flex flex-column">
+      <p id="title">Programa</p>
+      <p class="value" *ngIf="!!programAmmout; else noDataWarning" title="{{programAmmout | customCurrency }}">{{programAmmout | shortNumber}}</p>
+      <ng-template #noDataWarning><p class="value">Sem Dados</p></ng-template>
+      <p id="subtitle">Valor estimado em reais</p>
+    </div>
+    <img src="../../../../assets/images/programIcon.png" />
+  </nb-card-body>
+</nb-card>

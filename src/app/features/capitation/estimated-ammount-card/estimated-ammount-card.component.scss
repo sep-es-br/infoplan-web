@@ -1,0 +1,15 @@
+@import '../../../@theme/styles/themes';
+
+ngx-chart {
+    display: block;
+    max-height: 30rem;
+    overflow-y: auto;
+}
+
+:host h1.d-block, :host h2.d-block {
+    width: fit-content;
+}
+
+:host div#oneData {
+    height: 20rem !important;
+}

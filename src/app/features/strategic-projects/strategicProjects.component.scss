@@ -1,0 +1,241 @@
+/*Declaração inicial*/
+
+
+.col-xs-100,
+.col-xs-1-2,
+.col-sm-1-2,
+.col-md-1-2,
+.col-lg-1-2,
+.col-xs-1-5,
+.col-sm-1-5,
+.col-md-1-5,
+.col-lg-1-5{
+    position: relative;
+    min-height: 1px;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.col-xs-100 {
+    width: 100%;
+    float: left;
+}
+
+.col-xs-1-2 {
+    width: 50%;
+    float: left;
+}
+
+.col-xs-1-5 {
+    width: 20%;
+    float: left;
+}
+.col-xs-2-5 {
+    width: 40%;
+    float: left;
+}
+.col-xs-3-5 {
+    width: 60%;
+    float: left;
+}
+@media (min-width: 768px) {
+
+    .col-sm-100 {
+    width: 100%;
+    float: left;
+    }
+    .col-sm-1-2 {
+        width: 50%;
+        float: left;
+    }
+    .col-sm-1-5 {
+        width: 20%;
+        float: left;
+    }
+    .col-sm-2-5 {
+        width: 40%;
+        float: left;
+    }
+    .col-sm-3-5 {
+        width: 60%;
+        float: left;
+    }
+}
+@media (min-width: 992px) {
+    .col-md-100 {
+    width: 100%;
+    float: left;
+    }
+    .col-md-1-2 {
+        width: 50%;
+        float: left;
+    }
+    .col-md-1-5 {
+        width: 20%;
+        float: left;
+    }
+    .col-md-2-5 {
+        width: 40%;
+        float: left;
+    }
+    .col-md-3-5 {
+        width: 60%;
+        float: left;
+    }
+}
+@media (min-width: 1200px) {
+    .col-lg-100 {
+    width: 100%;
+    float: left;
+    }
+    .col-lg-1-2 {
+        width: 50%;
+        float: left;
+    }
+    .col-lg-1-5 {
+        width: 20%;
+        float: left;
+    }
+    .col-lg-2-5 {
+        width: 40%;
+        float: left;
+    }
+    .col-lg-3-5 {
+        width: 60%;
+        float: left;
+    }
+}
+
+.p-rl{
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+.card-content {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    padding: 5px 0 5px 5px;
+  }
+
+  .icon-top-right {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #005c99;
+    font-size: 18px;
+  }
+
+  .number-box.previsto {
+    background-color: #487D7A !important;
+  }
+  
+  .text-section.previsto, .icon-top-right.previsto {
+    color: #487D7A !important;
+  }
+
+  .number-box.realizado{
+    background-color: #00B26A !important;
+  }
+
+  .text-section.realizado, .icon-top-right.realizado {
+    color: #00B26A !important;
+  }
+  
+  .number-box {
+    background-color: #005c99;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 65px;
+    min-width: 120px;
+  }
+
+  .currency {
+    font-size: 15px;
+  }
+  
+  .text-section {
+    display: flex;
+    align-items:end;
+    color: #005c99;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .no-padding-top {
+    padding-top: 0;
+  }
+
+
+
+.dashboard-container {
+    padding: 20px;
+  }
+
+  .card h1 {
+    color: #007bff;
+    font-size: 2.5em;
+    margin: 0;
+  }
+
+  .card .text-card {
+    color: black;
+    font-size: 0.9rem;
+  }
+
+  .chart-container {
+    height: 150px;
+    // background-color: #f0f3f5;
+    border-radius: 8px;
+    display: flex;
+  }
+
+  .chart-container-large {
+    height: 290px;
+  }
+
+  .echart {
+    height: 100%;
+    width: 100%;
+  }
+
+  .legend-container {
+    width: 30%;
+    padding: 10px;
+  }
+  
+  .legend-container ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .legend-container li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .legend-color {
+    width: 15px;
+    height: 15px;
+    margin-right: 8px;
+    border-radius: 50%; /* Torna a cor em um círculo */
+  }
+
+
+
+

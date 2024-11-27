@@ -5,6 +5,7 @@ import { PagesComponent } from './pages.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
 import { HomeComponent } from '../features/home/home.component';
 import { CapitationComponent } from '../features/capitation/capitation.component';
+import { StrategicProjectsComponent } from '../features/strategic-projects/strategicProjects.component';
 
 const routes: Routes = [{
   path: '',
@@ -18,6 +19,10 @@ const routes: Routes = [{
       path: 'capitation',
       component: CapitationComponent,
       data: {dataSource: 'Sistema de Captação de Recursos - SISCAP'}
+    },
+    {
+      path: 'strategicProjects',
+      component: StrategicProjectsComponent
     },
     {
       path: '',

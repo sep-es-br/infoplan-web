@@ -7,6 +7,7 @@ import { PagesRoutingModule } from './pages-routing.module';
 import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
 import { HomeModule } from '../features/home/home.module';
 import { LoginModule } from '../features/login/login.module';
+import { StrategicProjectsModule } from '../features/strategic-projects/strategicProjects.module';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { LoginModule } from '../features/login/login.module';
     NbMenuModule,
     MiscellaneousModule,
     HomeModule,
+    StrategicProjectsModule,
     LoginModule
   ],
   declarations: [

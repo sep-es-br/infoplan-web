@@ -33,7 +33,6 @@ export class PagesComponent {
       if(iconFile.split('.')[1] == 'svg'){
         fetch("assets/images/app/" + iconFile).then(value => {
           let resp : Response = value;
-          console.log(resp)
           resp.text().then(innerText => {
             this.iconsLibrary.getPack("eva").icons.set(iconFile.split('.')[0], innerText);
             let nbIcon = document.querySelector('nb-menu nb-icon[ng-reflect-config="' + iconFile.split('.')[0] + '"]');

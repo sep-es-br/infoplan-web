@@ -1,19 +1,22 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { EChartsOption } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
 
 @Component({
-  selector: 'ngx-infoplan-pie-chart',
-  templateUrl: './infoplanPieChart.component.html',
-  styleUrls: ['./infoplanPieChart.component.scss'],
+  selector: 'ngx-pie-chart-model',
+  templateUrl: './pieChartModel.component.html',
+  styleUrls: ['./pieChartModel.component.scss'],
   standalone: true,
-  imports: [NgxEchartsModule],
+  imports: [NgxEchartsModule, CommonModule],
 })
-export class InfoplanPieChartComponent implements OnChanges{
+export class PieChartModelComponent implements OnChanges{
 
   @Input() data: { value: number, name: string }[] = [];
   @Input() colors: string[] = [];
+  @Input() height: number;
 
-  chartOptions: any;
+  chartOptions: EChartsOption;
   echartsInstance: any = null
 
   constructor() {
@@ -44,8 +47,6 @@ export class InfoplanPieChartComponent implements OnChanges{
 
   
   initChartOptions(data: { value: number, name: string }[], colors: string[] ) {
-
-    this.data = data;
     
     this.chartOptions = { 
       tooltip: {
@@ -57,9 +58,10 @@ export class InfoplanPieChartComponent implements OnChanges{
 
       title: {
         text: `${data.reduce((sum, item) => sum + item.value, 0)}`,
-        left: '70%', //center: ['72%', '50%'],
-        top: '45%',
+        left: '70%',
+        top: '50%',
         textAlign: 'center',
+        textVerticalAlign: 'middle',
         textStyle: {
           fontSize: 13,
           fontWeight: 'bold',
@@ -69,8 +71,26 @@ export class InfoplanPieChartComponent implements OnChanges{
       legend: {
         orient: 'vertical', 
         left: 'left', 
-        top: 'top', 
-        data: this.data.map(item => item.name),
+        top: 'top',
+        tooltip: {
+          show: true,
+          formatter: function (params) {
+            const maxLength = 15; 
+            let text = `${params.name}`;
+            if (text.length <= maxLength) {
+              text = ''
+            }
+            return text;
+          }
+        }, 
+        data: data.map(item => item.name), 
+        formatter: function (name) {
+          const maxLength = 15
+          if (name.length > maxLength) {
+            return name.substring(0, maxLength) + '...';  
+          }
+          return name;  
+        },
         textStyle: {
           fontSize: 10,
           color: '#000',
@@ -88,8 +108,9 @@ export class InfoplanPieChartComponent implements OnChanges{
           radius: ['60%', '100%'],
           center: ['72%', '50%'],
           data: this.data,
-          avoidLabelOverlap: false, 
-          hoverAnimation: false, 
+          emphasis: {
+            scale: false,
+          },
           label: {
             show: true, 
             position: 'inside',

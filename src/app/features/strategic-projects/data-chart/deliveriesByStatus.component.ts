@@ -1,16 +1,18 @@
 import { Component } from '@angular/core';
-import { InfoplanPieChartComponent } from '../../../@theme/components/infoplan-pie-chart/infoplanPieChart.component';
+import { PieChartModelComponent } from '../pie-chart-model/pieChartModel.component';
 
 @Component({
   selector: 'ngx-deliveries-by-status',
-  template: '<ngx-infoplan-pie-chart [data]="chartData" [colors]="chartColors"></ngx-infoplan-pie-chart>',
+  template: '<ngx-pie-chart-model [data]="chartData" [colors]="chartColors" [height]="150"></ngx-pie-chart-model>',
   standalone: true,
-  imports: [InfoplanPieChartComponent],
+  imports: [PieChartModelComponent],
 })
 export class DeliveriesByStatusComponent {
 
   chartData: any;
   chartColors: any;
+  height: 150;
+
 
   constructor() {
     this.loadData()

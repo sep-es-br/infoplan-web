@@ -21,6 +21,7 @@ import {
   NbWindowModule,
 } from '@nebular/theme';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { NgxEchartsModule } from 'ngx-echarts';
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,6 +41,9 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
     }),
     CoreModule.forRoot(),
     ThemeModule.forRoot(),
+    NgxEchartsModule.forRoot({
+      echarts: () => import('echarts')
+    }),
   ],
   providers: [
     provideHttpClient(withInterceptors([authInterceptor]))

@@ -112,7 +112,7 @@
 }
 
 .card {
-    background-color: #fff;
+    background-color: var(--card-background-color);
     border-radius: 8px;
     padding: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -193,13 +193,12 @@
   }
 
   .card .text-card {
-    color: black;
+    color: var(--card-text-color);;
     font-size: 0.9rem;
   }
 
-  .chart-container {
+  .chart-container  {
     height: 150px;
-    // background-color: #f0f3f5;
     border-radius: 8px;
     display: flex;
   }

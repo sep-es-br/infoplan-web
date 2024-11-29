@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { VerticalBarChartModel } from '../bar-chart-model/VerticalBarChartModel.component';
+import { VerticalBarChartModelComponent } from '../bar-chart-model/VerticalBarChartModel.component';
 
 @Component({
   selector: 'ngx-teste2',
   template: '<ngx-vertical-bar-chart-model [data]="chartData" [colors]="chartColors" [height]="290"></ngx-vertical-bar-chart-model>',
   standalone: true,
-  imports: [VerticalBarChartModel],
+  imports: [VerticalBarChartModelComponent],
 })
 export class AccumulatedInvestmentComponent {
 

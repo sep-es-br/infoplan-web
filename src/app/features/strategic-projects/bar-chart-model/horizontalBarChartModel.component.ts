@@ -10,7 +10,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
-export class HorizontalBarChartModel implements OnChanges{
+export class HorizontalBarChartModelComponent implements OnChanges{
 
   @Input() data: { category: string, previsto: number, realizado: number }[] = [];
   @Input() colors: []

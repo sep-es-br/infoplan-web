@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { HorizontalBarChartModel } from '../bar-chart-model/horizontalBarChartModel.component';
+import { HorizontalBarChartModelComponent } from '../bar-chart-model/horizontalBarChartModel.component';
 
 @Component({
   selector: 'ngx-investment-by-selected',
   template: '<ngx-horizontal-bar-chart-model [data]="chartData" [colors]="chartColors" [height]="290"></ngx-horizontal-bar-chart-model>',
   standalone: true,
-  imports: [HorizontalBarChartModel],
+  imports: [HorizontalBarChartModelComponent],
 })
 export class InvestmentBySelectedComponent {
 

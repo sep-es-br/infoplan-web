@@ -22,5 +22,10 @@ export const environment = {
     gestaoFiscal: ""
 
 
+  },
+
+  urls: {
+    indicadores: "",
+    sas: ""
   }
 };

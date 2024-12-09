@@ -12,6 +12,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { AccumulatedInvestmentComponent } from './data-chart/accumulatedInvestment.component';
 import { DeliveriesBySelectedComponent } from './data-chart/deliveriesBySelected.component';
 import { InvestmentBySelectedComponent } from './data-chart/investmentBySelected.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -19,6 +20,7 @@ import { InvestmentBySelectedComponent } from './data-chart/investmentBySelected
     StrategicProjectsComponent
   ],
   imports: [
+    FormsModule,
     CommonModule,
     NbCardModule,
     DeliveriesByStatusComponent,

@@ -12,8 +12,8 @@ import { NgxEchartsModule } from 'ngx-echarts';
 })
 export class HorizontalBarChartModelComponent implements OnChanges{
 
-  @Input() data: { category: string, previsto: number, realizado: number }[] = [];
-  @Input() colors: []
+  @Input() data: { category: string, previsto?: number, realizado?: number, emExecucao?: number, concluida?: number }[] = [];
+  @Input() colors:  string[] = [];
   @Input() height: number;
 
   chartOptions: EChartsOption;
@@ -24,12 +24,17 @@ export class HorizontalBarChartModelComponent implements OnChanges{
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['colors']) {
-      this.initChartOptions(this.data);
+      this.initChartOptions(this.data, this.colors);
     }
   }
 
-  initChartOptions(data: { category: string, previsto: number, realizado: number }[] ) {
+  initChartOptions(data: { category: string, previsto?: number, realizado?: number, emExecucao?: number, concluida?: number }[], colors: string[] ) {
+
+    const hasPrevistoRealizado = data.some(item => item.previsto !== undefined && item.realizado !== undefined);
+    const hasEmExecucaoConcluida = data.some(item => item.emExecucao !== undefined && item.concluida !== undefined);
     
+
+    if (hasPrevistoRealizado) {
     this.chartOptions = {
           tooltip: {
             trigger: 'axis',
@@ -62,20 +67,20 @@ export class HorizontalBarChartModelComponent implements OnChanges{
             left: '3%',
             right: '4%',
             bottom: '3%',
-            containLabel: true, // Garante que o conteúdo esteja dentro do grid
+            containLabel: true, 
           },
           xAxis: {
             type: 'value',
             axisLabel: {
-              fontSize: 10, // Tamanho das letras no eixo X
-              formatter: '{value} M', // Formato em milhões
+              fontSize: 10, 
+              formatter: '{value} M', 
             },
           },
           yAxis: {
             type: 'category',
-            inverse: true, // Inverte a ordem do eixo Y
+            inverse: true, 
             axisLabel: {
-              fontSize: 10, // Tamanho das letras no eixo Y
+              fontSize: 10, 
             },
             data: data.map(item => item.category),
           },
@@ -83,20 +88,90 @@ export class HorizontalBarChartModelComponent implements OnChanges{
             {
               name: 'Previsto',
               type: 'bar',
-              data: data.map(item => item.previsto), // Valores correspondentes
+              data: data.map(item => item.previsto), 
               itemStyle: {
-                color: '#42726F',
+                color: colors[0],
               },
             },
             {
               name: 'Realizado',
               type: 'bar',
-              data: data.map(item => item.realizado), // Valores correspondentes
+              data: data.map(item => item.realizado), 
               itemStyle: {
-                color: '#00A261',
+                color: colors[1],
+              },
+            },
+          ],
+        };
+      } else if (hasEmExecucaoConcluida) { 
+        this.chartOptions = {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'shadow',
+            },
+            // formatter: function (params) {
+            //   let tooltipText = '';
+            //   params.forEach((item) => {
+            //     tooltipText += `${item.seriesName}: ${item.value}M<br>`;
+            //   });
+            //   return tooltipText;
+            // },
+          },
+          legend: {
+            orient: 'horizontal',
+            top: 'top',
+            right: '3%',
+            data: ['Em Execução', 'Concluída'],
+            itemWidth: 10, 
+            itemHeight: 10, 
+            itemGap: 15,
+            selectedMode: true,
+            textStyle: {
+              fontSize: 12,
+            },
+          },
+          grid: {
+            top: '10%',
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true, 
+          },
+          xAxis: {
+            type: 'value',
+            axisLabel: {
+              fontSize: 10, 
+              formatter: '{value} M', 
+            },
+          },
+          yAxis: {
+            type: 'category',
+            inverse: true, 
+            axisLabel: {
+              fontSize: 10, 
+            },
+            data: data.map(item => item.category),
+          },
+          series: [
+            {
+              name: 'Em Execução',
+              type: 'bar',
+              data: data.map(item => item.emExecucao), 
+              itemStyle: {
+                color: colors[0],
+              },
+            },
+            {
+              name: 'Concluída',
+              type: 'bar',
+              data: data.map(item => item.concluida ), 
+              itemStyle: {
+                color: colors[1],
               },
             },
           ],
         };
       }
+    }
 }

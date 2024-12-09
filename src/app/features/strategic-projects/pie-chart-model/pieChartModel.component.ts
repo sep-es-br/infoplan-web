@@ -18,6 +18,8 @@ export class PieChartModelComponent implements OnChanges{
 
   chartOptions: EChartsOption;
   echartsInstance: any = null
+  centerX: number = 70;
+  centerY: number = 50;
 
   constructor() {
   }
@@ -58,8 +60,8 @@ export class PieChartModelComponent implements OnChanges{
 
       title: {
         text: `${data.reduce((sum, item) => sum + item.value, 0)}`,
-        left: '70%',
-        top: '50%',
+        left: `${this.centerX - 2}%`,
+        top: `${this.centerY}%`,
         textAlign: 'center',
         textVerticalAlign: 'middle',
         textStyle: {
@@ -106,7 +108,7 @@ export class PieChartModelComponent implements OnChanges{
           name: 'Status',
           type: 'pie',
           radius: ['60%', '100%'],
-          center: ['72%', '50%'],
+          center: [`${this.centerX}%`, `${this.centerY}%`],
           data: this.data,
           emphasis: {
             scale: false,

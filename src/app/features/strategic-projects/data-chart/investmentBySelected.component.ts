@@ -29,7 +29,7 @@ export class InvestmentBySelectedComponent {
       { category: "Caficultura Sustentável do Espírito Santo", previsto: 5, realizado: 3 }
     ];
 
-    this.chartColors = ['#CE4543', '#FB7800', '#FFC300']
+    this.chartColors = ['#42726F', '#00A261'];
 
   }
   

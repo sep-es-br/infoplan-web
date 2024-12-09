@@ -28,6 +28,9 @@ export class DeliveriesBySelectedComponent {
       { category: "Emprego, Trabalho e Renda", emExecucao: 80, concluida: 50 },
       { category: "Redução das Desigualdades Sociais", emExecucao: 50, concluida: 30 },
     ]
+
+    this.chartColors = ['#42726F', '#0081C1'];
   };
+  
   
 }

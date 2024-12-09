@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { VerticalBarChartModelComponent } from '../bar-chart-model/VerticalBarChartModel.component';
+import { VerticalBarChartModelComponent } from '../bar-chart-model/verticalBarChartModel.component';
+
 
 @Component({
   selector: 'ngx-teste2',

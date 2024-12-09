@@ -27,5 +27,12 @@ export const environment = {
   urls: {
     indicadores: "",
     sas: ""
+  },
+
+  strategicProjectFilter: {
+    portfolio: "",
+    dataInicio: "",
+    dataFim: ""
   }
+
 };

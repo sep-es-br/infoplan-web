@@ -72,7 +72,7 @@ export class HorizontalBarChartModelComponent implements OnChanges{
           xAxis: {
             type: 'value',
             axisLabel: {
-              fontSize: 10, 
+              fontSize: 9, 
               formatter: '{value} M', 
             },
           },
@@ -80,7 +80,7 @@ export class HorizontalBarChartModelComponent implements OnChanges{
             type: 'category',
             inverse: true, 
             axisLabel: {
-              fontSize: 10, 
+              fontSize: 9, 
             },
             data: data.map(item => item.category),
           },
@@ -141,7 +141,7 @@ export class HorizontalBarChartModelComponent implements OnChanges{
           xAxis: {
             type: 'value',
             axisLabel: {
-              fontSize: 10, 
+              fontSize: 9, 
               formatter: '{value} M', 
             },
           },
@@ -149,7 +149,7 @@ export class HorizontalBarChartModelComponent implements OnChanges{
             type: 'category',
             inverse: true, 
             axisLabel: {
-              fontSize: 10, 
+              fontSize: 9, 
             },
             data: data.map(item => item.category),
           },

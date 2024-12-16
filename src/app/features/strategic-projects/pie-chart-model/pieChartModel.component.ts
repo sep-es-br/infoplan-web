@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, HostListener, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
 
@@ -10,7 +10,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
-export class PieChartModelComponent implements OnChanges{
+export class PieChartModelComponent implements OnChanges, OnInit{
 
   @Input() data: { value: number, name: string }[] = [];
   @Input() colors: string[] = [];
@@ -22,6 +22,11 @@ export class PieChartModelComponent implements OnChanges{
   centerY: number = 50;
 
   constructor() {
+    this.updateTitlePosition();
+  }
+
+  ngOnInit() {
+    this.updateTitlePosition();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -47,6 +52,34 @@ export class PieChartModelComponent implements OnChanges{
     });
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.updateTitlePosition();
+  }
+
+  updateTitlePosition() {
+    const screenWidth = window.innerWidth;
+
+    if (screenWidth >= 1600 || screenWidth <= 1000 && screenWidth >= 768) {
+      if (this.echartsInstance) {
+        this.echartsInstance.setOption({
+          title: {
+            left: `${this.centerX - 2}%`,
+          }
+        });
+      }
+    } else {
+      if (this.echartsInstance) {
+        this.echartsInstance.setOption({
+          title: {
+            left: `${this.centerX - 1}%`,
+          }
+        });
+      }
+    }
+    
+  }
+
   
   initChartOptions(data: { value: number, name: string }[], colors: string[] ) {
     
@@ -65,7 +98,7 @@ export class PieChartModelComponent implements OnChanges{
         textAlign: 'center',
         textVerticalAlign: 'middle',
         textStyle: {
-          fontSize: 13,
+          fontSize: 16,
           fontWeight: 'bold',
         },
       },
@@ -75,24 +108,9 @@ export class PieChartModelComponent implements OnChanges{
         left: 'left', 
         top: 'top',
         tooltip: {
-          show: true,
-          formatter: function (params) {
-            const maxLength = 15; 
-            let text = `${params.name}`;
-            if (text.length <= maxLength) {
-              text = ''
-            }
-            return text;
-          }
+          show: true
         }, 
-        data: data.map(item => item.name), 
-        formatter: function (name) {
-          const maxLength = 15
-          if (name.length > maxLength) {
-            return name.substring(0, maxLength) + '...';  
-          }
-          return name;  
-        },
+        data: data.map(item => item.name),
         textStyle: {
           fontSize: 10,
           color: '#000',

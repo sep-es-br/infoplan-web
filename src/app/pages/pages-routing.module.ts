@@ -22,7 +22,8 @@ const routes: Routes = [{
     },
     {
       path: 'strategicProjects',
-      component: StrategicProjectsComponent
+      component: StrategicProjectsComponent,
+      data: {dataSource: 'OpenPMO'}
     },
     {
       path: '',

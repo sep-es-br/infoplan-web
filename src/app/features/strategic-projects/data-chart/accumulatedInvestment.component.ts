@@ -3,7 +3,7 @@ import { VerticalBarChartModelComponent } from '../bar-chart-model/verticalBarCh
 
 
 @Component({
-  selector: 'ngx-teste2',
+  selector: 'ngx-accumulated-investment',
   template: '<ngx-vertical-bar-chart-model [data]="chartData" [colors]="chartColors" [height]="290"></ngx-vertical-bar-chart-model>',
   standalone: true,
   imports: [VerticalBarChartModelComponent],

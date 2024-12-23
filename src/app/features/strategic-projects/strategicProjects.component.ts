@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { StrategicProjectsService } from '../../core/service/strategic-projects.service';
 import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
-import { StrategicProjectDto } from '../../core/interfaces/strategic-project-filter.interface';
+import { IStrategicProjectFilterDataDto } from '../../core/interfaces/strategic-project-filter.interface';
+import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project-totals.interface';
 
 @Component({
   selector: 'ngx-strategic-projects',
@@ -12,6 +13,14 @@ import { StrategicProjectDto } from '../../core/interfaces/strategic-project-fil
 export class StrategicProjectsComponent {
 
   showFilters = false;
+
+  totals: IStrategicProjectTotals = {
+    qdeProgramas: 0,
+    qdeProjetos: 0,
+    totalEntregasPE: 0,
+    totalPrevisto: 0,
+    totalRealizado: 0,
+  };
 
   filter = {
     portfolio: environment.strategicProjectFilter.portfolio,
@@ -56,6 +65,7 @@ export class StrategicProjectsComponent {
   constructor(private  strategicProjectsService :StrategicProjectsService) {
     this.updateActiveFilters()
     this.loadAll()
+    this.loadTotals()
   }
 
 
@@ -77,7 +87,12 @@ export class StrategicProjectsComponent {
       let displayValue: string;
 
       if (directValueKeys.includes(key)) {
-        displayValue = value;
+        if (key === 'dataInicio' || key === 'dataFim') {
+          const [year, month] = value.split('-');
+          displayValue = `${month}-${year}`;
+        } else {
+          displayValue = value;
+        }
       } else {
         const listKey = optionsMapping[key];
         const list = this[listKey as keyof this] as IIdAndName[];
@@ -106,7 +121,7 @@ export class StrategicProjectsComponent {
       }
 
       this.strategicProjectsService.getProgramsProjectsDeliveries(selectedValue).subscribe(
-        (data: StrategicProjectDto) => {
+        (data: IStrategicProjectFilterDataDto) => {
           this.programaOList = data.programasOriginal
           this.entregaList = data.entregas
           this.projetoList = data.projetos
@@ -135,7 +150,7 @@ export class StrategicProjectsComponent {
       const areaId = this.filter.areaTematica === '' ? 'todos' : this.filter.areaTematica;
 
       this.strategicProjectsService.getProjectsDeliveries(areaId, selectedValue).subscribe(
-        (data: StrategicProjectDto) => {
+        (data: IStrategicProjectFilterDataDto) => {
           this.entregaList = data.entregas
           this.projetoList = data.projetos
           
@@ -161,7 +176,7 @@ export class StrategicProjectsComponent {
       const programId = this.filter.programaOrigem === '' ? 'todos' : this.filter.programaOrigem
 
       this.strategicProjectsService.getDeliveries(areaId, programId, selectedValue).subscribe(
-        (data: StrategicProjectDto) => {
+        (data: IStrategicProjectFilterDataDto) => {
           this.entregaList = data.entregas
 
           if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
@@ -198,11 +213,12 @@ export class StrategicProjectsComponent {
     this.finalFilter[key] = '';
     this.filter[key] = '';
     this.updateActiveFilters();
+    this.loadTotals()
 
     if (key === 'areaTematica') {
 
       this.strategicProjectsService.getProgramsProjectsDeliveries('todos').subscribe(
-        (data: StrategicProjectDto) => {
+        (data: IStrategicProjectFilterDataDto) => {
           this.programaOList = data.programasOriginal
           this.entregaList = data.entregas
           this.projetoList = data.projetos
@@ -228,7 +244,7 @@ export class StrategicProjectsComponent {
       const areaId = this.filter.areaTematica === '' ? 'todos' : this.filter.areaTematica;
 
       this.strategicProjectsService.getProjectsDeliveries(areaId, 'todos').subscribe(
-        (data: StrategicProjectDto) => {
+        (data: IStrategicProjectFilterDataDto) => {
           this.entregaList = data.entregas
           this.projetoList = data.projetos
           
@@ -251,7 +267,7 @@ export class StrategicProjectsComponent {
       const programId = this.filter.programaOrigem === '' ? 'todos' : this.filter.programaOrigem
 
       this.strategicProjectsService.getDeliveries(areaId, programId, 'todos').subscribe(
-        (data: StrategicProjectDto) => {
+        (data: IStrategicProjectFilterDataDto) => {
           this.entregaList = data.entregas
 
           if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
@@ -275,11 +291,12 @@ export class StrategicProjectsComponent {
     this.showFilters = !this.showFilters;
     this.finalFilter = { ...this.filter };
     this.updateActiveFilters();
+    this.loadTotals()
   }
 
   loadAll(): void {
     this.strategicProjectsService.getAll().subscribe(
-      (allFilterList: StrategicProjectDto) => {
+      (allFilterList: IStrategicProjectFilterDataDto) => {
         this.areaList = allFilterList.area
         this.programaOList = allFilterList.programasOriginal
         this.programaTList = allFilterList.programasTransversal
@@ -293,5 +310,56 @@ export class StrategicProjectsComponent {
       }
     );
   }
+
+  loadTotals() {
+    const cleanedFilter = this.removeEmptyValues(this.finalFilter);
+
+    this.strategicProjectsService.getTotals(cleanedFilter).subscribe(
+      (totals: IStrategicProjectTotals) => {
+        this.totals = totals;
+      },
+      (error) => {
+        console.error('Erro ao carregar os totais:', error);
+      }
+    );
+}
+
+
+  removeEmptyValues(filter: any): any {
+    const cleanedFilter: any = {};
+
+    Object.keys(filter).forEach((key) => {
+        if (filter[key] !== '' && filter[key] !== null && filter[key] !== undefined) {
+            if (key === 'portfolio' && filter[key] === 'Realiza+') {
+                cleanedFilter[key] = 2572;
+            } 
+            else if ((key === 'dataInicio' || key === 'dataFim') && typeof filter[key] === 'string') {
+                cleanedFilter[key] = Number(filter[key].replace('-', ''));
+            } 
+            else {
+                cleanedFilter[key] = filter[key];
+            }
+        }
+    });
+
+    return cleanedFilter;
+  }
+
+  formatNumber(value: number): string {
+    if (!value) {
+      return 'R$ 0';
+    }
+  
+    if (value >= 1_000_000_000) {
+      return `${(value / 1_000_000_000).toFixed(2)} B`;
+    }
+
+    if (value >= 1_000_000) {
+      return `${(value / 1_000_000).toFixed(2)} M`;
+    }
+
+    return `R$ ${value.toLocaleString('pt-BR')}`;
+  }
+  
 
 }

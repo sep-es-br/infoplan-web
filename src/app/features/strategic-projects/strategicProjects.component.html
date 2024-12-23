@@ -5,7 +5,7 @@
         <div *ngFor="let tag of activeFilters; let i = index">
           <div class="filter-tag" [ngClass]="{ 'invisible-tag': showFilters }">
             {{ tag.label }}: {{ tag.value }}
-            <button *ngIf="tag.key !== 'portfolio'" 
+            <button *ngIf="tag.key !== 'portfolio' && tag.key !== 'dataInicio' && tag.key !== 'dataFim'" 
             class="remove-button" (click)="removeFilter(tag.key)">×</button>
           </div>
         </div>
@@ -30,17 +30,17 @@
     
             <div class="filter-group col">
               <label for="dataInicio">De</label>
-              <input id="dataInicio" type="date" [(ngModel)]="filter.dataInicio" name="dataInicio" />
+              <input id="dataInicio" type="month" [(ngModel)]="filter.dataInicio" name="dataInicio" />
             </div>
     
             <div class="filter-group col">
               <label for="dataFim">Até</label>
-              <input id="dataFim" type="date" [(ngModel)]="filter.dataFim" name="dataFim" />
+              <input id="dataFim" type="month" [(ngModel)]="filter.dataFim" name="dataFim" />
             </div>
     
             <div class="filter-group col invisible-tag">
               <label for="provConcl">Previsão de Conclusão</label>
-              <input id="provConcl" type="date" [(ngModel)]="filter.previsaoConclusao" name="previsaoConclusao" />
+              <input id="provConcl" type="month" [(ngModel)]="filter.previsaoConclusao" name="previsaoConclusao" />
             </div>
           </div>
     
@@ -145,9 +145,9 @@
                 <i class="fas fa-cogs"></i>
               </div>
               <div class="card-content">
-                <div class="number-box">11</div>
+                <div class="number-box">{{totals.qdeProgramas}}</div>
                 <div class="text-section">
-                  <span>Programas</span>
+                  <span>{{totals.qdeProgramas === 1 ? 'Programa' : 'Programas'}}</span>
                 </div>
               </div>
             </div>
@@ -159,9 +159,9 @@
                 <i class="fas fa-cog"></i>
               </div>
               <div class="card-content">
-                <div class="number-box">345</div>
+                <div class="number-box">{{totals.qdeProjetos}}</div>
                 <div class="text-section">
-                  <span>Projetos</span>
+                  <span>{{totals.qdeProjetos === 1 ? 'Projeto' : 'Projetos'}}</span>
                 </div>
               </div>
             </div>
@@ -173,9 +173,9 @@
                 <i class="fas fa-cubes"></i>
               </div>
               <div class="card-content">
-                <div class="number-box">3.043</div>
+                <div class="number-box">{{totals.totalEntregasPE}}</div>
                 <div class="text-section">
-                  <span>Entregas</span>
+                  <span>{{totals.totalEntregasPE === 1 ? 'Entrega' : 'Entregas'}}</span>
                 </div>
               </div>
             </div>
@@ -193,7 +193,7 @@
                     style="flex-direction: column; align-items: start"
                   >
                     <div class="currency">R$</div>
-                    <div class="value">40.6 Bi</div>
+                    <div class="value" [title]="totals.totalPrevisto| number:'1.0-0'">{{formatNumber(totals.totalPrevisto)}}</div>
                   </div>
                 </div>
                 <div class="text-section previsto">
@@ -215,7 +215,7 @@
                     style="flex-direction: column; align-items: start"
                   >
                     <div class="currency">R$</div>
-                    <div class="value">23.2 Bi</div>
+                    <div class="value" [title]="totals.totalRealizado| number:'1.0-0'">{{formatNumber(totals.totalRealizado)}}</div>
                   </div>
                 </div>
                 <div class="text-section realizado">
@@ -233,7 +233,7 @@
 
            <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
              <div class="card">
-               <div class="d-flex col-12 mt-1">
+               <div class="d-flex col-12 mt-1 mb-1">
                  <span class="text-card">Entregas por Status</span>
                </div>
                  <div class="d-flex mb-3 mt-3">
@@ -245,7 +245,7 @@
            </div>
            <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
              <div class="card">
-               <div class="d-flex col-12 mt-1">
+               <div class="d-flex col-12 mt-1 mb-1">
                  <span class="text-card">Entregas por Desempenho</span>
                </div>
                  <div class="d-flex mb-3 mt-3">
@@ -257,7 +257,7 @@
            </div>
            <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
              <div class="card">
-               <div class="d-flex col-12 mt-1">
+               <div class="d-flex col-12 mt-1 mb-1">
                  <span class="text-card">Projetos por Status</span>
                </div>
                  <div class="d-flex mb-3 mt-3">
@@ -269,7 +269,7 @@
            </div>
            <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
              <div class="card">
-               <div class="d-flex col-12 mt-1">
+               <div class="d-flex col-12 mt-1 mb-1">
                  <span class="text-card">Marcos Críticos por Desempenho</span>
                </div>
                  <div class="d-flex mb-3 mt-3">
@@ -281,7 +281,7 @@
            </div>
            <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
              <div class="card">
-               <div class="d-flex col-12 mt-1">
+               <div class="d-flex col-12 mt-1 mb-1">
                  <span class="text-card">Entregas por Tipo</span>
                </div>
                  <div class="d-flex mb-3 mt-3">
@@ -293,7 +293,7 @@
            </div>
            <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
              <div class="card">
-               <div class="d-flex col-12 mt-1">
+               <div class="d-flex col-12 mt-1 mb-1">
                  <span class="text-card">Riscos por Classificação</span>
                </div>
                  <div class="d-flex mb-3 mt-3">

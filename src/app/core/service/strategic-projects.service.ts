@@ -5,7 +5,8 @@ import { environment } from '../../../environments/environment';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { IIdAndName } from '../interfaces/id-and-name.interface';
-import { StrategicProjectDto } from '../interfaces/strategic-project-filter.interface';
+import { IStrategicProjectFilterDataDto, IStrategicProjectFilterValuesDto } from '../interfaces/strategic-project-filter.interface';
+import { IStrategicProjectTotals } from '../interfaces/strategic-project-totals.interface';
 
 
 
@@ -23,25 +24,31 @@ export class StrategicProjectsService {
         this.router = _router;
     }
 
-    public getAll() : Observable<StrategicProjectDto> {
-        return this.http.get<StrategicProjectDto>(this._urlBase + "all")
+    public getAll() : Observable<IStrategicProjectFilterDataDto> {
+        return this.http.get<IStrategicProjectFilterDataDto>(this._urlBase + "all")
         .pipe(catchError(err => this.handleError(err, this.router)))
 
     }
 
-    public getProgramsProjectsDeliveries(areaId: string) : Observable<StrategicProjectDto> {
-        return this.http.get<StrategicProjectDto>(this._urlBase + "programsProjectsDeliveries", {params: {areaId: areaId}})
+    public getProgramsProjectsDeliveries(areaId: string) : Observable<IStrategicProjectFilterDataDto> {
+        return this.http.get<IStrategicProjectFilterDataDto>(this._urlBase + "programsProjectsDeliveries", {params: {areaId: areaId}})
         .pipe(catchError(err => this.handleError(err, this.router)))
     }
 
-    public getProjectsDeliveries(areaId: string, programId: string) : Observable<StrategicProjectDto> {
-        return this.http.get<StrategicProjectDto>(this._urlBase + "projectsDeliveries", {params: {areaId: areaId, programId: programId}})
+    public getProjectsDeliveries(areaId: string, programId: string) : Observable<IStrategicProjectFilterDataDto> {
+        return this.http.get<IStrategicProjectFilterDataDto>(this._urlBase + "projectsDeliveries", {params: {areaId: areaId, programId: programId}})
         .pipe(catchError(err => this.handleError(err, this.router)))
     }
 
-    public getDeliveries(areaId: string, programId: string, projectId: string) : Observable<StrategicProjectDto> {
-        return this.http.get<StrategicProjectDto>(this._urlBase + "deliveries", {params: {areaId: areaId, programId: programId, projectId: projectId}})
+    public getDeliveries(areaId: string, programId: string, projectId: string) : Observable<IStrategicProjectFilterDataDto> {
+        return this.http.get<IStrategicProjectFilterDataDto>(this._urlBase + "deliveries", {params: {areaId: areaId, programId: programId, projectId: projectId}})
         .pipe(catchError(err => this.handleError(err, this.router)))
+    }
+
+    public getTotals(filter: IStrategicProjectFilterValuesDto) : Observable<IStrategicProjectTotals>{
+        return this.http.get<IStrategicProjectTotals>(this._urlBase + "totais", {params: {
+            filterJson: JSON.stringify(filter)
+        } }).pipe(catchError(err => this.handleError(err, this.router)))
     }
 
     

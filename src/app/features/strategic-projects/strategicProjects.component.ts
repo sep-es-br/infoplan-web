@@ -210,8 +210,8 @@ export class StrategicProjectsComponent {
   }
 
   removeFilter(key: string) {
-    this.finalFilter[key] = '';
     this.filter[key] = '';
+    this.finalFilter = { ...this.filter };
     this.updateActiveFilters();
     this.loadTotals()
 
@@ -312,7 +312,7 @@ export class StrategicProjectsComponent {
   }
 
   loadTotals() {
-    const cleanedFilter = this.removeEmptyValues(this.finalFilter);
+    const cleanedFilter = this.strategicProjectsService.removeEmptyValues(this.finalFilter);
 
     this.strategicProjectsService.getTotals(cleanedFilter).subscribe(
       (totals: IStrategicProjectTotals) => {
@@ -323,27 +323,6 @@ export class StrategicProjectsComponent {
       }
     );
 }
-
-
-  removeEmptyValues(filter: any): any {
-    const cleanedFilter: any = {};
-
-    Object.keys(filter).forEach((key) => {
-        if (filter[key] !== '' && filter[key] !== null && filter[key] !== undefined) {
-            if (key === 'portfolio' && filter[key] === 'Realiza+') {
-                cleanedFilter[key] = 2572;
-            } 
-            else if ((key === 'dataInicio' || key === 'dataFim') && typeof filter[key] === 'string') {
-                cleanedFilter[key] = Number(filter[key].replace('-', ''));
-            } 
-            else {
-                cleanedFilter[key] = filter[key];
-            }
-        }
-    });
-
-    return cleanedFilter;
-  }
 
   formatNumber(value: number): string {
     if (!value) {

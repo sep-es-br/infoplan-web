@@ -144,6 +144,7 @@
     width: 100%;
     width: 101%;
     margin-left: -8px;
+    margin-top: -30px;
   }
 
   .filter-button{
@@ -169,7 +170,6 @@
 
 .overlay-panel {
   position: absolute;
-  top: 35px;
   left: 0;
   width: 100%;
   background-color: var(--card-background-color);
@@ -236,7 +236,13 @@
   scrollbar-color: #005c99 transparent; 
 }
 
+.tag-label{
+  font-weight: normal;
+}
 
+.tag-value{
+  margin-top: -6px;
+}
 
 
 .filter-tag {
@@ -274,4 +280,25 @@
   visibility: hidden; 
 }
 
+
+.watermark-container {
+  position: relative;
+}
+
+.watermark {
+  height: 100%;
+  background-color: rgba(256, 265, 256, 0.7);
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 150px;
+  pointer-events: none;
+  z-index: 2;
+}
 

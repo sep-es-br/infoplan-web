@@ -10,7 +10,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
-export class PieChartModelComponent implements OnChanges, OnInit{
+export class PieChartModelComponent implements OnChanges{
 
   @Input() data: { value: number, name: string }[] = [];
   @Input() colors: string[] = [];
@@ -22,12 +22,8 @@ export class PieChartModelComponent implements OnChanges, OnInit{
   centerY: number = 50;
 
   constructor() {
-    this.updateTitlePosition();
   }
 
-  ngOnInit() {
-    this.updateTitlePosition();
-  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['colors']) {
@@ -40,15 +36,18 @@ export class PieChartModelComponent implements OnChanges, OnInit{
   
     chartInstance.on('legendselectchanged', (params: any) => {
       const selected = params.selected;
-      const newTotal = this.data.reduce((sum, item) => {
-        return selected[item.name] ? sum + item.value : sum;
-      }, 0);
   
-      chartInstance.setOption({
-        title: {
-          text: `${newTotal}`,
-        },
-      });
+      if (Array.isArray(this.data) && this.data.length > 0) {
+        const newTotal = this.data.reduce((sum, item) => {
+          return selected[item.name] ? sum + item.value : sum;
+        }, 0);
+  
+        chartInstance.setOption({
+          title: {
+            text: `${newTotal}`,
+          },
+        });
+      }
     });
   }
 
@@ -59,41 +58,40 @@ export class PieChartModelComponent implements OnChanges, OnInit{
 
   updateTitlePosition() {
     const screenWidth = window.innerWidth;
-
-    if (screenWidth >= 1600 || screenWidth <= 1000 && screenWidth >= 768) {
-      if (this.echartsInstance) {
-        this.echartsInstance.setOption({
-          title: {
-            left: `${this.centerX - 2}%`,
-          }
-        });
-      }
-    } else {
-      if (this.echartsInstance) {
-        this.echartsInstance.setOption({
-          title: {
-            left: `${this.centerX - 1}%`,
-          }
-        });
-      }
+    const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000) 
+      ? this.centerX - 2 
+      : this.centerX - 1;
+  
+    if (this.echartsInstance) {
+      this.echartsInstance.setOption({
+        title: {
+          left: `${offset}%`,
+        }
+      });
     }
-    
   }
 
   
-  initChartOptions(data: { value: number, name: string }[], colors: string[] ) {
-    
-    this.chartOptions = { 
+  initChartOptions(data: { value: number, name: string }[], colors: string[]) {
+    const total = Array.isArray(data) && data.length > 0 
+      ? data.reduce((sum, item) => sum + item.value, 0) 
+      : 0;
+  
+    const screenWidth = window.innerWidth;
+    const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000) 
+      ? this.centerX - 2 
+      : this.centerX - 1;
+  
+    this.chartOptions = {
       tooltip: {
         trigger: 'item',
         formatter: function (params) {
           return `${params.name}: ${params.value} (${params.percent}%)`;
-      }
+        }
       },
-
       title: {
-        text: `${data.reduce((sum, item) => sum + item.value, 0)}`,
-        left: `${this.centerX - 2}%`,
+        text: `${total}`,
+        left: `${offset}%`,
         top: `${this.centerY}%`,
         textAlign: 'center',
         textVerticalAlign: 'middle',
@@ -102,50 +100,53 @@ export class PieChartModelComponent implements OnChanges, OnInit{
           fontWeight: 'bold',
         },
       },
-
       legend: {
-        orient: 'vertical', 
-        left: 'left', 
+        orient: 'vertical',
+        left: 'left',
         top: 'top',
         tooltip: {
-          show: true
-        }, 
-        data: data.map(item => item.name),
+          show: true,
+          formatter: function (params) {
+            const item = data.find(item => item.name === params.name);
+            if (item) {
+              const percent = (item.value / total) * 100;
+              return `${item.name}: ${item.value} (${percent.toFixed(2)}%)`;
+            }
+            return '';
+          }
+        },
+        data: data ? data.map(item => item.name) : [],
         textStyle: {
           fontSize: 10,
           color: '#000',
         },
-        itemWidth: 10, 
-        itemHeight: 10, 
+        itemWidth: 10,
+        itemHeight: 10,
         itemGap: 15,
         selectedMode: true,
       },
-
       series: [
         {
           name: 'Status',
           type: 'pie',
           radius: ['60%', '100%'],
           center: [`${this.centerX}%`, `${this.centerY}%`],
-          data: this.data,
-          emphasis: {
-            scale: false,
-          },
+          data: data || [],
+          emphasis: { scale: false },
           label: {
-            show: true, 
+            show: true,
             position: 'inside',
             formatter: function (params) {
-              return Math.round(params.percent) + '%'; 
+              return params.percent >= 6 ? Math.round(params.percent) + '%' : '';
             },
-            color: '#fff', 
-            fontSize: 9, 
+            color: '#fff',
+            fontSize: 9,
           },
-          labelLine: {
-            show: false,
-          }
-          }
+          labelLine: { show: false },
+        }
       ],
-      color: colors
+      color: colors || [],
     };
   }
+  
 }

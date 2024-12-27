@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { PieChartModelComponent } from '../pie-chart-model/pieChartModel.component';
+import { IStrategicProjectFilterValuesDto } from '../../../core/interfaces/strategic-project-filter.interface';
+import { StrategicProjectsService } from '../../../core/service/strategic-projects.service';
+import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../core/interfaces/strategic-project-deliveries.interface';
 
 @Component({
   selector: 'ngx-deliveries-by-status',
@@ -7,29 +10,64 @@ import { PieChartModelComponent } from '../pie-chart-model/pieChartModel.compone
   standalone: true,
   imports: [PieChartModelComponent],
 })
-export class DeliveriesByStatusComponent {
+export class DeliveriesByStatusComponent implements OnChanges {
+
+  @Input() filter!: IStrategicProjectFilterValuesDto;
 
   chartData: any;
-  chartColors: any;
-  height: 150;
+  chartColors = [];
+  statusData: IStrategicProjectDeliveries[];
+  statusShow: IStrategicProjectDeliveriesShow[];
 
+  constructor(private strategicProjectsService: StrategicProjectsService) {}
 
-  constructor() {
-    this.loadData()
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['filter'] && this.filter) {
+      this.loadData();
+    }
   }
 
-  loadData(){
-    
-    this.chartData  = [
-      { value: 335, name: 'Em Planejamento' },
-      { value: 517, name: 'Concluídas' },
-      { value: 913, name: 'Em Execução' },
-      { value: 578, name: 'Canceladas' },
-      { value: 700, name: 'Paralisadas' },
-    ];
+  loadData() {
+    const cleanedFilter = this.strategicProjectsService.removeEmptyValues(this.filter);
+    this.chartColors = [];
+    this.statusShow = [];
 
-    this.chartColors = ['#EC78EA', '#118DFF', '#55B95E', '#CC2C52', '#EA9D42' ]
+    this.strategicProjectsService.getDeliveriesByStatus(cleanedFilter).subscribe(
+      (data: IStrategicProjectDeliveries[]) => {
+        this.statusData = data;
+
+      this.statusData.forEach(status => {
+        if(status.statusId !== 0 || status.nomeStatus !== 'null'){
+          let sShow = this.statusShow.find((s) => s.nomeStatus == status.nomeStatus)
+          if(sShow === undefined){
+            this.statusShow.push(
+              {
+                statusId: status.statusId,
+                nomeStatus: status.nomeStatus,
+                corStatus: status.corStatus,
+                count: status.contagemPE
+              }
+            )
+          }else{
+            sShow.count = sShow.count + status.contagemPE
+          }
+        }
+      });
+      this.statusShow
+        .sort((a, b) => (a.statusId < b.statusId ? -1 : 1));
+
+      this.chartData = this.statusShow.map(val => <any>{
+        value: val.count,
+        name: val.nomeStatus
+      });
+
+      this.chartColors = this.statusShow.map(val => val.corStatus);
+
+      },
+      (error) => {
+        console.error('Erro ao carregar os dados das entregas por status:', error);
+      }
+    );
 
   }
-  
 }

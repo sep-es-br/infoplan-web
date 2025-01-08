@@ -12,6 +12,10 @@ import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project
 })
 export class StrategicProjectsComponent {
 
+  investmentSelectedOption: string = 'Área Temática';
+
+  deliveriesSelectedOption: string = 'Área Temática';
+
   showFilters = false;
 
   totals: IStrategicProjectTotals = {
@@ -105,6 +109,14 @@ export class StrategicProjectsComponent {
         value: displayValue
       };
     });
+  }
+
+  selectedOptionI(event: any) {
+    this.investmentSelectedOption = event.target.value;
+  }
+
+  selectedOptionD(event: any) {
+    this.deliveriesSelectedOption = event.target.value;
   }
 
   onFilterChange(event: Event): void {

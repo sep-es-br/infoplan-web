@@ -23,6 +23,12 @@ import {
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { NgxEchartsModule } from 'ngx-echarts';
 
+
+import { LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import ptBr from '@angular/common/locales/pt';
+
+registerLocaleData(ptBr);
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -46,7 +52,8 @@ import { NgxEchartsModule } from 'ngx-echarts';
     }),
   ],
   providers: [
-    provideHttpClient(withInterceptors([authInterceptor]))
+    provideHttpClient(withInterceptors([authInterceptor])),
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
   ],
   bootstrap: [AppComponent],
 })

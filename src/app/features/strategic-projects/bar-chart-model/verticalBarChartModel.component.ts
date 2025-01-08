@@ -28,13 +28,28 @@ export class VerticalBarChartModelComponent implements OnChanges{
     }
   }
 
+  formatNumber(value: number): string {
+    return value.toLocaleString('pt-BR');
+  }
+
   initChartOptions(data: { date: string, previsto: number, realizado: number }[], colors: string[] ) {
+
+    if (!Array.isArray(data) || data.length === 0) {
+      data = [];
+    }
     
     this.chartOptions = {
           tooltip: {
             trigger: 'axis',
             axisPointer: {
               type: 'shadow',
+            },
+            formatter: (params: any) => {
+              let tooltipContent = `${params[0].name}<br>`;
+              params.forEach((param: any) => {
+                tooltipContent += `${param.seriesName}: ${this.formatNumber(param.value)}<br>`;
+              });
+              return tooltipContent;
             },
           },
           legend: {
@@ -61,6 +76,7 @@ export class VerticalBarChartModelComponent implements OnChanges{
             type: 'value',
             axisLabel: {
               fontSize: 10,
+              formatter: (value: number) => this.formatNumber(value),
             },
           },
           series: [

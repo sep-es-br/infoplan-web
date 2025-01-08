@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { PieChartModelComponent } from '../pie-chart-model/pieChartModel.component';
 import { IStrategicProjectFilterValuesDto } from '../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../core/service/strategic-projects.service';
-import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../core/interfaces/strategic-project-deliveries.interface';
+import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../core/interfaces/strategic-project.interface';
 
 @Component({
   selector: 'ngx-deliveries-by-status',

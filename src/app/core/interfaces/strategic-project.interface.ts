@@ -37,8 +37,31 @@ export interface IStrategicProjectRisksByClassification {
 }
 
 export interface IStrategicProjectDeliveriesShow{
-    statusId: number;
-    nomeStatus: string;
-    corStatus?: string;
-    count: number;
-  }
+  statusId: number;
+  nomeStatus: string;
+  corStatus?: string;
+  count: number;
+}
+
+
+export interface IStrategicProjectAccumulatedInvestment{
+  anoMes: number;
+  custoPrevisto: number;
+  custoPrevistoAcumulado: number;
+  custoRealizado: number;
+  custoRealizadoAcumulado: number;
+}
+
+export interface IStrategicProjectInvestmentSelected{
+  id: number;
+  nome: string;
+  custoPrevisto: number;
+  custoRealizado: number;
+}
+
+export interface IStrategicProjectDeliveriesBySelected{
+  id: number;
+  nome: string;
+  execucao: number;
+  concluida: number;
+}

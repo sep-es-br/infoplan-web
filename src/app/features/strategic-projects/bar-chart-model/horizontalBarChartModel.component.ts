@@ -28,6 +28,10 @@ export class HorizontalBarChartModelComponent implements OnChanges{
     }
   }
 
+  formatNumber(value: number): string {
+    return value.toLocaleString('pt-BR');
+  }
+
   initChartOptions(data: { category: string, previsto?: number, realizado?: number, emExecucao?: number, concluida?: number }[], colors: string[] ) {
 
     if (!Array.isArray(data) || data.length === 0) {
@@ -44,6 +48,13 @@ export class HorizontalBarChartModelComponent implements OnChanges{
           trigger: 'axis',
           axisPointer: {
             type: 'shadow',
+          },
+          formatter: (params: any) => {
+            let tooltipContent = `${params[0].name}<br>`;
+            params.forEach((param: any) => {
+              tooltipContent += `${param.seriesName}: ${this.formatNumber(param.value)}<br>`;
+            });
+            return tooltipContent;
           },
         },
         legend: {
@@ -137,6 +148,13 @@ export class HorizontalBarChartModelComponent implements OnChanges{
             trigger: 'axis',
             axisPointer: {
               type: 'shadow',
+            },
+            formatter: (params: any) => {
+              let tooltipContent = `${params[0].name}<br>`;
+              params.forEach((param: any) => {
+                tooltipContent += `${param.seriesName}: ${this.formatNumber(param.value)}<br>`;
+              });
+              return tooltipContent;
             },
           },
           legend: {

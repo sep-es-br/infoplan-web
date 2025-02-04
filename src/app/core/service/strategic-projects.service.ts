@@ -6,7 +6,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { IStrategicProjectFilterDataDto, IStrategicProjectFilterValuesDto } from '../interfaces/strategic-project-filter.interface';
 import { IStrategicProjectTotals } from '../interfaces/strategic-project-totals.interface';
-import { IStrategicProjectAccumulatedInvestment, IStrategicProjectDeliveries, IStrategicProjectDeliveriesBySelected, IStrategicProjectInvestmentSelected, IStrategicProjectRisksByClassification } from '../interfaces/strategic-project.interface';
+import { IStrategicProjectAccumulatedInvestment, IStrategicProjectDeliveries, IStrategicProjectDeliveriesBySelected, IStrategicProjectInvestmentSelected, IStrategicProjectRisksByClassification, IStrategicProjectTimestamp } from '../interfaces/strategic-project.interface';
 
 
 
@@ -42,6 +42,11 @@ export class StrategicProjectsService {
 
     public getDeliveries(areaId: string, programId: string, projectId: string): Observable<IStrategicProjectFilterDataDto> {
         return this.http.get<IStrategicProjectFilterDataDto>(this._urlBase + "deliveries", { params: { areaId: areaId, programId: programId, projectId: projectId } })
+            .pipe(catchError(err => this.handleError(err, this.router)))
+    }
+
+    public getTimestamp(): Observable<IStrategicProjectTimestamp> {
+        return this.http.get<IStrategicProjectTimestamp>(this._urlBase + "timestamp")
             .pipe(catchError(err => this.handleError(err, this.router)))
     }
 

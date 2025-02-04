@@ -65,3 +65,7 @@ export interface IStrategicProjectDeliveriesBySelected{
   execucao: number;
   concluida: number;
 }
+
+export interface IStrategicProjectTimestamp{
+  timestamp: string
+}

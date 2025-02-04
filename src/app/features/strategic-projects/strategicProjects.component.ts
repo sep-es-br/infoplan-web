@@ -4,6 +4,8 @@ import { StrategicProjectsService } from '../../core/service/strategic-projects.
 import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
 import { IStrategicProjectFilterDataDto } from '../../core/interfaces/strategic-project-filter.interface';
 import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project-totals.interface';
+import { IStrategicProjectTimestamp } from '../../core/interfaces/strategic-project.interface';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'ngx-strategic-projects',
@@ -15,6 +17,8 @@ export class StrategicProjectsComponent {
   investmentSelectedOption: string = 'Área Temática';
 
   deliveriesSelectedOption: string = 'Área Temática';
+
+  timestamp: string;
 
   showFilters = false;
 
@@ -67,6 +71,7 @@ export class StrategicProjectsComponent {
   activeFilters: { key: string; label: string; value: string }[] = [];
 
   constructor(private  strategicProjectsService :StrategicProjectsService) {
+    this.loadTimestamp()
     this.updateActiveFilters()
     this.loadAll()
     this.loadTotals()
@@ -319,6 +324,17 @@ export class StrategicProjectsComponent {
       },
       (error) => {
         console.error('Erro ao carregar áreas temáticas:', error);
+      }
+    );
+  }
+
+  loadTimestamp() {
+    this.strategicProjectsService.getTimestamp().subscribe(
+      (data: IStrategicProjectTimestamp) => {
+        this.timestamp = data.timestamp;
+      },
+      (error) => {
+        console.error('Erro ao carregar os totais:', error);
       }
     );
   }

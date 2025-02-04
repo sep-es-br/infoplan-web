@@ -4,7 +4,7 @@
 }
 
 .card {
-    background-color: var(--card-background-color);
+    background-color: white;
     border-radius: 8px;
     padding: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -96,7 +96,7 @@
   }
 
   .card .text-card {
-    color: var(--card-text-color);;
+    color: black;
     font-size: 0.9rem;
   }
 
@@ -164,6 +164,7 @@
   }
 
 .filter-toggle {
+  color: var(--card-text-color);
   min-width: 90px;
   border: none;
   background-color: transparent;
@@ -254,7 +255,7 @@
 .filter-tag {
   background-color: var(--card-background-color);
   border: 1px solid #ced4da;
-  color: var(--card-text-color);;
+  color: var(--card-text-color);
   padding: 4px 12px; 
   border-radius: 20px; 
   font-weight: bold;

@@ -62,7 +62,6 @@ export class RisksByClassificationComponent implements OnChanges {
       });
 
       this.chartColors = this.riskShow.map(val => val.corStatus);
-      console.log(this.chartData)
       },
       (error) => {
         console.error('Erro ao carregar os dados dos riscos por classificação:', error);

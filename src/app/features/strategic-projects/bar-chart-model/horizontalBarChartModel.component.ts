@@ -241,6 +241,8 @@ export class HorizontalBarChartModelComponent implements OnChanges{
             },
           ],
         };
+      }else{
+        this.chartOptions = {}
       }
 
       function formatValue(value: number): string {

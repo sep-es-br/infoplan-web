@@ -29,8 +29,9 @@ export class HorizontalBarChartModelComponent implements OnChanges{
   }
 
   formatNumber(value: number): string {
-    return value.toLocaleString('pt-BR');
+    return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
+  
 
   initChartOptions(data: { category: string, previsto?: number, realizado?: number, emExecucao?: number, concluida?: number }[], colors: string[] ) {
 

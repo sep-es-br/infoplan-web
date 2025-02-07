@@ -201,7 +201,7 @@
                     style="flex-direction: column; align-items: start"
                   >
                     <div class="currency">R$</div>
-                    <div class="value" [title]="totals.totalPrevisto| number:'1.0-0'">{{formatNumber(totals.totalPrevisto)}}</div>
+                    <div class="value" [title]="'R$ ' + (totals.totalPrevisto | number:'1.2-2')">{{formatNumber(totals.totalPrevisto)}}</div>
                   </div>
                 </div>
                 <div class="text-section previsto">
@@ -223,7 +223,7 @@
                     style="flex-direction: column; align-items: start"
                   >
                     <div class="currency">R$</div>
-                    <div class="value" [title]="totals.totalRealizado| number:'1.0-0'">{{formatNumber(totals.totalRealizado)}}</div>
+                    <div class="value" [title]="'R$ ' + (totals.totalRealizado| number:'1.0-2')">{{formatNumber(totals.totalRealizado)}}</div>
                   </div>
                 </div>
                 <div class="text-section realizado">

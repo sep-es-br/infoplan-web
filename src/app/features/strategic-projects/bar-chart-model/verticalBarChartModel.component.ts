@@ -29,8 +29,9 @@ export class VerticalBarChartModelComponent implements OnChanges{
   }
 
   formatNumber(value: number): string {
-    return value.toLocaleString('pt-BR');
+    return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
+  
 
   initChartOptions(data: { date: string, previsto: number, realizado: number }[], colors: string[] ) {
 

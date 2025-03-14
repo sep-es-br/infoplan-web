@@ -5,7 +5,10 @@ import {Router} from '@angular/router';
 
 import { IProfile } from '../../core/interfaces/profile.interface';
 import { ProfileService } from '../../core/service/profile.service';
-import { tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+import { of, throwError } from 'rxjs';
+import { off } from 'process';
 
 
 @Component({
@@ -43,10 +46,30 @@ export class AuthRedirectComponent {
             role: response.role,
           };
 
+        const userRoles = response.role ?? [];
+
+        const allowedRoles = Object.values(environment.allowedRoles).filter(role => role); 
+
+        const hasAccess = userRoles.some(role => allowedRoles.includes(role));
+
+        if (!hasAccess) {
+          sessionStorage.clear();
+          this._router.navigate(['/login'], {
+            state: { authError: 'Acesso negado: Você não tem autorização para acessar esta aplicação.' }
+          });
+          return;
+        }
+
           sessionStorage.setItem('user-profile', JSON.stringify(userProfile));
           this._router.navigate(['pages']);
-        }),
+        }), catchError(() => {
+          sessionStorage.clear();
+          this._router.navigate(['/login'], {
+            state: { authError: 'Acesso negado: Você não tem autorização para acessar esta aplicação.' }
+          });
+          return of(null);
+        })
       )
       .subscribe();
-  }
+    }
 }

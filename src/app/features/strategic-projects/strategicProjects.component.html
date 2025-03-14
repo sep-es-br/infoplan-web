@@ -18,10 +18,16 @@
           </div>
         </div>
       </div>
-      <!-- Botão de Filtro -->
-      <button (click)="toggleFiltroPanel()" class="filter-toggle">
-        Filtros {{ showFilters ? '▲' : '▼' }}
-      </button>
+      <div class="filter-button">
+        <button (click)="openMap()" class="map-btn">
+          <i class="fas fa-map"></i> <!-- Ícone de Mapa -->
+        </button>
+      
+        <button (click)="toggleFiltroPanel()" class="filter-toggle">
+          Filtros {{ showFilters ? '▲' : '▼' }}
+        </button>
+      </div>
+      
     </div>
       <!-- Painel de Filtros -->
       <div *ngIf="showFilters" class="overlay-panel">
@@ -368,4 +374,8 @@
   <nb-layout-footer class="mt-2">
     <ngx-footer [timestamp]="timestamp"></ngx-footer>
     </nb-layout-footer>
+
+<div class="curtain" [class.open]="isOpen">
+    <button class="close-btn" (click)="closeMap()">✖</button>
+</div>
   

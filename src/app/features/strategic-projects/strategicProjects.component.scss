@@ -309,3 +309,59 @@
   z-index: 2;
 }
 
+.curtain {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  transform: translateX(100%);
+  transition: transform 0.5s ease-in-out;
+  z-index: 9999;
+}
+
+.curtain.open {
+  transform: translateX(0);
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.open-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+
+.filter-button {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espaçamento entre os botões */
+}
+
+.map-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #333; /* Cor do ícone */
+}
+
+.map-btn:hover {
+  color: #007bff; /* Cor ao passar o mouse */
+}
+
+

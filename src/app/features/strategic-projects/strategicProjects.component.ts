@@ -20,6 +20,8 @@ export class StrategicProjectsComponent {
 
   timestamp: string;
 
+  isOpen = false;
+
   showFilters = false;
 
   totals: IStrategicProjectTotals = {
@@ -352,20 +354,33 @@ export class StrategicProjectsComponent {
     );
 }
 
-  formatNumber(value: number): string {
-    if (!value) {
-      return 'R$ 0';
-    }
-  
-    if (value >= 1_000_000_000) {
-      return `${(value / 1_000_000_000).toFixed(2)} B`;
-    }
+formatNumber(value: number): string {
+  if (!value) {
+    return 'R$ 0';
+  }
 
-    if (value >= 1_000_000) {
-      return `${(value / 1_000_000).toFixed(2)} M`;
-    }
+  if (value >= 1_000_000_000) {
+    return `${(value / 1_000_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} bi`;
+  }
 
-    return `R$ ${value.toLocaleString('pt-BR')}`;
+  if (value >= 1_000_000) {
+    return `${(value / 1_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} mi`;
+  }
+
+  if (value >= 1_000) {
+    return `${(value / 1_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} mil`;
+  }
+
+  return `R$ ${value.toLocaleString('pt-BR')}`;
+}
+
+
+  openMap() {
+    this.isOpen = true;
+  }
+
+  closeMap() {
+    this.isOpen = false;
   }
   
 

@@ -153,7 +153,7 @@ export class HorizontalBarChartModelComponent implements OnChanges{
             formatter: (params: any) => {
               let tooltipContent = `${params[0].name}<br>`;
               params.forEach((param: any) => {
-                tooltipContent += `${param.seriesName}: ${this.formatNumber(param.value)}<br>`;
+                tooltipContent += `${param.seriesName}: ${param.value}<br>`;
               });
               return tooltipContent;
             },

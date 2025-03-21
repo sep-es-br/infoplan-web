@@ -1,11 +1,10 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { StrategicProjectsService } from '../../core/service/strategic-projects.service';
 import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
 import { IStrategicProjectFilterDataDto } from '../../core/interfaces/strategic-project-filter.interface';
 import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project-totals.interface';
 import { IStrategicProjectTimestamp } from '../../core/interfaces/strategic-project.interface';
-import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'ngx-strategic-projects',
@@ -20,7 +19,7 @@ export class StrategicProjectsComponent {
 
   timestamp: string;
 
-  isOpen = false;
+  isMapOpen = false;
 
   showFilters = false;
 
@@ -72,7 +71,7 @@ export class StrategicProjectsComponent {
 
   activeFilters: { key: string; label: string; value: string }[] = [];
 
-  constructor(private  strategicProjectsService :StrategicProjectsService) {
+  constructor(private strategicProjectsService: StrategicProjectsService) {
     this.loadTimestamp()
     this.updateActiveFilters()
     this.loadAll()
@@ -93,29 +92,29 @@ export class StrategicProjectsComponent {
       acompanhamentos: 'acompanhamentoList'
     };
     this.activeFilters = Object.entries(this.finalFilter)
-    .filter(([key, value]) => value) 
-    .map(([key, value]) => {
-      let displayValue: string;
+      .filter(([key, value]) => value)
+      .map(([key, value]) => {
+        let displayValue: string;
 
-      if (directValueKeys.includes(key)) {
-        if (key === 'dataInicio' || key === 'dataFim') {
-          const [year, month] = value.split('-');
-          displayValue = `${month}-${year}`;
+        if (directValueKeys.includes(key)) {
+          if (key === 'dataInicio' || key === 'dataFim') {
+            const [year, month] = value.split('-');
+            displayValue = `${month}-${year}`;
+          } else {
+            displayValue = value;
+          }
         } else {
-          displayValue = value;
+          const listKey = optionsMapping[key];
+          const list = this[listKey as keyof this] as IIdAndName[];
+          displayValue = list?.find(item => item.id === Number(value))?.name || value;
         }
-      } else {
-        const listKey = optionsMapping[key];
-        const list = this[listKey as keyof this] as IIdAndName[];
-        displayValue = list?.find(item => item.id === Number(value))?.name || value; 
-      }
 
-      return {
-        key,
-        label: this.getFilterLabel(key),
-        value: displayValue
-      };
-    });
+        return {
+          key,
+          label: this.getFilterLabel(key),
+          value: displayValue
+        };
+      });
   }
 
   selectedOptionI(event: any) {
@@ -129,13 +128,13 @@ export class StrategicProjectsComponent {
   onFilterChange(event: Event): void {
     let selectedValue = (event.target as HTMLSelectElement).value;
     const selecetedName = (event.target as HTMLSelectElement).name;
-    
+
     if (selectedValue === "") {
       selectedValue = "todos";
     }
 
     if (selecetedName === 'areaTematica') {
-      if(selectedValue != "todos"){
+      if (selectedValue != "todos") {
         this.filter.areaTematica = selectedValue
       }
 
@@ -146,23 +145,23 @@ export class StrategicProjectsComponent {
           this.projetoList = data.projetos
 
           if (!this.programaOList.some(programa => programa.id.toString() === this.filter.programaOrigem)) {
-            this.filter.programaOrigem = ""; 
+            this.filter.programaOrigem = "";
           }
-  
+
           if (!this.projetoList.some(projeto => projeto.id.toString() === this.filter.projetos)) {
-            this.filter.projetos = ""; 
+            this.filter.projetos = "";
           }
-  
+
           if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = ""; 
+            this.filter.entregas = "";
           }
         },
         (error) => {
           console.error('Erro ao carregar programas, entregas e projetos:', error);
         }
       );
-    }else if (selecetedName === 'programaOrigem') {
-      if(selectedValue != "todos"){
+    } else if (selecetedName === 'programaOrigem') {
+      if (selectedValue != "todos") {
         this.filter.programaOrigem = selectedValue
       }
 
@@ -172,13 +171,13 @@ export class StrategicProjectsComponent {
         (data: IStrategicProjectFilterDataDto) => {
           this.entregaList = data.entregas
           this.projetoList = data.projetos
-          
+
           if (!this.projetoList.some(projeto => projeto.id.toString() === this.filter.projetos)) {
-            this.filter.projetos = ""; 
+            this.filter.projetos = "";
           }
-  
+
           if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = ""; 
+            this.filter.entregas = "";
           }
         },
         (error) => {
@@ -186,7 +185,7 @@ export class StrategicProjectsComponent {
         }
       );
     } else if (selecetedName === 'projetos') {
-      if(selectedValue != "todos"){
+      if (selectedValue != "todos") {
         this.filter.projetos = selectedValue
       }
 
@@ -199,7 +198,7 @@ export class StrategicProjectsComponent {
           this.entregaList = data.entregas
 
           if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = ""; 
+            this.filter.entregas = "";
           }
         },
         (error) => {
@@ -243,15 +242,15 @@ export class StrategicProjectsComponent {
           this.projetoList = data.projetos
 
           if (!this.programaOList.some(programa => programa.id.toString() === this.filter.programaOrigem)) {
-            this.filter.programaOrigem = ""; 
+            this.filter.programaOrigem = "";
           }
-  
+
           if (!this.projetoList.some(projeto => projeto.id.toString() === this.filter.projetos)) {
-            this.filter.projetos = ""; 
+            this.filter.projetos = "";
           }
-  
+
           if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = ""; 
+            this.filter.entregas = "";
           }
         },
         (error) => {
@@ -266,13 +265,13 @@ export class StrategicProjectsComponent {
         (data: IStrategicProjectFilterDataDto) => {
           this.entregaList = data.entregas
           this.projetoList = data.projetos
-          
+
           if (!this.projetoList.some(projeto => projeto.id.toString() === this.filter.projetos)) {
-            this.filter.projetos = ""; 
+            this.filter.projetos = "";
           }
-  
+
           if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = ""; 
+            this.filter.entregas = "";
           }
         },
         (error) => {
@@ -290,7 +289,7 @@ export class StrategicProjectsComponent {
           this.entregaList = data.entregas
 
           if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = ""; 
+            this.filter.entregas = "";
           }
         },
         (error) => {
@@ -306,7 +305,7 @@ export class StrategicProjectsComponent {
   }
 
   filtrar(event: Event): void {
-    event.preventDefault(); 
+    event.preventDefault();
     this.showFilters = !this.showFilters;
     this.finalFilter = { ...this.filter };
     this.updateActiveFilters();
@@ -352,36 +351,39 @@ export class StrategicProjectsComponent {
         console.error('Erro ao carregar os totais:', error);
       }
     );
-}
-
-formatNumber(value: number): string {
-  if (!value) {
-    return 'R$ 0';
   }
 
-  if (value >= 1_000_000_000) {
-    return `${(value / 1_000_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} bi`;
+  formatNumber(value: number): string {
+    if (!value) {
+      return 'R$ 0';
+    }
+
+    if (value >= 1_000_000_000) {
+      return `${(value / 1_000_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} bi`;
+    }
+
+    if (value >= 1_000_000) {
+      return `${(value / 1_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} mi`;
+    }
+
+    if (value >= 1_000) {
+      return `${(value / 1_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} mil`;
+    }
+
+    return `R$ ${value.toLocaleString('pt-BR')}`;
+  }
+  openAndCloseMap() {
+    this.isMapOpen = !this.isMapOpen;
   }
 
-  if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} mi`;
+  onMapFilterChange(newFilter: any): void {
+    this.filter = { ...this.filter, ...newFilter };
+    this.finalFilter = { ...this.filter };
+
+    this.updateActiveFilters();
+
+    this.loadTotals();
+
   }
-
-  if (value >= 1_000) {
-    return `${(value / 1_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} mil`;
-  }
-
-  return `R$ ${value.toLocaleString('pt-BR')}`;
-}
-
-
-  openMap() {
-    this.isOpen = true;
-  }
-
-  closeMap() {
-    this.isOpen = false;
-  }
-  
 
 }

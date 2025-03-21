@@ -15,11 +15,13 @@ import { InvestmentBySelectedComponent } from './data-chart/investmentBySelected
 import { FormsModule } from '@angular/forms';
 import { FooterComponent } from '../../@theme/components/footer/footer.component';
 import { ThemeModule } from '../../@theme/theme.module';
+import { MapEsComponent } from './map-es/mapEs.component';
 
 
 @NgModule({
   declarations: [
-    StrategicProjectsComponent
+    StrategicProjectsComponent,
+    MapEsComponent
   ],
   imports: [
     FormsModule,

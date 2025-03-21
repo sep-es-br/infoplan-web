@@ -17,7 +17,7 @@ export interface IStrategicProjectFilterValuesDto {
     projetoId: number; 
     entregaId: number; 
     orgaoId: number; 
-    localidadeId: number; 
+    localidadeId: number | string; 
     dataInicio: number; 
     dataFim: number; 
 }

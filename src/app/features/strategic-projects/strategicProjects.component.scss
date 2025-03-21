@@ -349,19 +349,37 @@
 .filter-button {
   display: flex;
   align-items: center;
-  gap: 10px; /* Espaçamento entre os botões */
+  gap: 5px; 
 }
 
 .map-btn {
-  background: transparent;
+  background: none;
   border: none;
-  font-size: 20px;
   cursor: pointer;
-  color: #333; /* Cor do ícone */
+  padding: 0;
 }
 
-.map-btn:hover {
-  color: #007bff; /* Cor ao passar o mouse */
+.map-icon {
+  width: 24px; 
+  height: 50px; 
+  vertical-align: middle; 
+}
+
+.map-btn:hover .map-icon {
+  filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+}
+
+.map-btn-clicked .map-icon {
+  filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+}
+
+@media (max-width: 767px) {
+  .map{
+    display: none !important;
+  }
+  .map-btn {
+    display: none !important;
+  }
 }
 
 

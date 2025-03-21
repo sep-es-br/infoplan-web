@@ -10,7 +10,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
-export class PieChartModelComponent implements OnChanges{
+export class PieChartModelComponent implements OnChanges {
 
   @Input() data: { value: number, name: string }[] = [];
   @Input() colors: string[] = [];
@@ -33,15 +33,15 @@ export class PieChartModelComponent implements OnChanges{
 
   onChartInit(chartInstance: any) {
     this.echartsInstance = chartInstance;
-  
+
     chartInstance.on('legendselectchanged', (params: any) => {
       const selected = params.selected;
-  
+
       if (Array.isArray(this.data) && this.data.length > 0) {
         const newTotal = this.data.reduce((sum, item) => {
           return selected[item.name] ? sum + item.value : sum;
         }, 0);
-  
+
         chartInstance.setOption({
           title: {
             text: `${newTotal}`,
@@ -58,10 +58,10 @@ export class PieChartModelComponent implements OnChanges{
 
   updateTitlePosition() {
     const screenWidth = window.innerWidth;
-    const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000) 
-      ? this.centerX - 2 
+    const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
+      ? this.centerX - 2
       : this.centerX - 1;
-  
+
     if (this.echartsInstance) {
       this.echartsInstance.setOption({
         title: {
@@ -71,17 +71,17 @@ export class PieChartModelComponent implements OnChanges{
     }
   }
 
-  
+
   initChartOptions(data: { value: number, name: string }[], colors: string[]) {
-    const total = Array.isArray(data) && data.length > 0 
-      ? data.reduce((sum, item) => sum + item.value, 0) 
+    const total = Array.isArray(data) && data.length > 0
+      ? data.reduce((sum, item) => sum + item.value, 0)
       : 0;
-  
+
     const screenWidth = window.innerWidth;
-    const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000) 
-      ? this.centerX - 2 
+    const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
+      ? this.centerX - 2
       : this.centerX - 1;
-  
+
     this.chartOptions = {
       tooltip: {
         trigger: 'item',
@@ -117,12 +117,12 @@ export class PieChartModelComponent implements OnChanges{
         },
         data: data ? data.map(item => item.name) : [],
         textStyle: {
-          fontSize: 10,
+          fontSize: 9,
           color: '#000',
         },
         itemWidth: 10,
         itemHeight: 10,
-        itemGap: 15,
+        itemGap: 10,
         selectedMode: true,
       },
       series: [
@@ -148,5 +148,5 @@ export class PieChartModelComponent implements OnChanges{
       color: colors || [],
     };
   }
-  
+
 }

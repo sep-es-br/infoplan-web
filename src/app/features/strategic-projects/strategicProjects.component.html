@@ -19,8 +19,8 @@
         </div>
       </div>
       <div class="filter-button">
-        <button (click)="openMap()" class="map-btn">
-          <i class="fas fa-map"></i> <!-- Ícone de Mapa -->
+        <button (click)="openAndCloseMap()" class="map-btn" [ngClass]="{'map-btn-clicked': isMapOpen}">
+          <img src="/assets/images/app/es-logo.svg" alt="Mapa do Espírito Santo" class="map-icon">
         </button>
       
         <button (click)="toggleFiltroPanel()" class="filter-toggle">
@@ -152,7 +152,6 @@
               </div>
             </div>
           </div>
-          <!-- <div class="col-xs-1-5 col-sm-1-5 col-md-1-5 col-lg-1-5 mb-3"> -->
             <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
             <div class="card">
               <div class="icon-top-right">
@@ -166,7 +165,6 @@
               </div>
             </div>
           </div>
-          <!-- <div class="col-xs-1-5 col-sm-1-5 col-md-1-5 col-lg-1-5 mb-3"> --->
             <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
             <div class="card">
               <div class="icon-top-right">
@@ -180,7 +178,6 @@
               </div>
             </div>
           </div>
-          <!-- <div class="col-xs-1-5 col-sm-1-5 col-md-1-5 col-lg-1-5 mb-3"> -->
             <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
             <div class="card">
               <div class="icon-top-right">
@@ -194,7 +191,6 @@
               </div>
             </div>
           </div>
-          <!-- <div class="col-xs-1-5 col-sm-1-5 col-md-1-5 col-lg-1-5 mb-3"> -->
             <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
             <div class="card">
               <div class="icon-top-right previsto">
@@ -216,7 +212,6 @@
               </div>
             </div>
           </div>
-          <!-- <div class="col-xs-1-5 col-sm-1-5 col-md-1-5 col-lg-1-5 mb-3"> -->
             <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
             <div class="card">
               <div class="icon-top-right realizado">
@@ -241,10 +236,17 @@
       </div>
     </div>
   
-    <!-- col-2-5 -->
-     <div class="row">
-      <div class="col-xxxl-6 col-md-12 pr-0 pl-0 d-flex flex-wrap">
+    <div class="row">
+      <div class="map col-xxxl-6 col-xxl-12 pr-0 pl-0 d-flex flex-wrap" *ngIf="isMapOpen">
+        <div class="col-xxxl-12 col-xxl-12 col-md-12 pr-1 pl-1 mb-2">
+          <div class="card">
+            <ngx-map-es [filter]="finalFilter" [localidadeList]="localidadeList" (filterChange)="onMapFilterChange($event)"></ngx-map-es>
+          </div>
+        </div>
+      </div>
 
+      <div class="col-xxxl-6 col-xxl-12 pr-0 pl-0 d-flex flex-wrap">
+        
            <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
              <div class="card">
                <div class="d-flex col-12 mt-1 mb-1">
@@ -257,6 +259,7 @@
                  </div>
              </div>
            </div>
+
            <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
              <div class="card">
                <div class="d-flex col-12 mt-1 mb-1">
@@ -317,10 +320,10 @@
                  </div>
              </div>
            </div>
-       </div>
+      </div>
      
-         <div class="col-xxxl-6 col-md-12 pr-0 pl-0 d-flex flex-wrap">
-           <div class="col-xxxl-12 col-xxl-6 col-12 pr-1 pl-1 mb-2 ">
+         <div [ngClass]="{'col-xxxl-12': isMapOpen, 'col-xxxl-6': !isMapOpen}" class="col-md-12 pr-0 pl-0 d-flex flex-wrap">
+           <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2 ">
              <div class="card">
                <div class="d-flex col-12 mt-1">
                  <span class="text-card mr-2">Investimento por</span>
@@ -338,7 +341,7 @@
              </div>
              <!-- <div class="watermark">EM BREVE</div> -->
            </div>
-           <div class="col-xxxl-12 col-xxl-6 col-12 pr-1 pl-1 mb-2">
+           <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2">
              <div class="card">
                <div class="d-flex col-12 mt-1">
                  <span class="text-card mr-2">Entregas por</span>
@@ -375,7 +378,11 @@
     <ngx-footer [timestamp]="timestamp"></ngx-footer>
     </nb-layout-footer>
 
-<div class="curtain" [class.open]="isOpen">
-    <button class="close-btn" (click)="closeMap()">✖</button>
-</div>
-  
+  <!-- <div class="curtain" [class.open]="isOpen">
+    <div class="col-12">
+      <button class="close-btn" (click)="closeMap()">✖</button>
+          <div class="col-5">
+              <ngx-map-es></ngx-map-es>
+          </div>
+    </div>
+  </div> -->

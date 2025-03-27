@@ -5,7 +5,7 @@
 }
 
 
-.subtitle {
+.font {
     font-size: 0.7rem;
     color: var(--card-text-color);
     font-style: italic;
@@ -18,16 +18,39 @@
     // background-color: ;
 }
 
+.card-title-subtitle{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.title-subtitle{
+    display: grid;
+    white-space: nowrap;
+}
+
 .title{
     padding-left: 0px;
+    margin-bottom: 0;
     font-size: 1rem;
     color: var(--card-text-color);
-    margin-bottom: 2em;
     display: flex;
     font-weight: bold;
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: ellipsis; 
+}
+
+.small-title {
+    font-size: 0.9rem !important;
+}
+  
+
+.subititle{
+    font-size: 0.7rem;
+    margin-bottom: 0;
+    color: var(--card-text-color);
+    padding-left: 0px;
 }
 
 .card-logo{

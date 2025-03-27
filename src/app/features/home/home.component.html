@@ -15,10 +15,13 @@
             </div>
             <div class="col-9 col-md-9 col-sm-9 col-is-9 card-title-subtitle">
               <div class="d-flex card-title-img">
-                <p class="title">{{menuItem.name}}</p>
+                <div class="title-subtitle">
+                  <p class="title" [ngClass]="{'small-title': menuItem.subTitle}">{{menuItem.name}}</p>
+                  <p *ngIf="menuItem.subTitle" class="subititle">{{menuItem.subTitle}}</p>
+                </div>
                 <img *ngIf="menuItem.url" [src]="'assets/images/app/external-link.svg'">
               </div>
-                <p class="subtitle"  [tooltip]="!menuItem.status ? '': menuItem.src " >Fonte: {{menuItem.src}}</p>
+                <p class="font" [tooltip]="!menuItem.status ? '': menuItem.src " >Fonte: {{menuItem.src}}</p>
             </div>
           </div>
         </div>

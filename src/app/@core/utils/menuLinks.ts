@@ -27,4 +27,5 @@ export const menulinks = [
   { id: 3, status: checkRoles(environment.allowedRoles.sas), name: 'Painéis SAS(Sigefes)', link: '', url: environment.urls.sas, icon: 'menu-icone-sas.svg', src: 'Sigefes/SAS Sefaz', menuIcon:'', color:'#0478ce' },
   { id: 4, status: checkRoles(environment.allowedRoles.projetosEstrategicos), name: 'Projetos Estratégicos', link: '/pages/strategicProjects', url: '', icon: 'menu-icone-openpmo.svg', src: 'OpenPMO', menuIcon:'', color:'#44B39B'},
   { id: 5, status: checkRoles(environment.allowedRoles.gestaoFiscal), name: 'Gestão Fiscal', icon: 'menu-icone-gestao-fiscal.svg', link: '/pages/gfiscal', url: '', src: 'Sigefes/BI SEP', menuIcon: '', color:'red' },
+  { id: 6, status: true, name: 'Programa Estado Presente', icon: 'logoAmareloEstadoPresente.svg', link: '', url: environment.urls.estadoPresente , src: 'Programa Estado Presente', menuIcon: '', color:'#f7a600ff', subTitle: 'Mapa das Principais Entregas' },
 ];

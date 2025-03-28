@@ -13,17 +13,42 @@ import { menulinks } from '../@core/utils/menuLinks';
     </ngx-one-column-layout>
   `,
 })
-export class PagesComponent implements AfterViewInit {
-  menu = MENU_ITEMS;
+export class PagesComponent implements OnInit {
 
-  constructor() {}
+    menu = []
 
-  ngAfterViewInit() {
-    this.setIconStyles();
-  }
+    constructor(private iconsLibrary: NbIconLibraries) {}
+  
+    async ngOnInit() {
+      const customIcons: { [key: string]: string } = {};
+  
+      await Promise.all(menulinks.map(async (item) => {
+        const iconName = item.icon.split('.')[0]; 
+  
+        if (item.icon.endsWith('.svg')) {
+          try {
+            const response = await fetch(`assets/images/app/${item.icon}`);
+            const svgContent = await response.text();
+            
+            customIcons[iconName] = svgContent;
+  
+          } catch (error) {
+            console.error(`Erro ao carregar o ícone ${item.icon}:`, error);
+          }
+        } else {
+          customIcons[iconName] = `<img src="assets/images/app/${iconName}.png" width="20px" />`;
+        }
+      }));
+  
+      this.iconsLibrary.registerSvgPack('custom-icons', customIcons);
+      this.menu = MENU_ITEMS
+      this.setIconStyles();
+  
+    }
 
   private setIconStyles() {
     setTimeout(() => {
+      
       const icons = document.querySelectorAll('nb-icon svg');
       icons.forEach((icon: SVGElement) => {
         icon.setAttribute('width', '20px');

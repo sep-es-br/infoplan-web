@@ -248,7 +248,6 @@ export class MapEsComponent implements OnInit, OnChanges {
   atualizarEstadosComBaseNoFilter(): void {
     const svgElement = document.querySelector('.mapa-es svg');
     if (!svgElement) return;
-    console.log(this.regionCities)
 
     Object.values(this.regionCities).forEach((region) => {
       region.active = false;

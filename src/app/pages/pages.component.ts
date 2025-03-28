@@ -1,5 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MENU_ITEMS } from './pages-menu';
 import { NbIconLibraries, NbMenuComponent, NbThemeService } from '@nebular/theme';
 import { menulinks } from '../@core/utils/menuLinks';
@@ -14,45 +13,33 @@ import { menulinks } from '../@core/utils/menuLinks';
     </ngx-one-column-layout>
   `,
 })
-export class PagesComponent {
-  
-  @ViewChild('menuElem')
-  menuElem: ElementRef;
-
-  iconColor : string;
-  
-  
+export class PagesComponent implements AfterViewInit {
   menu = MENU_ITEMS;
 
-  
-  constructor (private iconsLibrary: NbIconLibraries
-  ) {
+  constructor() {}
 
-    menulinks.map(item => item.icon).forEach(iconFile => {
-      
-      if(iconFile.split('.')[1] == 'svg'){
-        fetch("assets/images/app/" + iconFile).then(value => {
-          let resp : Response = value;
-          resp.text().then(innerText => {
-            this.iconsLibrary.getPack("eva").icons.set(iconFile.split('.')[0], innerText);
-            let nbIcon = document.querySelector('nb-menu nb-icon[ng-reflect-config="' + iconFile.split('.')[0] + '"]');
-            nbIcon ? nbIcon.innerHTML = innerText : null;
-            let elem = nbIcon ? nbIcon.querySelector('svg') : null;
-            elem ? elem.setAttribute('width', '20px') : null;
-            elem ? elem.setAttribute('height', '20px') : null;
-            elem = elem ? nbIcon.querySelector('[fill]') : null;
-            elem ? elem.setAttribute('fill', 'currentColor') : null;
-
-          }).catch(reason => console.error(reason));
-
-        }, reason => console.error(reason));
-      } else {
-        this.iconsLibrary.getPack("eva").icons.set(iconFile.split('.')[0], '<img src="assets/images/app/' + iconFile.split('.')[0] + '.png" width="20px" />');
-      }
-    });
-    
+  ngAfterViewInit() {
+    this.setIconStyles();
   }
 
+  private setIconStyles() {
+    setTimeout(() => {
+      const icons = document.querySelectorAll('nb-icon svg');
+      icons.forEach((icon: SVGElement) => {
+        icon.setAttribute('width', '20px');
+        icon.setAttribute('height', '20px');
+        
+        const paths = icon.querySelectorAll('[fill]');
+        paths.forEach((path: SVGElement) => {
+          path.setAttribute('fill', 'currentColor');
+        });
+      });
 
-
+      const imgIcons = document.querySelectorAll('nb-icon img');
+      imgIcons.forEach((img: HTMLImageElement) => {
+        img.style.width = '20px';
+        img.style.height = '20px';
+      });
+    });
+  }
 }

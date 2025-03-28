@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 import { Component, OnInit } from '@angular/core';
-import { NbIconLibraries } from '@nebular/theme';
+import { NbIconLibraries, NbSidebarService } from '@nebular/theme';
 import { menulinks } from './@core/utils/menuLinks';
 
 @Component({
@@ -12,4 +12,3 @@ import { menulinks } from './@core/utils/menuLinks';
   template: '<router-outlet></router-outlet>',
 })
 export class AppComponent {}
-

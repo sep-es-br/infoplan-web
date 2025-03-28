@@ -10,13 +10,21 @@ const dynamicMenuItems: NbMenuItem[] = menulinks.map(menu => ({
   hidden: !menu.status,
 }));
 
-export const MENU_ITEMS: NbMenuItem[] = [
+export interface CustomNbMenuItem extends NbMenuItem {
+  isExternalUrl?: boolean;
+}
+
+export const MENU_ITEMS: CustomNbMenuItem[] = [
   {
     title: 'Home',
     icon: 'home-outline',
-    link: '/pages/home'
+    link: '/pages/home',
+    isExternalUrl: false
     
   },
-  ...dynamicMenuItems,
+  ...dynamicMenuItems.map(item => ({
+    ...item,
+    isExternalUrl: !!item.url
+  })),
  
 ];

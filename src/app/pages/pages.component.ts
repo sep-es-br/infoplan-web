@@ -1,14 +1,16 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { MENU_ITEMS } from './pages-menu';
-import { NbIconLibraries, NbMenuComponent, NbThemeService } from '@nebular/theme';
+import { CustomNbMenuItem, MENU_ITEMS } from './pages-menu';
+import { NbIconLibraries, NbMenuComponent, NbMenuService, NbThemeService } from '@nebular/theme';
 import { menulinks } from '../@core/utils/menuLinks';
+import { filter } from 'rxjs/operators';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'ngx-pages',
   styleUrls: ['pages.component.scss'],
   template: `
     <ngx-one-column-layout>
-      <nb-menu [items]="menu"></nb-menu>
+      <nb-menu [items]="menu" tag="menu"></nb-menu>
       <router-outlet></router-outlet>
     </ngx-one-column-layout>
   `,
@@ -16,10 +18,12 @@ import { menulinks } from '../@core/utils/menuLinks';
 export class PagesComponent implements OnInit {
 
     menu = []
+    private lastSelectedItem: CustomNbMenuItem;
 
-    constructor(private iconsLibrary: NbIconLibraries) {}
+    constructor(private iconsLibrary: NbIconLibraries, private nbMenuService: NbMenuService,  private location: Location) {}
   
     async ngOnInit() {
+
       const customIcons: { [key: string]: string } = {};
   
       await Promise.all(menulinks.map(async (item) => {
@@ -43,7 +47,57 @@ export class PagesComponent implements OnInit {
       this.iconsLibrary.registerSvgPack('custom-icons', customIcons);
       this.menu = MENU_ITEMS
       this.setIconStyles();
+      this.setInitialActiveItem();
+
+    this.nbMenuService.onItemSelect()
+      .pipe(filter(({ tag }) => tag === 'menu'))
+      .subscribe(({ item }) => {
+        const menuItem = item as CustomNbMenuItem;
+        if (!menuItem.isExternalUrl) {
+          this.updateMenuState(menuItem);
+          this.lastSelectedItem = menuItem;
+        } else if (this.lastSelectedItem) {
+          this.resetMenuSelection();
+        }
+      });
+        
+    }
+
+    private setInitialActiveItem() {
+      const currentPath = this.location.path().split('?')[0];
+      
+      const activeItem = this.menu.find(item => {
+        if (!item.link) return false;
+        const itemPath = item.link.startsWith('/') ? item.link : `/${item.link}`;
+        return currentPath === itemPath || currentPath.startsWith(itemPath);
+      });
   
+      this.lastSelectedItem = activeItem || this.menu.find(item => item.link === '/pages/home');
+      this.resetMenuSelection();
+    }
+
+    private updateMenuState(activeItem: CustomNbMenuItem) {
+      this.menu = this.menu.map(item => ({
+        ...item,
+        selected: item.link === activeItem.link,
+        expanded: item.link === activeItem.link
+      }));
+      
+      this.menu = [...this.menu];
+      this.setIconStyles()
+    }
+  
+    private resetMenuSelection() {
+      if (!this.lastSelectedItem) return;
+      
+      this.menu = this.menu.map(item => ({
+        ...item,
+        selected: item.link === this.lastSelectedItem.link,
+        expanded: item.link === this.lastSelectedItem.link
+      }));
+      
+      this.menu = [...this.menu];
+      this.setIconStyles()
     }
 
   private setIconStyles() {

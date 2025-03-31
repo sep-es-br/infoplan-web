@@ -71,5 +71,11 @@
       display: none;
     }
   }
+
+  @media (max-width: 575px) {
+    ::ng-deep nb-user .info-container {
+      display: none;
+    }
+  }
   
 }

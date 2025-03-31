@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { NbSidebarService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-one-column-layout',
@@ -21,4 +22,12 @@ import { Component } from '@angular/core';
     </nb-layout>
   `,
 })
-export class OneColumnLayoutComponent {}
+export class OneColumnLayoutComponent implements AfterViewInit {
+  constructor(private sidebarService: NbSidebarService, private cdr: ChangeDetectorRef) {}
+
+  ngAfterViewInit() {
+    this.sidebarService.compact('menu-sidebar');
+    this.cdr.detectChanges();
+  }
+
+}

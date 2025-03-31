@@ -1,0 +1,52 @@
+.container {
+    position: relative;
+    display: flex;
+    max-width: none;
+  }
+  
+  .legenda {
+    display: flex;
+    padding-top: 10px;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 161px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  
+  .legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    span{
+      cursor: pointer;
+    }
+  }
+  
+  .legenda-cor {
+    width: 25px;
+    height: 10px;
+    border-radius: 3px;
+  }
+  
+  .mapa-es {
+    display: flex;
+    height: 670px;
+    width: 100%;
+  }
+
+::ng-deep .mapa-es g {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+::ng-deep .hover-effect text {
+  font-weight: bold;
+}
+
+
+
+
+
+  

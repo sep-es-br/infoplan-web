@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, HostListener, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { NbThemeService } from '@nebular/theme';
 import { EChartsOption } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
 
@@ -11,19 +12,52 @@ import { NgxEchartsModule } from 'ngx-echarts';
   imports: [NgxEchartsModule, CommonModule],
 })
 export class PieChartModelComponent implements OnChanges {
-
   @Input() data: { value: number, name: string }[] = [];
+
   @Input() colors: string[] = [];
+
   @Input() height: number;
 
-  chartOptions: EChartsOption;
-  echartsInstance: any = null
-  centerX: number = 70;
-  centerY: number = 50;
-
-  constructor() {
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.updateTitlePosition();
   }
 
+  chartOptions: EChartsOption;
+
+  echartsInstance: any = null
+
+  centerX: number = 70;
+
+  centerY: number = 50;
+
+  constructor(private themeService: NbThemeService) {
+    this.themeService.onThemeChange()
+      .subscribe((newTheme: { name: string; previous: string; }) => {
+        if (this.echartsInstance) {
+          let newTextColor: string;
+    
+          if (newTheme.name === 'default') {
+            newTextColor = '#505050';
+          } else if (newTheme.name === 'dark' || newTheme.name === 'cosmic') {
+            newTextColor = '#FFFFFF';
+          }
+
+          this.echartsInstance.setOption({
+            title: {
+              textStyle: {
+                color: newTextColor,
+              },
+            },
+            legend: {
+              textStyle: {
+                color: newTextColor,
+              },
+            },
+          });
+        }
+      });
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['colors']) {
@@ -51,11 +85,6 @@ export class PieChartModelComponent implements OnChanges {
     });
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
-    this.updateTitlePosition();
-  }
-
   updateTitlePosition() {
     const screenWidth = window.innerWidth;
     const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
@@ -70,7 +99,6 @@ export class PieChartModelComponent implements OnChanges {
       });
     }
   }
-
 
   initChartOptions(data: { value: number, name: string }[], colors: string[]) {
     const total = Array.isArray(data) && data.length > 0
@@ -98,6 +126,7 @@ export class PieChartModelComponent implements OnChanges {
         textStyle: {
           fontSize: 16,
           fontWeight: 'bold',
+          color: '#505050',
         },
       },
       legend: {
@@ -148,5 +177,4 @@ export class PieChartModelComponent implements OnChanges {
       color: colors || [],
     };
   }
-
 }

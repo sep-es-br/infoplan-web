@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { StrategicProjectsService } from '../../core/service/strategic-projects.service';
 import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
@@ -78,7 +78,6 @@ export class StrategicProjectsComponent {
     this.loadTotals()
   }
 
-
   updateActiveFilters() {
     const directValueKeys = ['portfolio', 'dataInicio', 'dataFim', 'previsaoConclusao'];
     const optionsMapping = {
@@ -91,6 +90,7 @@ export class StrategicProjectsComponent {
       projetos: 'projetoList',
       acompanhamentos: 'acompanhamentoList'
     };
+
     this.activeFilters = Object.entries(this.finalFilter)
       .filter(([key, value]) => value)
       .map(([key, value]) => {
@@ -206,7 +206,6 @@ export class StrategicProjectsComponent {
         }
       );
     }
-
   }
 
   getFilterLabel(key: string): string {
@@ -224,6 +223,7 @@ export class StrategicProjectsComponent {
       projetos: 'Projetos',
       acompanhamentos: 'Acompanhamentos'
     };
+
     return labels[key] || key;
   }
 
@@ -234,7 +234,6 @@ export class StrategicProjectsComponent {
     this.loadTotals()
 
     if (key === 'areaTematica') {
-
       this.strategicProjectsService.getProgramsProjectsDeliveries('todos').subscribe(
         (data: IStrategicProjectFilterDataDto) => {
           this.programaOList = data.programasOriginal
@@ -258,7 +257,6 @@ export class StrategicProjectsComponent {
         }
       );
     } else if (key === 'programaOrigem') {
-
       const areaId = this.filter.areaTematica === '' ? 'todos' : this.filter.areaTematica;
 
       this.strategicProjectsService.getProjectsDeliveries(areaId, 'todos').subscribe(
@@ -279,7 +277,6 @@ export class StrategicProjectsComponent {
         }
       );
     } else if (key === 'projetos') {
-
       const areaId = this.filter.areaTematica === '' ? 'todos' : this.filter.areaTematica;
 
       const programId = this.filter.programaOrigem === '' ? 'todos' : this.filter.programaOrigem
@@ -297,7 +294,6 @@ export class StrategicProjectsComponent {
         }
       );
     }
-
   }
 
   toggleFiltroPanel() {
@@ -372,6 +368,7 @@ export class StrategicProjectsComponent {
 
     return `R$ ${value.toLocaleString('pt-BR')}`;
   }
+
   openAndCloseMap() {
     this.isMapOpen = !this.isMapOpen;
   }
@@ -383,7 +380,5 @@ export class StrategicProjectsComponent {
     this.updateActiveFilters();
 
     this.loadTotals();
-
   }
-
 }

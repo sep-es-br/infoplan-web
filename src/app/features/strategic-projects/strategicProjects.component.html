@@ -3,7 +3,6 @@
     <div class="filter-button">
       <div class="filter-tags">
         <div *ngFor="let tag of activeFilters; let i = index">
-
           <div class="filter-tag" [ngClass]="{ 'invisible-tag': showFilters }">
             <div>
               <div class="tag-label">
@@ -13,11 +12,17 @@
                 {{ tag.value }}
               </div>
             </div>
-            <button *ngIf="tag.key !== 'portfolio' && tag.key !== 'dataInicio' && tag.key !== 'dataFim'" 
-            class="remove-button" (click)="removeFilter(tag.key)">×</button>
+            <button
+              *ngIf="tag.key !== 'portfolio' && tag.key !== 'dataInicio' && tag.key !== 'dataFim'"
+              class="remove-button"
+              (click)="removeFilter(tag.key)"
+            >
+              x
+            </button>
           </div>
         </div>
       </div>
+
       <div class="filter-button">
         <button (click)="openAndCloseMap()" class="map-btn" [ngClass]="{'map-btn-clicked': isMapOpen}">
           <img src="/assets/images/app/es-logo.svg" alt="Mapa do Espírito Santo" class="map-icon">
@@ -27,362 +32,370 @@
           Filtros {{ showFilters ? '▲' : '▼' }}
         </button>
       </div>
-      
     </div>
-      <!-- Painel de Filtros -->
-      <div *ngIf="showFilters" class="overlay-panel">
-        <form novalidate>
-          <!-- Primeira Linha -->
-          <div class="row filter-row">
-            <div class="filter-group col">
-              <label for="portfolio">Portfólios</label>
-              <select id="portfolio" disabled  [(ngModel)]="filter.portfolio" name="portfolio">
-                <option value="">Selecionar</option>
-                <option value="Realiza+">Realiza+</option>
-              </select>
-            </div>
-    
-            <div class="filter-group col">
-              <label for="dataInicio">De</label>
-              <input id="dataInicio" type="month" [(ngModel)]="filter.dataInicio" name="dataInicio" />
-            </div>
-    
-            <div class="filter-group col">
-              <label for="dataFim">Até</label>
-              <input id="dataFim" type="month" [(ngModel)]="filter.dataFim" name="dataFim" />
-            </div>
-    
-            <div class="filter-group col invisible-tag">
-              <label for="provConcl">Previsão de Conclusão</label>
-              <input id="provConcl" type="month" [(ngModel)]="filter.previsaoConclusao" name="previsaoConclusao" />
-            </div>
-          </div>
-    
-          <!-- Segunda Linha -->
-          <div class="row filter-row">
-            <div class="filter-group col">
-              <label for="areaTematica">Áreas Temáticas</label>
-              <select id="areaTematica" [(ngModel)]="filter.areaTematica" name="areaTematica" (change)="onFilterChange($event)">
-                <option value="">Selecionar</option>
-                <option *ngFor="let area of areaList" [value]="area.id">{{ area.name }}</option>
-              </select>
-            </div>
-    
-            <div class="filter-group col">
-              <label for="programaOrigem">Programas Originais</label>
-              <select id="programaOrigem" [(ngModel)]="filter.programaOrigem" name="programaOrigem" (change)="onFilterChange($event)">
-                <option value="">Selecionar</option>
-                <option *ngFor="let programa of programaOList" [value]="programa.id">{{ programa.name }}</option>
-              </select>
-            </div>
 
-            <div class="filter-group col">
-              <label for="projetos">Projetos</label>
-              <select id="projetos" [(ngModel)]="filter.projetos" name="projetos" (change)="onFilterChange($event)">
-                <option value="">Selecionar</option>
-                <option *ngFor="let projeto of projetoList" [value]="projeto.id">{{ projeto.name }}</option>
-              </select>
-            </div>
-          
-            <div class="filter-group col">
-              <label for="entregas">Entregas</label>
-              <select id="entregas" [(ngModel)]="filter.entregas" name="entregas">
-                <option value="">Selecionar</option>
-                <option *ngFor="let entrega of entregaList" [value]="entrega.id">{{ entrega.name }}</option>
-              </select>
-            </div>
+    <!-- Painel de Filtros -->
+    <div *ngIf="showFilters" class="overlay-panel">
+      <form novalidate>
+        <!-- Primeira Linha -->
+        <div class="row filter-row">
+          <div class="filter-group col">
+            <label for="portfolio">Portfólios</label>
+            <select id="portfolio" disabled  [(ngModel)]="filter.portfolio" name="portfolio">
+              <option value="">Selecionar</option>
+              <option value="Realiza+">Realiza+</option>
+            </select>
           </div>
-          
-          <!-- Terceira Linha -->
-          <div class="row filter-row">
+  
+          <div class="filter-group col">
+            <label for="dataInicio">De</label>
+            <input id="dataInicio" type="month" [(ngModel)]="filter.dataInicio" name="dataInicio" />
+          </div>
+  
+          <div class="filter-group col">
+            <label for="dataFim">Até</label>
+            <input id="dataFim" type="month" [(ngModel)]="filter.dataFim" name="dataFim" />
+          </div>
+  
+          <div class="filter-group col invisible-tag">
+            <label for="provConcl">Previsão de Conclusão</label>
+            <input id="provConcl" type="month" [(ngModel)]="filter.previsaoConclusao" name="previsaoConclusao" />
+          </div>
+        </div>
+  
+        <!-- Segunda Linha -->
+        <div class="row filter-row">
+          <div class="filter-group col">
+            <label for="areaTematica">Áreas Temáticas</label>
+            <select id="areaTematica" [(ngModel)]="filter.areaTematica" name="areaTematica" (change)="onFilterChange($event)">
+              <option value="">Selecionar</option>
+              <option *ngFor="let area of areaList" [value]="area.id">{{ area.name }}</option>
+            </select>
+          </div>
+  
+          <div class="filter-group col">
+            <label for="programaOrigem">Programas Originais</label>
+            <select id="programaOrigem" [(ngModel)]="filter.programaOrigem" name="programaOrigem" (change)="onFilterChange($event)">
+              <option value="">Selecionar</option>
+              <option *ngFor="let programa of programaOList" [value]="programa.id">{{ programa.name }}</option>
+            </select>
+          </div>
 
-            <div class="filter-group col">
-              <label for="programaTransversal">Programas Transversais</label>
-              <select id="programaTransversal" [(ngModel)]="filter.programaTransversal" name="programaTransversal">
-                <option value="">Selecionar</option>
-                <option *ngFor="let programa of programaTList" [value]="programa.id">{{ programa.name }}</option>
-              </select>
-            </div>
+          <div class="filter-group col">
+            <label for="projetos">Projetos</label>
+            <select id="projetos" [(ngModel)]="filter.projetos" name="projetos" (change)="onFilterChange($event)">
+              <option value="">Selecionar</option>
+              <option *ngFor="let projeto of projetoList" [value]="projeto.id">{{ projeto.name }}</option>
+            </select>
+          </div>
+        
+          <div class="filter-group col">
+            <label for="entregas">Entregas</label>
+            <select id="entregas" [(ngModel)]="filter.entregas" name="entregas">
+              <option value="">Selecionar</option>
+              <option *ngFor="let entrega of entregaList" [value]="entrega.id">{{ entrega.name }}</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Terceira Linha -->
+        <div class="row filter-row">
+          <div class="filter-group col">
+            <label for="programaTransversal">Programas Transversais</label>
+            <select id="programaTransversal" [(ngModel)]="filter.programaTransversal" name="programaTransversal">
+              <option value="">Selecionar</option>
+              <option *ngFor="let programa of programaTList" [value]="programa.id">{{ programa.name }}</option>
+            </select>
+          </div>
 
-            <div class="filter-group col">
-              <label for="localidades">Localidades</label>
-              <select id="localidades" [(ngModel)]="filter.localidades" name="localidades">
-                <option value="">Selecionar</option>
-                <option *ngFor="let localidade of localidadeList" [value]="localidade.id">{{ localidade.name }}</option>
-              </select>
-            </div>
-          
-            <div class="filter-group col">
-              <label for="orgaos">Órgãos</label>
-              <select id="orgaos" [(ngModel)]="filter.orgaos" name="orgaos">
-                <option value="">Selecionar</option>
-                <option *ngFor="let orgao of orgaoList" [value]="orgao.id">{{ orgao.name }}</option>
-              </select>
-            </div>
-    
-            <div class="filter-group col invisible-tag">
-              <label for="acompanhamentos">Acompanhado por</label>
-              <select id="acompanhamentos" [(ngModel)]="filter.acompanhamentos" name="acompanhamentos">
-                <option value="">Selecionar</option>
-              </select>
-            </div>
+          <div class="filter-group col">
+            <label for="localidades">Localidades</label>
+            <select id="localidades" [(ngModel)]="filter.localidades" name="localidades">
+              <option value="">Selecionar</option>
+              <option *ngFor="let localidade of localidadeList" [value]="localidade.id">{{ localidade.name }}</option>
+            </select>
           </div>
-          <!-- Botão de Ações -->
-          <div class="actions">
-            <button (click)="filtrar($event)">Filtrar</button>
+        
+          <div class="filter-group col">
+            <label for="orgaos">Órgãos</label>
+            <select id="orgaos" [(ngModel)]="filter.orgaos" name="orgaos">
+              <option value="">Selecionar</option>
+              <option *ngFor="let orgao of orgaoList" [value]="orgao.id">{{ orgao.name }}</option>
+            </select>
           </div>
-        </form>
-      </div>
+  
+          <div class="filter-group col invisible-tag">
+            <label for="acompanhamentos">Acompanhado por</label>
+            <select id="acompanhamentos" [(ngModel)]="filter.acompanhamentos" name="acompanhamentos">
+              <option value="">Selecionar</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Botão de Ações -->
+        <div class="actions">
+          <button (click)="filtrar($event)">Filtrar</button>
+        </div>
+      </form>
+    </div>
   </div>
   
-  
-    <!-- col-1-5 -->
-    <div class="row">
-
-      <div class="col-12 pr-0 pl-0 mt-1 d-flex flex-wrap">
-          <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-            <div class="card">
-              <div class="icon-top-right">
-                <i class="fas fa-briefcase"></i>
-              </div>
-              <div class="card-content">
-                <div class="portfolio-content">
-                  <img class="portfolio-logo" [src]="'assets/images/app/realiza+ img.png'">
-                </div>
-              </div>
-            </div>
+  <div class="row">
+    <div class="col-12 pr-0 pl-0 mt-1 d-flex flex-wrap">
+      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
+        <div class="card">
+          <div class="icon-top-right">
+            <i class="fas fa-briefcase"></i>
           </div>
-            <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-            <div class="card">
-              <div class="icon-top-right">
-                <i class="fas fa-cogs"></i>
-              </div>
-              <div class="card-content">
-                <div class="number-box">{{totals.qdeProgramas}}</div>
-                <div class="text-section">
-                  <span>{{totals.qdeProgramas === 1 ? 'Programa' : 'Programas'}}</span>
-                </div>
-              </div>
+          <div class="card-content">
+            <div class="portfolio-content">
+              <img class="portfolio-logo w-100" [src]="'assets/images/app/realiza+ img.png'">
             </div>
-          </div>
-            <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-            <div class="card">
-              <div class="icon-top-right">
-                <i class="fas fa-cog"></i>
-              </div>
-              <div class="card-content">
-                <div class="number-box">{{totals.qdeProjetos}}</div>
-                <div class="text-section">
-                  <span>{{totals.qdeProjetos === 1 ? 'Projeto' : 'Projetos'}}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-            <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-            <div class="card">
-              <div class="icon-top-right">
-                <i class="fas fa-cubes"></i>
-              </div>
-              <div class="card-content">
-                <div class="number-box">{{totals.totalEntregasPE}}</div>
-                <div class="text-section">
-                  <span>{{totals.totalEntregasPE === 1 ? 'Entrega' : 'Entregas'}}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-            <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-            <div class="card">
-              <div class="icon-top-right previsto">
-                <i class="fas fa-calculator"></i>
-              </div>
-              <div class="card-content">
-                <div class="number-box previsto">
-                  <div
-                    class="d-flex"
-                    style="flex-direction: column; align-items: start"
-                  >
-                    <div class="currency">R$</div>
-                    <div class="value" [title]="'R$ ' + (totals.totalPrevisto | number:'1.2-2')">{{formatNumber(totals.totalPrevisto)}}</div>
-                  </div>
-                </div>
-                <div class="text-section previsto">
-                  <span>Previsto</span>
-                </div>
-              </div>
-            </div>
-          </div>
-            <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-            <div class="card">
-              <div class="icon-top-right realizado">
-                <i class="fas fa-database"></i>
-              </div>
-              <div class="card-content">
-                <div class="number-box realizado">
-                  <div
-                    class="d-flex"
-                    style="flex-direction: column; align-items: start"
-                  >
-                    <div class="currency">R$</div>
-                    <div class="value" [title]="'R$ ' + (totals.totalRealizado| number:'1.0-2')">{{formatNumber(totals.totalRealizado)}}</div>
-                  </div>
-                </div>
-                <div class="text-section realizado">
-                  <span>Realizado</span>
-                </div>
-              </div>
-            </div>
-          </div>
-      </div>
-    </div>
-  
-    <div class="row">
-      <div class="map col-xxxl-6 col-xxl-12 pr-0 pl-0 d-flex flex-wrap" *ngIf="isMapOpen">
-        <div class="col-xxxl-12 col-xxl-12 col-md-12 pr-1 pl-1 mb-2">
-          <div class="card">
-            <ngx-map-es [filter]="finalFilter" [localidadeList]="localidadeList" (filterChange)="onMapFilterChange($event)"></ngx-map-es>
           </div>
         </div>
       </div>
 
-      <div class="col-xxxl-6 col-xxl-12 pr-0 pl-0 d-flex flex-wrap">
-        
-           <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-             <div class="card">
-               <div class="d-flex col-12 mt-1 mb-1">
-                 <span class="text-card">Entregas por Status</span>
-               </div>
-                 <div class="d-flex mb-3 mt-3">
-                   <div class="col-12">
-                       <ngx-deliveries-by-status [filter]="finalFilter"></ngx-deliveries-by-status>
-                   </div>
-                 </div>
-             </div>
-           </div>
+      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
+        <div class="card">
+          <div class="icon-top-right">
+            <i class="fas fa-cogs"></i>
+          </div>
+          <div class="card-content">
+            <div class="number-box">{{totals.qdeProgramas}}</div>
 
-           <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-             <div class="card">
-               <div class="d-flex col-12 mt-1 mb-1">
-                 <span class="text-card">Entregas por Desempenho</span>
-               </div>
-                 <div class="d-flex mb-3 mt-3">
-                   <div class="col-12">
-                       <ngx-deliveries-by-performace [filter]="finalFilter"></ngx-deliveries-by-performace>
-                   </div>
-                 </div>
-             </div>
-           </div>
-           <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-             <div class="card">
-               <div class="d-flex col-12 mt-1 mb-1">
-                 <span class="text-card">Projetos por Status</span>
-               </div>
-                 <div class="d-flex mb-3 mt-3">
-                   <div class="col-12">
-                       <ngx-projects-by-status [filter]="finalFilter"></ngx-projects-by-status>
-                   </div>
-                 </div>
-             </div>
-           </div>
-           <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-             <div class="card">
-               <div class="d-flex col-12 mt-1 mb-1">
-                 <span class="text-card">Marcos Críticos por Desempenho</span>
-               </div>
-                 <div class="d-flex mb-3 mt-3">
-                   <div class="col-12">
-                       <ngx-critical-milestones-for-performance [filter]="finalFilter"></ngx-critical-milestones-for-performance>
-                   </div>
-                 </div>
-             </div>
-           </div>
-           <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-             <div class="card">
-               <div class="d-flex col-12 mt-1 mb-1">
-                 <span class="text-card">Entregas por Tipo</span>
-               </div>
-                 <div class="d-flex mb-3 mt-3">
-                   <div class="col-12">
-                       <ngx-deliveries-by-type [filter]="finalFilter"></ngx-deliveries-by-type>
-                   </div>
-                 </div>
-             </div>
-           </div>
-           <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-             <div class="card">
-               <div class="d-flex col-12 mt-1 mb-1">
-                 <span class="text-card">Riscos por Importância</span>
-               </div>
-                 <div class="d-flex mb-3 mt-3">
-                   <div class="col-12">
-                       <ngx-risks-by-classification [filter]="finalFilter"></ngx-risks-by-classification>
-                   </div>
-                 </div>
-             </div>
-           </div>
+            <div class="text-section">
+              <span>{{totals.qdeProgramas === 1 ? 'Programa' : 'Programas'}}</span>
+            </div>
+          </div>
+        </div>
       </div>
-     
-         <div [ngClass]="{'col-xxxl-12': isMapOpen, 'col-xxxl-6': !isMapOpen}" class="col-md-12 pr-0 pl-0 d-flex flex-wrap">
-           <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2 ">
-             <div class="card">
-               <div class="d-flex col-12 mt-1">
-                 <span class="text-card mr-2">Investimento por</span>
-                 <select class="text-card" (change)="selectedOptionI($event)">
-                   <option>Área Temática</option>
-                   <option>Programa</option>
-                   <option>Programas Transversais</option>
-                   <option>Projeto</option>
-                   <option>Entrega </option>
-                 </select>
-               </div>
-               <div class="col-12 mt-2">
-                 <ngx-investment-by-selected [filter]="finalFilter" [selectedOption]="investmentSelectedOption"></ngx-investment-by-selected>
-             </div>
-             </div>
-             <!-- <div class="watermark">EM BREVE</div> -->
-           </div>
-           <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2">
-             <div class="card">
-               <div class="d-flex col-12 mt-1">
-                 <span class="text-card mr-2">Entregas por</span>
-                 <select class="text-card" (change)="selectedOptionD($event)">
-                   <option>Área Temática</option>
-                   <option>Programa</option>
-                   <option>Programas Transversais</option>
-                   <option>Projeto</option>
-                 </select>
-               </div>
-               <div class="col-12 mt-2">
-                 <ngx-deliveries-by-selected [filter]="finalFilter" [selectedOption]="deliveriesSelectedOption"></ngx-deliveries-by-selected>
-             </div>
-             </div>
-             <!-- <div class="watermark">EM BREVE</div> -->
-           </div>
-         </div>
-          <div class="col-12 pr-1 pl-1 mb-2">
-            <div class="card">
-              <div class="d-flex col-12 mt-1">
-                <span class="text-card mr-2">Investimento Acumulado
-    
-                </span>
-              </div>
-              <div class="col-12 mt-2">
-                <ngx-accumulated-investment [filter]="finalFilter"></ngx-accumulated-investment>
-            </div>
-            </div>
-            <!-- <div class="watermark">EM BREVE</div> -->
-          </div>
-     </div>
-    </div>
-  <nb-layout-footer class="mt-2">
-    <ngx-footer [timestamp]="timestamp"></ngx-footer>
-    </nb-layout-footer>
 
-  <!-- <div class="curtain" [class.open]="isOpen">
-    <div class="col-12">
-      <button class="close-btn" (click)="closeMap()">✖</button>
-          <div class="col-5">
-              <ngx-map-es></ngx-map-es>
+      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
+        <div class="card">
+          <div class="icon-top-right">
+            <i class="fas fa-cog"></i>
           </div>
+          <div class="card-content">
+            <div class="number-box">{{totals.qdeProjetos}}</div>
+
+            <div class="text-section">
+              <span>{{totals.qdeProjetos === 1 ? 'Projeto' : 'Projetos'}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
+        <div class="card">
+          <div class="icon-top-right">
+            <i class="fas fa-cubes"></i>
+          </div>
+          <div class="card-content">
+            <div class="number-box">{{totals.totalEntregasPE}}</div>
+
+            <div class="text-section">
+              <span>{{totals.totalEntregasPE === 1 ? 'Entrega' : 'Entregas'}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
+        <div class="card">
+          <div class="icon-top-right previsto">
+            <i class="fas fa-calculator"></i>
+          </div>
+          <div class="card-content">
+            <div class="number-box previsto">
+              <div
+                class="d-flex"
+                style="flex-direction: column; align-items: start"
+              >
+                <div class="currency">R$</div>
+                <div class="value" [title]="'R$ ' + (totals.totalPrevisto | number:'1.2-2')">{{formatNumber(totals.totalPrevisto)}}</div>
+              </div>
+            </div>
+            <div class="text-section previsto">
+              <span>Previsto</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
+        <div class="card">
+          <div class="icon-top-right realizado">
+            <i class="fas fa-database"></i>
+          </div>
+          <div class="card-content">
+            <div class="number-box realizado">
+              <div
+                class="d-flex"
+                style="flex-direction: column; align-items: start"
+              >
+                <div class="currency">R$</div>
+                <div class="value" [title]="'R$ ' + (totals.totalRealizado| number:'1.0-2')">{{formatNumber(totals.totalRealizado)}}</div>
+              </div>
+            </div>
+            <div class="text-section realizado">
+              <span>Realizado</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div> -->
+  </div>
+  
+  <div class="row">
+    <div class="map col-xxxl-6 col-xxl-12 pr-0 pl-0 d-flex flex-wrap" *ngIf="isMapOpen">
+      <div class="col-xxxl-12 col-xxl-12 col-md-12 pr-1 pl-1 mb-2">
+        <div class="card">
+          <ngx-map-es [filter]="finalFilter" [localidadeList]="localidadeList" (filterChange)="onMapFilterChange($event)"></ngx-map-es>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xxxl-6 col-xxl-12 pr-0 pl-0 d-flex flex-wrap">
+      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
+        <div class="card">
+          <div class="d-flex col-12 mt-1 mb-1">
+            <span class="text-card">Entregas por Status</span>
+          </div>
+
+          <div class="d-flex mb-3 mt-3">
+            <div class="col-12">
+              <ngx-deliveries-by-status [filter]="finalFilter"></ngx-deliveries-by-status>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
+        <div class="card">
+          <div class="d-flex col-12 mt-1 mb-1">
+            <span class="text-card">Entregas por Desempenho</span>
+          </div>
+
+          <div class="d-flex mb-3 mt-3">
+            <div class="col-12">
+              <ngx-deliveries-by-performace [filter]="finalFilter"></ngx-deliveries-by-performace>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
+        <div class="card">
+          <div class="d-flex col-12 mt-1 mb-1">
+            <span class="text-card">Projetos por Status</span>
+          </div>
+
+          <div class="d-flex mb-3 mt-3">
+            <div class="col-12">
+              <ngx-projects-by-status [filter]="finalFilter"></ngx-projects-by-status>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
+        <div class="card">
+          <div class="d-flex col-12 mt-1 mb-1">
+            <span class="text-card">Marcos Críticos por Desempenho</span>
+          </div>
+
+          <div class="d-flex mb-3 mt-3">
+            <div class="col-12">
+              <ngx-critical-milestones-for-performance [filter]="finalFilter"></ngx-critical-milestones-for-performance>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
+        <div class="card">
+          <div class="d-flex col-12 mt-1 mb-1">
+            <span class="text-card">Entregas por Tipo</span>
+          </div>
+          <div class="d-flex mb-3 mt-3">
+            <div class="col-12">
+              <ngx-deliveries-by-type [filter]="finalFilter"></ngx-deliveries-by-type>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
+        <div class="card">
+          <div class="d-flex col-12 mt-1 mb-1">
+            <span class="text-card">Riscos por Importância</span>
+          </div>
+
+          <div class="d-flex mb-3 mt-3">
+            <div class="col-12">
+              <ngx-risks-by-classification [filter]="finalFilter"></ngx-risks-by-classification>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <div [ngClass]="{'col-xxxl-12': isMapOpen, 'col-xxxl-6': !isMapOpen}" class="col-md-12 pr-0 pl-0 d-flex flex-wrap">
+      <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2 ">
+        <div class="card">
+          <div class="d-flex col-12 mt-1">
+            <span class="text-card mr-2">Investimento por</span>
+            <select class="text-card" (change)="selectedOptionI($event)">
+              <option>Área Temática</option>
+              <option>Programa</option>
+              <option>Programas Transversais</option>
+              <option>Projeto</option>
+              <option>Entrega </option>
+            </select>
+          </div>
+
+          <div class="col-12 mt-2">
+            <ngx-investment-by-selected [filter]="finalFilter" [selectedOption]="investmentSelectedOption"></ngx-investment-by-selected>
+          </div>
+        </div>
+        <!-- <div class="watermark">EM BREVE</div> -->
+      </div>
+
+      <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2">
+        <div class="card">
+          <div class="d-flex col-12 mt-1">
+            <span class="text-card mr-2">Entregas por</span>
+            <select class="text-card" (change)="selectedOptionD($event)">
+              <option>Área Temática</option>
+              <option>Programa</option>
+              <option>Programas Transversais</option>
+              <option>Projeto</option>
+            </select>
+          </div>
+
+          <div class="col-12 mt-2">
+            <ngx-deliveries-by-selected [filter]="finalFilter" [selectedOption]="deliveriesSelectedOption"></ngx-deliveries-by-selected>
+          </div>
+        </div>
+        <!-- <div class="watermark">EM BREVE</div> -->
+      </div>
+    </div>
+
+    <div class="col-12 pr-1 pl-1 mb-2">
+      <div class="card">
+        <div class="d-flex col-12 mt-1">
+          <span class="text-card mr-2">Investimento Acumulado</span>
+        </div>
+
+        <div class="col-12 mt-2">
+          <ngx-accumulated-investment [filter]="finalFilter"></ngx-accumulated-investment>
+        </div>
+      </div>
+      <!-- <div class="watermark">EM BREVE</div> -->
+    </div>
+  </div>
+</div>
+
+<nb-layout-footer class="mt-2">
+  <ngx-footer [timestamp]="timestamp"></ngx-footer>
+</nb-layout-footer>

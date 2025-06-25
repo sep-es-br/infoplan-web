@@ -117,14 +117,6 @@ export class StrategicProjectsComponent {
       });
   }
 
-  selectedOptionI(event: any) {
-    this.investmentSelectedOption = event.target.value;
-  }
-
-  selectedOptionD(event: any) {
-    this.deliveriesSelectedOption = event.target.value;
-  }
-
   onFilterChange(event: Event): void {
     let selectedValue = (event.target as HTMLSelectElement).value;
     const selecetedName = (event.target as HTMLSelectElement).name;

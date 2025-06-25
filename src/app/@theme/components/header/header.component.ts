@@ -11,10 +11,14 @@ import { Subject } from 'rxjs';
   templateUrl: './header.component.html',
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  @ViewChild(NbMenuComponent) menuComponent: NbMenuComponent | undefined;
 
   private destroy$: Subject<void> = new Subject<void>();
+
   userPictureOnly: boolean = false;
+
   user: { name: string; email: string };
+
   imageLogoSrc: string;
 
   themes = [
@@ -50,30 +54,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
       data: { action: 'logout' } ,
       link: '#'
      },
-    
   ];
 
-  @ViewChild(NbMenuComponent) menuComponent: NbMenuComponent | undefined;
-
-  constructor(private sidebarService: NbSidebarService,
-              private menuService: NbMenuService,
-              private themeService: NbThemeService,
-              private layoutService: LayoutService,
-              private breakpointService: NbMediaBreakpointsService) 
-              {
-                this.menuService.onItemClick()
-                .pipe(
-                  filter(({ item }) => !!item.data?.theme || !!item.data?.action)
-                )
-                .subscribe(({ item }) => {
-                  if (item.data?.theme) {
-                    this.changeTheme(item.data.theme);
-                  } else if (item.data?.action === 'logout') {
-                    this.logout();
-                  }
-                });
-                
-              }
+  constructor(
+    private sidebarService: NbSidebarService,
+    private menuService: NbMenuService,
+    private themeService: NbThemeService,
+    private layoutService: LayoutService,
+    private breakpointService: NbMediaBreakpointsService,
+  ) {
+    this.menuService.onItemClick()
+    .pipe(filter(({ item }) => !!item.data?.theme || !!item.data?.action))
+    .subscribe(({ item }) => {
+      if (item.data?.theme) {
+        this.changeTheme(item.data.theme);
+        this.menuService.collapseAll();
+      } else if (item.data?.action === 'logout') {
+        this.logout();
+      }
+    });
+  }
 
   ngOnInit() {
     this.currentTheme = this.themeService.currentTheme;
@@ -102,7 +102,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.setImageForTheme(themeName)
       });
   }
-  
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   setImageForTheme(themeName: string): void {
     switch (themeName) {
@@ -123,11 +127,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   changeTheme(themeName: string) {
     this.themeService.changeTheme(themeName);
   }
@@ -138,7 +137,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     return false;
   }
+
   logout() {
+    localStorage.removeItem('infoPlanCurrentTheme');
     window.location.href = 'https://acessocidadao.es.gov.br/is/logout';
   }
 }

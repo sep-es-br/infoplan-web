@@ -39,6 +39,52 @@ import { COSMIC_THEME } from './styles/theme.cosmic';
 import { CORPORATE_THEME } from './styles/theme.corporate';
 import { DARK_THEME } from './styles/theme.dark';
 
+export enum AvailableThemes {
+  DEFAULT = 'default',
+  DARK = 'dark',
+  COSMIC = 'cosmic',
+};
+
+export interface AvailableThemesStyles {
+  themePrimaryColor: string;
+  themeSecondaryColor: string;
+  textPrimaryColor: string;
+  textSecondaryColor: string;
+}
+
+export const getAvailableThemesStyles = (theme: AvailableThemes): AvailableThemesStyles => {
+  switch (theme) {
+    case AvailableThemes.DEFAULT:
+      return {
+        themePrimaryColor: '#FFFFFF',
+        themeSecondaryColor: '#EDF1F7',
+        textPrimaryColor: '#505050',
+        textSecondaryColor: '#000000',
+      };
+    case AvailableThemes.DARK:
+      return {
+        themePrimaryColor: '#151A30',
+        themeSecondaryColor: '#222B45',
+        textPrimaryColor: '#FFFFFF',
+        textSecondaryColor: '#505050',
+      };
+    case AvailableThemes.COSMIC:
+      return {
+        themePrimaryColor: '#1B1B38',
+        themeSecondaryColor: '#323259',
+        textPrimaryColor: '#FFFFFF',
+        textSecondaryColor: '#505050',
+      };
+    default:
+      return {
+        themePrimaryColor: '#FFFFFF',
+        themeSecondaryColor: '#EDF1F7',
+        textPrimaryColor: '#000000',
+        textSecondaryColor: '#505050',
+      };
+  }
+};
+
 const NB_MODULES = [
   NbLayoutModule,
   NbMenuModule,

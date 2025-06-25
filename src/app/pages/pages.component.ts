@@ -1,6 +1,6 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CustomNbMenuItem, MENU_ITEMS } from './pages-menu';
-import { NbIconLibraries, NbMenuComponent, NbMenuService, NbThemeService } from '@nebular/theme';
+import { NbIconLibraries, NbMenuService, NbThemeService } from '@nebular/theme';
 import { menulinks } from '../@core/utils/menuLinks';
 import { filter } from 'rxjs/operators';
 import { Location } from '@angular/common';
@@ -16,38 +16,55 @@ import { Location } from '@angular/common';
   `,
 })
 export class PagesComponent implements OnInit {
+  menu = []
 
-    menu = []
-    private lastSelectedItem: CustomNbMenuItem;
+  private lastSelectedItem: CustomNbMenuItem;
 
-    constructor(private iconsLibrary: NbIconLibraries, private nbMenuService: NbMenuService,  private location: Location) {}
-  
-    async ngOnInit() {
+  constructor(
+    private iconsLibrary: NbIconLibraries,
+    private nbMenuService: NbMenuService,
+    private location: Location,
+    private themeService: NbThemeService,
+  ) {
+    let currentTheme = localStorage.getItem('infoPlanCurrentTheme');
 
-      const customIcons: { [key: string]: string } = {};
-  
-      await Promise.all(menulinks.map(async (item) => {
-        const iconName = item.icon.split('.')[0]; 
-  
-        if (item.icon.endsWith('.svg')) {
-          try {
-            const response = await fetch(`assets/images/app/${item.icon}`);
-            const svgContent = await response.text();
-            
-            customIcons[iconName] = svgContent;
-  
-          } catch (error) {
-            console.error(`Erro ao carregar o ícone ${item.icon}:`, error);
-          }
-        } else {
-          customIcons[iconName] = `<img src="assets/images/app/${iconName}.png" width="20px" />`;
+    if (currentTheme) {
+      this.themeService.changeTheme(currentTheme);
+    } else {
+      currentTheme = this.themeService.currentTheme;
+      localStorage.setItem('infoPlanCurrentTheme', currentTheme);
+    }
+
+    this.themeService.onThemeChange().subscribe((newTheme: { name: string; previous: string; }) => {
+      localStorage.setItem('infoPlanCurrentTheme', newTheme.name);
+    });
+  }
+
+  async ngOnInit() {
+    const customIcons: { [key: string]: string } = {};
+
+    await Promise.all(menulinks.map(async (item) => {
+      const iconName = item.icon.split('.')[0]; 
+
+      if (item.icon.endsWith('.svg')) {
+        try {
+          const response = await fetch(`assets/images/app/${item.icon}`);
+          const svgContent = await response.text();
+          
+          customIcons[iconName] = svgContent;
+
+        } catch (error) {
+          console.error(`Erro ao carregar o ícone ${item.icon}:`, error);
         }
-      }));
-  
-      this.iconsLibrary.registerSvgPack('custom-icons', customIcons);
-      this.menu = MENU_ITEMS
-      this.setIconStyles();
-      this.setInitialActiveItem();
+      } else {
+        customIcons[iconName] = `<img src="assets/images/app/${iconName}.png" width="20px" />`;
+      }
+    }));
+
+    this.iconsLibrary.registerSvgPack('custom-icons', customIcons);
+    this.menu = MENU_ITEMS
+    this.setIconStyles();
+    this.setInitialActiveItem();
 
     this.nbMenuService.onItemSelect()
       .pipe(filter(({ tag }) => tag === 'menu'))
@@ -60,49 +77,47 @@ export class PagesComponent implements OnInit {
           this.resetMenuSelection();
         }
       });
-        
-    }
+  }
 
-    private setInitialActiveItem() {
-      const currentPath = this.location.path().split('?')[0];
-      
-      const activeItem = this.menu.find(item => {
-        if (!item.link) return false;
-        const itemPath = item.link.startsWith('/') ? item.link : `/${item.link}`;
-        return currentPath === itemPath || currentPath.startsWith(itemPath);
-      });
-  
-      this.lastSelectedItem = activeItem || this.menu.find(item => item.link === '/pages/home');
-      this.resetMenuSelection();
-    }
+  private setInitialActiveItem() {
+    const currentPath = this.location.path().split('?')[0];
+    
+    const activeItem = this.menu.find(item => {
+      if (!item.link) return false;
+      const itemPath = item.link.startsWith('/') ? item.link : `/${item.link}`;
+      return currentPath === itemPath || currentPath.startsWith(itemPath);
+    });
 
-    private updateMenuState(activeItem: CustomNbMenuItem) {
-      this.menu = this.menu.map(item => ({
-        ...item,
-        selected: item.link === activeItem.link,
-        expanded: item.link === activeItem.link
-      }));
-      
-      this.menu = [...this.menu];
-      this.setIconStyles()
-    }
-  
-    private resetMenuSelection() {
-      if (!this.lastSelectedItem) return;
-      
-      this.menu = this.menu.map(item => ({
-        ...item,
-        selected: item.link === this.lastSelectedItem.link,
-        expanded: item.link === this.lastSelectedItem.link
-      }));
-      
-      this.menu = [...this.menu];
-      this.setIconStyles()
-    }
+    this.lastSelectedItem = activeItem || this.menu.find(item => item.link === '/pages/home');
+    this.resetMenuSelection();
+  }
+
+  private updateMenuState(activeItem: CustomNbMenuItem) {
+    this.menu = this.menu.map(item => ({
+      ...item,
+      selected: item.link === activeItem.link,
+      expanded: item.link === activeItem.link
+    }));
+    
+    this.menu = [...this.menu];
+    this.setIconStyles()
+  }
+
+  private resetMenuSelection() {
+    if (!this.lastSelectedItem) return;
+    
+    this.menu = this.menu.map(item => ({
+      ...item,
+      selected: item.link === this.lastSelectedItem.link,
+      expanded: item.link === this.lastSelectedItem.link
+    }));
+    
+    this.menu = [...this.menu];
+    this.setIconStyles()
+  }
 
   private setIconStyles() {
     setTimeout(() => {
-      
       const icons = document.querySelectorAll('nb-icon svg');
       icons.forEach((icon: SVGElement) => {
         icon.setAttribute('width', '20px');

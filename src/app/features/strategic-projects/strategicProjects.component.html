@@ -345,13 +345,13 @@
         <div class="card">
           <div class="d-flex col-12 mt-1">
             <span class="text-card mr-2">Investimento por</span>
-            <select class="text-card" (change)="selectedOptionI($event)">
-              <option>Área Temática</option>
-              <option>Programa</option>
-              <option>Programas Transversais</option>
-              <option>Projeto</option>
-              <option>Entrega </option>
-            </select>
+            <nb-select class="investment-select" size="tiny" shape="semi-round" [(selected)]="investmentSelectedOption">
+              <nb-option value="Área Temática">Área Temática</nb-option>
+              <nb-option value="Programa">Programa</nb-option>
+              <nb-option value="Programas Transversais">Programas Transversais</nb-option>
+              <nb-option value="Projeto">Projeto</nb-option>
+              <nb-option value="Entrega">Entrega</nb-option>
+            </nb-select>
           </div>
 
           <div class="col-12 mt-2">
@@ -365,12 +365,12 @@
         <div class="card">
           <div class="d-flex col-12 mt-1">
             <span class="text-card mr-2">Entregas por</span>
-            <select class="text-card" (change)="selectedOptionD($event)">
-              <option>Área Temática</option>
-              <option>Programa</option>
-              <option>Programas Transversais</option>
-              <option>Projeto</option>
-            </select>
+            <nb-select class="delivery-select" size="tiny" shape="semi-round" [(selected)]="deliveriesSelectedOption">
+              <nb-option value="Área Temática">Área Temática</nb-option>
+              <nb-option value="Programa">Programa</nb-option>
+              <nb-option value="Programas Transversais">Programas Transversais</nb-option>
+              <nb-option value="Projeto">Projeto</nb-option>
+            </nb-select>
           </div>
 
           <div class="col-12 mt-2">

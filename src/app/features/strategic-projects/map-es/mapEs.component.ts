@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { IStrategicProjectFilterValuesDto } from '../../../core/interfaces/strategic-project-filter.interface';
 import { IIdAndName } from '../../../core/interfaces/id-and-name.interface';
 import { Region } from '../../../core/interfaces/map-es.interface';
+import { NbThemeService } from '@nebular/theme';
+import { AvailableThemes } from '../../../@theme/theme.module';
 
 @Component({
   selector: 'ngx-map-es',
@@ -21,9 +22,10 @@ import { Region } from '../../../core/interfaces/map-es.interface';
   `,
 })
 export class MapEsComponent implements OnInit, OnChanges {
-
   @Input() filter!: any;
+
   @Input() localidadeList!: IIdAndName[];
+
   @Output() filterChange = new EventEmitter<any>();
 
   regioes = {
@@ -198,7 +200,14 @@ export class MapEsComponent implements OnInit, OnChanges {
 
   svgSeguro: SafeHtml;
 
-  constructor(private http: HttpClient, private sanitizer: DomSanitizer) { }
+  constructor(
+    private http: HttpClient,
+    private sanitizer: DomSanitizer,
+    private themeService: NbThemeService,
+    private changeDetectorRef: ChangeDetectorRef,
+  ) {
+    this.themeService.onThemeChange().subscribe(() => this.alterStylesBasedOnTheme());
+  }
 
   ngOnInit(): void {
     this.carregarSvg();
@@ -216,7 +225,7 @@ export class MapEsComponent implements OnInit, OnChanges {
         const svgColorido = this.aplicarCores(svg);
         this.svgSeguro = this.sanitizer.bypassSecurityTrustHtml(svgColorido);
         this.adicionarEfeitos();
-        this.verificarSvgRenderizado()
+        this.verificarSvgRenderizado();
       },
       (error) => {
         console.error('Erro ao carregar o SVG:', error);
@@ -235,6 +244,7 @@ export class MapEsComponent implements OnInit, OnChanges {
 
       if (svgElement) {
         this.atualizarEstadosComBaseNoFilter();
+        this.alterStylesBasedOnTheme();
       } else if (Date.now() - inicio < tempoMaximo) {
         setTimeout(loop, intervalo);
       } else {
@@ -276,6 +286,7 @@ export class MapEsComponent implements OnInit, OnChanges {
         });
       }
     }
+
     const paths = svgElement.querySelectorAll('path');
     paths.forEach((path: SVGPathElement) => {
       const pathId = path.getAttribute('id');
@@ -496,7 +507,6 @@ export class MapEsComponent implements OnInit, OnChanges {
         }
       }
     });
-
   }
 
   getOpacidadeLegenda(nomeRegiao: string): number {
@@ -535,5 +545,41 @@ export class MapEsComponent implements OnInit, OnChanges {
     const todasAtivas = regiao.cities.every((city) => city.active);
 
     return todasAtivas ? "bold" : "normal";
+  }
+
+  alterStylesBasedOnTheme() {
+    const currentTheme = this.themeService.currentTheme;
+
+    /*
+    * Caso seja aplicado um tema escuro, deve diminuir a grossura do contorno dos municípios,
+    * e trocar a cor do nome dos municípios para branco, para melhorar a visualização.
+    * Caso seja aplicado um tema claro, deve alterar as propriedades para seus valores originais.
+    */
+    const svgElement = document.querySelector('.mapa-es svg');
+    if (!svgElement) return;
+
+    console.log('chegou aqui');
+
+    // Seleciona todas as tags <path> do svg
+    const paths = svgElement.querySelectorAll('path');
+    paths.forEach((path: SVGPathElement) => {
+      if (currentTheme === AvailableThemes.DARK || currentTheme === AvailableThemes.COSMIC) {
+        path.setAttribute('stroke-width', '0.6');
+      } else if (currentTheme === AvailableThemes.DEFAULT) {
+        path.setAttribute('stroke-width', '1.2');
+      }
+    });
+    
+    // Seleciona todas as tags <text> do svg
+    const texts = svgElement.querySelectorAll('text');
+    texts.forEach((text: SVGTextElement) => {
+      if (currentTheme === AvailableThemes.DARK || currentTheme === AvailableThemes.COSMIC) {
+        text.setAttribute('fill', '#FFFFFF');
+      } else if (currentTheme === AvailableThemes.DEFAULT) {
+        text.setAttribute('fill', '#000000');
+      }
+    });
+
+    this.changeDetectorRef.detectChanges();
   }
 }

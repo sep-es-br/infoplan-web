@@ -193,6 +193,10 @@ button:focus, select:focus, input:focus {
     font-size: 0.9rem;
   }
 
+  .investment-select, .delivery-select {
+    min-width: 200px;
+  }
+
   .icon-top-right {
     position: absolute;
     top: 10px;

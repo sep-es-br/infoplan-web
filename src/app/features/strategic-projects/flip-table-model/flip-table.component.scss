@@ -1,0 +1,46 @@
+.outer-card {
+  background-color: var(--card-background-color);
+  border: none;
+  border-radius: 8px;
+  padding: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  .card-header {
+    border: none;
+
+    .card-title {
+      color: var(--card-text-color);
+      font-size: 0.9rem;
+    }
+
+    .flip-button {
+      cursor: pointer;
+
+      transition: .5s ease;
+    }
+  }
+  
+  .flip-card {
+    .card-front, .card-back {
+      border: none;
+    }
+
+    .card-back {
+      height: 150px;
+
+      .table {
+        text-align: center;
+
+        tr:nth-child(0) {
+          line-height: 20%;
+        }
+
+        tbody {
+          th, td {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+}

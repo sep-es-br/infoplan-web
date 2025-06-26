@@ -1,14 +1,19 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { PieChartModelComponent } from '../pie-chart-model/pieChartModel.component';
-import { IStrategicProjectFilterValuesDto } from '../../../core/interfaces/strategic-project-filter.interface';
-import { StrategicProjectsService } from '../../../core/service/strategic-projects.service';
-import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../core/interfaces/strategic-project.interface';
+import { PieChartModelComponent } from '../../pie-chart-model/pieChartModel.component';
+import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
+import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
+import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../../core/interfaces/strategic-project.interface';
+import { FlipTableComponent } from '../../flip-table-model/flip-table.component';
 
 @Component({
   selector: 'ngx-deliveries-by-status',
-  template: '<ngx-pie-chart-model [data]="chartData" [colors]="chartColors" [height]="150"></ngx-pie-chart-model>',
+  templateUrl: './deliveriesByStatus.component.html',
+  styleUrls: ['./deliveriesByStatus.component.scss'],
+  imports: [
+    PieChartModelComponent,
+    FlipTableComponent,
+  ],
   standalone: true,
-  imports: [PieChartModelComponent],
 })
 export class DeliveriesByStatusComponent implements OnChanges {
 

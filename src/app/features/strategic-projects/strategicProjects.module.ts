@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { StrategicProjectsComponent } from './strategicProjects.component';
 import { NbCardModule, NbLayoutModule, NbSelectModule } from '@nebular/theme';
-import { DeliveriesByStatusComponent } from './data-chart/deliveriesByStatus.component';
+import { DeliveriesByStatusComponent } from './data-chart/deliveries-by-status/deliveriesByStatus.component';
 import { CriticalMilestonesForPerformanceComponent } from './data-chart/criticalMilestonesForPerformace.component';
 import { DeliveriesByPerformaceComponent } from './data-chart/deliveriesByPerformace.component';
 import { DeliveriesByTypeComponent } from './data-chart/deliveriesByType.component';

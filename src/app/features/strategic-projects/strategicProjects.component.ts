@@ -5,6 +5,8 @@ import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
 import { IStrategicProjectFilterDataDto } from '../../core/interfaces/strategic-project-filter.interface';
 import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project-totals.interface';
 import { IStrategicProjectTimestamp } from '../../core/interfaces/strategic-project.interface';
+import { NbThemeService } from '@nebular/theme';
+import { AvailableThemes } from '../../@theme/theme.module';
 
 @Component({
   selector: 'ngx-strategic-projects',
@@ -71,11 +73,24 @@ export class StrategicProjectsComponent {
 
   activeFilters: { key: string; label: string; value: string }[] = [];
 
-  constructor(private strategicProjectsService: StrategicProjectsService) {
+  constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
     this.loadTimestamp()
     this.updateActiveFilters()
     this.loadAll()
     this.loadTotals()
+  }
+
+  get portfolioLogoUrl(): string {
+    const currentTheme = this.themeService.currentTheme;
+    switch (currentTheme) {
+      case AvailableThemes.DEFAULT:
+        return 'assets/images/app/realiza+_transparente.png';
+      case AvailableThemes.DARK:
+      case AvailableThemes.COSMIC:
+        return 'assets/images/app/realiza+ full_white.png';
+      default:
+        return 'assets/images/app/realiza+_transparente.png';
+    }
   }
 
   updateActiveFilters() {

@@ -114,10 +114,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.imageLogoSrc = 'assets/images/app/icone-info-plan.png';
         break;
       case 'dark':
-        this.imageLogoSrc = 'assets/images/app/icone-info-plan-cinza.png';
+        this.imageLogoSrc = 'assets/images/app/icone-info-plan.png';
         break;
       case 'cosmic':
-        this.imageLogoSrc = 'assets/images/app/icone-info-plan-cinza.png';
+        this.imageLogoSrc = 'assets/images/app/icone-info-plan.png';
         break;
       case 'corporate':
         this.imageLogoSrc = 'assets/images/app/icone-info-plan.png';

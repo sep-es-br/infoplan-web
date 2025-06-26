@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { IIdAndName } from '../../../core/interfaces/id-and-name.interface';
 import { Region } from '../../../core/interfaces/map-es.interface';
@@ -204,9 +204,10 @@ export class MapEsComponent implements OnInit, OnChanges {
     private http: HttpClient,
     private sanitizer: DomSanitizer,
     private themeService: NbThemeService,
-    private changeDetectorRef: ChangeDetectorRef,
   ) {
-    this.themeService.onThemeChange().subscribe(() => this.alterStylesBasedOnTheme());
+    this.themeService.onThemeChange().subscribe(() => {
+      setTimeout(() => this.alterStylesBasedOnTheme(), 0);
+    });
   }
 
   ngOnInit(): void {
@@ -244,7 +245,6 @@ export class MapEsComponent implements OnInit, OnChanges {
 
       if (svgElement) {
         this.atualizarEstadosComBaseNoFilter();
-        this.alterStylesBasedOnTheme();
       } else if (Date.now() - inicio < tempoMaximo) {
         setTimeout(loop, intervalo);
       } else {
@@ -308,6 +308,8 @@ export class MapEsComponent implements OnInit, OnChanges {
         }
       }
     });
+
+    this.alterStylesBasedOnTheme();
   }
 
   aplicarCores(svg: string): string {
@@ -558,8 +560,6 @@ export class MapEsComponent implements OnInit, OnChanges {
     const svgElement = document.querySelector('.mapa-es svg');
     if (!svgElement) return;
 
-    console.log('chegou aqui');
-
     // Seleciona todas as tags <path> do svg
     const paths = svgElement.querySelectorAll('path');
     paths.forEach((path: SVGPathElement) => {
@@ -579,7 +579,5 @@ export class MapEsComponent implements OnInit, OnChanges {
         text.setAttribute('fill', '#000000');
       }
     });
-
-    this.changeDetectorRef.detectChanges();
   }
 }

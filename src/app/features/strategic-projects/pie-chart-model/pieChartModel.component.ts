@@ -69,11 +69,6 @@ export class PieChartModelComponent implements OnInit, OnChanges {
                 },
               },
             },
-            series: {
-              label: {
-                color: newTextColor,
-              },
-            },
           });
         }
       });
@@ -204,7 +199,7 @@ export class PieChartModelComponent implements OnInit, OnChanges {
             formatter: function (params) {
               return params.percent >= 6 ? Math.round(params.percent) + '%' : '';
             },
-            color: currentThemeStyles.textPrimaryColor,
+            color: '#FFFFFF',
             fontSize: 9,
           },
           labelLine: { show: false },

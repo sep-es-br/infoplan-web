@@ -1,5 +1,5 @@
 <div  [ngStyle]="{ 'height': height + 'px' }" >
-  <div echarts [options]="chartOptions" class="echart"></div>
+  <div echarts [options]="chartOptions" class="echart" (chartInit)="onChartInit($event)"></div>
 </div>
 
 

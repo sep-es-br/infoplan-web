@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { StrategicProjectsComponent } from './strategicProjects.component';
-import { NbCardModule, NbLayoutFooterComponent, NbLayoutModule } from '@nebular/theme';
+import { NbCardModule, NbLayoutModule, NbSelectModule } from '@nebular/theme';
 import { DeliveriesByStatusComponent } from './data-chart/deliveriesByStatus.component';
 import { CriticalMilestonesForPerformanceComponent } from './data-chart/criticalMilestonesForPerformace.component';
 import { DeliveriesByPerformaceComponent } from './data-chart/deliveriesByPerformace.component';
@@ -13,7 +13,6 @@ import { AccumulatedInvestmentComponent } from './data-chart/accumulatedInvestme
 import { DeliveriesBySelectedComponent } from './data-chart/deliveriesBySelected.component';
 import { InvestmentBySelectedComponent } from './data-chart/investmentBySelected.component';
 import { FormsModule } from '@angular/forms';
-import { FooterComponent } from '../../@theme/components/footer/footer.component';
 import { ThemeModule } from '../../@theme/theme.module';
 import { MapEsComponent } from './map-es/mapEs.component';
 
@@ -38,7 +37,8 @@ import { MapEsComponent } from './map-es/mapEs.component';
     RisksByClassificationComponent,
     NgxEchartsModule,
     NbLayoutModule,
-    ThemeModule
+    ThemeModule,
+    NbSelectModule,
   ]
 })
 export class StrategicProjectsModule { }

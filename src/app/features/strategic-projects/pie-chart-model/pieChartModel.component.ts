@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { NbThemeService } from '@nebular/theme';
 import { EChartsOption } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
+import { AvailableThemes, getAvailableThemesStyles } from '../../../@theme/theme.module';
 
 @Component({
   selector: 'ngx-pie-chart-model',
@@ -10,20 +12,71 @@ import { NgxEchartsModule } from 'ngx-echarts';
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
-export class PieChartModelComponent implements OnChanges {
-
+export class PieChartModelComponent implements OnInit, OnChanges {
   @Input() data: { value: number, name: string }[] = [];
+
   @Input() colors: string[] = [];
+
   @Input() height: number;
 
-  chartOptions: EChartsOption;
-  echartsInstance: any = null
-  centerX: number = 70;
-  centerY: number = 50;
-
-  constructor() {
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.updateTitlePosition();
   }
 
+  chartOptions: EChartsOption;
+
+  echartsInstance: any = null
+
+  centerX: number = 70;
+
+  centerY: number = 50;
+
+  currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
+
+  constructor(private themeService: NbThemeService) {
+    this.themeService.onThemeChange()
+      .subscribe((newTheme: { name: AvailableThemes; previous: string; }) => {
+        if (this.echartsInstance) {
+          this.currentTheme = newTheme.name;
+
+          const newStyles = getAvailableThemesStyles(newTheme.name);
+          const newTextColor = newStyles.textPrimaryColor;
+          const newBackgroundColor = newStyles.themePrimaryColor;
+
+          this.echartsInstance.setOption({
+            tooltip: {
+              textStyle: {
+                color: newTextColor,
+              },
+              backgroundColor: newBackgroundColor,
+              borderColor: newBackgroundColor,
+            },
+            title: {
+              textStyle: {
+                color: newTextColor,
+              },
+            },
+            legend: {
+              textStyle: {
+                color: newTextColor,
+              },
+              tooltip: {
+                backgroundColor: newBackgroundColor,
+                borderColor: newBackgroundColor,
+                textStyle: {
+                  color: newTextColor,
+                },
+              },
+            },
+          });
+        }
+      });
+  }
+
+  ngOnInit() {
+    this.currentTheme = (this.themeService.currentTheme as AvailableThemes);
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['colors']) {
@@ -51,11 +104,6 @@ export class PieChartModelComponent implements OnChanges {
     });
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
-    this.updateTitlePosition();
-  }
-
   updateTitlePosition() {
     const screenWidth = window.innerWidth;
     const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
@@ -71,7 +119,6 @@ export class PieChartModelComponent implements OnChanges {
     }
   }
 
-
   initChartOptions(data: { value: number, name: string }[], colors: string[]) {
     const total = Array.isArray(data) && data.length > 0
       ? data.reduce((sum, item) => sum + item.value, 0)
@@ -82,12 +129,19 @@ export class PieChartModelComponent implements OnChanges {
       ? this.centerX - 2
       : this.centerX - 1;
 
+    const currentThemeStyles = getAvailableThemesStyles(this.currentTheme);
+
     this.chartOptions = {
       tooltip: {
         trigger: 'item',
         formatter: function (params) {
           return `${params.name}: ${params.value} (${params.percent}%)`;
-        }
+        },
+        textStyle: {
+          color: currentThemeStyles.textPrimaryColor,
+        },
+        backgroundColor: currentThemeStyles.themePrimaryColor,
+        borderColor: currentThemeStyles.themePrimaryColor,
       },
       title: {
         text: `${total}`,
@@ -98,6 +152,7 @@ export class PieChartModelComponent implements OnChanges {
         textStyle: {
           fontSize: 16,
           fontWeight: 'bold',
+          color: currentThemeStyles.textPrimaryColor,
         },
       },
       legend: {
@@ -105,6 +160,11 @@ export class PieChartModelComponent implements OnChanges {
         left: 'left',
         top: 'top',
         tooltip: {
+          textStyle: {
+            color: currentThemeStyles.textPrimaryColor,
+          },
+          backgroundColor: currentThemeStyles.themePrimaryColor,
+          borderColor: currentThemeStyles.themePrimaryColor,
           show: true,
           formatter: function (params) {
             const item = data.find(item => item.name === params.name);
@@ -118,7 +178,7 @@ export class PieChartModelComponent implements OnChanges {
         data: data ? data.map(item => item.name) : [],
         textStyle: {
           fontSize: 9,
-          color: '#000',
+          color: currentThemeStyles.textPrimaryColor,
         },
         itemWidth: 10,
         itemHeight: 10,
@@ -139,7 +199,7 @@ export class PieChartModelComponent implements OnChanges {
             formatter: function (params) {
               return params.percent >= 6 ? Math.round(params.percent) + '%' : '';
             },
-            color: '#fff',
+            color: '#FFFFFF',
             fontSize: 9,
           },
           labelLine: { show: false },
@@ -148,5 +208,4 @@ export class PieChartModelComponent implements OnChanges {
       color: colors || [],
     };
   }
-
 }

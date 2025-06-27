@@ -1,6 +1,15 @@
-import { NgFor } from "@angular/common";
-import { Component, Input } from "@angular/core";
-import { NbCardModule, NbIconModule } from "@nebular/theme";
+import { NgFor, NgIf } from "@angular/common";
+import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
+import { NbCardModule, NbFormFieldModule, NbIconModule, NbInputModule, NbTreeGridModule } from "@nebular/theme";
+
+export interface FlipTableContent {
+  columns: Array<{
+    propertyName: string;
+    displayName: string;
+  }>;
+  lines: Array<Object>;
+  numOfColumns?: Number;
+}
 
 @Component({
   selector: 'ngx-flip-table',
@@ -9,22 +18,41 @@ import { NbCardModule, NbIconModule } from "@nebular/theme";
   standalone: true,
   imports: [
     NgFor,
+    NgIf,
     NbCardModule,
     NbIconModule,
+    NbInputModule,
+    NbFormFieldModule,
+    NbTreeGridModule,
   ]
 })
-export class FlipTableComponent {
+export class FlipTableComponent implements OnChanges {
   @Input() cardTitle: string = 'Título aqui';
+
+  @Input() tableContent: FlipTableContent;
   
   isFlipCardFlipped: boolean = false;
 
-  fakeList(): Array<Number> {
-    const result = [];
+  isSearchFieldVisible: boolean = false;
 
-    for (let i = 0; i <= 1000; i++) {
-      result.push(i);
+  allColumns = ['Coluna 1', 'Coluna 2', 'Coluna 3'];
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tableContent'] && this.tableContent) {
+      if (!this.tableContent.numOfColumns) {
+        this.tableContent.numOfColumns = this.tableContent.columns.length;
+      }
     }
+  }
 
-    return result;
+  handleFlipButtonClick() {
+    this.isFlipCardFlipped = !this.isFlipCardFlipped
+    if (!this.isFlipCardFlipped) {
+      this.isSearchFieldVisible = false;
+    }
+  }
+
+  handleInputSearchChange(event: KeyboardEvent) {
+    console.log('newValue: ', (event.target as any).value);
   }
 }

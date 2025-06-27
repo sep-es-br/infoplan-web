@@ -1,12 +1,53 @@
 <nb-card class="outer-card m-0">
   <nb-card-header class="card-header d-flex justify-content-between align-items-center p-2 px-3 pb-3">
-    <span class="card-title m-0">{{ cardTitle }}</span>
-    <nb-icon
-      class="flip-button m-0 p-0"
-      [icon]="isFlipCardFlipped ? 'arrow-ios-back-outline' : 'arrow-ios-forward-outline'"
-      (click)="isFlipCardFlipped = !isFlipCardFlipped"
-    >
-    </nb-icon>
+    <span class="card-title text-truncate w-50 m-0">{{ cardTitle }}</span>
+
+    <div class="d-flex align-items-center justify-content-end">
+      <ng-container *ngIf="isFlipCardFlipped">
+        <ng-container *ngIf="isSearchFieldVisible">
+          <nb-form-field class="search-form-field opening">
+            <input
+              nbInput
+              class="search-input"
+              type="text"
+              shape="round"
+              fieldSize="tiny"
+              placeholder="Buscar"
+              (keyup)="handleInputSearchChange($event)"
+            />
+            <nb-icon
+              nbSuffix
+              class="close-icon"
+              [icon]="'close-outline'"
+              (click)="isSearchFieldVisible = false"
+            >
+            </nb-icon>
+          </nb-form-field>
+        </ng-container>
+
+        <ng-container *ngIf="!isSearchFieldVisible">
+          <nb-icon
+            class="search-button m-0 ml-3 p-0"
+            [icon]="'search-outline'"
+            (click)="isSearchFieldVisible = true"
+          >
+          </nb-icon>
+        </ng-container>
+      </ng-container>
+
+      <nb-icon
+        class="export-button m-0 ml-3 p-0"
+        [icon]="'cloud-download-outline'"
+      >
+      </nb-icon>
+
+      <nb-icon
+        class="flip-button m-0 ml-3 p-0"
+        [icon]="isFlipCardFlipped ? 'activity-outline' : 'layout-outline'"
+        (click)="handleFlipButtonClick()"
+      >
+      </nb-icon>
+    </div>
   </nb-card-header>
   <nb-flip-card class="flip-card" [showToggleButton]="false" [flipped]="isFlipCardFlipped">
     <nb-card-front>
@@ -16,28 +57,61 @@
     </nb-card-front>
     <nb-card-back>
       <nb-card class="card-back box-limited m-0 px-3">
-        <table class="table text-light scrollable-container">
-          <thead class="w-100">
-            <tr class="col-12">
-              <!-- <th class="col-1" scope="col">#</th> -->
-              <th class="col-3" scope="col">Área</th>
-              <th class="col-3" scope="col">Projeto</th>
-              <th class="col-3" scope="col">Entrega</th>
-              <th class="col-3" scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let i of fakeList();">
+        <ng-container *ngIf="tableContent">
+          <!-- <table class="table text-light scrollable-container">
+            <thead class="w-100">
               <tr class="col-12">
-                <!-- <th class="col-1" scope="row">{{ i + 1 }}</th> -->
-                <td class="col-3 text-truncate">Educação, Cultura, Esporte e Lazer</td>
-                <td class="col-3 text-truncate">Procon nas Escolas</td>
-                <td class="col-3 text-truncate">Realizar palestras para estudantes</td>
-                <td class="col-3 text-truncate">Paralisada</td>
+                <ng-container *ngFor="let column of tableContent.columns">
+                  <th class="col-3" scope="col">{{ column.displayName }}</th>
+                </ng-container>
               </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let line of tableContent.lines;">
+                <tr class="col-12">
+                  <ng-container *ngFor="let column of tableContent.columns">
+                    <td class="col-3 text-truncate">
+                      {{ line[column.propertyName] }}
+                    </td>
+                  </ng-container>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table> -->
+
+          <table
+            equalColumnsWidth
+            [nbTreeGrid]="dataSource"
+            [nbSort]="dataSource"
+            (sort)="handleSortClick($event)"
+          >
+            <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumns"></tr>
+            <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns"></tr>
+
+            <ng-container [nbTreeGridColumnDef]="customColumn">
+              <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(customColumn)" *nbTreeGridHeaderCellDef>
+                {{ customColumn }}
+              </th>
+              <td nbTreeGridCell *nbTreeGridCellDef="let row">
+                <nb-fs-icon [kind]="row.data.kind" [expanded]="row.expanded"></nb-fs-icon>
+                {{ row.data[customColumn] }}
+              </td>
             </ng-container>
-          </tbody>
-        </table>
+
+            <ng-container
+              *ngFor="let column of defaultColumns; let index = index"
+              [nbTreeGridColumnDef]="column"
+              [showOn]="getShowOn(index)"
+            >
+              <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(column)" *nbTreeGridHeaderCellDef>
+                {{ column }}
+              </th>
+              <td nbTreeGridCell *nbTreeGridCellDef="let row">
+                {{row.data[column] || '-'}}
+              </td>
+            </ng-container>
+          </table>
+        </ng-container>
       </nb-card>
     </nb-card-back>
   </nb-flip-card>

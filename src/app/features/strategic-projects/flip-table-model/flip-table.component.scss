@@ -1,3 +1,25 @@
+@keyframes openSearch {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 60%;
+    opacity: 1;
+  }
+}
+
+// @keyframes closeSearch {
+//   from {
+//     width: 60%;
+//     opacity: 1;
+//   }
+//   to {
+//     width: 0;
+//     opacity: 0;
+//   }
+// }
+
 .outer-card {
   background-color: var(--card-background-color);
   border: none;
@@ -7,16 +29,33 @@
 
   .card-header {
     border: none;
+    height: 4rem;
 
     .card-title {
       color: var(--card-text-color);
       font-size: 0.9rem;
+      font-weight: var(--layout-text-font-weight);
+    }
+    
+    .search-form-field {
+      width: 0;
+      opacity: 0;
+      
+      &.opening {
+        animation: openSearch 500ms ease-out forwards;
+      }
+      // &.closing {
+      //   animation: closeSearch 500ms ease-in forwards;
+      // }
+
+      .search-input {
+        transition: all 0.3s ease;
+        min-width: 0;
+      }
     }
 
-    .flip-button {
+    .search-button, .close-icon, .export-button, .flip-button {
       cursor: pointer;
-
-      transition: .5s ease;
     }
   }
   
@@ -30,14 +69,21 @@
 
       .table {
         text-align: center;
+        font-family: var(--text-paragraph-font-family);
 
-        tr:nth-child(0) {
+        tr:first-child {
           line-height: 20%;
         }
 
-        tbody {
-          th, td {
+        thead {
+          th {
             font-size: 12px;
+          }
+        }
+
+        tbody {
+          td {
+            font-size: 11px;
           }
         }
       }

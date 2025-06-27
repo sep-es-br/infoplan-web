@@ -1,30 +1,30 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { PieChartModelComponent } from '../../pie-chart-model/pieChartModel.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
-import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../../core/interfaces/strategic-project.interface';
+import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { FlipTableComponent, FlipTableContent } from '../../flip-table-model/flip-table.component';
 
 @Component({
-  selector: 'ngx-deliveries-by-status',
-  templateUrl: './deliveriesByStatus.component.html',
-  styleUrls: ['./deliveriesByStatus.component.scss'],
+  selector: 'ngx-deliveries-by-performace',
+  templateUrl: './deliveriesByPerformance.component.html',
+  styleUrls: ['./deliveriesByPerformance.component.scss'],
+  standalone: true,
   imports: [
     PieChartModelComponent,
     FlipTableComponent,
   ],
-  standalone: true,
 })
-export class DeliveriesByStatusComponent implements OnChanges {
+export class DeliveriesByPerformaceComponent implements OnChanges {
   @Input() filter!: IStrategicProjectFilterValuesDto;
 
   chartData: any;
 
   chartColors = [];
 
-  statusData: IStrategicProjectDeliveries[];
+  performaceData: IStrategicProjectDeliveries[];
 
-  statusShow: IStrategicProjectDeliveriesShow[];
+  performaceShow: IStrategicProjectDeliveriesShow[];
 
   flipTableContent: FlipTableContent;
 
@@ -39,44 +39,44 @@ export class DeliveriesByStatusComponent implements OnChanges {
   loadData() {
     const cleanedFilter = this.strategicProjectsService.removeEmptyValues(this.filter);
     this.chartColors = [];
-    this.statusShow = [];
+    this.performaceShow = [];
 
-    this.strategicProjectsService.getDeliveriesByStatus(cleanedFilter)
+    this.strategicProjectsService.getDeliveriesByPerformace(cleanedFilter)
       .subscribe((data: IStrategicProjectDeliveries[]) => {
-        this.statusData = data;
+        this.performaceData = data;
 
-        this.statusData.forEach(status => {
-          if (status.statusId !== 0 || status.nomeStatus !== 'null') {
-            let sShow = this.statusShow.find((s) => s.nomeStatus == status.nomeStatus);
+        this.performaceData.forEach(performace => {
+          if (performace.statusId !== 0 || performace.nomeStatus !== 'null') {
+            let pShow = this.performaceShow.find((s) => s.nomeStatus == performace.nomeStatus);
 
-            if (sShow === undefined) {
-              this.statusShow.push(
+            if (pShow === undefined) {
+              this.performaceShow.push(
                 {
-                  statusId: status.statusId,
-                  nomeStatus: status.nomeStatus,
-                  corStatus: status.corStatus,
-                  count: status.contagemPE
+                  statusId: performace.statusId,
+                  nomeStatus: performace.nomeStatus,
+                  corStatus: performace.corStatus,
+                  count: performace.contagemPE
                 }
               );
             } else {
-              sShow.count = sShow.count + status.contagemPE;
+              pShow.count = pShow.count + performace.contagemPE;
             }
           }
         });
 
-        this.statusShow.sort((a, b) => (a.statusId < b.statusId ? -1 : 1));
+        this.performaceShow.sort((a, b) => (a.statusId < b.statusId ? -1 : 1));
 
-        this.chartData = this.statusShow.map(val => <any> {
+        this.chartData = this.performaceShow.map(val => <any> {
           value: val.count,
           name: val.nomeStatus
         });
 
-        this.chartColors = this.statusShow.map(val => val.corStatus);
+        this.chartColors = this.performaceShow.map(val => val.corStatus);
 
         this.assembleFlipTableContent(data);
       },
       (error) => {
-        console.error('Erro ao carregar os dados das entregas por status:', error);
+        console.error('Erro ao carregar os dados das entregas por desempenho:', error);
       }
     );
   }

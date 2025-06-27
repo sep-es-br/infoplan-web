@@ -1,21 +1,21 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { PieChartModelComponent } from '../../pie-chart-model/pieChartModel.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
-import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../../core/interfaces/strategic-project.interface';
-import { FlipTableComponent, FlipTableContent } from '../../flip-table-model/flip-table.component';
+import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
+import { FlipTableComponent } from '../../flip-table-model/flip-table.component';
 
 @Component({
-  selector: 'ngx-deliveries-by-status',
-  templateUrl: './deliveriesByStatus.component.html',
-  styleUrls: ['./deliveriesByStatus.component.scss'],
+  selector: 'ngx-projects-by-status',
+  templateUrl: './projectsByStatus.component.html',
+  styleUrls: ['./projectsByStatus.component.scss'],
+  standalone: true,
   imports: [
     PieChartModelComponent,
     FlipTableComponent,
   ],
-  standalone: true,
 })
-export class DeliveriesByStatusComponent implements OnChanges {
+export class ProjectsByStatusComponent implements OnChanges {
   @Input() filter!: IStrategicProjectFilterValuesDto;
 
   chartData: any;
@@ -25,8 +25,6 @@ export class DeliveriesByStatusComponent implements OnChanges {
   statusData: IStrategicProjectDeliveries[];
 
   statusShow: IStrategicProjectDeliveriesShow[];
-
-  flipTableContent: FlipTableContent;
 
   constructor(private strategicProjectsService: StrategicProjectsService) {}
 
@@ -41,7 +39,7 @@ export class DeliveriesByStatusComponent implements OnChanges {
     this.chartColors = [];
     this.statusShow = [];
 
-    this.strategicProjectsService.getDeliveriesByStatus(cleanedFilter)
+    this.strategicProjectsService.getProjectByStatus(cleanedFilter)
       .subscribe((data: IStrategicProjectDeliveries[]) => {
         this.statusData = data;
 
@@ -55,11 +53,11 @@ export class DeliveriesByStatusComponent implements OnChanges {
                   statusId: status.statusId,
                   nomeStatus: status.nomeStatus,
                   corStatus: status.corStatus,
-                  count: status.contagemPE
+                  count: 1
                 }
               );
             } else {
-              sShow.count = sShow.count + status.contagemPE;
+              sShow.count++;
             }
           }
         });
@@ -72,33 +70,10 @@ export class DeliveriesByStatusComponent implements OnChanges {
         });
 
         this.chartColors = this.statusShow.map(val => val.corStatus);
-
-        this.assembleFlipTableContent(data);
       },
       (error) => {
         console.error('Erro ao carregar os dados das entregas por status:', error);
       }
     );
-  }
-
-  assembleFlipTableContent(rawData: IStrategicProjectDeliveries[]) {
-    const tableColumns = [
-      { propertyName: 'nomeArea', displayName: 'Nome da Área' },
-      { propertyName: 'nomeEntrega', displayName: 'Nome da Entrega' },
-      { propertyName: 'nomeProjeto', displayName: 'Nome do Projeto' },
-      { propertyName: 'nomeStatus', displayName: 'Status' },
-    ];
-
-    const tableLines = rawData.map((item) => ({
-      nomeArea: item.nomeArea,
-      nomeEntrega: item.nomeEntrega,
-      nomeProjeto: item.nomeProjeto,
-      nomeStatus: item.nomeStatus,
-    }));
-
-    this.flipTableContent = {
-      columns: tableColumns,
-      lines: tableLines,
-    };
   }
 }

@@ -96,9 +96,9 @@ export class DeliveriesByPerformaceComponent implements OnChanges {
       nomeStatus: item.nomeStatus,
     }));
 
-    this.flipTableContent = {
-      columns: tableColumns,
-      lines: tableLines,
-    };
+    // this.flipTableContent = {
+    //   columns: tableColumns,
+    //   lines: tableLines,
+    // };
   }
 }

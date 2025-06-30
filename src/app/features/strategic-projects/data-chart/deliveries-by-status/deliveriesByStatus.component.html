@@ -1,6 +1,7 @@
 <ngx-flip-table
   [cardTitle]="'Entregas por Status'"
   [tableContent]="flipTableContent"
+  (executeSearch)="handleUserTableSearch($event)"
 >
   <ngx-pie-chart-model [data]="chartData" [colors]="chartColors" [height]="150">
   </ngx-pie-chart-model>

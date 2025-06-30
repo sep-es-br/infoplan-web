@@ -3,7 +3,7 @@ import { PieChartModelComponent } from '../../pie-chart-model/pieChartModel.comp
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../../core/interfaces/strategic-project.interface';
-import { FlipTableComponent, FlipTableContent } from '../../flip-table-model/flip-table.component';
+import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 
 @Component({
   selector: 'ngx-deliveries-by-status',
@@ -83,22 +83,92 @@ export class DeliveriesByStatusComponent implements OnChanges {
 
   assembleFlipTableContent(rawData: IStrategicProjectDeliveries[]) {
     const tableColumns = [
-      { propertyName: 'nomeArea', displayName: 'Nome da Área' },
-      { propertyName: 'nomeEntrega', displayName: 'Nome da Entrega' },
-      { propertyName: 'nomeProjeto', displayName: 'Nome do Projeto' },
+      // { propertyName: 'nomeArea', displayName: 'Nome da Área' },
       { propertyName: 'nomeStatus', displayName: 'Status' },
     ];
 
-    const tableLines = rawData.map((item) => ({
-      nomeArea: item.nomeArea,
-      nomeEntrega: item.nomeEntrega,
-      nomeProjeto: item.nomeProjeto,
-      nomeStatus: item.nomeStatus,
-    }));
+    const finalData: Array<TreeNode> = [];
+    
+    rawData.forEach((entrega) => {
+      const areaIsAlreadyListed = finalData.find((area) => {
+        const areaName = area.data.find((prop) => prop.propertyName === 'firstColumn' && prop.value === entrega.nomeArea);
+
+        if (areaName) return area;
+      });
+
+      if (areaIsAlreadyListed) {
+        // A área em questão já está listada
+
+        const projectIsAlreadyListed = areaIsAlreadyListed.children.find((project) => {
+          const projectName = project.data.find((prop) => prop.propertyName === 'firstColumn' && prop.value === entrega.nomeProjeto);
+
+          if (projectName) return project;
+        });
+
+        if (projectIsAlreadyListed) {
+          // O projeto em questão já está listado
+
+          projectIsAlreadyListed.children.push({
+            data: [
+              { originalPropertyName: 'nomeEntrega', propertyName: 'firstColumn', value: entrega.nomeEntrega },
+              { propertyName: 'nomeStatus', value: entrega.nomeStatus },
+            ],
+            expanded: false,
+          });
+        } else {
+          // O projeto em questão ainda não foi listado
+
+          areaIsAlreadyListed.children.push({
+            data: [
+              { originalPropertyName: 'nomeProjeto', propertyName: 'firstColumn', value: entrega.nomeProjeto },
+            ],
+            children: [{
+              data: [
+                { originalPropertyName: 'nomeEntrega', propertyName: 'firstColumn', value: entrega.nomeEntrega },
+                { propertyName: 'nomeStatus', value: entrega.nomeStatus },
+              ],
+              expanded: false,
+            }],
+            expanded: false,
+          });
+        }
+      } else {
+        // A área em questão ainda não foi listada
+
+        finalData.push({
+          data: [
+            { originalPropertyName: 'nomeArea', propertyName: 'firstColumn', value: entrega.nomeArea },
+          ],
+          children: [{
+            data: [
+              { originalPropertyName: 'nomeProjeto', propertyName: 'firstColumn', value: entrega.nomeProjeto },
+            ],
+            children: [{
+              data: [
+                { originalPropertyName: 'nomeEntrega', propertyName: 'firstColumn', value: entrega.nomeEntrega },
+                { propertyName: 'nomeStatus', value: entrega.nomeStatus },
+              ],
+              expanded: false,
+            }],
+            expanded: false,
+          }],
+          expanded: false,
+        });
+      }
+    });
 
     this.flipTableContent = {
-      columns: tableColumns,
-      lines: tableLines,
+      defaultColumns: tableColumns,
+      customColumn: {
+        originalPropertyName: 'nomeArea',
+        propertyName: 'firstColumn',
+        displayName: 'Nome da Área',
+      },
+      data: finalData,
     };
+  }
+
+  handleUserTableSearch(searchTerm: string) {
+    
   }
 }

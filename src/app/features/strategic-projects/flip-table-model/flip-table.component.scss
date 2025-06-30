@@ -20,6 +20,10 @@
 //   }
 // }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .outer-card {
   background-color: var(--card-background-color);
   border: none;
@@ -30,6 +34,7 @@
   .card-header {
     border: none;
     height: 4rem;
+    background-color: transparent;
 
     .card-title {
       color: var(--card-text-color);
@@ -68,23 +73,23 @@
       height: 150px;
 
       .table {
-        text-align: center;
         font-family: var(--text-paragraph-font-family);
 
         tr:first-child {
-          line-height: 20%;
+          line-height: 80%;
         }
 
-        thead {
-          th {
-            font-size: 12px;
-          }
+        th {
+          font-size: 12px !important;
         }
 
-        tbody {
-          td {
-            font-size: 11px;
-          }
+        td {
+          font-size: 10px !important;
+          line-height: 125%;
+        }
+
+        .icon {
+          color: var(--card-text-color);
         }
       }
     }

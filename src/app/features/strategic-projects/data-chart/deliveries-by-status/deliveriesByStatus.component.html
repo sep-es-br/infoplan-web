@@ -2,6 +2,7 @@
   [cardTitle]="'Entregas por Status'"
   [tableContent]="flipTableContent"
   (executeSearch)="handleUserTableSearch($event)"
+  (executeDownload)="handleUserTableDownload()"
 >
   <ngx-pie-chart-model [data]="chartData" [colors]="chartColors" [height]="150">
   </ngx-pie-chart-model>

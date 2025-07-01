@@ -1,6 +1,7 @@
 import { NgClass, NgFor, NgIf } from "@angular/common";
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { NbCardModule, NbColumnsService, NbFormFieldModule, NbIconModule, NbInputModule, NbSortDirection, NbSortRequest, NbTreeGridModule } from "@nebular/theme";
+import { NbCardModule, NbColumnsService, NbFormFieldModule, NbIconModule, NbInputModule, NbSortDirection, NbSortRequest, NbTooltipModule, NbTreeGridModule } from "@nebular/theme";
+import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
 
 export interface TreeNode {
   data: Array<{
@@ -43,6 +44,8 @@ export interface FlipTableContent {
     NbInputModule,
     NbFormFieldModule,
     NbTreeGridModule,
+    NbTooltipModule,
+    TextTruncatePipe,
   ]
 })
 export class FlipTableComponent implements OnChanges {
@@ -51,6 +54,8 @@ export class FlipTableComponent implements OnChanges {
   @Input() tableContent: FlipTableContent;
 
   @Output() executeSearch = new EventEmitter<string>();
+
+  @Output() executeDownload = new EventEmitter<any>();
   
   isFlipCardFlipped: boolean = false;
 
@@ -70,8 +75,6 @@ export class FlipTableComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tableContent'] && this.tableContent) {
-      console.log('this.tableContent: ', this.tableContent);
-
       if (changes['tableContent'].previousValue) {
         // A listagem foi modificada pois os filtros aplicados mudaram
 
@@ -94,6 +97,17 @@ export class FlipTableComponent implements OnChanges {
     }
   }
 
+  /* Handlers */
+
+  handleCloseSearchFieldClick() {
+    this.isSearchFieldVisible = false;
+    this.executeSearch.emit('');
+  }
+
+  handleDownloadButtonClick() {
+    this.executeDownload.emit();
+  }
+
   handleFlipButtonClick() {
     this.isFlipCardFlipped = !this.isFlipCardFlipped
     if (!this.isFlipCardFlipped) {
@@ -101,15 +115,17 @@ export class FlipTableComponent implements OnChanges {
     }
   }
 
+  handleSortClick(sortRequest: NbSortRequest): void {
+    this.sortColumn = sortRequest.column;
+    this.sortDirection = sortRequest.direction;
+  }
+
+  /* Getters */
+
   getCellValue(dataObject: Array<{ propertyName: string; value: any; }>, column: string): string {
     const object = dataObject.find((el) => el.propertyName === column);
 
     return (object ? object.value : '--');
-  }
-
-  handleSortClick(sortRequest: NbSortRequest): void {
-    this.sortColumn = sortRequest.column;
-    this.sortDirection = sortRequest.direction;
   }
 
   getSortDirection(column: string): NbSortDirection {
@@ -124,6 +140,8 @@ export class FlipTableComponent implements OnChanges {
     const nextColumnStep = 100;
     return minWithForMultipleColumns + (nextColumnStep * index);
   }
+
+  /* Auxiliares */
 
   debounceOnInput(event: KeyboardEvent) {
     clearTimeout(this.debounceTimer);

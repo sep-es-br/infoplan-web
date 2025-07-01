@@ -33,7 +33,7 @@
 
   .card-header {
     border: none;
-    height: 4rem;
+    height: 3rem;
     background-color: transparent;
 
     .card-title {
@@ -64,6 +64,7 @@
     }
   }
   
+  
   .flip-card {
     .card-front, .card-back {
       border: none;
@@ -72,20 +73,35 @@
     .card-back {
       height: 150px;
 
-      .table {
+      .flip-table {
         font-family: var(--text-paragraph-font-family);
-
-        tr:first-child {
-          line-height: 80%;
-        }
 
         th {
           font-size: 12px !important;
+          padding: 0;
+          padding-left: .5em;
+          height: 30px;
+        }
+        th:nth-child(2) {
+          width: 25%;
+
+          @media screen and (max-width: 576px) {
+            width: 35%;
+          }
+        }
+        th:nth-child(3) {
+          width: 20%;
+
+          @media screen and (max-width: 576px) {
+            width: 25%;
+          }
         }
 
         td {
           font-size: 10px !important;
           line-height: 125%;
+          padding: 0;
+          padding-left: .5em;
         }
 
         .icon {

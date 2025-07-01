@@ -4,6 +4,7 @@ import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/st
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../../core/interfaces/strategic-project.interface';
 import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
+import { ExportCSVService } from '../../../../core/service/export-csv.service';
 
 @Component({
   selector: 'ngx-deliveries-by-status',
@@ -28,7 +29,10 @@ export class DeliveriesByStatusComponent implements OnChanges {
 
   flipTableContent: FlipTableContent;
 
-  constructor(private strategicProjectsService: StrategicProjectsService) {}
+  constructor(
+    private strategicProjectsService: StrategicProjectsService,
+    private exportToCSVService: ExportCSVService,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {
@@ -81,10 +85,11 @@ export class DeliveriesByStatusComponent implements OnChanges {
     );
   }
 
-  assembleFlipTableContent(rawData: IStrategicProjectDeliveries[]) {
+  assembleFlipTableContent(rawData: IStrategicProjectDeliveries[], shouldStartExpanded: boolean = false) {
     const tableColumns = [
       // { propertyName: 'nomeArea', displayName: 'Nome da Área' },
       { propertyName: 'nomeStatus', displayName: 'Status' },
+      { propertyName: 'contagemPE', displayName: 'Contagem PE' },
     ];
 
     const finalData: Array<TreeNode> = [];
@@ -112,8 +117,9 @@ export class DeliveriesByStatusComponent implements OnChanges {
             data: [
               { originalPropertyName: 'nomeEntrega', propertyName: 'firstColumn', value: entrega.nomeEntrega },
               { propertyName: 'nomeStatus', value: entrega.nomeStatus },
+              { propertyName: 'contagemPE', value: entrega.contagemPE },
             ],
-            expanded: false,
+            expanded: shouldStartExpanded,
           });
         } else {
           // O projeto em questão ainda não foi listado
@@ -126,10 +132,11 @@ export class DeliveriesByStatusComponent implements OnChanges {
               data: [
                 { originalPropertyName: 'nomeEntrega', propertyName: 'firstColumn', value: entrega.nomeEntrega },
                 { propertyName: 'nomeStatus', value: entrega.nomeStatus },
+                { propertyName: 'contagemPE', value: entrega.contagemPE },
               ],
-              expanded: false,
+              expanded: shouldStartExpanded,
             }],
-            expanded: false,
+            expanded: shouldStartExpanded,
           });
         }
       } else {
@@ -147,12 +154,13 @@ export class DeliveriesByStatusComponent implements OnChanges {
               data: [
                 { originalPropertyName: 'nomeEntrega', propertyName: 'firstColumn', value: entrega.nomeEntrega },
                 { propertyName: 'nomeStatus', value: entrega.nomeStatus },
+                { propertyName: 'contagemPE', value: entrega.contagemPE },
               ],
-              expanded: false,
+              expanded: shouldStartExpanded,
             }],
-            expanded: false,
+            expanded: shouldStartExpanded,
           }],
-          expanded: false,
+          expanded: shouldStartExpanded,
         });
       }
     });
@@ -162,13 +170,50 @@ export class DeliveriesByStatusComponent implements OnChanges {
       customColumn: {
         originalPropertyName: 'nomeArea',
         propertyName: 'firstColumn',
-        displayName: 'Nome da Área',
+        displayName: 'Nome',
       },
       data: finalData,
     };
   }
 
   handleUserTableSearch(searchTerm: string) {
-    
+    if (searchTerm.length > 0) {
+      const preparedSearchTerm = searchTerm.toLowerCase();
+      const filteredItems = this.statusData.filter((entrega) => (
+        entrega.nomeArea.toLowerCase().includes(preparedSearchTerm) ||
+        entrega.nomeProjeto.toLowerCase().includes(preparedSearchTerm) ||
+        entrega.nomeEntrega.toLowerCase().includes(preparedSearchTerm) ||
+        entrega.nomeStatus.toLowerCase().includes(preparedSearchTerm)
+      ));
+  
+      this.assembleFlipTableContent(filteredItems, true);
+    } else {
+      this.assembleFlipTableContent(this.statusData);
+    }
+  }
+
+  handleUserTableDownload() {
+    const columns: Array<{ key: string; label: string; }> = [
+      { key: 'areaId', label: 'ID Área' },
+      { key: 'nomeArea', label: 'Área Temática' },
+      { key: 'projetoId', label: 'ID Projeto' },
+      { key: 'nomeProjeto', label: 'Projeto' },
+      { key: 'programaId', label: 'ID Programa' },
+      { key: 'nomePrograma', label: 'Programa' },
+      { key: 'entregaId', label: 'ID Entrega' },
+      { key: 'nomeEntrega', label: 'Entrega' },
+      { key: 'nomeStatus', label: 'Status' },
+      { key: 'orgaoId', label: 'ID Órgão' },
+      { key: 'nomeOrgao', label: 'Órgão' },
+      { key: 'portfolioId', label: 'ID Portifólio' },
+      { key: 'nomePortfolio', label: 'Portifólio' },
+      { key: 'contagemPE', label: 'Contagem PE' }
+    ];
+
+    this.exportToCSVService.exportWithCustomHeaders(
+      this.statusData,
+      columns,
+      'InfoPlan_Entregas_por_Status.csv'
+    );
   }
 }

@@ -3,7 +3,8 @@ import { PieChartModelComponent } from '../../pie-chart-model/pieChartModel.comp
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../../core/interfaces/strategic-project.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
-import { FlipTableComponent } from '../../flip-table-model/flip-table.component';
+import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
+import { ExportCSVService } from '../../../../core/service/export-csv.service';
 
 @Component({
   selector: 'ngx-deliveries-by-type',
@@ -26,7 +27,12 @@ export class DeliveriesByTypeComponent implements OnChanges {
 
   typeShow: IStrategicProjectDeliveriesShow[];
 
-  constructor(private strategicProjectsService: StrategicProjectsService) {}
+  flipTableContent: FlipTableContent;
+
+  constructor(
+    private strategicProjectsService: StrategicProjectsService,
+    private exportToCSVService: ExportCSVService,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {
@@ -67,6 +73,8 @@ export class DeliveriesByTypeComponent implements OnChanges {
           value: val.count,
           name: val.nomeStatus
         });
+
+        this.assembleFlipTableContent(data);
       },
       (error) => {
         console.error('Erro ao carregar os dados das entregas por tipo:', error);
@@ -82,5 +90,134 @@ export class DeliveriesByTypeComponent implements OnChanges {
       '#1EBBD7', 
       '#71C7EC', 
     ];
+  }
+
+  assembleFlipTableContent(rawData: IStrategicProjectDeliveries[], shouldStartExpanded: boolean = false) {
+    const tableColumns = [
+      { propertyName: 'nomeStatus', displayName: 'Tipo' },
+      { propertyName: 'contagemPE', displayName: 'Contagem PE' },
+    ];
+
+    const finalData: Array<TreeNode> = [];
+    
+    rawData.forEach((entrega) => {
+      const areaIsAlreadyListed = finalData.find((area) => {
+        const areaName = area.data.find((prop) => prop.propertyName === 'firstColumn' && prop.value === entrega.nomeArea);
+
+        if (areaName) return area;
+      });
+
+      if (areaIsAlreadyListed) {
+        // A área em questão já está listada
+
+        const projectIsAlreadyListed = areaIsAlreadyListed.children.find((project) => {
+          const projectName = project.data.find((prop) => prop.propertyName === 'firstColumn' && prop.value === entrega.nomeProjeto);
+
+          if (projectName) return project;
+        });
+
+        if (projectIsAlreadyListed) {
+          // O projeto em questão já está listado
+
+          projectIsAlreadyListed.children.push({
+            data: [
+              { originalPropertyName: 'nomeEntrega', propertyName: 'firstColumn', value: entrega.nomeEntrega },
+              { propertyName: 'nomeStatus', value: entrega.nomeStatus },
+              { propertyName: 'contagemPE', value: entrega.contagemPE },
+            ],
+            expanded: shouldStartExpanded,
+          });
+        } else {
+          // O projeto em questão ainda não foi listado
+
+          areaIsAlreadyListed.children.push({
+            data: [
+              { originalPropertyName: 'nomeProjeto', propertyName: 'firstColumn', value: entrega.nomeProjeto },
+            ],
+            children: [{
+              data: [
+                { originalPropertyName: 'nomeEntrega', propertyName: 'firstColumn', value: entrega.nomeEntrega },
+                { propertyName: 'nomeStatus', value: entrega.nomeStatus },
+                { propertyName: 'contagemPE', value: entrega.contagemPE },
+              ],
+              expanded: shouldStartExpanded,
+            }],
+            expanded: shouldStartExpanded,
+          });
+        }
+      } else {
+        // A área em questão ainda não foi listada
+
+        finalData.push({
+          data: [
+            { originalPropertyName: 'nomeArea', propertyName: 'firstColumn', value: entrega.nomeArea },
+          ],
+          children: [{
+            data: [
+              { originalPropertyName: 'nomeProjeto', propertyName: 'firstColumn', value: entrega.nomeProjeto },
+            ],
+            children: [{
+              data: [
+                { originalPropertyName: 'nomeEntrega', propertyName: 'firstColumn', value: entrega.nomeEntrega },
+                { propertyName: 'nomeStatus', value: entrega.nomeStatus },
+                { propertyName: 'contagemPE', value: entrega.contagemPE },
+              ],
+              expanded: shouldStartExpanded,
+            }],
+            expanded: shouldStartExpanded,
+          }],
+          expanded: shouldStartExpanded,
+        });
+      }
+    });
+
+    this.flipTableContent = {
+      defaultColumns: tableColumns,
+      customColumn: {
+        originalPropertyName: 'nomeArea',
+        propertyName: 'firstColumn',
+        displayName: 'Nome',
+      },
+      data: finalData,
+    };
+  }
+
+  handleUserTableSearch(searchTerm: string) {
+    if (searchTerm.length > 0) {
+      const preparedSearchTerm = searchTerm.toLowerCase();
+      const filteredItems = this.typeData.filter((entrega) => (
+        entrega.nomeArea.toLowerCase().includes(preparedSearchTerm) ||
+        entrega.nomeProjeto.toLowerCase().includes(preparedSearchTerm) ||
+        entrega.nomeEntrega.toLowerCase().includes(preparedSearchTerm) ||
+        entrega.nomeStatus.toLowerCase().includes(preparedSearchTerm)
+      ));
+  
+      this.assembleFlipTableContent(filteredItems, true);
+    } else {
+      this.assembleFlipTableContent(this.typeData);
+    }
+  }
+
+  handleUserTableDownload() {
+    const columns: Array<{ key: string; label: string; }> = [
+      { key: 'areaId', label: 'ID Área' },
+      { key: 'nomeArea', label: 'Área Temática' },
+      { key: 'projetoId', label: 'ID Projeto' },
+      { key: 'nomeProjeto', label: 'Projeto' },
+      { key: 'entregaId', label: 'ID Entrega' },
+      { key: 'nomeEntrega', label: 'Entrega' },
+      { key: 'nomeStatus', label: 'Status' },
+      { key: 'orgaoId', label: 'ID Órgão' },
+      { key: 'nomeOrgao', label: 'Órgão' },
+      { key: 'portfolioId', label: 'ID Portifólio' },
+      { key: 'nomePortfolio', label: 'Portifólio' },
+      { key: 'contagemPE', label: 'Contagem PE' }
+    ];
+
+    this.exportToCSVService.exportWithCustomHeaders(
+      this.typeData,
+      columns,
+      'InfoPlan_Entregas_por_Tipo.csv'
+    );
   }
 }

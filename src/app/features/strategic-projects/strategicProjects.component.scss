@@ -188,12 +188,7 @@ button:focus, select:focus, input:focus {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   text-align: center;
 
-  .text-card {
-    color: var(--card-text-color);
-    font-size: 0.9rem;
-  }
-
-  .investment-select, .delivery-select {
+  .delivery-select {
     min-width: 200px;
   }
 

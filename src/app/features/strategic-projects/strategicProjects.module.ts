@@ -11,7 +11,7 @@ import { RisksByClassificationComponent } from './data-chart/risks-by-classifica
 import { NgxEchartsModule } from 'ngx-echarts';
 import { AccumulatedInvestmentComponent } from './data-chart/accumulatedInvestment.component';
 import { DeliveriesBySelectedComponent } from './data-chart/deliveriesBySelected.component';
-import { InvestmentBySelectedComponent } from './data-chart/investmentBySelected.component';
+import { InvestmentBySelectedComponent } from './data-chart/investment-by-selected/investmentBySelected.component';
 import { FormsModule } from '@angular/forms';
 import { ThemeModule } from '../../@theme/theme.module';
 import { MapEsComponent } from './map-es/mapEs.component';

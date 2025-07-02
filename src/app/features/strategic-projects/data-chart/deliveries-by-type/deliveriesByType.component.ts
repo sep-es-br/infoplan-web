@@ -4,7 +4,7 @@ import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/st
 import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../../core/interfaces/strategic-project.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
-import { ExportCSVService } from '../../../../core/service/export-csv.service';
+import { ExportDataService } from '../../../../core/service/export-data';
 
 @Component({
   selector: 'ngx-deliveries-by-type',
@@ -31,7 +31,7 @@ export class DeliveriesByTypeComponent implements OnChanges {
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
-    private exportToCSVService: ExportCSVService,
+    private exportDataService: ExportDataService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -95,7 +95,7 @@ export class DeliveriesByTypeComponent implements OnChanges {
   assembleFlipTableContent(rawData: IStrategicProjectDeliveries[], shouldStartExpanded: boolean = false) {
     const tableColumns = [
       { propertyName: 'nomeStatus', displayName: 'Tipo' },
-      { propertyName: 'contagemPE', displayName: 'Contagem PE' },
+      { propertyName: 'contagemPE', displayName: 'Cont.PE' },
     ];
 
     const finalData: Array<TreeNode> = [];
@@ -214,7 +214,7 @@ export class DeliveriesByTypeComponent implements OnChanges {
       { key: 'contagemPE', label: 'Contagem PE' }
     ];
 
-    this.exportToCSVService.exportWithCustomHeaders(
+    this.exportDataService.exportCSVWithCustomHeaders(
       this.typeData,
       columns,
       'InfoPlan_Entregas_por_Tipo.csv'

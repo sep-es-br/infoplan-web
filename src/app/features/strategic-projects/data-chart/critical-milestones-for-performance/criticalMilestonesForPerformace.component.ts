@@ -4,7 +4,7 @@ import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/st
 import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../../core/interfaces/strategic-project.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
-import { ExportCSVService } from '../../../../core/service/export-csv.service';
+import { ExportDataService } from '../../../../core/service/export-data';
 
 @Component({
   selector: 'ngx-critical-milestones-for-performance',
@@ -33,7 +33,7 @@ export class CriticalMilestonesForPerformanceComponent  implements OnChanges {
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
-    private exportToCSVService: ExportCSVService,
+    private exportDataService: ExportDataService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -204,7 +204,7 @@ export class CriticalMilestonesForPerformanceComponent  implements OnChanges {
       { key: 'nomePortfolio', label: 'Portifólio' },
     ];
 
-    this.exportToCSVService.exportWithCustomHeaders(
+    this.exportDataService.exportCSVWithCustomHeaders(
       this.performanceData,
       columns,
       'InfoPlan_Marcos_Críticos_por_Desempenho.csv'

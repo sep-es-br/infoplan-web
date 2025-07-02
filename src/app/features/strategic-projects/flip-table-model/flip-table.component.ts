@@ -49,7 +49,7 @@ export interface FlipTableContent {
   ]
 })
 export class FlipTableComponent implements OnChanges {
-  @Input() cardTitle: string = 'Título aqui';
+  @Input() cardTitle: string;
 
   @Input() tableContent: FlipTableContent;
 
@@ -125,7 +125,7 @@ export class FlipTableComponent implements OnChanges {
   getCellValue(dataObject: Array<{ propertyName: string; value: any; }>, column: string): string {
     const object = dataObject.find((el) => el.propertyName === column);
 
-    return (object ? object.value : '--');
+    return (object ? object.value : '');
   }
 
   getSortDirection(column: string): NbSortDirection {

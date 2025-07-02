@@ -1,6 +1,12 @@
 <nb-card class="outer-card m-0">
   <nb-card-header class="card-header d-flex justify-content-between align-items-center p-2 px-3">
-    <span class="card-title text-truncate w-50 m-0">{{ cardTitle }}</span>
+    <ng-container *ngIf="cardTitle else customHeader">
+      <span class="card-title text-truncate w-50 m-0">{{ cardTitle }}</span>
+    </ng-container>
+
+    <ng-template #customHeader>
+      <ng-content select="[custom-header]"></ng-content>
+    </ng-template>
 
     <div class="d-flex align-items-center justify-content-end">
       <ng-container *ngIf="isFlipCardFlipped">
@@ -53,7 +59,7 @@
   <nb-flip-card class="flip-card" [showToggleButton]="false" [flipped]="isFlipCardFlipped">
     <nb-card-front>
       <nb-card class="card-front px-3 pb-2 m-0">
-        <ng-content></ng-content>
+        <ng-content select="[card-front]"></ng-content>
       </nb-card>
     </nb-card-front>
     <nb-card-back>
@@ -81,11 +87,13 @@
                 [nbTooltip]="getCellValue(row.data, tableContent.customColumn.propertyName)"
                 [ngClass]="{ 'cursor-pointer': row.children }"
               >
-                <ng-container *ngIf="row.children">
-                  <nb-icon class="icon" [icon]="row.expanded ? 'chevron-down-outline' : 'chevron-right-outline'">
-                  </nb-icon>
-                </ng-container> 
-                {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
+                <div class="d-flex align-items-center" [ngClass]="{ 'pl-2': !row.children }">
+                  <ng-container *ngIf="row.children">
+                    <nb-icon class="icon" [icon]="row.expanded ? 'chevron-down-outline' : 'chevron-right-outline'">
+                    </nb-icon>
+                  </ng-container> 
+                  {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
+                </div>
               </td>
             </ng-container>
 
@@ -97,7 +105,7 @@
               <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>
                 {{ columnLabels[column] }}
               </th>
-              <td nbTreeGridCell *nbTreeGridCellDef="let row">
+              <td nbTreeGridCell *nbTreeGridCellDef="let row" class="pl-1">
                 {{ getCellValue(row.data, column) }}
               </td>
             </ng-container>

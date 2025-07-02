@@ -4,7 +4,7 @@ import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/st
 import { IStrategicProjectDeliveriesShow, IStrategicProjectRisksByClassification } from '../../../../core/interfaces/strategic-project.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
-import { ExportCSVService } from '../../../../core/service/export-csv.service';
+import { ExportDataService } from '../../../../core/service/export-data';
 
 @Component({
   selector: 'ngx-risks-by-classification',
@@ -31,7 +31,7 @@ export class RisksByClassificationComponent implements OnChanges {
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
-    private exportToCSVService: ExportCSVService,
+    private exportDataService: ExportDataService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -200,7 +200,7 @@ export class RisksByClassificationComponent implements OnChanges {
       { key: 'nomePortfolio', label: 'Portifólio' },
     ];
 
-    this.exportToCSVService.exportWithCustomHeaders(
+    this.exportDataService.exportCSVWithCustomHeaders(
       this.riskData,
       columns,
       'InfoPlan_Riscos_por_Importância.csv'

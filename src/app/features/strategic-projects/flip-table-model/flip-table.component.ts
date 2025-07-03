@@ -13,17 +13,25 @@ export interface TreeNode {
   expanded?: boolean;
 };
 
-export interface FlipTableContent {
-  defaultColumns: Array<{
-    originalPropertyName?: string;
-    propertyName: string;
-    displayName: string;
-  }>;
-  customColumn: {
-    originalPropertyName?: string;
-    propertyName: string;
-    displayName: string;
+export enum FlipTableAlignment {
+  LEFT = 'left',
+  CENTER = 'center',
+  RIGHT = 'right',
+}
+
+interface FlipTableColumn {
+  originalPropertyName?: string;
+  propertyName: string;
+  displayName: string;
+  alignment?: {
+    header: FlipTableAlignment;
+    data: FlipTableAlignment;
   };
+}
+
+export interface FlipTableContent {
+  defaultColumns: Array<FlipTableColumn>;
+  customColumn: FlipTableColumn;
   data: Array<TreeNode>;
 }
 
@@ -63,9 +71,9 @@ export class FlipTableComponent implements OnChanges {
 
   isSearchFieldVisible: boolean = false;
 
-  defaultColumnsList: Array<string> = [];
+  defaultColumnsList: Array<FlipTableColumn> = [];
 
-  allColumns: Array<string> = [];
+  allColumns: Array<FlipTableColumn> = [];
 
   columnLabels: { [key: string]: string } = {};
 
@@ -74,6 +82,10 @@ export class FlipTableComponent implements OnChanges {
   sortDirection: NbSortDirection = NbSortDirection.NONE;
 
   debounceTimer: any;
+
+  get allColumnsNames(): Array<string> {
+    return this.allColumns.map((el) => el.propertyName);
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tableContent'] && this.tableContent) {
@@ -87,13 +99,28 @@ export class FlipTableComponent implements OnChanges {
       
       this.tableContent.defaultColumns.forEach((el) => {
         this.columnLabels[el.propertyName] = el.displayName;
-        this.defaultColumnsList.push(el.propertyName);
+        this.defaultColumnsList.push({
+          propertyName: el.propertyName,
+          displayName: el.displayName,
+          alignment: {
+            header: el.alignment ? el.alignment.header : FlipTableAlignment.LEFT,
+            data: el.alignment ? el.alignment.data : FlipTableAlignment.LEFT,
+          },
+        });
       });
 
       this.columnLabels[this.tableContent.customColumn.propertyName] = this.tableContent.customColumn.displayName;
 
+      const customColumn = this.tableContent.customColumn;
       this.allColumns = [
-        this.tableContent.customColumn.propertyName,
+        {
+          propertyName: customColumn.propertyName,
+          displayName: customColumn.displayName,
+          alignment: {
+            header: customColumn.alignment ? customColumn.alignment.header : FlipTableAlignment.LEFT,
+            data: customColumn.alignment ? customColumn.alignment.data : FlipTableAlignment.LEFT,
+          },
+        },
         ...this.defaultColumnsList,
       ];
     }

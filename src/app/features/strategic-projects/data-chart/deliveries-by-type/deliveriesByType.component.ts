@@ -3,7 +3,7 @@ import { PieChartModelComponent } from '../../pie-chart-model/pieChartModel.comp
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '../../../../core/interfaces/strategic-project.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
-import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
+import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { ExportDataService } from '../../../../core/service/export-data';
 
 @Component({
@@ -95,7 +95,14 @@ export class DeliveriesByTypeComponent implements OnChanges {
   assembleFlipTableContent(rawData: IStrategicProjectDeliveries[], shouldStartExpanded: boolean = false) {
     const tableColumns = [
       { propertyName: 'nomeStatus', displayName: 'Tipo' },
-      { propertyName: 'contagemPE', displayName: 'Cont.PE' },
+      {
+        propertyName: 'contagemPE',
+        displayName: 'Cont.PE',
+        alignment: {
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
+        },
+      },
     ];
 
     const finalData: Array<TreeNode> = [];

@@ -3,7 +3,7 @@ import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizont
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectInvestmentSelected } from '../../../../core/interfaces/strategic-project.interface';
-import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
+import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { UtilitiesService } from '../../../../core/service/utilities.service';
@@ -147,15 +147,23 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   assembleFlipTableContent(rawData: IStrategicProjectInvestmentSelected[], shouldStartExpanded: boolean = false) {
     const tableColumns = [
-      { propertyName: 'custoPrevisto', displayName: 'Previsto' },
-      { propertyName: 'custoRealizado', displayName: 'Realizado' },
+      {
+        propertyName: 'custoPrevisto',
+        displayName: 'Previsto',
+        alignment: { header: FlipTableAlignment.CENTER, data: FlipTableAlignment.RIGHT },
+      },
+      {
+        propertyName: 'custoRealizado',
+        displayName: 'Realizado',
+        alignment: { header: FlipTableAlignment.CENTER, data: FlipTableAlignment.RIGHT },
+      },
     ];
 
     const finalData: Array<TreeNode> = rawData.map((investimento) => ({
       data: [
         { originalPropertyName: 'nome', propertyName: 'firstColumn', value: investimento.nome },
-        { propertyName: 'custoPrevisto', value: this.utilitiesService.formatCurrencyString(investimento.custoPrevisto) },
-        { propertyName: 'custoRealizado', value: this.utilitiesService.formatCurrencyString(investimento.custoRealizado) },
+        { propertyName: 'custoPrevisto', value: this.utilitiesService.formatCurrencyUsingBrazilianStandards(investimento.custoPrevisto, 'R$') },
+        { propertyName: 'custoRealizado', value: this.utilitiesService.formatCurrencyUsingBrazilianStandards(investimento.custoRealizado, 'R$') },
       ],
       children: [],
       expanded: shouldStartExpanded,
@@ -177,8 +185,8 @@ export class InvestmentBySelectedComponent implements OnChanges {
       const preparedSearchTerm = searchTerm.toLowerCase();
       const filteredItems = this.investmentData.filter((investimento) => (
         investimento.nome.toLowerCase().includes(preparedSearchTerm) ||
-        this.utilitiesService.formatCurrencyString(investimento.custoPrevisto).includes(preparedSearchTerm) ||
-        this.utilitiesService.formatCurrencyString(investimento.custoRealizado).includes(preparedSearchTerm)
+        this.utilitiesService.formatCurrencyUsingBrazilianStandards(investimento.custoPrevisto, 'R$').includes(preparedSearchTerm) ||
+        this.utilitiesService.formatCurrencyUsingBrazilianStandards(investimento.custoRealizado, 'R$').includes(preparedSearchTerm)
       ));
   
       this.assembleFlipTableContent(filteredItems, true);

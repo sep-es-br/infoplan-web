@@ -71,13 +71,21 @@
     }
 
     .card-back {
+
       .flip-table {
         font-family: var(--text-paragraph-font-family);
+        z-index: 2;
 
+        .nb-tree-grid-header-row {
+          position: sticky;
+          top: -1px;
+          z-index: 10;
+        }
         th {
           font-size: 12px !important;
           padding: 0;
           padding-left: .5em;
+          padding-right: .5em;
           height: 20px;
         }
         th:nth-child(2) {

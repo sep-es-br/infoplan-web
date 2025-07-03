@@ -4,7 +4,23 @@ import { Injectable } from "@angular/core";
   providedIn: 'root',
 })
 export class UtilitiesService {
-  formatCurrencyString(input: number): string {
+  formatCurrencyUsingBrazilianStandards(input: number, currencySign?: string): string {
+    let formattedNumber = new Intl.NumberFormat(
+      'pt-BR',
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }
+    ).format(input).toString();
+
+    if (currencySign) {
+      formattedNumber = `${currencySign} ${formattedNumber}`;
+    }
+
+    return formattedNumber;
+  }
+
+  formatCurrencyStringWithLabels(input: number): string {
     let suffix = '';
     const originalInText = input.toString();
     const beforeDecimals = originalInText.split('.')[0];

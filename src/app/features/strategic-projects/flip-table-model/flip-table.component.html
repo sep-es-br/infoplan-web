@@ -74,11 +74,15 @@
             [nbSort]="tableContent.data"
             (sort)="handleSortClick($event)"
           >
-            <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumns"></tr>
-            <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns"></tr>
+            <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumnsNames"></tr>
+            <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumnsNames"></tr>
 
             <ng-container [nbTreeGridColumnDef]="tableContent.customColumn.propertyName">
-              <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>
+              <th
+                nbTreeGridHeaderCell
+                *nbTreeGridHeaderCellDef
+                [style]="{ 'text-align': tableContent.customColumn.alignment?.header || 'left' }"
+              >
                 {{ tableContent.customColumn.displayName }}
               </th>
               <td
@@ -88,6 +92,7 @@
                 nbTooltipStatus="basic"
                 [nbTooltip]="getCellValue(row.data, tableContent.customColumn.propertyName)"
                 [ngClass]="{ 'cursor-pointer': row.children }"
+                [style]="{ 'text-align': tableContent.customColumn.alignment?.data || 'left' }"
               >
                 <div class="d-flex align-items-center text-truncate" [ngClass]="{ 'pl-2': !row.children }">
                   <ng-container *ngIf="row.children">
@@ -101,14 +106,23 @@
 
             <ng-container
               *ngFor="let column of defaultColumnsList; let index = index"
-              [nbTreeGridColumnDef]="column"
+              [nbTreeGridColumnDef]="column.propertyName"
               [showOn]="getShowOn(index)"
             >
-              <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>
-                {{ columnLabels[column] }}
+              <th
+                nbTreeGridHeaderCell
+                *nbTreeGridHeaderCellDef
+                [style]="{ 'text-align': column.alignment ? column.alignment.header : 'left' }"
+              >
+                {{ columnLabels[column.propertyName] }}
               </th>
-              <td nbTreeGridCell *nbTreeGridCellDef="let row" class="pl-1">
-                {{ getCellValue(row.data, column) }}
+              <td
+                nbTreeGridCell
+                *nbTreeGridCellDef="let row"
+                class="px-1"
+                [style]="{ 'text-align': column.alignment ? column.alignment.data : 'left' }"
+              >
+                {{ getCellValue(row.data, column.propertyName) }}
               </td>
             </ng-container>
           </table>

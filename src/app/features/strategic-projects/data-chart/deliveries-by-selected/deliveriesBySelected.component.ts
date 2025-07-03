@@ -3,7 +3,7 @@ import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizont
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectDeliveriesBySelected } from '../../../../core/interfaces/strategic-project.interface';
-import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
+import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
 
@@ -129,8 +129,22 @@ export class DeliveriesBySelectedComponent implements OnChanges {
 
   assembleFlipTableContent(rawData: IStrategicProjectDeliveriesBySelected[], shouldStartExpanded: boolean = false) {
     const tableColumns = [
-      { propertyName: 'concluida', displayName: 'Concluída' },
-      { propertyName: 'execucao', displayName: 'Em execução' },
+      {
+        propertyName: 'concluida',
+        displayName: 'Concluída',
+        alignment: {
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
+        },
+      },
+      {
+        propertyName: 'execucao',
+        displayName: 'Em execução',
+        alignment: {
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
+        },
+      },
     ];
 
     const finalData: Array<TreeNode> = rawData.map((entrega) => ({

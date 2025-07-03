@@ -202,16 +202,18 @@ export class DeliveriesByTypeComponent implements OnChanges {
     const columns: Array<{ key: string; label: string; }> = [
       { key: 'areaId', label: 'ID Área' },
       { key: 'nomeArea', label: 'Área Temática' },
+      { key: 'programaId', label: 'ID Programa' },
+      { key: 'nomePrograma', label: 'Programa' },
       { key: 'projetoId', label: 'ID Projeto' },
       { key: 'nomeProjeto', label: 'Projeto' },
       { key: 'entregaId', label: 'ID Entrega' },
       { key: 'nomeEntrega', label: 'Entrega' },
+      { key: 'contagemPE', label: 'Contagem PE' },
       { key: 'nomeStatus', label: 'Status' },
       { key: 'orgaoId', label: 'ID Órgão' },
       { key: 'nomeOrgao', label: 'Órgão' },
       { key: 'portfolioId', label: 'ID Portifólio' },
       { key: 'nomePortfolio', label: 'Portifólio' },
-      { key: 'contagemPE', label: 'Contagem PE' }
     ];
 
     this.exportDataService.exportXLSXWithCustomHeaders(

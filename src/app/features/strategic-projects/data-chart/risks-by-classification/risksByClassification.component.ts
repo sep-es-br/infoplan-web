@@ -189,13 +189,13 @@ export class RisksByClassificationComponent implements OnChanges {
     const columns: Array<{ key: string; label: string; }> = [
       { key: 'areaId', label: 'ID Área' },
       { key: 'nomeArea', label: 'Área Temática' },
+      { key: 'programaId', label: 'ID Programa' },
+      { key: 'nomePrograma', label: 'Programa' },
       { key: 'projetoId', label: 'ID Projeto' },
       { key: 'nomeProjeto', label: 'Projeto' },
       { key: 'riscoId', label: 'ID Risco' },
       { key: 'nomeRisco', label: 'Risco' },
       { key: 'riscoImportancia', label: 'Importância' },
-      { key: 'programaId', label: 'ID Programa' },
-      { key: 'nomePrograma', label: 'Programa' },
       { key: 'portfolioId', label: 'ID Portifólio' },
       { key: 'nomePortfolio', label: 'Portifólio' },
     ];

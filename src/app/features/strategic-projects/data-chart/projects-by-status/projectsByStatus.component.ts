@@ -158,10 +158,10 @@ export class ProjectsByStatusComponent implements OnChanges {
     const columns: Array<{ key: string; label: string; }> = [
       { key: 'areaId', label: 'ID Área' },
       { key: 'nomeArea', label: 'Área Temática' },
-      { key: 'projetoId', label: 'ID Projeto' },
-      { key: 'nomeProjeto', label: 'Projeto' },
       { key: 'programaId', label: 'ID Programa' },
       { key: 'nomePrograma', label: 'Programa' },
+      { key: 'projetoId', label: 'ID Projeto' },
+      { key: 'nomeProjeto', label: 'Projeto' },
       { key: 'nomeStatus', label: 'Status' },
       { key: 'orgaoId', label: 'ID Órgão' },
       { key: 'nomeOrgao', label: 'Órgão' },

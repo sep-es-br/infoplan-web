@@ -209,10 +209,10 @@ export class DeliveriesByPerformaceComponent implements OnChanges {
       { key: 'contagemPE', label: 'Contagem PE' }
     ];
 
-    this.exportDataService.exportCSVWithCustomHeaders(
+    this.exportDataService.exportXLSXWithCustomHeaders(
       this.performanceData,
       columns,
-      'InfoPlan_Entregas_por_Desempenho.csv'
+      'InfoPlan_Entregas_por_Desempenho.xlsx'
     );
   }
 }

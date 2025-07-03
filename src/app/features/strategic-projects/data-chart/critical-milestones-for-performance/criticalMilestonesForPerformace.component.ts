@@ -204,10 +204,10 @@ export class CriticalMilestonesForPerformanceComponent  implements OnChanges {
       { key: 'nomePortfolio', label: 'Portifólio' },
     ];
 
-    this.exportDataService.exportCSVWithCustomHeaders(
+    this.exportDataService.exportXLSXWithCustomHeaders(
       this.performanceData,
       columns,
-      'InfoPlan_Marcos_Críticos_por_Desempenho.csv'
+      'InfoPlan_Marcos_Críticos_por_Desempenho.xlsx'
     );
   }
 }

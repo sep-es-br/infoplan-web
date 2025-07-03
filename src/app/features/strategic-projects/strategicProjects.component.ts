@@ -14,7 +14,7 @@ import { AvailableThemes } from '../../@theme/theme.module';
   styleUrls: ['./strategicProjects.component.scss']
 })
 export class StrategicProjectsComponent {
-  deliveriesSelectedOption: string = 'Área Temática';
+  
 
   timestamp: string;
 

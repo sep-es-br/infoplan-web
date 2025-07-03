@@ -63,7 +63,10 @@
       </nb-card>
     </nb-card-front>
     <nb-card-back>
-      <nb-card class="card-back box-limited m-0 px-3">
+      <nb-card
+        class="card-back box-limited m-0 px-3"
+        [style]="{ 'height': backCardHeight + 'px' }"
+      >
         <ng-container *ngIf="tableContent">
           <table
             class="flip-table"
@@ -79,7 +82,6 @@
                 {{ tableContent.customColumn.displayName }}
               </th>
               <td
-                class="text-truncate"
                 *nbTreeGridCellDef="let row"
                 nbTreeGridCell
                 nbTooltipPlacement="right"
@@ -87,7 +89,7 @@
                 [nbTooltip]="getCellValue(row.data, tableContent.customColumn.propertyName)"
                 [ngClass]="{ 'cursor-pointer': row.children }"
               >
-                <div class="d-flex align-items-center" [ngClass]="{ 'pl-2': !row.children }">
+                <div class="d-flex align-items-center text-truncate" [ngClass]="{ 'pl-2': !row.children }">
                   <ng-container *ngIf="row.children">
                     <nb-icon class="icon" [icon]="row.expanded ? 'chevron-down-outline' : 'chevron-right-outline'">
                     </nb-icon>

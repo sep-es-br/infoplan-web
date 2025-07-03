@@ -169,10 +169,10 @@ export class ProjectsByStatusComponent implements OnChanges {
       { key: 'nomePortfolio', label: 'Portifólio' },
     ];
 
-    this.exportDataService.exportCSVWithCustomHeaders(
+    this.exportDataService.exportXLSXWithCustomHeaders(
       this.statusData,
       columns,
-      'InfoPlan_Projetos_por_Status.csv'
+      'InfoPlan_Projetos_por_Status.xlsx'
     );
   }
 }

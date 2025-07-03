@@ -214,10 +214,10 @@ export class DeliveriesByTypeComponent implements OnChanges {
       { key: 'contagemPE', label: 'Contagem PE' }
     ];
 
-    this.exportDataService.exportCSVWithCustomHeaders(
+    this.exportDataService.exportXLSXWithCustomHeaders(
       this.typeData,
       columns,
-      'InfoPlan_Entregas_por_Tipo.csv'
+      'InfoPlan_Entregas_por_Tipo.xlsx'
     );
   }
 }

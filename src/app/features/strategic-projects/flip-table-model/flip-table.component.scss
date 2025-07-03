@@ -71,8 +71,6 @@
     }
 
     .card-back {
-      height: 150px;
-
       .flip-table {
         font-family: var(--text-paragraph-font-family);
 
@@ -86,7 +84,7 @@
           width: 25%;
 
           @media screen and (max-width: 576px) {
-            width: 35%;
+            width: 30%;
           }
         }
         th:nth-child(3) {

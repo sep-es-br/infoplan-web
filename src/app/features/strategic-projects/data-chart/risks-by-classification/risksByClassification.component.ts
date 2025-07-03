@@ -200,10 +200,10 @@ export class RisksByClassificationComponent implements OnChanges {
       { key: 'nomePortfolio', label: 'Portifólio' },
     ];
 
-    this.exportDataService.exportCSVWithCustomHeaders(
+    this.exportDataService.exportXLSXWithCustomHeaders(
       this.riskData,
       columns,
-      'InfoPlan_Riscos_por_Importância.csv'
+      'InfoPlan_Riscos_por_Importância.xlsx'
     );
   }
 }

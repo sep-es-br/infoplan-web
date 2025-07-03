@@ -10,7 +10,26 @@ export class ExportDataService {
     columns: Array<{ key: string; label: string; }>,
     fileName: string,
   ) {
-    
+    const formatedData = data.map((item) => {
+      const row: any = {};
+      columns.forEach((column) => {
+        row[column.label] = item[column.key];
+      });
+
+      return row;
+    });
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(formatedData);
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Infoplan': worksheet },
+      SheetNames: ['Infoplan'],
+    };
+
+    if (!fileName.endsWith('.xlsx')) {
+      fileName = `${fileName}.xlsx`;
+    }
+
+    XLSX.writeFile(workbook, fileName);
   }
   
   public exportCSVWithCustomHeaders(

@@ -210,10 +210,10 @@ export class DeliveriesByStatusComponent implements OnChanges {
       { key: 'contagemPE', label: 'Contagem PE' }
     ];
 
-    this.exportDataService.exportCSVWithCustomHeaders(
+    this.exportDataService.exportXLSXWithCustomHeaders(
       this.statusData,
       columns,
-      'InfoPlan_Entregas_por_Status.csv'
+      'InfoPlan_Entregas_por_Status.xlsx',
     );
   }
 }

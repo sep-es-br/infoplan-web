@@ -53,6 +53,8 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() tableContent: FlipTableContent;
 
+  @Input() backCardHeight: number = 150;
+
   @Output() executeSearch = new EventEmitter<string>();
 
   @Output() executeDownload = new EventEmitter<any>();

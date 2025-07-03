@@ -6,6 +6,7 @@ import { IStrategicProjectInvestmentSelected } from '../../../../core/interfaces
 import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
+import { UtilitiesService } from '../../../../core/service/utilities.service';
 
 @Component({
   selector: 'ngx-investment-by-selected',
@@ -34,6 +35,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
+    private utilitiesService: UtilitiesService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -144,99 +146,58 @@ export class InvestmentBySelectedComponent implements OnChanges {
   }
 
   assembleFlipTableContent(rawData: IStrategicProjectInvestmentSelected[], shouldStartExpanded: boolean = false) {
-      const tableColumns = [
-        { propertyName: 'custoPrevisto', displayName: 'Previsto' },
-        { propertyName: 'custoRealizado', displayName: 'Realizado' },
-      ];
-  
-      const finalData: Array<TreeNode> = rawData.map((investimento) => ({
-        data: [
-          { originalPropertyName: 'nome', propertyName: 'firstColumn', value: investimento.nome },
-          { propertyName: 'custoPrevisto', value: this.formatCurrencyString(investimento.custoPrevisto) },
-          { propertyName: 'custoRealizado', value: this.formatCurrencyString(investimento.custoRealizado) },
-        ],
-        children: [],
-        expanded: shouldStartExpanded,
-      }));
-  
-      this.flipTableContent = {
-        defaultColumns: tableColumns,
-        customColumn: {
-          originalPropertyName: 'nome',
-          propertyName: 'firstColumn',
-          displayName: this.selectedInvestmentOption,
-        },
-        data: finalData,
-      };
-    }
-  
-    handleUserTableSearch(searchTerm: string) {
-      // if (searchTerm.length > 0) {
-      //   const preparedSearchTerm = searchTerm.toLowerCase();
-      //   const filteredItems = this.statusData.filter((entrega) => (
-      //     entrega.nomeArea.toLowerCase().includes(preparedSearchTerm) ||
-      //     entrega.nomeProjeto.toLowerCase().includes(preparedSearchTerm) ||
-      //     entrega.nomeEntrega.toLowerCase().includes(preparedSearchTerm) ||
-      //     entrega.nomeStatus.toLowerCase().includes(preparedSearchTerm)
-      //   ));
-    
-      //   this.assembleFlipTableContent(filteredItems, true);
-      // } else {
-      //   this.assembleFlipTableContent(this.statusData);
-      // }
-    }
-  
-    handleUserTableDownload() {
-      const columns: Array<{ key: string; label: string; }> = [
-        { key: 'areaId', label: 'ID Área' },
-        { key: 'nomeArea', label: 'Área Temática' },
-        { key: 'projetoId', label: 'ID Projeto' },
-        { key: 'nomeProjeto', label: 'Projeto' },
-        { key: 'programaId', label: 'ID Programa' },
-        { key: 'nomePrograma', label: 'Programa' },
-        { key: 'entregaId', label: 'ID Entrega' },
-        { key: 'nomeEntrega', label: 'Entrega' },
-        { key: 'nomeStatus', label: 'Status' },
-        { key: 'orgaoId', label: 'ID Órgão' },
-        { key: 'nomeOrgao', label: 'Órgão' },
-        { key: 'portfolioId', label: 'ID Portifólio' },
-        { key: 'nomePortfolio', label: 'Portifólio' },
-        { key: 'contagemPE', label: 'Contagem PE' }
-      ];
-  
-      // this.exportToCSVService.exportWithCustomHeaders(
-      //   this.statusData,
-      //   columns,
-      //   'InfoPlan_Entregas_por_Status.csv'
-      // );
-      // 123 456 789 *
-    }
-  
-    formatCurrencyString(original: number) {
-      let suffix = '';
-      const originalInText = original.toString();
-      const beforeDecimals = originalInText.split('.')[0];
-      // Divide o número no ponto ".", e seleciona a primeira parte
+    const tableColumns = [
+      { propertyName: 'custoPrevisto', displayName: 'Previsto' },
+      { propertyName: 'custoRealizado', displayName: 'Realizado' },
+    ];
 
-      if (beforeDecimals.length >= 4 && beforeDecimals.length <= 6) {
-        // Se tiver 4-6 dígitos, é na faixa dos milhares
-        suffix = 'k';
-      }
-      if (beforeDecimals.length >= 7 && beforeDecimals.length <= 9) {
-        // Se tiver 7-9 dígitos, é na faixa dos milhões
-        suffix = 'mi';
-      } else if (beforeDecimals.length >= 10 && beforeDecimals.length <= 12) {
-        // Se tiver 10-12 dígitos, é na faixa dos bilhões
-        suffix = 'bi';
-      } else if (beforeDecimals.length >= 13 && beforeDecimals.length <= 15) {
-        // Se tiver 13-15 dígitos, é na faixa dos trilhões
-        suffix = 'tri';
-      }
-      
-      if (originalInText.length > 2) {
-        return `R$ ${originalInText.slice(0, 2)},${originalInText.slice(2, 4)} ${suffix}`;
-      }
+    const finalData: Array<TreeNode> = rawData.map((investimento) => ({
+      data: [
+        { originalPropertyName: 'nome', propertyName: 'firstColumn', value: investimento.nome },
+        { propertyName: 'custoPrevisto', value: this.utilitiesService.formatCurrencyString(investimento.custoPrevisto) },
+        { propertyName: 'custoRealizado', value: this.utilitiesService.formatCurrencyString(investimento.custoRealizado) },
+      ],
+      children: [],
+      expanded: shouldStartExpanded,
+    }));
 
-      return `R$ ${originalInText}`;
+    this.flipTableContent = {
+      defaultColumns: tableColumns,
+      customColumn: {
+        originalPropertyName: 'nome',
+        propertyName: 'firstColumn',
+        displayName: this.selectedInvestmentOption,
+      },
+      data: finalData,
+    };
+  }
+
+  handleUserTableSearch(searchTerm: string) {
+    if (searchTerm.length > 0) {
+      const preparedSearchTerm = searchTerm.toLowerCase();
+      const filteredItems = this.investmentData.filter((investimento) => (
+        investimento.nome.toLowerCase().includes(preparedSearchTerm) ||
+        this.utilitiesService.formatCurrencyString(investimento.custoPrevisto).includes(preparedSearchTerm) ||
+        this.utilitiesService.formatCurrencyString(investimento.custoRealizado).includes(preparedSearchTerm)
+      ));
+  
+      this.assembleFlipTableContent(filteredItems, true);
+    } else {
+      this.assembleFlipTableContent(this.investmentData);
     }
+  }
+
+  handleUserTableDownload() {
+    const columns: Array<{ key: string; label: string; }> = [
+      { key: 'nome', label: this.selectedInvestmentOption },
+      { key: 'custoPrevisto', label: 'Custo Previsto' },
+      { key: 'custoRealizado', label: 'Custo Realizado' },
+    ];
+
+    this.exportDataService.exportXLSXWithCustomHeaders(
+      this.investmentData,
+      columns,
+      `InfoPlan_Investimento_por_${this.selectedInvestmentOption}.xlsx`,
+    );
+  }
 }

@@ -9,8 +9,8 @@ import { DeliveriesByTypeComponent } from './data-chart/deliveries-by-type/deliv
 import { ProjectsByStatusComponent } from './data-chart/projects-by-status/projectsByStatus.component';
 import { RisksByClassificationComponent } from './data-chart/risks-by-classification/risksByClassification.component';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { AccumulatedInvestmentComponent } from './data-chart/accumulatedInvestment.component';
-import { DeliveriesBySelectedComponent } from './data-chart/deliveriesBySelected.component';
+import { AccumulatedInvestmentComponent } from './data-chart/accumulated-investment/accumulatedInvestment.component';
+import { DeliveriesBySelectedComponent } from './data-chart/deliveries-by-selected/deliveriesBySelected.component';
 import { InvestmentBySelectedComponent } from './data-chart/investment-by-selected/investmentBySelected.component';
 import { FormsModule } from '@angular/forms';
 import { ThemeModule } from '../../@theme/theme.module';

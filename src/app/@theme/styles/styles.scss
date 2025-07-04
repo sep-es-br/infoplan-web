@@ -35,3 +35,8 @@
 .context-menu {
   text-align: left;
 }
+
+.box-limited {
+  overflow-y: auto;
+  overflow-x: hidden;
+}

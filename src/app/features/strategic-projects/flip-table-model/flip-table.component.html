@@ -1,0 +1,133 @@
+<nb-card class="outer-card m-0">
+  <nb-card-header class="card-header d-flex justify-content-between align-items-center p-2 px-3">
+    <ng-container *ngIf="cardTitle else customHeader">
+      <span class="card-title text-truncate w-50 m-0">{{ cardTitle }}</span>
+    </ng-container>
+
+    <ng-template #customHeader>
+      <ng-content select="[custom-header]"></ng-content>
+    </ng-template>
+
+    <div class="d-flex align-items-center justify-content-end">
+      <ng-container *ngIf="isFlipCardFlipped">
+        <ng-container *ngIf="isSearchFieldVisible">
+          <nb-form-field class="search-form-field opening">
+            <input
+              nbInput
+              class="search-input"
+              type="text"
+              shape="round"
+              fieldSize="tiny"
+              placeholder="Buscar"
+              (keyup)="debounceOnInput($event)"
+            />
+            <nb-icon
+              nbSuffix
+              class="close-icon"
+              [icon]="'close-outline'"
+              (click)="handleCloseSearchFieldClick()"
+            >
+            </nb-icon>
+          </nb-form-field>
+        </ng-container>
+
+        <ng-container *ngIf="!isSearchFieldVisible">
+          <nb-icon
+            class="search-button m-0 ml-3 p-0"
+            [icon]="'search-outline'"
+            (click)="isSearchFieldVisible = true"
+          >
+          </nb-icon>
+        </ng-container>
+      </ng-container>
+
+      <nb-icon
+        class="export-button m-0 ml-3 p-0"
+        [icon]="'cloud-download-outline'"
+        (click)="handleDownloadButtonClick()"
+      >
+      </nb-icon>
+
+      <ng-container *ngIf="isFlipCardFlipped else tableIcon">
+        <i class="flip-button fas fa-chart-pie m-0 ml-3 p-0" (click)="handleFlipButtonClick()"></i>
+      </ng-container>
+      <ng-template #tableIcon>
+        <i class="flip-button fas fa-table m-0 ml-3 p-0" (click)="handleFlipButtonClick()"></i>
+      </ng-template>
+    </div>
+  </nb-card-header>
+  <nb-flip-card class="flip-card" [showToggleButton]="false" [flipped]="isFlipCardFlipped">
+    <nb-card-front>
+      <nb-card class="card-front px-3 pb-2 m-0">
+        <ng-content select="[card-front]"></ng-content>
+      </nb-card>
+    </nb-card-front>
+    <nb-card-back>
+      <nb-card
+        class="card-back box-limited m-0 px-3"
+        [style]="{ 'height': backCardHeight + 'px' }"
+      >
+        <ng-container *ngIf="tableContent">
+          <table
+            class="flip-table"
+            [nbTreeGrid]="tableContent.data"
+            [nbSort]="tableContent.data"
+            (sort)="handleSortClick($event)"
+          >
+            <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumnsNames"></tr>
+            <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumnsNames"></tr>
+
+            <ng-container [nbTreeGridColumnDef]="tableContent.customColumn.propertyName">
+              <th
+                nbTreeGridHeaderCell
+                *nbTreeGridHeaderCellDef
+                [style]="{ 'text-align': tableContent.customColumn.alignment?.header || 'left' }"
+              >
+                {{ tableContent.customColumn.displayName }}
+              </th>
+              <td
+                *nbTreeGridCellDef="let row"
+                nbTreeGridCell
+                nbTooltipPlacement="right"
+                nbTooltipStatus="basic"
+                [nbTooltip]="getCellValue(row.data, tableContent.customColumn.propertyName)"
+                [ngClass]="{ 'cursor-pointer': row.children }"
+                [style]="{ 'text-align': tableContent.customColumn.alignment?.data || 'left' }"
+              >
+                <div class="d-flex align-items-center text-truncate" [ngClass]="{ 'pl-2': !row.children }">
+                  <ng-container *ngIf="row.children">
+                    <nb-icon class="icon" [icon]="row.expanded ? 'chevron-down-outline' : 'chevron-right-outline'">
+                    </nb-icon>
+                  </ng-container> 
+                  {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container
+              *ngFor="let column of defaultColumnsList; let index = index"
+              [nbTreeGridColumnDef]="column.propertyName"
+              [showOn]="getShowOn(index)"
+            >
+              <th
+                nbTreeGridHeaderCell
+                *nbTreeGridHeaderCellDef
+                [style]="{ 'text-align': column.alignment ? column.alignment.header : 'left' }"
+              >
+                {{ columnLabels[column.propertyName] }}
+              </th>
+              <td
+                nbTreeGridCell
+                *nbTreeGridCellDef="let row"
+                class="px-1"
+                [style]="{ 'text-align': column.alignment ? column.alignment.data : 'left' }"
+              >
+                {{ getCellValue(row.data, column.propertyName) }}
+              </td>
+            </ng-container>
+          </table>
+        </ng-container>
+      </nb-card>
+    </nb-card-back>
+  </nb-flip-card>
+</nb-card>

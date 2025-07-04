@@ -1,0 +1,9 @@
+<ngx-flip-table
+  [cardTitle]="'Entregas por Tipo'"
+  [tableContent]="flipTableContent"
+  (executeSearch)="handleUserTableSearch($event)"
+  (executeDownload)="handleUserTableDownload()"
+>
+  <ngx-pie-chart-model [data]="chartData" [colors]="chartColors" [height]="150" card-front>
+  </ngx-pie-chart-model>
+</ngx-flip-table>

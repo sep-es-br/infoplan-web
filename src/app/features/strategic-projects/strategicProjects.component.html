@@ -257,141 +257,42 @@
 
     <div class="col-xxxl-6 col-xxl-12 pr-0 pl-0 d-flex flex-wrap">
       <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-        <div class="card">
-          <div class="d-flex col-12 mt-1 mb-1">
-            <span class="text-card">Entregas por Status</span>
-          </div>
-
-          <div class="d-flex mb-3 mt-3">
-            <div class="col-12">
-              <ngx-deliveries-by-status [filter]="finalFilter"></ngx-deliveries-by-status>
-            </div>
-          </div>
-        </div>
+        <ngx-deliveries-by-status [filter]="finalFilter"></ngx-deliveries-by-status>
       </div>
 
       <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-        <div class="card">
-          <div class="d-flex col-12 mt-1 mb-1">
-            <span class="text-card">Entregas por Desempenho</span>
-          </div>
-
-          <div class="d-flex mb-3 mt-3">
-            <div class="col-12">
-              <ngx-deliveries-by-performace [filter]="finalFilter"></ngx-deliveries-by-performace>
-            </div>
-          </div>
-        </div>
+        <ngx-deliveries-by-performace [filter]="finalFilter"></ngx-deliveries-by-performace>
       </div>
 
       <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-        <div class="card">
-          <div class="d-flex col-12 mt-1 mb-1">
-            <span class="text-card">Projetos por Status</span>
-          </div>
-
-          <div class="d-flex mb-3 mt-3">
-            <div class="col-12">
-              <ngx-projects-by-status [filter]="finalFilter"></ngx-projects-by-status>
-            </div>
-          </div>
-        </div>
+        <ngx-projects-by-status [filter]="finalFilter"></ngx-projects-by-status>
       </div>
 
       <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-        <div class="card">
-          <div class="d-flex col-12 mt-1 mb-1">
-            <span class="text-card">Marcos Críticos por Desempenho</span>
-          </div>
-
-          <div class="d-flex mb-3 mt-3">
-            <div class="col-12">
-              <ngx-critical-milestones-for-performance [filter]="finalFilter"></ngx-critical-milestones-for-performance>
-            </div>
-          </div>
-        </div>
+        <ngx-critical-milestones-for-performance [filter]="finalFilter"></ngx-critical-milestones-for-performance>
       </div>
 
       <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-        <div class="card">
-          <div class="d-flex col-12 mt-1 mb-1">
-            <span class="text-card">Entregas por Tipo</span>
-          </div>
-          <div class="d-flex mb-3 mt-3">
-            <div class="col-12">
-              <ngx-deliveries-by-type [filter]="finalFilter"></ngx-deliveries-by-type>
-            </div>
-          </div>
-        </div>
+        <ngx-deliveries-by-type [filter]="finalFilter"></ngx-deliveries-by-type>
       </div>
 
       <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2">
-        <div class="card">
-          <div class="d-flex col-12 mt-1 mb-1">
-            <span class="text-card">Riscos por Importância</span>
-          </div>
-
-          <div class="d-flex mb-3 mt-3">
-            <div class="col-12">
-              <ngx-risks-by-classification [filter]="finalFilter"></ngx-risks-by-classification>
-            </div>
-          </div>
-        </div>
+        <ngx-risks-by-classification [filter]="finalFilter"></ngx-risks-by-classification>
       </div>
     </div>
      
     <div [ngClass]="{'col-xxxl-12': isMapOpen, 'col-xxxl-6': !isMapOpen}" class="col-md-12 pr-0 pl-0 d-flex flex-wrap">
       <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2 ">
-        <div class="card">
-          <div class="d-flex col-12 mt-1">
-            <span class="text-card mr-2">Investimento por</span>
-            <nb-select class="investment-select" size="tiny" shape="semi-round" [(selected)]="investmentSelectedOption">
-              <nb-option value="Área Temática">Área Temática</nb-option>
-              <nb-option value="Programa">Programa</nb-option>
-              <nb-option value="Programas Transversais">Programas Transversais</nb-option>
-              <nb-option value="Projeto">Projeto</nb-option>
-              <nb-option value="Entrega">Entrega</nb-option>
-            </nb-select>
-          </div>
-
-          <div class="col-12 mt-2">
-            <ngx-investment-by-selected [filter]="finalFilter" [selectedOption]="investmentSelectedOption"></ngx-investment-by-selected>
-          </div>
-        </div>
-        <!-- <div class="watermark">EM BREVE</div> -->
+        <ngx-investment-by-selected [filter]="finalFilter"></ngx-investment-by-selected>
       </div>
 
       <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2">
-        <div class="card">
-          <div class="d-flex col-12 mt-1">
-            <span class="text-card mr-2">Entregas por</span>
-            <nb-select class="delivery-select" size="tiny" shape="semi-round" [(selected)]="deliveriesSelectedOption">
-              <nb-option value="Área Temática">Área Temática</nb-option>
-              <nb-option value="Programa">Programa</nb-option>
-              <nb-option value="Programas Transversais">Programas Transversais</nb-option>
-              <nb-option value="Projeto">Projeto</nb-option>
-            </nb-select>
-          </div>
-
-          <div class="col-12 mt-2">
-            <ngx-deliveries-by-selected [filter]="finalFilter" [selectedOption]="deliveriesSelectedOption"></ngx-deliveries-by-selected>
-          </div>
-        </div>
-        <!-- <div class="watermark">EM BREVE</div> -->
+        <ngx-deliveries-by-selected [filter]="finalFilter"></ngx-deliveries-by-selected>
       </div>
     </div>
 
     <div class="col-12 pr-1 pl-1 mb-2">
-      <div class="card">
-        <div class="d-flex col-12 mt-1">
-          <span class="text-card mr-2">Investimento Acumulado</span>
-        </div>
-
-        <div class="col-12 mt-2">
-          <ngx-accumulated-investment [filter]="finalFilter"></ngx-accumulated-investment>
-        </div>
-      </div>
-      <!-- <div class="watermark">EM BREVE</div> -->
+      <ngx-accumulated-investment [filter]="finalFilter"></ngx-accumulated-investment>
     </div>
   </div>
 </div>

@@ -1,0 +1,10 @@
+<ngx-flip-table
+  [cardTitle]="'Investimento Acumulado'"
+  [tableContent]="flipTableContent"
+  [backCardHeight]="290"
+  (executeSearch)="handleUserTableSearch($event)"
+  (executeDownload)="handleUserTableDownload()"
+>
+  <ngx-vertical-bar-chart-model [data]="chartData" [colors]="chartColors" [height]="290" card-front>
+  </ngx-vertical-bar-chart-model>
+</ngx-flip-table>

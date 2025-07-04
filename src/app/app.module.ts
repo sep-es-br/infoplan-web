@@ -50,6 +50,7 @@ registerLocaleData(ptBr);
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
     }),
+    NbDatepickerModule.forRoot(),
   ],
   providers: [
     provideHttpClient(withInterceptors([authInterceptor])),

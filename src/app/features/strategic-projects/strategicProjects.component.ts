@@ -32,8 +32,8 @@ export class StrategicProjectsComponent {
 
   filter = {
     portfolio: environment.strategicProjectFilter.portfolio,
-    dataInicio: environment.strategicProjectFilter.dataInicio,
-    dataFim: environment.strategicProjectFilter.dataFim,
+    dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
+    dataFim: new Date(environment.strategicProjectFilter.dataFim),
     previsaoConclusao: '',
     areaTematica: '',
     programaOrigem: '',
@@ -47,8 +47,8 @@ export class StrategicProjectsComponent {
 
   finalFilter = {
     portfolio: environment.strategicProjectFilter.portfolio,
-    dataInicio: environment.strategicProjectFilter.dataInicio,
-    dataFim: environment.strategicProjectFilter.dataFim,
+    dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
+    dataFim: new Date(environment.strategicProjectFilter.dataFim),
     previsaoConclusao: '',
     areaTematica: '',
     programaOrigem: '',
@@ -110,16 +110,20 @@ export class StrategicProjectsComponent {
 
         if (directValueKeys.includes(key)) {
           if (key === 'dataInicio' || key === 'dataFim') {
-            const [year, month] = value.split('-');
+            const year = ((value as Date).getFullYear()).toString();
+            let month = ((value as Date).getMonth() + 1).toString();
+            if (Number(month) < 10) month = `0${month}`;
             displayValue = `${month}-${year}`;
           } else {
-            displayValue = value;
+            displayValue = (value as string);
           }
         } else {
           const listKey = optionsMapping[key];
           const list = this[listKey as keyof this] as IIdAndName[];
-          displayValue = list?.find(item => item.id === Number(value))?.name || value;
+          displayValue = list?.find(item => item.id === Number(value as string))?.name || (value as string);
         }
+
+        console.log('displayValue: ', displayValue);
 
         return {
           key,
@@ -310,6 +314,26 @@ export class StrategicProjectsComponent {
     this.finalFilter = { ...this.filter };
     this.updateActiveFilters();
     this.loadTotals()
+  }
+
+  resetFilters(): void {
+    this.showFilters = !this.showFilters;
+    this.finalFilter = {
+      portfolio: environment.strategicProjectFilter.portfolio,
+      dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
+      dataFim: new Date(environment.strategicProjectFilter.dataFim),
+      previsaoConclusao: '',
+      areaTematica: '',
+      programaOrigem: '',
+      projetos: '',
+      entregas: '',
+      programaTransversal: '',
+      localidades: '',
+      orgaos: '',
+      acompanhamentos: '',
+    };
+    this.updateActiveFilters();
+    this.loadTotals();
   }
 
   loadAll(): void {

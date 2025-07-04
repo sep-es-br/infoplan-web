@@ -18,10 +18,19 @@ button:focus, select:focus, input:focus {
   }
 }
 
+::ng-deep {
+  .nb-select-overlay-container {
+    nb-option-list {
+      ::webkit-scrollbar {
+        width: var(--);
+      }
+    }
+  }
+}
+
 .filter-container {
   position: relative;
   width: 100%;
-  margin-left: -8px;
   margin-top: -30px;
 
   @media (max-width: 991px) {
@@ -126,6 +135,7 @@ button:focus, select:focus, input:focus {
   .overlay-panel {
     position: absolute;
     left: 0;
+    top: 5px;
     width: 100%;
     background-color: var(--card-background-color);
     border-radius: 8px;
@@ -135,11 +145,17 @@ button:focus, select:focus, input:focus {
     display: flex;
     flex-direction: column;
 
+    .form-header {
+      .close-filter-button {
+        color: var(--card-text-color);
+      }
+    }
+
     .filter-row {
       display: flex;
       flex-wrap: wrap;
       gap: 15px;
-      margin-bottom: 20px;
+      margin-bottom: 1em;
 
       .filter-group {
         flex: 1;
@@ -155,27 +171,10 @@ button:focus, select:focus, input:focus {
         select, input {
           width: 100%;
           padding: 8px;
-          border: 1px solid #ccc;
+          border: 1px solid var(--input-basic-border-color);
           border-radius: 4px;
           box-sizing: border-box;
         }
-      }
-    }
-
-    .actions {
-      text-align: right;
-
-      button {
-        background-color: #D9001B;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        cursor: pointer;
-        border-radius: 4px;
-      }
-
-      button:hover {
-        background-color: #D9001B;
       }
     }
   }

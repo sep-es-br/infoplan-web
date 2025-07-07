@@ -36,7 +36,7 @@
     </div>
 
     <!-- Painel de Filtros -->
-    <div *ngIf="showFilters" class="overlay-panel">
+    <div *ngIf="showFilters" class="overlay-panel py-2 px-4">
       <form novalidate>
         <div class="form-header w-100 d-flex justify-content-end">
           <button class="btn p-0 close-filter-button" (click)="toggleFiltroPanel()">
@@ -45,23 +45,23 @@
         </div>
 
         <!-- Primeira Linha -->
-        <div class="row filter-row">
+        <div class="row filter-row flex-column flex-md-row">
           <div class="filter-group col">
-            <span class="mb-1">Portifólio</span>
-            <nb-select placeholder="Selecionar" size="small" [(ngModel)]="filter.portfolio" name="portifolio">
+            <span class="mb-1">Portfólio</span>
+            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.portfolio" name="portfolio">
               <nb-option value="Realiza+">Realiza+</nb-option>
             </nb-select>
           </div>
   
           <div class="filter-group col">
             <span class="mb-1">De</span>
-            <input nbInput placeholder="Data Inicial" [nbDatepicker]="initialDatePicker" size="small" [(ngModel)]="filter.dataInicio" name="dataInicial" />
-            <nb-datepicker size="small" #initialDatePicker></nb-datepicker>
+            <input nbInput placeholder="Data Inicial" [nbDatepicker]="initialDatePicker" size="tiny" [(ngModel)]="filter.dataInicio" name="dataInicial" />
+            <nb-datepicker size="tiny" #initialDatePicker></nb-datepicker>
           </div>
   
           <div class="filter-group col">
             <span class="mb-1">Até</span>
-            <input nbInput placeholder="Data Final" [nbDatepicker]="endDatePicker" size="small" [(ngModel)]="filter.dataFim" name="dataFim" />
+            <input nbInput placeholder="Data Final" [nbDatepicker]="endDatePicker" size="tiny" [(ngModel)]="filter.dataFim" name="dataFim" />
             <nb-datepicker #endDatePicker>
             </nb-datepicker>
           </div>
@@ -76,7 +76,7 @@
         <div class="row filter-row">
           <div class="filter-group col">
             <span class="mb-1">Áreas Temáticas</span>
-            <nb-select placeholder="Selecionar" size="small" [(ngModel)]="filter.areaTematica" name="areaTematica">
+            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.areaTematica" name="areaTematica">
               <nb-option *ngFor="let area of areaList" [value]="area.id">
                 {{ area.name }}
               </nb-option>
@@ -85,7 +85,7 @@
   
           <div class="filter-group col">
             <span class="mb-1">Programas Originais</span>
-            <nb-select placeholder="Selecionar" size="small" [(ngModel)]="filter.programaOrigem" name="programaOrigem">
+            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.programaOrigem" name="programaOrigem">
               <nb-option *ngFor="let programa of programaOList" [value]="programa.id">
                 {{ programa.name }}
               </nb-option>
@@ -94,7 +94,7 @@
 
           <div class="filter-group col">
             <span class="mb-1">Projetos</span>
-            <nb-select placeholder="Selecionar" size="small" [(ngModel)]="filter.projetos" name="projetos">
+            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.projetos" name="projetos">
               <nb-option *ngFor="let projeto of projetoList" [value]="projeto.id">
                 {{ projeto.name }}
               </nb-option>
@@ -103,7 +103,7 @@
         
           <div class="filter-group col">
             <span class="mb-1">Entregas</span>
-            <nb-select placeholder="Selecionar" size="small" [(ngModel)]="filter.entregas" name="entregas">
+            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.entregas" name="entregas">
               <nb-option *ngFor="let entrega of entregaList" [value]="entrega.id">
                 {{ entrega.name }}
               </nb-option>
@@ -115,7 +115,7 @@
         <div class="row filter-row">
           <div class="filter-group col">
             <span class="mb-1">Programas Transversais</span>
-            <nb-select placeholder="Selecionar" size="small" [(ngModel)]="filter.programaTransversal" name="programaTransversal">
+            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.programaTransversal" name="programaTransversal">
               <nb-option *ngFor="let programa of programaTList" [value]="programa.id">
                 {{ programa.name }}
               </nb-option>
@@ -124,7 +124,7 @@
 
           <div class="filter-group col">
             <span class="mb-1">Localidades</span>
-            <nb-select placeholder="Selecionar" size="small" [(ngModel)]="filter.localidades" name="localidades">
+            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.localidades" name="localidades">
               <nb-option *ngFor="let localidade of localidadeTList" [value]="localidade.id">
                 {{ localidade.name }}
               </nb-option>
@@ -133,7 +133,7 @@
         
           <div class="filter-group col">
             <span class="mb-1">Órgãos</span>
-            <nb-select placeholder="Selecionar" size="small" [(ngModel)]="filter.orgaos" name="orgaos">
+            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.orgaos" name="orgaos">
               <nb-option *ngFor="let orgao of orgaoTList" [value]="orgao.id">
                 {{ orgao.name }}
               </nb-option>

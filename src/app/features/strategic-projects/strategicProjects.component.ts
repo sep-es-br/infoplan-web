@@ -8,14 +8,27 @@ import { IStrategicProjectTimestamp } from '../../core/interfaces/strategic-proj
 import { NbThemeService } from '@nebular/theme';
 import { AvailableThemes } from '../../@theme/theme.module';
 
+enum AvailableFilters {
+  PORTFOLIO = 'Portfolio',
+  DATA_INICIAL = 'Data_Inicial',
+  DATA_FINAL = 'Data_Final',
+  PREVISAO_CONCLUSAO = 'Previsao_Conclusao',
+  AREAS_TEMATICAS = 'Areas_Tematicas',
+  PROGRAMAS_ORIGINAIS = 'Programas_Originais',
+  PROJETOS = 'Projetos',
+  ENTREGAS = 'Entregas',
+  PROGRAMAS_TRANSVERSAIS = 'Programas_Transversais',
+  LOCALIDADES = 'Localidades',
+  ORGAOS = 'Orgaos',
+  ACOMPANHADO_POR = 'Acompanhado_Por',
+}
+
 @Component({
   selector: 'ngx-strategic-projects',
   templateUrl: './strategicProjects.component.html',
   styleUrls: ['./strategicProjects.component.scss']
 })
 export class StrategicProjectsComponent {
-  
-
   timestamp: string;
 
   isMapOpen = false;
@@ -31,33 +44,33 @@ export class StrategicProjectsComponent {
   };
 
   filter = {
-    portfolio: environment.strategicProjectFilter.portfolio,
-    dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
-    dataFim: new Date(environment.strategicProjectFilter.dataFim),
-    previsaoConclusao: '',
-    areaTematica: '',
-    programaOrigem: '',
-    projetos: '',
-    entregas: '',
-    programaTransversal: '',
-    localidades: '',
-    orgaos: '',
-    acompanhamentos: '',
+    Portfolio: environment.strategicProjectFilter.portfolio,
+    Data_Inicial: new Date(environment.strategicProjectFilter.dataInicio),
+    Data_Final: new Date(environment.strategicProjectFilter.dataFim),
+    Previsao_Conclusao: '',
+    Areas_Tematicas: [],
+    Programas_Originais: [],
+    Projetos: [],
+    Entregas: [],
+    Programas_Transversais: [],
+    Localidades: [],
+    Orgaos: [],
+    Acompanhado_Por: [],
   };
 
   finalFilter = {
-    portfolio: environment.strategicProjectFilter.portfolio,
-    dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
-    dataFim: new Date(environment.strategicProjectFilter.dataFim),
-    previsaoConclusao: '',
-    areaTematica: '',
-    programaOrigem: '',
-    projetos: '',
-    entregas: '',
-    programaTransversal: '',
-    localidades: '',
-    orgaos: '',
-    acompanhamentos: '',
+    Portfolio: environment.strategicProjectFilter.portfolio,
+    Data_Inicial: new Date(environment.strategicProjectFilter.dataInicio),
+    Data_Final: new Date(environment.strategicProjectFilter.dataFim),
+    Previsao_Conclusao: '',
+    Areas_Tematicas: [],
+    Programas_Originais: [],
+    Projetos: [],
+    Entregas: [],
+    Programas_Transversais: [],
+    Localidades: [],
+    Orgaos: [],
+    Acompanhado_Por: [],
   };
 
   areaList: IIdAndName[] = [];
@@ -68,13 +81,13 @@ export class StrategicProjectsComponent {
   localidadeList: IIdAndName[] = [];
   projetoList: IIdAndName[] = [];
 
-  activeFilters: { key: string; label: string; value: string }[] = [];
+  activeFilters: { key: AvailableFilters; label: string; value: string }[] = [];
 
   constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
-    this.loadTimestamp()
-    this.updateActiveFilters()
-    this.loadAll()
-    this.loadTotals()
+    this.loadTimestamp();
+    this.updateActiveFilters();
+    this.loadAll();    
+    this.loadTotals();
   }
 
   get portfolioLogoUrl(): string {
@@ -91,128 +104,143 @@ export class StrategicProjectsComponent {
   }
 
   updateActiveFilters() {
-    const directValueKeys = ['portfolio', 'dataInicio', 'dataFim', 'previsaoConclusao'];
-    const optionsMapping = {
-      areaTematica: 'areaList',
-      programaOrigem: 'programaOList',
-      programaTransversal: 'programaTList',
-      entregas: 'entregaList',
-      localidades: 'localidadeList',
-      orgaos: 'orgaoList',
-      projetos: 'projetoList',
-      acompanhamentos: 'acompanhamentoList'
-    };
+    // const directValueKeys = ['portfolio', 'dataInicio', 'dataFim', 'previsaoConclusao'];
+    // const optionsMapping = {
+    //   areaTematica: 'areaList',
+    //   programaOrigem: 'programaOList',
+    //   programaTransversal: 'programaTList',
+    //   entregas: 'entregaList',
+    //   localidades: 'localidadeList',
+    //   orgaos: 'orgaoList',
+    //   projetos: 'projetoList',
+    //   acompanhamentos: 'acompanhamentoList'
+    // };
 
-    this.activeFilters = Object.entries(this.finalFilter)
-      .filter(([key, value]) => value)
-      .map(([key, value]) => {
-        let displayValue: string;
+    // this.activeFilters = Object.entries(this.finalFilter)
+    //   .filter(([key, value]) => value && (Array.isArray(value) ? value.length > 0 : true))
+    //   .map(([key, value]) => {
+    //     let displayValue: string;
 
-        if (directValueKeys.includes(key)) {
-          if (key === 'dataInicio' || key === 'dataFim') {
-            const year = ((value as Date).getFullYear()).toString();
-            let month = ((value as Date).getMonth() + 1).toString();
-            if (Number(month) < 10) month = `0${month}`;
-            displayValue = `${month}-${year}`;
-          } else {
-            displayValue = (value as string);
-          }
-        } else {
-          const listKey = optionsMapping[key];
-          const list = this[listKey as keyof this] as IIdAndName[];
-          displayValue = list?.find(item => item.id === Number(value as string))?.name || (value as string);
-        }
+    //     if (directValueKeys.includes(key)) {
+    //       if (key === 'dataInicio' || key === 'dataFim') {
+    //         const year = ((value as Date).getFullYear()).toString();
+    //         let month = ((value as Date).getMonth() + 1).toString();
+    //         if (Number(month) < 10) month = `0${month}`;
+    //         displayValue = `${month}-${year}`;
+    //       } else {
+    //         displayValue = (value as string);
+    //       }
+    //     } else {
+    //       const listKey = optionsMapping[key];
+    //       const list = this[listKey as keyof this] as IIdAndName[];
+    //       displayValue = list?.find(item => item.id === Number(value as string))?.name || (value as string);
+    //     }
 
-        console.log('displayValue: ', displayValue);
+    //     return {
+    //       key,
+    //       label: this.getFilterLabel(key),
+    //       value: displayValue
+    //     };
+    //   });
 
-        return {
-          key,
-          label: this.getFilterLabel(key),
-          value: displayValue
+    this.activeFilters = [
+      AvailableFilters.PORTFOLIO,
+      AvailableFilters.DATA_INICIAL,
+      AvailableFilters.DATA_FINAL,
+      AvailableFilters.PREVISAO_CONCLUSAO,
+      AvailableFilters.AREAS_TEMATICAS,
+      AvailableFilters.PROGRAMAS_ORIGINAIS,
+      AvailableFilters.PROJETOS,
+      AvailableFilters.ENTREGAS,
+      AvailableFilters.PROGRAMAS_TRANSVERSAIS,
+      AvailableFilters.LOCALIDADES,
+      AvailableFilters.ORGAOS,
+      AvailableFilters.ACOMPANHADO_POR,
+    ].filter(
+      (filter) => this.finalFilter[filter] && (Array.isArray(this.finalFilter[filter]) ? this.finalFilter[filter].length > 0 : true)
+    ).map((filter) => {
+      let displayValue: string;
+      const filterValue = this.finalFilter[filter];
+
+      if (filter === AvailableFilters.DATA_INICIAL || filter === AvailableFilters.DATA_FINAL) {
+        const year = ((filterValue as Date).getFullYear()).toString();
+        let month = ((filterValue as Date).getMonth() + 1).toString();
+        if (Number(month) < 10) month = `0${month}`;
+        displayValue = `${month}-${year}`;
+      } else {
+        const listMapping = {
+          Areas_Tematicas: 'areaList',
+          Programas_Originais: 'programaOList',
+          Projetos: 'projetoList',
+          Entregas: 'entregaList',
+          Programas_Transversais: 'programaTList',
+          Localidades: 'localidadeList',
+          Orgaos: 'orgaoList',
+          Acompanhado_Por: 'acompanhamentoList',
         };
-      });
+
+        const list = this[listMapping[filter]] as IIdAndName[];
+        displayValue = list?.find((item) => item.id === Number(filterValue as string))?.name || (filterValue as string);
+      }
+
+      return {
+        key: filter,
+        label: this.getFilterLabel(filter),
+        value: displayValue,
+      };
+    });
+
+    console.log('this.activeFilters: ', this.activeFilters);
   }
 
-  onFilterChange(event: Event): void {
-    let selectedValue = (event.target as HTMLSelectElement).value;
-    const selecetedName = (event.target as HTMLSelectElement).name;
+  handleFilterChange(origin: AvailableFilters, newValue: Array<number>) {
+    const selectedValue = newValue.length === 0 ? 'todos' : newValue.toString();
+    
+    switch (origin) {
+      case AvailableFilters.AREAS_TEMATICAS:
+        // Faz uma requisição para pegar uma lista de Programas, Projetos e Entregas baseado nas Áreas Temáticas selecionadas
+        this.strategicProjectsService.getProgramsProjectsDeliveries(selectedValue)
+          .subscribe(
+            (data: IStrategicProjectFilterDataDto) => {
+              this.programaOList = data.programasOriginal;
+              this.entregaList = data.entregas;
+              this.projetoList = data.projetos;
+            },
+            (error) => {
+              console.error('Erro ao tentar carregar Programas, Projetos e Entregas: ', error);
+            },
+          );
+        break;
+      case AvailableFilters.PROGRAMAS_ORIGINAIS:
+        const selectedAreasTematicas = this.filter.Areas_Tematicas.length === 0 ? 'todos' : this.filter.Areas_Tematicas.toString();
 
-    if (selectedValue === "") {
-      selectedValue = "todos";
-    }
+        this.strategicProjectsService.getProjectsDeliveries(selectedAreasTematicas, selectedValue)
+          .subscribe(
+            (data: IStrategicProjectFilterDataDto) => {
+              this.projetoList = data.projetos;
+              this.entregaList = data.entregas;
+            },
+            (error) => {
+              console.error('Erro ao tentar carregar Projetos e Entregas: ', error);
+            },
+          );
+        break;
+      case AvailableFilters.PROJETOS:
+        const selectedAreas = this.filter.Areas_Tematicas.length === 0 ? 'todos' : this.filter.Areas_Tematicas.toString();
+        const selectedProgramas = this.filter.Programas_Originais.length === 0 ? 'todos' : this.filter.Programas_Originais.toString();
 
-    if (selecetedName === 'areaTematica') {
-      if (selectedValue != "todos") {
-        this.filter.areaTematica = selectedValue
-      }
-
-      this.strategicProjectsService.getProgramsProjectsDeliveries(selectedValue).subscribe(
-        (data: IStrategicProjectFilterDataDto) => {
-          this.programaOList = data.programasOriginal
-          this.entregaList = data.entregas
-          this.projetoList = data.projetos
-
-          if (!this.programaOList.some(programa => programa.id.toString() === this.filter.programaOrigem)) {
-            this.filter.programaOrigem = "";
-          }
-
-          if (!this.projetoList.some(projeto => projeto.id.toString() === this.filter.projetos)) {
-            this.filter.projetos = "";
-          }
-
-          if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = "";
-          }
-        },
-        (error) => {
-          console.error('Erro ao carregar programas, entregas e projetos:', error);
-        }
-      );
-    } else if (selecetedName === 'programaOrigem') {
-      if (selectedValue != "todos") {
-        this.filter.programaOrigem = selectedValue
-      }
-
-      const areaId = this.filter.areaTematica === '' ? 'todos' : this.filter.areaTematica;
-
-      this.strategicProjectsService.getProjectsDeliveries(areaId, selectedValue).subscribe(
-        (data: IStrategicProjectFilterDataDto) => {
-          this.entregaList = data.entregas
-          this.projetoList = data.projetos
-
-          if (!this.projetoList.some(projeto => projeto.id.toString() === this.filter.projetos)) {
-            this.filter.projetos = "";
-          }
-
-          if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = "";
-          }
-        },
-        (error) => {
-          console.error('Erro ao carregar entregas e projetos:', error);
-        }
-      );
-    } else if (selecetedName === 'projetos') {
-      if (selectedValue != "todos") {
-        this.filter.projetos = selectedValue
-      }
-
-      const areaId = this.filter.areaTematica === '' ? 'todos' : this.filter.areaTematica;
-
-      const programId = this.filter.programaOrigem === '' ? 'todos' : this.filter.programaOrigem
-
-      this.strategicProjectsService.getDeliveries(areaId, programId, selectedValue).subscribe(
-        (data: IStrategicProjectFilterDataDto) => {
-          this.entregaList = data.entregas
-
-          if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = "";
-          }
-        },
-        (error) => {
-          console.error('Erro ao carregar entregas e projetos:', error);
-        }
-      );
+        this.strategicProjectsService.getDeliveries(selectedAreas, selectedProgramas, selectedValue)
+          .subscribe(
+            (data: IStrategicProjectFilterDataDto) => {
+              this.entregaList = data.entregas;
+            },
+            (error) => {
+              console.error('Erro ao tentar carregar Entregas: ', error);
+            }
+          );
+        break;
+      default:
+        break;
     }
   }
 
@@ -235,73 +263,12 @@ export class StrategicProjectsComponent {
     return labels[key] || key;
   }
 
-  removeFilter(key: string) {
-    this.filter[key] = '';
+  removeFilter(key: AvailableFilters) {
+    this.filter[key] = undefined;
     this.finalFilter = { ...this.filter };
     this.updateActiveFilters();
-    this.loadTotals()
-
-    if (key === 'areaTematica') {
-      this.strategicProjectsService.getProgramsProjectsDeliveries('todos').subscribe(
-        (data: IStrategicProjectFilterDataDto) => {
-          this.programaOList = data.programasOriginal
-          this.entregaList = data.entregas
-          this.projetoList = data.projetos
-
-          if (!this.programaOList.some(programa => programa.id.toString() === this.filter.programaOrigem)) {
-            this.filter.programaOrigem = "";
-          }
-
-          if (!this.projetoList.some(projeto => projeto.id.toString() === this.filter.projetos)) {
-            this.filter.projetos = "";
-          }
-
-          if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = "";
-          }
-        },
-        (error) => {
-          console.error('Erro ao carregar programas, entregas e projetos:', error);
-        }
-      );
-    } else if (key === 'programaOrigem') {
-      const areaId = this.filter.areaTematica === '' ? 'todos' : this.filter.areaTematica;
-
-      this.strategicProjectsService.getProjectsDeliveries(areaId, 'todos').subscribe(
-        (data: IStrategicProjectFilterDataDto) => {
-          this.entregaList = data.entregas
-          this.projetoList = data.projetos
-
-          if (!this.projetoList.some(projeto => projeto.id.toString() === this.filter.projetos)) {
-            this.filter.projetos = "";
-          }
-
-          if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = "";
-          }
-        },
-        (error) => {
-          console.error('Erro ao carregar entregas e projetos:', error);
-        }
-      );
-    } else if (key === 'projetos') {
-      const areaId = this.filter.areaTematica === '' ? 'todos' : this.filter.areaTematica;
-
-      const programId = this.filter.programaOrigem === '' ? 'todos' : this.filter.programaOrigem
-
-      this.strategicProjectsService.getDeliveries(areaId, programId, 'todos').subscribe(
-        (data: IStrategicProjectFilterDataDto) => {
-          this.entregaList = data.entregas
-
-          if (!this.entregaList.some(entrega => entrega.id.toString() === this.filter.entregas)) {
-            this.filter.entregas = "";
-          }
-        },
-        (error) => {
-          console.error('Erro ao carregar entregas e projetos:', error);
-        }
-      );
-    }
+    this.loadTotals();
+    this.handleFilterChange(key, []);
   }
 
   toggleFiltroPanel() {
@@ -314,26 +281,6 @@ export class StrategicProjectsComponent {
     this.finalFilter = { ...this.filter };
     this.updateActiveFilters();
     this.loadTotals()
-  }
-
-  resetFilters(): void {
-    this.showFilters = !this.showFilters;
-    this.finalFilter = {
-      portfolio: environment.strategicProjectFilter.portfolio,
-      dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
-      dataFim: new Date(environment.strategicProjectFilter.dataFim),
-      previsaoConclusao: '',
-      areaTematica: '',
-      programaOrigem: '',
-      projetos: '',
-      entregas: '',
-      programaTransversal: '',
-      localidades: '',
-      orgaos: '',
-      acompanhamentos: '',
-    };
-    this.updateActiveFilters();
-    this.loadTotals();
   }
 
   loadAll(): void {
@@ -353,6 +300,26 @@ export class StrategicProjectsComponent {
     );
   }
 
+  resetFilters(): void {
+    this.showFilters = !this.showFilters;
+    this.finalFilter = {
+      Portfolio: environment.strategicProjectFilter.portfolio,
+      Data_Inicial: new Date(environment.strategicProjectFilter.dataInicio),
+      Data_Final: new Date(environment.strategicProjectFilter.dataFim),
+      Previsao_Conclusao: '',
+      Areas_Tematicas: [],
+      Programas_Originais: [],
+      Projetos: [],
+      Entregas: [],
+      Programas_Transversais: [],
+      Localidades: [],
+      Orgaos: [],
+      Acompanhado_Por: [],
+    };
+    this.updateActiveFilters();
+    this.loadTotals();
+  }
+
   loadTimestamp() {
     this.strategicProjectsService.getTimestamp().subscribe(
       (data: IStrategicProjectTimestamp) => {
@@ -366,6 +333,7 @@ export class StrategicProjectsComponent {
 
   loadTotals() {
     const cleanedFilter = this.strategicProjectsService.removeEmptyValues(this.finalFilter);
+    console.log('cleanedFilter: ', cleanedFilter);
 
     this.strategicProjectsService.getTotals(cleanedFilter).subscribe(
       (totals: IStrategicProjectTotals) => {

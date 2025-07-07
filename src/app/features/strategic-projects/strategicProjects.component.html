@@ -36,115 +36,197 @@
     </div>
 
     <!-- Painel de Filtros -->
-    <div *ngIf="showFilters" class="overlay-panel py-2 px-4">
-      <form novalidate>
-        <div class="form-header w-100 d-flex justify-content-end">
+    <div *ngIf="showFilters" class="overlay-panel py-2 px-4 box-limited">
+      <form class="w-100">
+        <div class="form-header w-100 d-flex justify-content-between">
+          <h4>Filtros</h4>
           <button class="btn p-0 close-filter-button" (click)="toggleFiltroPanel()">
             <nb-icon [icon]="'close-outline'"></nb-icon>
           </button>
         </div>
 
-        <!-- Primeira Linha -->
-        <div class="row filter-row flex-column flex-md-row">
-          <div class="filter-group col">
-            <span class="mb-1">Portfólio</span>
-            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.portfolio" name="portfolio">
-              <nb-option value="Realiza+">Realiza+</nb-option>
-            </nb-select>
-          </div>
-  
-          <div class="filter-group col">
-            <span class="mb-1">De</span>
-            <input nbInput placeholder="Data Inicial" [nbDatepicker]="initialDatePicker" size="tiny" [(ngModel)]="filter.dataInicio" name="dataInicial" />
-            <nb-datepicker size="tiny" #initialDatePicker></nb-datepicker>
-          </div>
-  
-          <div class="filter-group col">
-            <span class="mb-1">Até</span>
-            <input nbInput placeholder="Data Final" [nbDatepicker]="endDatePicker" size="tiny" [(ngModel)]="filter.dataFim" name="dataFim" />
-            <nb-datepicker #endDatePicker>
-            </nb-datepicker>
-          </div>
-  
-          <div class="filter-group col invisible-tag">
-            <label for="provConcl">Previsão de Conclusão</label>
-            <input id="provConcl" type="month" [(ngModel)]="filter.previsaoConclusao" name="previsaoConclusao" />
-          </div>
-        </div>
-  
-        <!-- Segunda Linha -->
-        <div class="row filter-row">
-          <div class="filter-group col">
-            <span class="mb-1">Áreas Temáticas</span>
-            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.areaTematica" name="areaTematica">
-              <nb-option *ngFor="let area of areaList" [value]="area.id">
-                {{ area.name }}
-              </nb-option>
-            </nb-select>
-          </div>
-  
-          <div class="filter-group col">
-            <span class="mb-1">Programas Originais</span>
-            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.programaOrigem" name="programaOrigem">
-              <nb-option *ngFor="let programa of programaOList" [value]="programa.id">
-                {{ programa.name }}
-              </nb-option>
-            </nb-select>
+        <div class="d-flex flex-column w-100">
+          <div class="filter-row d-flex flex-column flex-md-row w-100">
+            <div class="filter-entity d-flex flex-column col-12 col-md-3">
+              <span class="mb-1">Portfólio</span>
+              <nb-select
+                name="portfolio"
+                placeholder="Selecionar"
+                size="tiny"
+                [(ngModel)]="filter.portfolio"
+                (selectedChange)="handleFilterChange('Portfolio', $event)"
+              >
+                <nb-option value="Realiza+">Realiza+</nb-option>
+              </nb-select>
+            </div>
+
+            <div class="filter-entity d-flex flex-column col-12 col-md-3">
+              <span class="mb-1">De</span>
+              <input
+                nbInput
+                name="dataInicial"
+                placeholder="Data Inicial"
+                size="tiny"
+                [nbDatepicker]="initialDatePicker"
+                [(ngModel)]="filter.dataInicio"
+              />
+              <nb-datepicker size="tiny" #initialDatePicker></nb-datepicker>
+            </div>
+    
+            <div class="filter-entity d-flex flex-column col-12 col-md-3">
+              <span class="mb-1">Até</span>
+              <input
+                nbInput
+                name="dataFim"
+                placeholder="Data Final"
+                size="tiny"
+                [nbDatepicker]="endDatePicker"
+                [(ngModel)]="filter.dataFim"
+              />
+              <nb-datepicker #endDatePicker>
+              </nb-datepicker>
+            </div>
+    
+            <div class="filter-entity d-flex flex-column col-12 col-md-3 invisible-tag">
+              <span class="mb-1">Previsão de Conclusão</span>
+              <input
+                nbInput
+                name="previsaoConclusao"
+                placeholder="Previs. Conclusão"
+                size="tiny"
+                [nbDatepicker]="conclusaoDatePicker"
+                [(ngModel)]="filter.previsaoConclusao"
+              />
+              <nb-datepicker #conclusaoDatePicker>
+              </nb-datepicker>
+            </div>
           </div>
 
-          <div class="filter-group col">
-            <span class="mb-1">Projetos</span>
-            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.projetos" name="projetos">
-              <nb-option *ngFor="let projeto of projetoList" [value]="projeto.id">
-                {{ projeto.name }}
-              </nb-option>
-            </nb-select>
-          </div>
-        
-          <div class="filter-group col">
-            <span class="mb-1">Entregas</span>
-            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.entregas" name="entregas">
-              <nb-option *ngFor="let entrega of entregaList" [value]="entrega.id">
-                {{ entrega.name }}
-              </nb-option>
-            </nb-select>
-          </div>
-        </div>
-        
-        <!-- Terceira Linha -->
-        <div class="row filter-row">
-          <div class="filter-group col">
-            <span class="mb-1">Programas Transversais</span>
-            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.programaTransversal" name="programaTransversal">
-              <nb-option *ngFor="let programa of programaTList" [value]="programa.id">
-                {{ programa.name }}
-              </nb-option>
-            </nb-select>
+          <div class="filter-row d-flex flex-column flex-md-row w-100">
+            <div class="filter-entity d-flex flex-column col-12 col-md-3">
+              <span class="mb-1">Áreas Temáticas</span>
+              <nb-select
+                multiple
+                name="areaTematica"
+                placeholder="Selecionar"
+                size="tiny"
+                [(ngModel)]="filter.areaTematica"
+                (selectedChange)="handleFilterChange('Areas_Tematicas', $event)"
+              >
+                <nb-option *ngFor="let area of areaList" [value]="area.id">
+                  {{ area.name }}
+                </nb-option>
+              </nb-select>
+            </div>
+    
+            <div class="filter-entity d-flex flex-column col-12 col-md-3">
+              <span class="mb-1">Programas Originais</span>
+              <nb-select
+                multiple
+                name="programaOrigem"
+                placeholder="Selecionar"
+                size="tiny"
+                [(ngModel)]="filter.programaOrigem"
+                (selectedChange)="handleFilterChange('Programas_Originais', $event)"
+              >
+                <nb-option *ngFor="let programa of programaOList" [value]="programa.id">
+                  {{ programa.name }}
+                </nb-option>
+              </nb-select>
+            </div>
+
+            <div class="filter-entity d-flex flex-column col-12 col-md-3">
+              <span class="mb-1">Projetos</span>
+              <nb-select
+                multiple
+                name="projetos"
+                placeholder="Selecionar"
+                size="tiny"
+                [(ngModel)]="filter.projetos"
+                (selectedChange)="handleFilterChange('Projetos', $event)"
+              >
+                <nb-option *ngFor="let projeto of projetoList" [value]="projeto.id">
+                  {{ projeto.name }}
+                </nb-option>
+              </nb-select>
+            </div>
+          
+            <div class="filter-entity d-flex flex-column col-12 col-md-3">
+              <span class="mb-1">Entregas</span>
+              <nb-select
+                multiple
+                name="entregas"
+                placeholder="Selecionar"
+                size="tiny"
+                [(ngModel)]="filter.entregas"
+                (selectedChange)="handleFilterChange('Entregas', $event)"
+              >
+                <nb-option *ngFor="let entrega of entregaList" [value]="entrega.id">
+                  {{ entrega.name }}
+                </nb-option>
+              </nb-select>
+            </div>
           </div>
 
-          <div class="filter-group col">
-            <span class="mb-1">Localidades</span>
-            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.localidades" name="localidades">
-              <nb-option *ngFor="let localidade of localidadeTList" [value]="localidade.id">
-                {{ localidade.name }}
-              </nb-option>
-            </nb-select>
-          </div>
-        
-          <div class="filter-group col">
-            <span class="mb-1">Órgãos</span>
-            <nb-select placeholder="Selecionar" size="tiny" [(ngModel)]="filter.orgaos" name="orgaos">
-              <nb-option *ngFor="let orgao of orgaoTList" [value]="orgao.id">
-                {{ orgao.name }}
-              </nb-option>
-            </nb-select>
-          </div>
-  
-          <div class="filter-group col invisible-tag">
-            <label for="acompanhamentos">Acompanhado por</label>
-            <select id="acompanhamentos" [(ngModel)]="filter.acompanhamentos" name="acompanhamentos">
-              <option value="">Selecionar</option>
-            </select>
+          <div class="filter-row d-flex flex-column flex-md-row w-100">
+            <div class="filter-entity d-flex flex-column col-12 col-md-3">
+              <span class="mb-1">Programas Transversais</span>
+              <nb-select
+                multiple
+                name="programaTransversal"
+                placeholder="Selecionar"
+                size="tiny"
+                [(ngModel)]="filter.programaTransversal"
+                (selectedChange)="handleFilterChange('Programas_Transversais', $event)"
+              >
+                <nb-option *ngFor="let programa of programaTList" [value]="programa.id">
+                  {{ programa.name }}
+                </nb-option>
+              </nb-select>
+            </div>
+
+            <div class="filter-entity d-flex flex-column col-12 col-md-3">
+              <span class="mb-1">Localidades</span>
+              <nb-select
+                multiple
+                name="localidades"
+                placeholder="Selecionar"
+                size="tiny"
+                [(ngModel)]="filter.localidades"
+              >
+                <nb-option *ngFor="let localidade of localidadeTList" [value]="localidade.id">
+                  {{ localidade.name }}
+                </nb-option>
+              </nb-select>
+            </div>
+          
+            <div class="filter-entity d-flex flex-column col-12 col-md-3">
+              <span class="mb-1">Órgãos</span>
+              <nb-select
+                multiple
+                name="orgaos"
+                placeholder="Selecionar"
+                size="tiny"
+                [(ngModel)]="filter.orgaos"
+              >
+                <nb-option *ngFor="let orgao of orgaoTList" [value]="orgao.id">
+                  {{ orgao.name }}
+                </nb-option>
+              </nb-select>
+            </div>
+    
+            <div class="filter-entity d-flex flex-column col-12 col-md-3 invisible-tag">
+              <span class="mb-1">Acompanhado Por</span>
+              <nb-select
+                multiple
+                name="acompanhamentos"
+                placeholder="Selecione"
+                size="tiny"
+                [(ngModel)]="filter.acompanhamentos"
+              >
+                <nb-option>Nenhuma</nb-option>
+              </nb-select>
+            </div>
           </div>
         </div>
 

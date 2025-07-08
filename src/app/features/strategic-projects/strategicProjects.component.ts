@@ -44,33 +44,33 @@ export class StrategicProjectsComponent {
   };
 
   filter = {
-    Portfolio: environment.strategicProjectFilter.portfolio,
-    Data_Inicial: new Date(environment.strategicProjectFilter.dataInicio),
-    Data_Final: new Date(environment.strategicProjectFilter.dataFim),
-    Previsao_Conclusao: '',
-    Areas_Tematicas: [],
-    Programas_Originais: [],
-    Projetos: [],
-    Entregas: [],
-    Programas_Transversais: [],
-    Localidades: [],
-    Orgaos: [],
-    Acompanhado_Por: [],
+    portfolio: environment.strategicProjectFilter.portfolio,
+    dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
+    dataFim: new Date(environment.strategicProjectFilter.dataFim),
+    previsaoConclusao: '',
+    areaTematica: [],
+    programaOrigem: [],
+    projetos: [],
+    entregas: [],
+    programaTransversal: [],
+    localidades: [],
+    orgaos: [],
+    acompanhamentos: [],
   };
 
   finalFilter = {
-    Portfolio: environment.strategicProjectFilter.portfolio,
-    Data_Inicial: new Date(environment.strategicProjectFilter.dataInicio),
-    Data_Final: new Date(environment.strategicProjectFilter.dataFim),
-    Previsao_Conclusao: '',
-    Areas_Tematicas: [],
-    Programas_Originais: [],
-    Projetos: [],
-    Entregas: [],
-    Programas_Transversais: [],
-    Localidades: [],
-    Orgaos: [],
-    Acompanhado_Por: [],
+    portfolio: environment.strategicProjectFilter.portfolio,
+    dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
+    dataFim: new Date(environment.strategicProjectFilter.dataFim),
+    previsaoConclusao: '',
+    areaTematica: [],
+    programaOrigem: [],
+    projetos: [],
+    entregas: [],
+    programaTransversal: [],
+    localidades: [],
+    orgaos: [],
+    acompanhamentos: [],
   };
 
   areaList: IIdAndName[] = [];
@@ -81,7 +81,7 @@ export class StrategicProjectsComponent {
   localidadeList: IIdAndName[] = [];
   projetoList: IIdAndName[] = [];
 
-  activeFilters: { key: AvailableFilters; label: string; value: string }[] = [];
+  activeFilters: { key: string; label: string; value: string }[] = [];
 
   constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
     this.loadTimestamp();
@@ -104,93 +104,44 @@ export class StrategicProjectsComponent {
   }
 
   updateActiveFilters() {
-    // const directValueKeys = ['portfolio', 'dataInicio', 'dataFim', 'previsaoConclusao'];
-    // const optionsMapping = {
-    //   areaTematica: 'areaList',
-    //   programaOrigem: 'programaOList',
-    //   programaTransversal: 'programaTList',
-    //   entregas: 'entregaList',
-    //   localidades: 'localidadeList',
-    //   orgaos: 'orgaoList',
-    //   projetos: 'projetoList',
-    //   acompanhamentos: 'acompanhamentoList'
-    // };
+    const directValueKeys = ['portfolio', 'dataInicio', 'dataFim', 'previsaoConclusao'];
+    const optionsMapping = {
+      areaTematica: 'areaList',
+      programaOrigem: 'programaOList',
+      programaTransversal: 'programaTList',
+      entregas: 'entregaList',
+      localidades: 'localidadeList',
+      orgaos: 'orgaoList',
+      projetos: 'projetoList',
+      acompanhamentos: 'acompanhamentoList'
+    };
 
-    // this.activeFilters = Object.entries(this.finalFilter)
-    //   .filter(([key, value]) => value && (Array.isArray(value) ? value.length > 0 : true))
-    //   .map(([key, value]) => {
-    //     let displayValue: string;
+    this.activeFilters = Object.entries(this.finalFilter)
+      .filter(([key, value]) => value && (Array.isArray(value) ? value.length > 0 : true))
+      .map(([key, value]) => {
+        let displayValue: string;
 
-    //     if (directValueKeys.includes(key)) {
-    //       if (key === 'dataInicio' || key === 'dataFim') {
-    //         const year = ((value as Date).getFullYear()).toString();
-    //         let month = ((value as Date).getMonth() + 1).toString();
-    //         if (Number(month) < 10) month = `0${month}`;
-    //         displayValue = `${month}-${year}`;
-    //       } else {
-    //         displayValue = (value as string);
-    //       }
-    //     } else {
-    //       const listKey = optionsMapping[key];
-    //       const list = this[listKey as keyof this] as IIdAndName[];
-    //       displayValue = list?.find(item => item.id === Number(value as string))?.name || (value as string);
-    //     }
+        if (directValueKeys.includes(key)) {
+          if (key === 'dataInicio' || key === 'dataFim') {
+            const year = ((value as Date).getFullYear()).toString();
+            let month = ((value as Date).getMonth() + 1).toString();
+            if (Number(month) < 10) month = `0${month}`;
+            displayValue = `${month}-${year}`;
+          } else {
+            displayValue = (value as string);
+          }
+        } else {
+          const listKey = optionsMapping[key];
+          const list = this[listKey as keyof this] as IIdAndName[];
+          displayValue = list?.find(item => item.id === Number(value as string))?.name || (value as string);
+        }
 
-    //     return {
-    //       key,
-    //       label: this.getFilterLabel(key),
-    //       value: displayValue
-    //     };
-    //   });
-
-    this.activeFilters = [
-      AvailableFilters.PORTFOLIO,
-      AvailableFilters.DATA_INICIAL,
-      AvailableFilters.DATA_FINAL,
-      AvailableFilters.PREVISAO_CONCLUSAO,
-      AvailableFilters.AREAS_TEMATICAS,
-      AvailableFilters.PROGRAMAS_ORIGINAIS,
-      AvailableFilters.PROJETOS,
-      AvailableFilters.ENTREGAS,
-      AvailableFilters.PROGRAMAS_TRANSVERSAIS,
-      AvailableFilters.LOCALIDADES,
-      AvailableFilters.ORGAOS,
-      AvailableFilters.ACOMPANHADO_POR,
-    ].filter(
-      (filter) => this.finalFilter[filter] && (Array.isArray(this.finalFilter[filter]) ? this.finalFilter[filter].length > 0 : true)
-    ).map((filter) => {
-      let displayValue: string;
-      const filterValue = this.finalFilter[filter];
-
-      if (filter === AvailableFilters.DATA_INICIAL || filter === AvailableFilters.DATA_FINAL) {
-        const year = ((filterValue as Date).getFullYear()).toString();
-        let month = ((filterValue as Date).getMonth() + 1).toString();
-        if (Number(month) < 10) month = `0${month}`;
-        displayValue = `${month}-${year}`;
-      } else {
-        const listMapping = {
-          Areas_Tematicas: 'areaList',
-          Programas_Originais: 'programaOList',
-          Projetos: 'projetoList',
-          Entregas: 'entregaList',
-          Programas_Transversais: 'programaTList',
-          Localidades: 'localidadeList',
-          Orgaos: 'orgaoList',
-          Acompanhado_Por: 'acompanhamentoList',
+        return {
+          key,
+          label: this.getFilterLabel(key),
+          value: displayValue
         };
-
-        const list = this[listMapping[filter]] as IIdAndName[];
-        displayValue = list?.find((item) => item.id === Number(filterValue as string))?.name || (filterValue as string);
-      }
-
-      return {
-        key: filter,
-        label: this.getFilterLabel(filter),
-        value: displayValue,
-      };
-    });
-
-    console.log('this.activeFilters: ', this.activeFilters);
+      });
   }
 
   handleFilterChange(origin: AvailableFilters, newValue: Array<number>) {
@@ -212,7 +163,8 @@ export class StrategicProjectsComponent {
           );
         break;
       case AvailableFilters.PROGRAMAS_ORIGINAIS:
-        const selectedAreasTematicas = this.filter.Areas_Tematicas.length === 0 ? 'todos' : this.filter.Areas_Tematicas.toString();
+        // Faz uma requisição para pegar uma lista de Projetos e Entregas baseado nas Áreas Temáticas e Programas Originais selecionados
+        const selectedAreasTematicas = this.filter.areaTematica.length === 0 ? 'todos' : this.filter.areaTematica.toString();
 
         this.strategicProjectsService.getProjectsDeliveries(selectedAreasTematicas, selectedValue)
           .subscribe(
@@ -226,8 +178,9 @@ export class StrategicProjectsComponent {
           );
         break;
       case AvailableFilters.PROJETOS:
-        const selectedAreas = this.filter.Areas_Tematicas.length === 0 ? 'todos' : this.filter.Areas_Tematicas.toString();
-        const selectedProgramas = this.filter.Programas_Originais.length === 0 ? 'todos' : this.filter.Programas_Originais.toString();
+        // Faz uma requisição para pegar uma lista de Entregas baseado nas Áreas Temáticas, Programas Originais e Projetos selecionados
+        const selectedAreas = this.filter.areaTematica.length === 0 ? 'todos' : this.filter.areaTematica.toString();
+        const selectedProgramas = this.filter.programaOrigem.length === 0 ? 'todos' : this.filter.programaOrigem.toString();
 
         this.strategicProjectsService.getDeliveries(selectedAreas, selectedProgramas, selectedValue)
           .subscribe(
@@ -303,18 +256,18 @@ export class StrategicProjectsComponent {
   resetFilters(): void {
     this.showFilters = !this.showFilters;
     this.finalFilter = {
-      Portfolio: environment.strategicProjectFilter.portfolio,
-      Data_Inicial: new Date(environment.strategicProjectFilter.dataInicio),
-      Data_Final: new Date(environment.strategicProjectFilter.dataFim),
-      Previsao_Conclusao: '',
-      Areas_Tematicas: [],
-      Programas_Originais: [],
-      Projetos: [],
-      Entregas: [],
-      Programas_Transversais: [],
-      Localidades: [],
-      Orgaos: [],
-      Acompanhado_Por: [],
+      portfolio: environment.strategicProjectFilter.portfolio,
+      dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
+      dataFim: new Date(environment.strategicProjectFilter.dataFim),
+      previsaoConclusao: '',
+      areaTematica: [],
+      programaOrigem: [],
+      projetos: [],
+      entregas: [],
+      programaTransversal: [],
+      localidades: [],
+      orgaos: [],
+      acompanhamentos: [],
     };
     this.updateActiveFilters();
     this.loadTotals();
@@ -333,7 +286,6 @@ export class StrategicProjectsComponent {
 
   loadTotals() {
     const cleanedFilter = this.strategicProjectsService.removeEmptyValues(this.finalFilter);
-    console.log('cleanedFilter: ', cleanedFilter);
 
     this.strategicProjectsService.getTotals(cleanedFilter).subscribe(
       (totals: IStrategicProjectTotals) => {

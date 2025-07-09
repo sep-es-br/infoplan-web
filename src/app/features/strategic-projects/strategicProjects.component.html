@@ -38,8 +38,7 @@
     <!-- Painel de Filtros -->
     <div *ngIf="showFilters" class="overlay-panel py-2 px-4 box-limited">
       <form class="w-100">
-        <div class="form-header w-100 d-flex justify-content-between">
-          <h4>Filtros</h4>
+        <div class="form-header w-100 d-flex justify-content-end">
           <button class="btn p-0 close-filter-button" (click)="toggleFiltroPanel()">
             <nb-icon [icon]="'close-outline'"></nb-icon>
           </button>
@@ -194,7 +193,7 @@
                 size="tiny"
                 [(ngModel)]="filter.localidades"
               >
-                <nb-option *ngFor="let localidade of localidadeTList" [value]="localidade.id">
+                <nb-option *ngFor="let localidade of localidadeList" [value]="localidade.id">
                   {{ localidade.name }}
                 </nb-option>
               </nb-select>
@@ -209,7 +208,7 @@
                 size="tiny"
                 [(ngModel)]="filter.orgaos"
               >
-                <nb-option *ngFor="let orgao of orgaoTList" [value]="orgao.id">
+                <nb-option *ngFor="let orgao of orgaoList" [value]="orgao.id">
                   {{ orgao.name }}
                 </nb-option>
               </nb-select>

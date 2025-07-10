@@ -201,14 +201,14 @@ export class StrategicProjectsService {
     const cleanedFilter: any = {};
 
     Object.keys(filter).forEach((key) => {
-      if (filter[key] !== '' && filter[key] !== null && filter[key] !== undefined) {
+      if (filter[key] !== '' && filter[key] !== null && filter[key] !== undefined && (Array.isArray(filter[key]) ? filter[key].length > 0 : true)) {
         if (key === 'portfolio' && filter[key] === 'Realiza+') {
           cleanedFilter[key] = 2572;
         } else if ((key === 'dataInicio' || key === 'dataFim')) {
-          // cleanedFilter[key] = Number(filter[key].replace('-', ''));
           const date = (filter[key] as Date);
           const year = date.getFullYear().toString();
-          const month = (date.getMonth() + 1).toString();
+          let month = (date.getMonth() + 1).toString();
+          if (Number(month) < 10) month = `0${month}`;
           cleanedFilter[key] = `${year}${month}`;
         } else {
           cleanedFilter[key] = filter[key];

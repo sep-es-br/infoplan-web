@@ -133,7 +133,18 @@ export class StrategicProjectsComponent {
         } else {
           const listKey = optionsMapping[key];
           const list = this[listKey as keyof this] as IIdAndName[];
-          displayValue = list?.find(item => item.id === Number(value as string))?.name || (value as string);
+
+          if (Array.isArray(value)) {
+            displayValue = value.map((selectedItem, index) => {
+              let name = list?.find((item) => item.id === selectedItem)?.name || selectedItem;
+              if (index + 1 < value.length) {
+                name = `${name}; `;
+              }
+              return name;
+            }).join('');
+          } else {
+            displayValue = list?.find(item => item.id === Number(value as string))?.name || (value as string);
+          }
         }
 
         return {
@@ -164,7 +175,7 @@ export class StrategicProjectsComponent {
         break;
       case AvailableFilters.PROGRAMAS_ORIGINAIS:
         // Faz uma requisição para pegar uma lista de Projetos e Entregas baseado nas Áreas Temáticas e Programas Originais selecionados
-        const selectedAreasTematicas = this.filter.areaTematica.length === 0 ? 'todos' : this.filter.areaTematica.toString();
+        const selectedAreasTematicas = this.filter.areaTematica?.length === 0 ? 'todos' : this.filter.areaTematica.toString();
 
         this.strategicProjectsService.getProjectsDeliveries(selectedAreasTematicas, selectedValue)
           .subscribe(
@@ -179,8 +190,8 @@ export class StrategicProjectsComponent {
         break;
       case AvailableFilters.PROJETOS:
         // Faz uma requisição para pegar uma lista de Entregas baseado nas Áreas Temáticas, Programas Originais e Projetos selecionados
-        const selectedAreas = this.filter.areaTematica.length === 0 ? 'todos' : this.filter.areaTematica.toString();
-        const selectedProgramas = this.filter.programaOrigem.length === 0 ? 'todos' : this.filter.programaOrigem.toString();
+        const selectedAreas = this.filter.areaTematica?.length === 0 ? 'todos' : this.filter.areaTematica.toString();
+        const selectedProgramas = this.filter.programaOrigem?.length === 0 ? 'todos' : this.filter.programaOrigem.toString();
 
         this.strategicProjectsService.getDeliveries(selectedAreas, selectedProgramas, selectedValue)
           .subscribe(
@@ -217,7 +228,7 @@ export class StrategicProjectsComponent {
   }
 
   removeFilter(key: AvailableFilters) {
-    this.filter[key] = undefined;
+    this.filter[key] = [];
     this.finalFilter = { ...this.filter };
     this.updateActiveFilters();
     this.loadTotals();
@@ -269,6 +280,7 @@ export class StrategicProjectsComponent {
       orgaos: [],
       acompanhamentos: [],
     };
+    this.filter = { ...this.finalFilter };
     this.updateActiveFilters();
     this.loadTotals();
   }

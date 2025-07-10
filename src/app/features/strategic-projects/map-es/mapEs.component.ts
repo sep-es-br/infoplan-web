@@ -49,7 +49,6 @@ export class MapEsComponent implements OnInit, OnChanges {
   });
 
   regionCities: { [key: string]: Region } = {
-
     Todo_o_Estado: {
       label: 'Todo o Estado',
       active: false,
@@ -57,7 +56,6 @@ export class MapEsComponent implements OnInit, OnChanges {
         { code: 'TEstado', name: 'Todo o Estado', active: false },
       ],
     },
-
     Metropolitana: {
       label: 'Metropolitana',
       active: false,
@@ -317,12 +315,19 @@ export class MapEsComponent implements OnInit, OnChanges {
       const region = this.regionCities[regionKey];
       const color = this.regioes[regionKey];
 
+      // Aplica as cores em todos os municípios no Mapa de Municípios
       region.cities.forEach((city) => {
         svg = svg.replace(
           `id="${city.code}"`,
-          `id="${city.code}" fill="${color}"`
+          `id="${city.code}" fill="${color}" fill-opacity="0.498"`
         );
       });
+
+      // Aplica as cores em todas as regiões no Mapa de Regiões
+      svg = svg.replace(
+        `<g id="${regionKey}"`,
+        `<g id="${regionKey}" fill="${color}" fill-opacity="0.498"`,
+      );
     });
 
     return svg;

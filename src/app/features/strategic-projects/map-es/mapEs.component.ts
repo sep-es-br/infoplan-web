@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { IIdAndName } from '../../../core/interfaces/id-and-name.interface';
-import { Region } from '../../../core/interfaces/map-es.interface';
+import { City, Region } from '../../../core/interfaces/map-es.interface';
 import { NbThemeService } from '@nebular/theme';
 import { AvailableThemes } from '../../../@theme/theme.module';
 
@@ -11,12 +11,12 @@ import { AvailableThemes } from '../../../@theme/theme.module';
   styleUrls: ['./mapEs.component.scss'],
   template: `
     <div class="container">
-      <div class="legenda">
+      <!-- <div class="legenda">
         <div *ngFor="let regiao of regioesArray" class="legenda-item">
           <span class="legenda-cor" [style.background-color]="regiao.cor" [style.opacity]="getOpacidadeLegenda(regiao.nome)" (click)="aplicarCorRegiao(regiao)"></span>
           <span class="legenda-texto" (click)="aplicarCorRegiao(regiao)" [style.font-weight]="getFontWeightBasedOnRegionActivity(regiao.nome)">{{ regiao.nome }}</span>
         </div>
-      </div>
+      </div> -->
       <div class="mapa-es" [innerHTML]="svgSeguro"></div>
     </div>
   `,
@@ -336,117 +336,76 @@ export class MapEsComponent implements OnInit, OnChanges {
   adicionarEfeitos(): void {
     setTimeout(() => {
       const svgElement = document.querySelector('.mapa-es svg');
+
       if (svgElement) {
+        const municipiosList = Object.values(this.regionCities).flatMap((region) => region.cities);
         const paths = svgElement.querySelectorAll('path');
 
-        paths.forEach((path: SVGPathElement) => {
-          const pathId = path.getAttribute('id');
-          const municipio = Object.values(this.regionCities)
-            .flatMap((region) => region.cities)
-            .find((city) => city.code === pathId);
+        paths.forEach((path) => {
+          const municipio = municipiosList.find((city) => city.code === path.id);
+          let pathEntity: { name: string; active: boolean; };
 
           if (municipio) {
-            path.setAttribute('fill-opacity', municipio.active ? '1' : '0.4980');
+            pathEntity = municipio;
+          } else {
+            const region = this.regionCities[path.id];
+            pathEntity = { name: region.label, active: region.active };
           }
-
-          const grupoCorrespondente = svgElement.querySelector(`g[id="${pathId}"]`) as SVGGElement | null;
-          const textoDiretoCorrespondente = svgElement.querySelector(`text[id="${pathId}"]`) as SVGTextElement | null;
-
+          
+          path.setAttribute('fill-opacity', pathEntity.active ? '1' : '0.4980');
           path.style.cursor = 'pointer';
           path.style.transition = 'fill-opacity 0.3s ease';
 
           const toggleAtivo = () => {
-            const estavaAtivo = municipio.active;
-            municipio.active = !estavaAtivo;
-            const region = Object.values(this.regionCities).find((region) =>
-              region.cities.some((city) => city.code === pathId)
-            );
+            pathEntity.active = !pathEntity.active;
+            const localidade = this.localidadeList.find((item) => item.name === pathEntity.name);
 
-            if (region.active) {
-              if(!(region.label === 'Todo o Estado')){
-                municipio.active = region.active;
-              }
-            }
-
-            const localidade = this.localidadeList.find(
-              (item) => item.name === municipio.name
-            );
-
-            if (localidade) {
-              if (municipio.active) {
-                this.filter.localidades = localidade.id;
-              } else {
-                this.filter.localidades = '';
-              }
-              this.filterChange.emit(this.filter);
+            if (this.filter.localidades) {
+              this.filter.localidades.push(localidade.id);
+            } else {
+              this.filter = {
+                ...this.filter,
+                localidades: [
+                  localidade.id,
+                ],
+              };
             }
           };
 
+          const grupoCorrespondente = svgElement.querySelector(`g[id="${path.id}"]`) as SVGGElement | null;
+          const textoDiretoCorrespondente = svgElement.querySelector(`text[id="${path.id}"]`) as SVGTextElement | null;
+
+          const actionsOnMouseEvent = (opacityLevel: string, newTextWeight: 'normal' | 'bold', hoverEffectAction?: 'add' | 'remove') => {
+            if (!pathEntity.active) {
+              path.setAttribute('fill-opacity', opacityLevel);
+              if (hoverEffectAction && grupoCorrespondente) {
+                if (hoverEffectAction === 'add') {
+                  grupoCorrespondente.classList.add('hover-effect');
+                } else if (hoverEffectAction === 'remove') {
+                  grupoCorrespondente.classList.remove('hover-effect');
+                }
+              }
+              if (textoDiretoCorrespondente) {
+                textoDiretoCorrespondente.style.fontWeight = newTextWeight;
+              }
+            }
+          };
+          
           path.addEventListener('click', toggleAtivo);
-
-          path.addEventListener('mouseenter', () => {
-            if (!municipio.active) {
-              path.setAttribute('fill-opacity', '1');
-              if (grupoCorrespondente) {
-                grupoCorrespondente.classList.add('hover-effect');
-              }
-              if (textoDiretoCorrespondente) {
-                textoDiretoCorrespondente.style.fontWeight = 'bold';
-              }
-            }
-          });
-
-          path.addEventListener('mouseleave', () => {
-            if (!municipio.active) {
-              path.setAttribute('fill-opacity', '0.4980');
-              if (grupoCorrespondente) {
-                grupoCorrespondente.classList.remove('hover-effect');
-              }
-              if (textoDiretoCorrespondente) {
-                textoDiretoCorrespondente.style.fontWeight = 'normal';
-              }
-            }
-          });
-
+          path.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
+          path.addEventListener('mouseleave', () => actionsOnMouseEvent('0.4980', 'normal', 'remove'));
 
           if (grupoCorrespondente) {
             grupoCorrespondente.style.cursor = 'pointer';
-
-            grupoCorrespondente.addEventListener('mouseenter', () => {
-              if (!municipio.active) {
-                path.setAttribute('fill-opacity', '1');
-                grupoCorrespondente.classList.add('hover-effect');
-              }
-            });
-
-            grupoCorrespondente.addEventListener('mouseleave', () => {
-              if (!municipio.active) {
-                path.setAttribute('fill-opacity', '0.4980');
-                grupoCorrespondente.classList.remove('hover-effect');
-              }
-            });
-
+            grupoCorrespondente.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
+            grupoCorrespondente.addEventListener('mouseleave', () => actionsOnMouseEvent('0.4980', 'normal', 'remove'));
             grupoCorrespondente.addEventListener('click', toggleAtivo);
           }
 
-
           if (textoDiretoCorrespondente) {
             textoDiretoCorrespondente.style.cursor = 'pointer';
-
-            textoDiretoCorrespondente.addEventListener('mouseenter', () => {
-              if (!municipio.active) {
-                path.setAttribute('fill-opacity', '1');
-                textoDiretoCorrespondente.style.fontWeight = 'bold';
-              }
-            });
-
-            textoDiretoCorrespondente.addEventListener('mouseleave', () => {
-              if (!municipio.active) {
-                path.setAttribute('fill-opacity', '0.4980');
-                textoDiretoCorrespondente.style.fontWeight = 'normal';
-              }
-            });
-
+            textoDiretoCorrespondente.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold'));
+            textoDiretoCorrespondente.addEventListener('mouseleave', () => actionsOnMouseEvent('0.4980', 'normal'));
             textoDiretoCorrespondente.addEventListener('click', toggleAtivo);
           }
         });

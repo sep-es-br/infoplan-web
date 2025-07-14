@@ -341,39 +341,37 @@ export class MapEsComponent implements OnInit, OnChanges {
         const municipiosList = Object.values(this.regionCities).flatMap((region) => region.cities);
         const paths = svgElement.querySelectorAll('path');
 
-        paths.forEach((path) => {
+        paths.forEach((path: SVGPathElement) => {
           const municipio = municipiosList.find((city) => city.code === path.id);
           let pathEntity: { name: string; active: boolean; };
 
-          if (municipio) {
-            pathEntity = municipio;
-          } else {
-            const region = this.regionCities[path.id];
-            pathEntity = { name: region.label, active: region.active };
-          }
-          
-          path.setAttribute('fill-opacity', pathEntity.active ? '1' : '0.4980');
-          path.style.cursor = 'pointer';
-          path.style.transition = 'fill-opacity 0.3s ease';
+          const grupoCorrespondente = svgElement.querySelector(`g[id="${path.id}"]`) as SVGGElement | null;
+          const textoDiretoCorrespondente = svgElement.querySelector(`text[id="${path.id}"]`) as SVGTextElement | null;
 
           const toggleAtivo = () => {
             pathEntity.active = !pathEntity.active;
             const localidade = this.localidadeList.find((item) => item.name === pathEntity.name);
 
-            if (this.filter.localidades) {
-              this.filter.localidades.push(localidade.id);
+            if (pathEntity.active) {
+              // Clicou pra selecionar o município/região
+              if (this.filter.localidades) {
+                this.filter.localidades.push(localidade.id);
+              } else {
+                this.filter = {
+                  ...this.filter,
+                  localidades: [
+                    localidade.id,
+                  ],
+                };
+              }
             } else {
-              this.filter = {
-                ...this.filter,
-                localidades: [
-                  localidade.id,
-                ],
-              };
+              // Clicou pra de-selecionar o município/região
+              this.filter.localidades = this.filter.localidades.filter((el: any) => el.id !== localidade.id);
+              if (this.filter.localidades.length === 0) {
+                delete this.filter.localidades;
+              }
             }
           };
-
-          const grupoCorrespondente = svgElement.querySelector(`g[id="${path.id}"]`) as SVGGElement | null;
-          const textoDiretoCorrespondente = svgElement.querySelector(`text[id="${path.id}"]`) as SVGTextElement | null;
 
           const actionsOnMouseEvent = (opacityLevel: string, newTextWeight: 'normal' | 'bold', hoverEffectAction?: 'add' | 'remove') => {
             if (!pathEntity.active) {
@@ -390,10 +388,25 @@ export class MapEsComponent implements OnInit, OnChanges {
               }
             }
           };
-          
-          path.addEventListener('click', toggleAtivo);
-          path.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
-          path.addEventListener('mouseleave', () => actionsOnMouseEvent('0.4980', 'normal', 'remove'));
+
+          if (municipio) {
+            pathEntity = municipio;
+
+            path.setAttribute('fill-opacity', pathEntity.active ? '1' : '0.4980');
+            path.style.cursor = 'pointer';
+            path.style.transition = 'fill-opacity 0.3s ease';
+
+            path.addEventListener('click', toggleAtivo);
+            path.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
+            path.addEventListener('mouseleave', () => actionsOnMouseEvent('0.4980', 'normal', 'remove'));
+          } else {
+            const region = this.regionCities[path.id];
+            pathEntity = { name: region.label, active: region.active };
+
+            grupoCorrespondente.setAttribute('fill-opacity', pathEntity.active ? '1' : '0.4980');
+            grupoCorrespondente.style.cursor = 'pointer';
+            grupoCorrespondente.style.transition = 'fill-opacity 0.3s ease';
+          }
 
           if (grupoCorrespondente) {
             grupoCorrespondente.style.cursor = 'pointer';
@@ -477,7 +490,7 @@ export class MapEsComponent implements OnInit, OnChanges {
 
   getOpacidadeLegenda(nomeRegiao: string): number {
     if (nomeRegiao === 'Todas as Localidades' && this.filter.localidades === "") {
-      return 1; 
+      return 1;
     }
 
     const regiaoFormatada = nomeRegiao.replace(/\s/g, '_');
@@ -496,7 +509,7 @@ export class MapEsComponent implements OnInit, OnChanges {
 
   getFontWeightBasedOnRegionActivity(nomeRegiao: string): string {
     if (nomeRegiao === 'Todas as Localidades' && this.filter.localidades === "") {
-      return "bold"; 
+      return "bold";
     }
 
     const regiaoFormatada = nomeRegiao.replace(/\s/g, '_');
@@ -533,7 +546,7 @@ export class MapEsComponent implements OnInit, OnChanges {
         path.setAttribute('stroke-width', '1.2');
       }
     });
-    
+
     // Seleciona todas as tags <text> do svg
     const texts = svgElement.querySelectorAll('text');
     texts.forEach((text: SVGTextElement) => {

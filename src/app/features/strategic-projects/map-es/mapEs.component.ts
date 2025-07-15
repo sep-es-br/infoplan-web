@@ -5,6 +5,7 @@ import { IIdAndName } from '../../../core/interfaces/id-and-name.interface';
 import { City, Region } from '../../../core/interfaces/map-es.interface';
 import { NbThemeService } from '@nebular/theme';
 import { AvailableThemes } from '../../../@theme/theme.module';
+import { svg } from 'leaflet';
 
 @Component({
   selector: 'ngx-map-es',
@@ -257,33 +258,20 @@ export class MapEsComponent implements OnInit, OnChanges {
     const svgElement = document.querySelector('.mapa-es svg');
     if (!svgElement) return;
 
+    console.log('this.filter: ', this.filter);
+
+    // Inicia por percorrer todas as regiões e cidades e setando active = true caso estejam inclusas no filtro.
+    
     Object.values(this.regionCities).forEach((region) => {
-      region.active = false;
+      const regionId = this.localidadeList.find((el) => el.name === region.label).id;
+      region.active = this.filter.localidades.includes(regionId);
       region.cities.forEach((city) => {
-        city.active = false;
+        const cityId = this.localidadeList.find((el) => el.name === city.name)?.id;
+        city.active = this.filter.localidades.includes(cityId);
       });
     });
-    if (this.filter.localidades) {
-      const localidade = this.localidadeList.find(
-        (item) => item.id.toString() === this.filter.localidades.toString()
-      );
 
-      if (localidade) {
-        Object.values(this.regionCities).forEach((region) => {
-          if (region.label === localidade.name) {
-            region.active = true;
-            region.cities.forEach((city) => {
-              city.active = true;
-            });
-          } else {
-            const city = region.cities.find((city) => city.name === localidade.name);
-            if (city) {
-              city.active = true;
-            }
-          }
-        });
-      }
-    }
+    console.log('this.regionCities: ', this.regionCities);
 
     const paths = svgElement.querySelectorAll('path');
     paths.forEach((path: SVGPathElement) => {
@@ -295,6 +283,7 @@ export class MapEsComponent implements OnInit, OnChanges {
         .find((city) => city.code === pathId);
 
       if (municipio) {
+        // O path atual é referente a um município
         path.setAttribute('fill-opacity', municipio.active ? '1' : '0.4980');
 
         if (grupoCorrespondente) {
@@ -303,6 +292,18 @@ export class MapEsComponent implements OnInit, OnChanges {
 
         if (textoDiretoCorrespondente) {
           textoDiretoCorrespondente.style.fontWeight = municipio.active ? 'bold' : 'normal';
+        }
+      } else if (Object.keys(this.regionCities).includes(pathId)) {
+        // O path atual é referente a uma região
+        const currentRegion = this.regionCities[pathId];
+        console.log('currentRegion: ', currentRegion);
+        if (grupoCorrespondente) {
+          grupoCorrespondente.classList.toggle('hover-effect', currentRegion.active);
+          grupoCorrespondente.setAttribute('fill-opacity', currentRegion.active ? '1' : '0.4980');
+        }
+
+        if (textoDiretoCorrespondente) {
+          textoDiretoCorrespondente.style.fontWeight = currentRegion.active ? 'bold' : 'normal';
         }
       }
     });
@@ -354,9 +355,9 @@ export class MapEsComponent implements OnInit, OnChanges {
 
             if (pathEntity.active) {
               // Clicou pra selecionar o município/região
-              if (this.filter.localidades) {
+              if (this.filter.localidades && !this.filter.localidades.includes(localidade.id)) {
                 this.filter.localidades.push(localidade.id);
-              } else {
+              } else if (!this.filter.localidades) {
                 this.filter = {
                   ...this.filter,
                   localidades: [
@@ -366,14 +367,14 @@ export class MapEsComponent implements OnInit, OnChanges {
               }
             } else {
               // Clicou pra de-selecionar o município/região
-              this.filter.localidades = this.filter.localidades.filter((el: any) => el.id !== localidade.id);
-              if (this.filter.localidades.length === 0) {
-                delete this.filter.localidades;
-              }
+              this.filter.localidades = this.filter.localidades.filter((el: number) => el !== localidade.id);
             }
+
+            this.atualizarEstadosComBaseNoFilter();
           };
 
           const actionsOnMouseEvent = (opacityLevel: string, newTextWeight: 'normal' | 'bold', hoverEffectAction?: 'add' | 'remove') => {
+            console.log('pathEntity: ', pathEntity);
             if (!pathEntity.active) {
               path.setAttribute('fill-opacity', opacityLevel);
               if (hoverEffectAction && grupoCorrespondente) {
@@ -399,17 +400,14 @@ export class MapEsComponent implements OnInit, OnChanges {
             path.addEventListener('click', toggleAtivo);
             path.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
             path.addEventListener('mouseleave', () => actionsOnMouseEvent('0.4980', 'normal', 'remove'));
-          } else {
+          } else if (grupoCorrespondente) {
             const region = this.regionCities[path.id];
             pathEntity = { name: region.label, active: region.active };
 
             grupoCorrespondente.setAttribute('fill-opacity', pathEntity.active ? '1' : '0.4980');
             grupoCorrespondente.style.cursor = 'pointer';
             grupoCorrespondente.style.transition = 'fill-opacity 0.3s ease';
-          }
 
-          if (grupoCorrespondente) {
-            grupoCorrespondente.style.cursor = 'pointer';
             grupoCorrespondente.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
             grupoCorrespondente.addEventListener('mouseleave', () => actionsOnMouseEvent('0.4980', 'normal', 'remove'));
             grupoCorrespondente.addEventListener('click', toggleAtivo);

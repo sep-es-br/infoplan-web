@@ -2,22 +2,23 @@ import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { IIdAndName } from '../../../core/interfaces/id-and-name.interface';
-import { City, Region } from '../../../core/interfaces/map-es.interface';
+import { Region } from '../../../core/interfaces/map-es.interface';
 import { NbThemeService } from '@nebular/theme';
 import { AvailableThemes } from '../../../@theme/theme.module';
-import { svg } from 'leaflet';
 
 @Component({
   selector: 'ngx-map-es',
   styleUrls: ['./mapEs.component.scss'],
   template: `
-    <div class="container">
-      <!-- <div class="legenda">
-        <div *ngFor="let regiao of regioesArray" class="legenda-item">
-          <span class="legenda-cor" [style.background-color]="regiao.cor" [style.opacity]="getOpacidadeLegenda(regiao.nome)" (click)="aplicarCorRegiao(regiao)"></span>
-          <span class="legenda-texto" (click)="aplicarCorRegiao(regiao)" [style.font-weight]="getFontWeightBasedOnRegionActivity(regiao.nome)">{{ regiao.nome }}</span>
-        </div>
-      </div> -->
+    <div class="container d-flex flex-column">
+      <div class="d-flex justify-content-end py-2">
+        <nb-icon
+          class="m-0 p-0 reset-filter"
+          [icon]="'refresh-outline'"
+          (click)="handleResetFilters()"
+        >
+        </nb-icon>
+      </div>
       <div class="mapa-es" [innerHTML]="svgSeguro"></div>
     </div>
   `,
@@ -199,6 +200,8 @@ export class MapEsComponent implements OnInit, OnChanges {
 
   svgSeguro: SafeHtml;
 
+  standardUnselectedPathOpacity = '0.25';
+
   constructor(
     private http: HttpClient,
     private sanitizer: DomSanitizer,
@@ -219,46 +222,43 @@ export class MapEsComponent implements OnInit, OnChanges {
     }
   }
 
-  carregarSvg(): void {
-    this.http.get('/assets/images/app/mapa-es.svg', { responseType: 'text' }).subscribe(
-      (svg: string) => {
-        const svgColorido = this.aplicarCores(svg);
-        this.svgSeguro = this.sanitizer.bypassSecurityTrustHtml(svgColorido);
-        this.adicionarEfeitos();
-        this.verificarSvgRenderizado();
-      },
-      (error) => {
-        console.error('Erro ao carregar o SVG:', error);
-      },
-    );
-  }
+carregarSvg(): void {
+  this.http.get('/assets/images/app/mapa-es.svg', { responseType: 'text' }).subscribe(
+    (svg: string) => {
+      const svgColorido = this.aplicarCores(svg);
+      this.svgSeguro = this.sanitizer.bypassSecurityTrustHtml(svgColorido);
+      this.verificarSvgRenderizado(); // <- move para cá
+    },
+    (error) => {
+      console.error('Erro ao carregar o SVG:', error);
+    },
+  );
+}
 
-  verificarSvgRenderizado(): void {
-    const intervalo = 100;
-    const tempoMaximo = 5000;
+verificarSvgRenderizado(): void {
+  const intervalo = 100;
+  const tempoMaximo = 5000;
+  const inicio = Date.now();
 
-    const inicio = Date.now();
+  const loop = () => {
+    const svgElement = document.querySelector('.mapa-es svg');
 
-    const loop = () => {
-      const svgElement = document.querySelector('.mapa-es svg');
+    if (svgElement) {
+      this.atualizarEstadosComBaseNoFilter();
+      setTimeout(() => this.adicionarEfeitos(), 0); // Só depois de atualizar o estado
+    } else if (Date.now() - inicio < tempoMaximo) {
+      setTimeout(loop, intervalo);
+    } else {
+      console.warn('O SVG não foi renderizado dentro do tempo esperado.');
+    }
+  };
 
-      if (svgElement) {
-        this.atualizarEstadosComBaseNoFilter();
-      } else if (Date.now() - inicio < tempoMaximo) {
-        setTimeout(loop, intervalo);
-      } else {
-        console.warn('O SVG não foi renderizado dentro do tempo esperado.');
-      }
-    };
-
-    loop();
-  }
+  loop();
+}
 
   atualizarEstadosComBaseNoFilter(): void {
     const svgElement = document.querySelector('.mapa-es svg');
     if (!svgElement) return;
-
-    console.log('this.filter: ', this.filter);
 
     // Inicia por percorrer todas as regiões e cidades e setando active = true caso estejam inclusas no filtro.
     
@@ -271,8 +271,6 @@ export class MapEsComponent implements OnInit, OnChanges {
       });
     });
 
-    console.log('this.regionCities: ', this.regionCities);
-
     const paths = svgElement.querySelectorAll('path');
     paths.forEach((path: SVGPathElement) => {
       const pathId = path.getAttribute('id');
@@ -284,7 +282,7 @@ export class MapEsComponent implements OnInit, OnChanges {
 
       if (municipio) {
         // O path atual é referente a um município
-        path.setAttribute('fill-opacity', municipio.active ? '1' : '0.4980');
+        path.setAttribute('fill-opacity', municipio.active ? '1' : '0.25');
 
         if (grupoCorrespondente) {
           grupoCorrespondente.classList.toggle('hover-effect', municipio.active);
@@ -296,11 +294,10 @@ export class MapEsComponent implements OnInit, OnChanges {
       } else if (Object.keys(this.regionCities).includes(pathId)) {
         // O path atual é referente a uma região
         const currentRegion = this.regionCities[pathId];
-        console.log('currentRegion: ', currentRegion);
-        if (grupoCorrespondente) {
-          grupoCorrespondente.classList.toggle('hover-effect', currentRegion.active);
-          grupoCorrespondente.setAttribute('fill-opacity', currentRegion.active ? '1' : '0.4980');
-        }
+        // if (grupoCorrespondente) {
+        //   grupoCorrespondente.classList.toggle('hover-effect', currentRegion.active);
+        //   grupoCorrespondente.setAttribute('fill-opacity', currentRegion.active ? '1' : '0.25');
+        // }
 
         if (textoDiretoCorrespondente) {
           textoDiretoCorrespondente.style.fontWeight = currentRegion.active ? 'bold' : 'normal';
@@ -320,14 +317,15 @@ export class MapEsComponent implements OnInit, OnChanges {
       region.cities.forEach((city) => {
         svg = svg.replace(
           `id="${city.code}"`,
-          `id="${city.code}" fill="${color}" fill-opacity="0.498"`
+          `id="${city.code}" fill="${color}" fill-opacity="${this.standardUnselectedPathOpacity}"`
         );
       });
 
       // Aplica as cores em todas as regiões no Mapa de Regiões
+     const patternRegion = new RegExp(`<path([^>]*?)id=["']${regionKey}["']`, 'g');
       svg = svg.replace(
-        `<g id="${regionKey}"`,
-        `<g id="${regionKey}" fill="${color}" fill-opacity="0.498"`,
+        patternRegion,
+        `<path fill="${color}" fill-opacity="${this.standardUnselectedPathOpacity}"$1 id="${regionKey}"`
       );
     });
 
@@ -371,10 +369,10 @@ export class MapEsComponent implements OnInit, OnChanges {
             }
 
             this.atualizarEstadosComBaseNoFilter();
+            this.filterChange.emit(this.filter);
           };
 
           const actionsOnMouseEvent = (opacityLevel: string, newTextWeight: 'normal' | 'bold', hoverEffectAction?: 'add' | 'remove') => {
-            console.log('pathEntity: ', pathEntity);
             if (!pathEntity.active) {
               path.setAttribute('fill-opacity', opacityLevel);
               if (hoverEffectAction && grupoCorrespondente) {
@@ -393,31 +391,33 @@ export class MapEsComponent implements OnInit, OnChanges {
           if (municipio) {
             pathEntity = municipio;
 
-            path.setAttribute('fill-opacity', pathEntity.active ? '1' : '0.4980');
+            path.setAttribute('fill-opacity', pathEntity.active ? '1' : this.standardUnselectedPathOpacity);
             path.style.cursor = 'pointer';
             path.style.transition = 'fill-opacity 0.3s ease';
 
             path.addEventListener('click', toggleAtivo);
             path.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
-            path.addEventListener('mouseleave', () => actionsOnMouseEvent('0.4980', 'normal', 'remove'));
-          } else if (grupoCorrespondente) {
+            path.addEventListener('mouseleave', () => actionsOnMouseEvent(this.standardUnselectedPathOpacity, 'normal', 'remove'));
+          } else {
             const region = this.regionCities[path.id];
             pathEntity = { name: region.label, active: region.active };
 
-            grupoCorrespondente.setAttribute('fill-opacity', pathEntity.active ? '1' : '0.4980');
-            grupoCorrespondente.style.cursor = 'pointer';
-            grupoCorrespondente.style.transition = 'fill-opacity 0.3s ease';
+            path.setAttribute('fill-opacity', pathEntity.active ? '1' : this.standardUnselectedPathOpacity);
+            path.style.cursor = 'pointer';
+            path.style.transition = 'fill-opacity 0.3s ease';
 
-            grupoCorrespondente.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
-            grupoCorrespondente.addEventListener('mouseleave', () => actionsOnMouseEvent('0.4980', 'normal', 'remove'));
-            grupoCorrespondente.addEventListener('click', toggleAtivo);
+            path.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
+            path.addEventListener('mouseleave', () => actionsOnMouseEvent(this.standardUnselectedPathOpacity, 'normal', 'remove'));
+            path.addEventListener('click', toggleAtivo);
           }
 
           if (textoDiretoCorrespondente) {
             textoDiretoCorrespondente.style.cursor = 'pointer';
             textoDiretoCorrespondente.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold'));
-            textoDiretoCorrespondente.addEventListener('mouseleave', () => actionsOnMouseEvent('0.4980', 'normal'));
-            textoDiretoCorrespondente.addEventListener('click', toggleAtivo);
+            textoDiretoCorrespondente.addEventListener('mouseleave', () => actionsOnMouseEvent(this.standardUnselectedPathOpacity, 'normal'));
+            if (!textoDiretoCorrespondente.eventListeners().map((evt: EventListener) => evt.name).includes('toggleAtivo')) {
+              	textoDiretoCorrespondente.addEventListener('click', toggleAtivo);
+            }
           }
         });
       }
@@ -486,44 +486,6 @@ export class MapEsComponent implements OnInit, OnChanges {
     });
   }
 
-  getOpacidadeLegenda(nomeRegiao: string): number {
-    if (nomeRegiao === 'Todas as Localidades' && this.filter.localidades === "") {
-      return 1;
-    }
-
-    const regiaoFormatada = nomeRegiao.replace(/\s/g, '_');
-
-    const regiao = Object.values(this.regionCities).find(
-      (region) => region.label.replace(/\s/g, '_') === regiaoFormatada
-    );
-
-    if (!regiao) {
-      return 0.4980;
-    }
-    const todasAtivas = regiao.cities.every((city) => city.active);
-
-    return todasAtivas ? 1 : 0.4980;
-  }
-
-  getFontWeightBasedOnRegionActivity(nomeRegiao: string): string {
-    if (nomeRegiao === 'Todas as Localidades' && this.filter.localidades === "") {
-      return "bold";
-    }
-
-    const regiaoFormatada = nomeRegiao.replace(/\s/g, '_');
-
-    const regiao = Object.values(this.regionCities).find(
-      (region) => region.label.replace(/\s/g, '_') === regiaoFormatada
-    );
-
-    if (!regiao) {
-      return "normal";
-    }
-    const todasAtivas = regiao.cities.every((city) => city.active);
-
-    return todasAtivas ? "bold" : "normal";
-  }
-
   alterStylesBasedOnTheme() {
     const currentTheme = this.themeService.currentTheme;
 
@@ -554,5 +516,12 @@ export class MapEsComponent implements OnInit, OnChanges {
         text.setAttribute('fill', '#000000');
       }
     });
+  }
+
+  handleResetFilters() {
+    this.filter.localidades = '';
+    this.filterChange.emit(this.filter);
+    this.atualizarEstadosComBaseNoFilter();
+    this.adicionarEfeitos();
   }
 }

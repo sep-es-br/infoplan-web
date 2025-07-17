@@ -15,6 +15,7 @@ import { AvailableThemes } from '../../../@theme/theme.module';
         <nb-icon
           class="m-0 p-0 reset-filter"
           [icon]="'refresh-outline'"
+          nbTooltip="Redefinir Localidades"
           (click)="handleResetFilters()"
         >
         </nb-icon>
@@ -275,7 +276,7 @@ verificarSvgRenderizado(): void {
     paths.forEach((path: SVGPathElement) => {
       const pathId = path.getAttribute('id');
       const grupoCorrespondente = svgElement.querySelector(`g[id="${pathId}"]`) as SVGGElement | null;
-      const textoDiretoCorrespondente = svgElement.querySelector(`text[id="${pathId}"]`) as SVGTextElement | null;
+      const textoDiretoCorrespondente = svgElement.querySelectorAll(`text[id="${pathId}"]`) as NodeListOf<SVGTextElement | null>;
       const municipio = Object.values(this.regionCities)
         .flatMap((region) => region.cities)
         .find((city) => city.code === pathId);
@@ -289,7 +290,9 @@ verificarSvgRenderizado(): void {
         }
 
         if (textoDiretoCorrespondente) {
-          textoDiretoCorrespondente.style.fontWeight = municipio.active ? 'bold' : 'normal';
+          textoDiretoCorrespondente.forEach((text) => {
+            text.style.fontWeight = municipio.active ? 'bold' : 'normal';
+          });
         }
       } else if (Object.keys(this.regionCities).includes(pathId)) {
         // O path atual é referente a uma região
@@ -300,7 +303,9 @@ verificarSvgRenderizado(): void {
         // }
 
         if (textoDiretoCorrespondente) {
-          textoDiretoCorrespondente.style.fontWeight = currentRegion.active ? 'bold' : 'normal';
+          textoDiretoCorrespondente.forEach((text) => {
+            text.style.fontWeight = currentRegion.active ? 'bold' : 'normal';
+          });
         }
       }
     });
@@ -345,7 +350,7 @@ verificarSvgRenderizado(): void {
           let pathEntity: { name: string; active: boolean; };
 
           const grupoCorrespondente = svgElement.querySelector(`g[id="${path.id}"]`) as SVGGElement | null;
-          const textoDiretoCorrespondente = svgElement.querySelector(`text[id="${path.id}"]`) as SVGTextElement | null;
+          const textoDiretoCorrespondente = svgElement.querySelectorAll(`text[id="${path.id}"]`) as NodeListOf<SVGTextElement | null>;
 
           const toggleAtivo = () => {
             pathEntity.active = !pathEntity.active;
@@ -383,7 +388,9 @@ verificarSvgRenderizado(): void {
                 }
               }
               if (textoDiretoCorrespondente) {
-                textoDiretoCorrespondente.style.fontWeight = newTextWeight;
+                textoDiretoCorrespondente.forEach((text) => {
+                  text.style.fontWeight = newTextWeight;
+                });
               }
             }
           };
@@ -412,12 +419,14 @@ verificarSvgRenderizado(): void {
           }
 
           if (textoDiretoCorrespondente) {
-            textoDiretoCorrespondente.style.cursor = 'pointer';
-            textoDiretoCorrespondente.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold'));
-            textoDiretoCorrespondente.addEventListener('mouseleave', () => actionsOnMouseEvent(this.standardUnselectedPathOpacity, 'normal'));
-            if (!textoDiretoCorrespondente.eventListeners().map((evt: EventListener) => evt.name).includes('toggleAtivo')) {
-              	textoDiretoCorrespondente.addEventListener('click', toggleAtivo);
-            }
+            textoDiretoCorrespondente.forEach((text) => {
+              text.style.cursor = 'pointer';
+              text.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold'));
+              text.addEventListener('mouseleave', () => actionsOnMouseEvent(this.standardUnselectedPathOpacity, 'normal'));
+              if (!text.eventListeners().map((evt: EventListener) => evt.name).includes('toggleAtivo')) {
+                text.addEventListener('click', toggleAtivo);
+              }
+            });
           }
         });
       }
@@ -502,8 +511,10 @@ verificarSvgRenderizado(): void {
     paths.forEach((path: SVGPathElement) => {
       if (currentTheme === AvailableThemes.DARK || currentTheme === AvailableThemes.COSMIC) {
         path.setAttribute('stroke-width', '0.6');
+        path.setAttribute('stroke', '#FFFFFF');
       } else if (currentTheme === AvailableThemes.DEFAULT) {
-        path.setAttribute('stroke-width', '1.2');
+        path.setAttribute('stroke-width', '0.6');
+        path.setAttribute('stroke', '#000000')
       }
     });
 

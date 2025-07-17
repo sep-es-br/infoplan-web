@@ -10,12 +10,15 @@ import { AvailableThemes } from '../../../@theme/theme.module';
   selector: 'ngx-map-es',
   styleUrls: ['./mapEs.component.scss'],
   template: `
-    <div class="container">
-      <div class="legenda">
-        <div *ngFor="let regiao of regioesArray" class="legenda-item">
-          <span class="legenda-cor" [style.background-color]="regiao.cor" [style.opacity]="getOpacidadeLegenda(regiao.nome)" (click)="aplicarCorRegiao(regiao)"></span>
-          <span class="legenda-texto" (click)="aplicarCorRegiao(regiao)" [style.font-weight]="getFontWeightBasedOnRegionActivity(regiao.nome)">{{ regiao.nome }}</span>
-        </div>
+    <div class="container d-flex flex-column">
+      <div class="d-flex justify-content-end py-2">
+        <nb-icon
+          class="m-0 p-0 reset-filter"
+          [icon]="'refresh-outline'"
+          nbTooltip="Redefinir Localidades"
+          (click)="handleResetFilters()"
+        >
+        </nb-icon>
       </div>
       <div class="mapa-es" [innerHTML]="svgSeguro"></div>
     </div>
@@ -49,7 +52,6 @@ export class MapEsComponent implements OnInit, OnChanges {
   });
 
   regionCities: { [key: string]: Region } = {
-
     Todo_o_Estado: {
       label: 'Todo o Estado',
       active: false,
@@ -57,7 +59,6 @@ export class MapEsComponent implements OnInit, OnChanges {
         { code: 'TEstado', name: 'Todo o Estado', active: false },
       ],
     },
-
     Metropolitana: {
       label: 'Metropolitana',
       active: false,
@@ -200,6 +201,8 @@ export class MapEsComponent implements OnInit, OnChanges {
 
   svgSeguro: SafeHtml;
 
+  standardUnselectedPathOpacity = '0.25';
+
   constructor(
     private http: HttpClient,
     private sanitizer: DomSanitizer,
@@ -220,91 +223,89 @@ export class MapEsComponent implements OnInit, OnChanges {
     }
   }
 
-  carregarSvg(): void {
-    this.http.get('/assets/images/app/mapa-es.svg', { responseType: 'text' }).subscribe(
-      (svg: string) => {
-        const svgColorido = this.aplicarCores(svg);
-        this.svgSeguro = this.sanitizer.bypassSecurityTrustHtml(svgColorido);
-        this.adicionarEfeitos();
-        this.verificarSvgRenderizado();
-      },
-      (error) => {
-        console.error('Erro ao carregar o SVG:', error);
-      },
-    );
-  }
+carregarSvg(): void {
+  this.http.get('/assets/images/app/mapa-es.svg', { responseType: 'text' }).subscribe(
+    (svg: string) => {
+      const svgColorido = this.aplicarCores(svg);
+      this.svgSeguro = this.sanitizer.bypassSecurityTrustHtml(svgColorido);
+      this.verificarSvgRenderizado(); // <- move para cá
+    },
+    (error) => {
+      console.error('Erro ao carregar o SVG:', error);
+    },
+  );
+}
 
-  verificarSvgRenderizado(): void {
-    const intervalo = 100;
-    const tempoMaximo = 5000;
+verificarSvgRenderizado(): void {
+  const intervalo = 100;
+  const tempoMaximo = 5000;
+  const inicio = Date.now();
 
-    const inicio = Date.now();
+  const loop = () => {
+    const svgElement = document.querySelector('.mapa-es svg');
 
-    const loop = () => {
-      const svgElement = document.querySelector('.mapa-es svg');
+    if (svgElement) {
+      this.atualizarEstadosComBaseNoFilter();
+      setTimeout(() => this.adicionarEfeitos(), 0); // Só depois de atualizar o estado
+    } else if (Date.now() - inicio < tempoMaximo) {
+      setTimeout(loop, intervalo);
+    } else {
+      console.warn('O SVG não foi renderizado dentro do tempo esperado.');
+    }
+  };
 
-      if (svgElement) {
-        this.atualizarEstadosComBaseNoFilter();
-      } else if (Date.now() - inicio < tempoMaximo) {
-        setTimeout(loop, intervalo);
-      } else {
-        console.warn('O SVG não foi renderizado dentro do tempo esperado.');
-      }
-    };
-
-    loop();
-  }
+  loop();
+}
 
   atualizarEstadosComBaseNoFilter(): void {
     const svgElement = document.querySelector('.mapa-es svg');
     if (!svgElement) return;
 
+    // Inicia por percorrer todas as regiões e cidades e setando active = true caso estejam inclusas no filtro.
+    
     Object.values(this.regionCities).forEach((region) => {
-      region.active = false;
+      const regionId = this.localidadeList.find((el) => el.name === region.label).id;
+      region.active = this.filter.localidades.includes(regionId);
       region.cities.forEach((city) => {
-        city.active = false;
+        const cityId = this.localidadeList.find((el) => el.name === city.name)?.id;
+        city.active = this.filter.localidades.includes(cityId);
       });
     });
-    if (this.filter.localidades) {
-      const localidade = this.localidadeList.find(
-        (item) => item.id.toString() === this.filter.localidades.toString()
-      );
-
-      if (localidade) {
-        Object.values(this.regionCities).forEach((region) => {
-          if (region.label === localidade.name) {
-            region.active = true;
-            region.cities.forEach((city) => {
-              city.active = true;
-            });
-          } else {
-            const city = region.cities.find((city) => city.name === localidade.name);
-            if (city) {
-              city.active = true;
-            }
-          }
-        });
-      }
-    }
 
     const paths = svgElement.querySelectorAll('path');
     paths.forEach((path: SVGPathElement) => {
       const pathId = path.getAttribute('id');
       const grupoCorrespondente = svgElement.querySelector(`g[id="${pathId}"]`) as SVGGElement | null;
-      const textoDiretoCorrespondente = svgElement.querySelector(`text[id="${pathId}"]`) as SVGTextElement | null;
+      const textoDiretoCorrespondente = svgElement.querySelectorAll(`text[id="${pathId}"]`) as NodeListOf<SVGTextElement | null>;
       const municipio = Object.values(this.regionCities)
         .flatMap((region) => region.cities)
         .find((city) => city.code === pathId);
 
       if (municipio) {
-        path.setAttribute('fill-opacity', municipio.active ? '1' : '0.4980');
+        // O path atual é referente a um município
+        path.setAttribute('fill-opacity', municipio.active ? '1' : '0.25');
 
         if (grupoCorrespondente) {
           grupoCorrespondente.classList.toggle('hover-effect', municipio.active);
         }
 
         if (textoDiretoCorrespondente) {
-          textoDiretoCorrespondente.style.fontWeight = municipio.active ? 'bold' : 'normal';
+          textoDiretoCorrespondente.forEach((text) => {
+            text.style.fontWeight = municipio.active ? 'bold' : 'normal';
+          });
+        }
+      } else if (Object.keys(this.regionCities).includes(pathId)) {
+        // O path atual é referente a uma região
+        const currentRegion = this.regionCities[pathId];
+        // if (grupoCorrespondente) {
+        //   grupoCorrespondente.classList.toggle('hover-effect', currentRegion.active);
+        //   grupoCorrespondente.setAttribute('fill-opacity', currentRegion.active ? '1' : '0.25');
+        // }
+
+        if (textoDiretoCorrespondente) {
+          textoDiretoCorrespondente.forEach((text) => {
+            text.style.fontWeight = currentRegion.active ? 'bold' : 'normal';
+          });
         }
       }
     });
@@ -317,12 +318,20 @@ export class MapEsComponent implements OnInit, OnChanges {
       const region = this.regionCities[regionKey];
       const color = this.regioes[regionKey];
 
+      // Aplica as cores em todos os municípios no Mapa de Municípios
       region.cities.forEach((city) => {
         svg = svg.replace(
           `id="${city.code}"`,
-          `id="${city.code}" fill="${color}"`
+          `id="${city.code}" fill="${color}" fill-opacity="${this.standardUnselectedPathOpacity}"`
         );
       });
+
+      // Aplica as cores em todas as regiões no Mapa de Regiões
+     const patternRegion = new RegExp(`<path([^>]*?)id=["']${regionKey}["']`, 'g');
+      svg = svg.replace(
+        patternRegion,
+        `<path fill="${color}" fill-opacity="${this.standardUnselectedPathOpacity}"$1 id="${regionKey}"`
+      );
     });
 
     return svg;
@@ -331,118 +340,93 @@ export class MapEsComponent implements OnInit, OnChanges {
   adicionarEfeitos(): void {
     setTimeout(() => {
       const svgElement = document.querySelector('.mapa-es svg');
+
       if (svgElement) {
+        const municipiosList = Object.values(this.regionCities).flatMap((region) => region.cities);
         const paths = svgElement.querySelectorAll('path');
 
         paths.forEach((path: SVGPathElement) => {
-          const pathId = path.getAttribute('id');
-          const municipio = Object.values(this.regionCities)
-            .flatMap((region) => region.cities)
-            .find((city) => city.code === pathId);
+          const municipio = municipiosList.find((city) => city.code === path.id);
+          let pathEntity: { name: string; active: boolean; };
 
-          if (municipio) {
-            path.setAttribute('fill-opacity', municipio.active ? '1' : '0.4980');
-          }
-
-          const grupoCorrespondente = svgElement.querySelector(`g[id="${pathId}"]`) as SVGGElement | null;
-          const textoDiretoCorrespondente = svgElement.querySelector(`text[id="${pathId}"]`) as SVGTextElement | null;
-
-          path.style.cursor = 'pointer';
-          path.style.transition = 'fill-opacity 0.3s ease';
+          const grupoCorrespondente = svgElement.querySelector(`g[id="${path.id}"]`) as SVGGElement | null;
+          const textoDiretoCorrespondente = svgElement.querySelectorAll(`text[id="${path.id}"]`) as NodeListOf<SVGTextElement | null>;
 
           const toggleAtivo = () => {
-            const estavaAtivo = municipio.active;
-            municipio.active = !estavaAtivo;
-            const region = Object.values(this.regionCities).find((region) =>
-              region.cities.some((city) => city.code === pathId)
-            );
+            pathEntity.active = !pathEntity.active;
+            const localidade = this.localidadeList.find((item) => item.name === pathEntity.name);
 
-            if (region.active) {
-              if(!(region.label === 'Todo o Estado')){
-                municipio.active = region.active;
+            if (pathEntity.active) {
+              // Clicou pra selecionar o município/região
+              if (this.filter.localidades && !this.filter.localidades.includes(localidade.id)) {
+                this.filter.localidades.push(localidade.id);
+              } else if (!this.filter.localidades) {
+                this.filter = {
+                  ...this.filter,
+                  localidades: [
+                    localidade.id,
+                  ],
+                };
               }
+            } else {
+              // Clicou pra de-selecionar o município/região
+              this.filter.localidades = this.filter.localidades.filter((el: number) => el !== localidade.id);
             }
 
-            const localidade = this.localidadeList.find(
-              (item) => item.name === municipio.name
-            );
+            this.atualizarEstadosComBaseNoFilter();
+            this.filterChange.emit(this.filter);
+          };
 
-            if (localidade) {
-              if (municipio.active) {
-                this.filter.localidades = localidade.id;
-              } else {
-                this.filter.localidades = '';
+          const actionsOnMouseEvent = (opacityLevel: string, newTextWeight: 'normal' | 'bold', hoverEffectAction?: 'add' | 'remove') => {
+            if (!pathEntity.active) {
+              path.setAttribute('fill-opacity', opacityLevel);
+              if (hoverEffectAction && grupoCorrespondente) {
+                if (hoverEffectAction === 'add') {
+                  grupoCorrespondente.classList.add('hover-effect');
+                } else if (hoverEffectAction === 'remove') {
+                  grupoCorrespondente.classList.remove('hover-effect');
+                }
               }
-              this.filterChange.emit(this.filter);
+              if (textoDiretoCorrespondente) {
+                textoDiretoCorrespondente.forEach((text) => {
+                  text.style.fontWeight = newTextWeight;
+                });
+              }
             }
           };
 
-          path.addEventListener('click', toggleAtivo);
+          if (municipio) {
+            pathEntity = municipio;
 
-          path.addEventListener('mouseenter', () => {
-            if (!municipio.active) {
-              path.setAttribute('fill-opacity', '1');
-              if (grupoCorrespondente) {
-                grupoCorrespondente.classList.add('hover-effect');
-              }
-              if (textoDiretoCorrespondente) {
-                textoDiretoCorrespondente.style.fontWeight = 'bold';
-              }
-            }
-          });
+            path.setAttribute('fill-opacity', pathEntity.active ? '1' : this.standardUnselectedPathOpacity);
+            path.style.cursor = 'pointer';
+            path.style.transition = 'fill-opacity 0.3s ease';
 
-          path.addEventListener('mouseleave', () => {
-            if (!municipio.active) {
-              path.setAttribute('fill-opacity', '0.4980');
-              if (grupoCorrespondente) {
-                grupoCorrespondente.classList.remove('hover-effect');
-              }
-              if (textoDiretoCorrespondente) {
-                textoDiretoCorrespondente.style.fontWeight = 'normal';
-              }
-            }
-          });
+            path.addEventListener('click', toggleAtivo);
+            path.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
+            path.addEventListener('mouseleave', () => actionsOnMouseEvent(this.standardUnselectedPathOpacity, 'normal', 'remove'));
+          } else {
+            const region = this.regionCities[path.id];
+            pathEntity = { name: region.label, active: region.active };
 
+            path.setAttribute('fill-opacity', pathEntity.active ? '1' : this.standardUnselectedPathOpacity);
+            path.style.cursor = 'pointer';
+            path.style.transition = 'fill-opacity 0.3s ease';
 
-          if (grupoCorrespondente) {
-            grupoCorrespondente.style.cursor = 'pointer';
-
-            grupoCorrespondente.addEventListener('mouseenter', () => {
-              if (!municipio.active) {
-                path.setAttribute('fill-opacity', '1');
-                grupoCorrespondente.classList.add('hover-effect');
-              }
-            });
-
-            grupoCorrespondente.addEventListener('mouseleave', () => {
-              if (!municipio.active) {
-                path.setAttribute('fill-opacity', '0.4980');
-                grupoCorrespondente.classList.remove('hover-effect');
-              }
-            });
-
-            grupoCorrespondente.addEventListener('click', toggleAtivo);
+            path.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
+            path.addEventListener('mouseleave', () => actionsOnMouseEvent(this.standardUnselectedPathOpacity, 'normal', 'remove'));
+            path.addEventListener('click', toggleAtivo);
           }
 
-
           if (textoDiretoCorrespondente) {
-            textoDiretoCorrespondente.style.cursor = 'pointer';
-
-            textoDiretoCorrespondente.addEventListener('mouseenter', () => {
-              if (!municipio.active) {
-                path.setAttribute('fill-opacity', '1');
-                textoDiretoCorrespondente.style.fontWeight = 'bold';
+            textoDiretoCorrespondente.forEach((text) => {
+              text.style.cursor = 'pointer';
+              text.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold'));
+              text.addEventListener('mouseleave', () => actionsOnMouseEvent(this.standardUnselectedPathOpacity, 'normal'));
+              if (!text.eventListeners().map((evt: EventListener) => evt.name).includes('toggleAtivo')) {
+                text.addEventListener('click', toggleAtivo);
               }
             });
-
-            textoDiretoCorrespondente.addEventListener('mouseleave', () => {
-              if (!municipio.active) {
-                path.setAttribute('fill-opacity', '0.4980');
-                textoDiretoCorrespondente.style.fontWeight = 'normal';
-              }
-            });
-
-            textoDiretoCorrespondente.addEventListener('click', toggleAtivo);
           }
         });
       }
@@ -511,44 +495,6 @@ export class MapEsComponent implements OnInit, OnChanges {
     });
   }
 
-  getOpacidadeLegenda(nomeRegiao: string): number {
-    if (nomeRegiao === 'Todas as Localidades' && this.filter.localidades === "") {
-      return 1; 
-    }
-
-    const regiaoFormatada = nomeRegiao.replace(/\s/g, '_');
-
-    const regiao = Object.values(this.regionCities).find(
-      (region) => region.label.replace(/\s/g, '_') === regiaoFormatada
-    );
-
-    if (!regiao) {
-      return 0.4980;
-    }
-    const todasAtivas = regiao.cities.every((city) => city.active);
-
-    return todasAtivas ? 1 : 0.4980;
-  }
-
-  getFontWeightBasedOnRegionActivity(nomeRegiao: string): string {
-    if (nomeRegiao === 'Todas as Localidades' && this.filter.localidades === "") {
-      return "bold"; 
-    }
-
-    const regiaoFormatada = nomeRegiao.replace(/\s/g, '_');
-
-    const regiao = Object.values(this.regionCities).find(
-      (region) => region.label.replace(/\s/g, '_') === regiaoFormatada
-    );
-
-    if (!regiao) {
-      return "normal";
-    }
-    const todasAtivas = regiao.cities.every((city) => city.active);
-
-    return todasAtivas ? "bold" : "normal";
-  }
-
   alterStylesBasedOnTheme() {
     const currentTheme = this.themeService.currentTheme;
 
@@ -565,11 +511,13 @@ export class MapEsComponent implements OnInit, OnChanges {
     paths.forEach((path: SVGPathElement) => {
       if (currentTheme === AvailableThemes.DARK || currentTheme === AvailableThemes.COSMIC) {
         path.setAttribute('stroke-width', '0.6');
+        path.setAttribute('stroke', '#FFFFFF');
       } else if (currentTheme === AvailableThemes.DEFAULT) {
-        path.setAttribute('stroke-width', '1.2');
+        path.setAttribute('stroke-width', '0.6');
+        path.setAttribute('stroke', '#000000')
       }
     });
-    
+
     // Seleciona todas as tags <text> do svg
     const texts = svgElement.querySelectorAll('text');
     texts.forEach((text: SVGTextElement) => {
@@ -579,5 +527,12 @@ export class MapEsComponent implements OnInit, OnChanges {
         text.setAttribute('fill', '#000000');
       }
     });
+  }
+
+  handleResetFilters() {
+    this.filter.localidades = '';
+    this.filterChange.emit(this.filter);
+    this.atualizarEstadosComBaseNoFilter();
+    this.adicionarEfeitos();
   }
 }

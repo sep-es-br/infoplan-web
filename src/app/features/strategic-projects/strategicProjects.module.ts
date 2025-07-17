@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { StrategicProjectsComponent } from './strategicProjects.component';
-import { NbButtonModule, NbCardModule, NbDatepickerModule, NbIconModule, NbInputModule, NbLayoutModule, NbSelectModule } from '@nebular/theme';
+import { NbButtonModule, NbCardModule, NbDatepickerModule, NbIconModule, NbInputModule, NbLayoutModule, NbSelectModule, NbTooltipModule } from '@nebular/theme';
 import { DeliveriesByStatusComponent } from './data-chart/deliveries-by-status/deliveriesByStatus.component';
 import { CriticalMilestonesForPerformanceComponent } from './data-chart/critical-milestones-for-performance/criticalMilestonesForPerformace.component';
 import { DeliveriesByPerformaceComponent } from './data-chart/deliveries-by-performance/deliveriesByPerformace.component';
@@ -43,6 +43,7 @@ import { MapEsComponent } from './map-es/mapEs.component';
     NbDatepickerModule,
     NbInputModule,
     NbButtonModule,
+    NbTooltipModule,
   ]
 })
 export class StrategicProjectsModule { }

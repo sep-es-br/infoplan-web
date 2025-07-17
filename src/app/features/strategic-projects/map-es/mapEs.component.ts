@@ -352,6 +352,8 @@ verificarSvgRenderizado(): void {
           const grupoCorrespondente = svgElement.querySelector(`g[id="${path.id}"]`) as SVGGElement | null;
           const textoDiretoCorrespondente = svgElement.querySelectorAll(`text[id="${path.id}"]`) as NodeListOf<SVGTextElement | null>;
 
+          path.removeAllListeners();
+
           const toggleAtivo = () => {
             pathEntity.active = !pathEntity.active;
             const localidade = this.localidadeList.find((item) => item.name === pathEntity.name);
@@ -406,8 +408,8 @@ verificarSvgRenderizado(): void {
             path.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
             path.addEventListener('mouseleave', () => actionsOnMouseEvent(this.standardUnselectedPathOpacity, 'normal', 'remove'));
           } else {
-            const region = this.regionCities[path.id];
-            pathEntity = { name: region.label, active: region.active };
+            const region = { name: this.regionCities[path.id].label, active: this.regionCities[path.id].active };
+            pathEntity = region;
 
             path.setAttribute('fill-opacity', pathEntity.active ? '1' : this.standardUnselectedPathOpacity);
             path.style.cursor = 'pointer';
@@ -431,69 +433,7 @@ verificarSvgRenderizado(): void {
         });
       }
     }, 0);
-  }
-
-  aplicarCorRegiao(regiao: { nome: string }): void {
-    const svgElement = document.querySelector('.mapa-es svg');
-    if (!svgElement) return;
-
-    const regiaoNomeFormatado = regiao.nome.replace(/_/g, ' ');
-
-    const regiaoAtiva = Object.values(this.regionCities).some(
-      (region) => region.label === regiaoNomeFormatado && region.active
-    );
-
-
-    if (regiaoAtiva) {
-      this.filter.localidades = '';
-      this.filterChange.emit(this.filter);
-      return;
-    }
-
-    if (regiaoNomeFormatado === 'Todas as Localidades') {
-      this.filter.localidades = '';
-      this.filterChange.emit(this.filter);
-      return;
-    }
-
-    if (regiaoNomeFormatado === 'Todo o Estado') {
-      const pathEstado = svgElement.querySelector(`path[id="TEstado"]`) as SVGPathElement | null;
-      if (pathEstado) {
-        const estado = this.regionCities['Todo_o_Estado'];
-        if (estado) {
-          estado.active = !estado.active;
-          estado.cities[0].active = estado.active;
-          const localidade = this.localidadeList.find(
-            (item) => item.name === estado.label
-          );
-
-          if (localidade) {
-            this.filter.localidades = localidade.id;
-            this.filterChange.emit(this.filter);
-          }
-        }
-      }
-      return;
-    }
-
-    Object.keys(this.regionCities).forEach((regionKey) => {
-      const region = this.regionCities[regionKey];
-      if (region.label === regiaoNomeFormatado) {
-        region.active = !region.active;
-        region.cities.forEach((city) => {
-          city.active = region.active;
-        });
-        const localidade = this.localidadeList.find(
-          (item) => item.name === region.label
-        );
-
-        if (localidade) {
-          this.filter.localidades = localidade.id;
-          this.filterChange.emit(this.filter);
-        }
-      }
-    });
-  }
+  }  
 
   alterStylesBasedOnTheme() {
     const currentTheme = this.themeService.currentTheme;
@@ -530,7 +470,7 @@ verificarSvgRenderizado(): void {
   }
 
   handleResetFilters() {
-    this.filter.localidades = '';
+    this.filter.localidades = [];
     this.filterChange.emit(this.filter);
     this.atualizarEstadosComBaseNoFilter();
     this.adicionarEfeitos();

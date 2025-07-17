@@ -156,7 +156,7 @@ export class StrategicProjectsComponent {
   }
 
   handleFilterChange(origin: AvailableFilters, newValue: Array<number>) {
-    const selectedValue = newValue.length === 0 ? 'todos' : newValue.toString();
+    const selectedValue = newValue.length === 0 ? '' : newValue.toString();
     
     switch (origin) {
       case AvailableFilters.AREAS_TEMATICAS:
@@ -164,7 +164,10 @@ export class StrategicProjectsComponent {
         this.strategicProjectsService.getProgramsProjectsDeliveries(selectedValue)
           .subscribe(
             (data: IStrategicProjectFilterDataDto) => {
-              this.programaOList = data.programasOriginal;
+              this.programaOList = [
+                { id: -1, name: '(Sem Programa)' },
+                ...data.programasOriginal
+              ];
               this.entregaList = data.entregas;
               this.projetoList = data.projetos;
             },
@@ -175,7 +178,7 @@ export class StrategicProjectsComponent {
         break;
       case AvailableFilters.PROGRAMAS_ORIGINAIS:
         // Faz uma requisição para pegar uma lista de Projetos e Entregas baseado nas Áreas Temáticas e Programas Originais selecionados
-        const selectedAreasTematicas = this.filter.areaTematica?.length === 0 ? 'todos' : this.filter.areaTematica.toString();
+        const selectedAreasTematicas = this.filter.areaTematica?.length === 0 ? '' : this.filter.areaTematica.toString();
 
         this.strategicProjectsService.getProjectsDeliveries(selectedAreasTematicas, selectedValue)
           .subscribe(
@@ -190,8 +193,8 @@ export class StrategicProjectsComponent {
         break;
       case AvailableFilters.PROJETOS:
         // Faz uma requisição para pegar uma lista de Entregas baseado nas Áreas Temáticas, Programas Originais e Projetos selecionados
-        const selectedAreas = this.filter.areaTematica?.length === 0 ? 'todos' : this.filter.areaTematica.toString();
-        const selectedProgramas = this.filter.programaOrigem?.length === 0 ? 'todos' : this.filter.programaOrigem.toString();
+        const selectedAreas = this.filter.areaTematica?.length === 0 ? '' : this.filter.areaTematica.toString();
+        const selectedProgramas = this.filter.programaOrigem?.length === 0 ? '' : this.filter.programaOrigem.toString();
 
         this.strategicProjectsService.getDeliveries(selectedAreas, selectedProgramas, selectedValue)
           .subscribe(
@@ -251,7 +254,10 @@ export class StrategicProjectsComponent {
     this.strategicProjectsService.getAll().subscribe(
       (allFilterList: IStrategicProjectFilterDataDto) => {
         this.areaList = allFilterList.area
-        this.programaOList = allFilterList.programasOriginal
+        this.programaOList = [
+          { id: -1, name: '(Sem Programa)' },
+          ...allFilterList.programasOriginal
+        ];
         this.programaTList = allFilterList.programasTransversal
         this.entregaList = allFilterList.entregas
         this.orgaoList = allFilterList.orgaos

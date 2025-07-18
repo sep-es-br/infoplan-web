@@ -170,6 +170,7 @@ button:focus, select:focus, input:focus {
   padding: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   text-align: center;
+  height: 100%;
 
   .delivery-select {
     min-width: 200px;
@@ -187,6 +188,13 @@ button:focus, select:focus, input:focus {
     gap: 20px;
     width: 100%;
     padding: 5px 0 5px 5px;
+    height: 100%;
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+      border-width: 0.35em;
+    }
 
     .portfolio-content {
       display: flex;

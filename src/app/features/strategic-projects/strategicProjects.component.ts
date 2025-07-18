@@ -23,6 +23,13 @@ enum AvailableFilters {
   ACOMPANHADO_POR = 'Acompanhado_Por',
 }
 
+export enum RequestStatus {
+  EMPTY = 'Empty',
+  LOADING = 'Loading',
+  SUCCESS = 'Success',
+  ERROR = 'Error',
+}
+
 @Component({
   selector: 'ngx-strategic-projects',
   templateUrl: './strategicProjects.component.html',
@@ -82,6 +89,10 @@ export class StrategicProjectsComponent {
   projetoList: IIdAndName[] = [];
 
   activeFilters: { key: string; label: string; displayValue: Array<{name: string; fullName?: string; }>; }[] = [];
+
+  requestStatus = {
+    totals: RequestStatus.EMPTY,
+  }
 
   constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
     this.loadTimestamp();
@@ -305,14 +316,17 @@ export class StrategicProjectsComponent {
   }
 
   loadTotals() {
+    this.requestStatus.totals = RequestStatus.LOADING;
     const cleanedFilter = this.strategicProjectsService.removeEmptyValues(this.finalFilter);
 
     this.strategicProjectsService.getTotals(cleanedFilter).subscribe(
       (totals: IStrategicProjectTotals) => {
         this.totals = totals;
+        this.requestStatus.totals = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os totais:', error);
+        this.requestStatus.totals = RequestStatus.ERROR;
       }
     );
   }

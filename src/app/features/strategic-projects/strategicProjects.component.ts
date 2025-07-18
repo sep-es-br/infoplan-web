@@ -81,12 +81,12 @@ export class StrategicProjectsComponent {
   localidadeList: IIdAndName[] = [];
   projetoList: IIdAndName[] = [];
 
-  activeFilters: { key: string; label: string; value: string }[] = [];
+  activeFilters: { key: string; label: string; displayValue: Array<{name: string; fullName?: string; }>; }[] = [];
 
   constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
     this.loadTimestamp();
     this.updateActiveFilters();
-    this.loadAll();    
+    this.loadAll();
     this.loadTotals();
   }
 
@@ -119,16 +119,16 @@ export class StrategicProjectsComponent {
     this.activeFilters = Object.entries(this.finalFilter)
       .filter(([key, value]) => value && (Array.isArray(value) ? value.length > 0 : true))
       .map(([key, value]) => {
-        let displayValue: string;
+        let displayValue: Array<{name: string; fullName?: string; }>;
 
         if (directValueKeys.includes(key)) {
           if (key === 'dataInicio' || key === 'dataFim') {
             const year = ((value as Date).getFullYear()).toString();
             let month = ((value as Date).getMonth() + 1).toString();
             if (Number(month) < 10) month = `0${month}`;
-            displayValue = `${month}-${year}`;
+            displayValue = [{ name: `${month}-${year}` }];
           } else {
-            displayValue = (value as string);
+            displayValue = [{ name: (value as string) }];
           }
         } else {
           const listKey = optionsMapping[key];
@@ -136,21 +136,23 @@ export class StrategicProjectsComponent {
 
           if (Array.isArray(value)) {
             displayValue = value.map((selectedItem, index) => {
-              let name = list?.find((item) => item.id === selectedItem)?.name || selectedItem;
+              const item = list?.find((item) => item.id === selectedItem) || selectedItem;
+              let name: string = item.name;
               if (index + 1 < value.length) {
-                name = `${name}; `;
+                name = `${name}`;
               }
-              return name;
-            }).join('');
+              return { name, fullName: item?.fullName || name };
+            });
           } else {
-            displayValue = list?.find(item => item.id === Number(value as string))?.name || (value as string);
+            const item = list?.find(item => item.id === Number(value as string));
+            displayValue = item?.name ? [{ name: item.name, fullName: item?.fullName || '' }] : [{ name: (value as string), fullName: (value as string) }];
           }
         }
 
         return {
           key,
           label: this.getFilterLabel(key),
-          value: displayValue
+          displayValue
         };
       });
   }
@@ -253,16 +255,16 @@ export class StrategicProjectsComponent {
   loadAll(): void {
     this.strategicProjectsService.getAll().subscribe(
       (allFilterList: IStrategicProjectFilterDataDto) => {
-        this.areaList = allFilterList.area
+        this.areaList = allFilterList.area;
         this.programaOList = [
-          { id: -1, name: '(Sem Programa)' },
+          { id: -1, name: '(Sem Programa)', fullName: '(Sem Programa)' },
           ...allFilterList.programasOriginal
         ];
-        this.programaTList = allFilterList.programasTransversal
-        this.entregaList = allFilterList.entregas
-        this.orgaoList = allFilterList.orgaos
-        this.localidadeList = allFilterList.localidades
-        this.projetoList = allFilterList.projetos
+        this.programaTList = allFilterList.programasTransversal;
+        this.entregaList = allFilterList.entregas;
+        this.orgaoList = allFilterList.orgaos;
+        this.localidadeList = allFilterList.localidades;
+        this.projetoList = allFilterList.projetos;
       },
       (error) => {
         console.error('Erro ao carregar áreas temáticas:', error);

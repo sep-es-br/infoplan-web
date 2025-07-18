@@ -2,11 +2,17 @@ import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({ name: 'TextTruncate', standalone: true })
 export class TextTruncatePipe implements PipeTransform {
-  transform(element: string, numOfChars: number): string {
+  transform(element: string, numOfChars: number, customLastChar?: string): string {
+    let finalString = element;
+
     if (element.length > numOfChars) {
-      return `${element.slice(0, numOfChars - 1)}...`;
+      finalString = `${element.slice(0, numOfChars - 1)}...`;
     }
 
-    return element;
+    if (customLastChar) {
+      finalString = `${finalString}${customLastChar}`;
+    }
+
+    return finalString;
   }
 }

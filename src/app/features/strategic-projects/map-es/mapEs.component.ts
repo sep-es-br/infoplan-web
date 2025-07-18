@@ -15,7 +15,7 @@ import { AvailableThemes } from '../../../@theme/theme.module';
         <nb-icon
           class="m-0 p-0 reset-filter"
           [icon]="'refresh-outline'"
-          nbTooltip="Redefinir Localidades"
+          nbTooltip="Redefinir Filtros"
           (click)="handleResetFilters()"
         >
         </nb-icon>
@@ -53,14 +53,14 @@ export class MapEsComponent implements OnInit, OnChanges {
 
   regionCities: { [key: string]: Region } = {
     Todo_o_Estado: {
-      label: 'Todo o Estado',
+      name: 'Todo o Estado',
       active: false,
       cities: [
         { code: 'TEstado', name: 'Todo o Estado', active: false },
       ],
     },
     Metropolitana: {
-      label: 'Metropolitana',
+      name: 'Metropolitana',
       active: false,
       cities: [
         { code: '3201308', name: 'Cariacica', active: false },
@@ -73,7 +73,7 @@ export class MapEsComponent implements OnInit, OnChanges {
       ],
     },
     Central_Serrana: {
-      label: 'Central Serrana',
+      name: 'Central Serrana',
       active: false,
       cities: [
         { code: '3202702', name: 'Itaguaçu', active: false },
@@ -84,7 +84,7 @@ export class MapEsComponent implements OnInit, OnChanges {
       ],
     },
     Sudoeste_Serrana: {
-      label: 'Sudoeste Serrana',
+      name: 'Sudoeste Serrana',
       active: false,
       cities: [
         { code: '3200102', name: 'Afonso Cláudio', active: false },
@@ -97,7 +97,7 @@ export class MapEsComponent implements OnInit, OnChanges {
       ],
     },
     Litoral_Sul: {
-      label: 'Litoral Sul',
+      name: 'Litoral Sul',
       active: false,
       cities: [
         { code: '3200300', name: 'Alfredo Chaves', active: false },
@@ -111,7 +111,7 @@ export class MapEsComponent implements OnInit, OnChanges {
       ],
     },
     Central_Sul: {
-      label: 'Central Sul',
+      name: 'Central Sul',
       active: false,
       cities: [
         { code: '3201209', name: 'Cachoeiro de Itapemirim', active: false },
@@ -124,7 +124,7 @@ export class MapEsComponent implements OnInit, OnChanges {
       ],
     },
     Caparaó: {
-      label: 'Caparaó',
+      name: 'Caparaó',
       active: false,
       cities: [
         { code: '3203106', name: 'Jerônimo Monteiro', active: false },
@@ -142,7 +142,7 @@ export class MapEsComponent implements OnInit, OnChanges {
       ],
     },
     Rio_Doce: {
-      label: 'Rio Doce',
+      name: 'Rio Doce',
       active: false,
       cities: [
         { code: '3200607', name: 'Aracruz', active: false },
@@ -154,11 +154,11 @@ export class MapEsComponent implements OnInit, OnChanges {
       ],
     },
     Centro_Oeste: {
-      label: 'Centro Oeste',
+      name: 'Centro Oeste',
       active: false,
       cities: [
         { code: '3200359', name: 'Alto Rio Novo', active: false },
-        { code: '3200805', name: 'Baixo Guandú', active: false },
+        { code: '3200805', name: 'Baixo Guandu', active: false },
         { code: '3201506', name: 'Colatina', active: false },
         { code: '3204005', name: 'Pancas', active: false },
         { code: '3202256', name: 'Governador Lindenberg', active: false },
@@ -170,7 +170,7 @@ export class MapEsComponent implements OnInit, OnChanges {
       ],
     },
     Nordeste: {
-      label: 'Nordeste',
+      name: 'Nordeste',
       active: false,
       cities: [
         { code: '3201605', name: 'Conceição da Barra', active: false },
@@ -185,7 +185,7 @@ export class MapEsComponent implements OnInit, OnChanges {
       ],
     },
     Noroeste: {
-      label: 'Noroeste',
+      name: 'Noroeste',
       active: false,
       cities: [
         { code: '3200169', name: 'Água Doce do Norte', active: false },
@@ -264,7 +264,7 @@ verificarSvgRenderizado(): void {
     // Inicia por percorrer todas as regiões e cidades e setando active = true caso estejam inclusas no filtro.
     
     Object.values(this.regionCities).forEach((region) => {
-      const regionId = this.localidadeList.find((el) => el.name === region.label).id;
+      const regionId = this.localidadeList.find((el) => el.name === region.name).id;
       region.active = this.filter.localidades.includes(regionId);
       region.cities.forEach((city) => {
         const cityId = this.localidadeList.find((el) => el.name === city.name)?.id;
@@ -275,7 +275,7 @@ verificarSvgRenderizado(): void {
     const paths = svgElement.querySelectorAll('path');
     paths.forEach((path: SVGPathElement) => {
       const pathId = path.getAttribute('id');
-      const grupoCorrespondente = svgElement.querySelector(`g[id="${pathId}"]`) as SVGGElement | null;
+      // const grupoCorrespondente = svgElement.querySelector(`g[id="${pathId}"]`) as SVGGElement | null;
       const textoDiretoCorrespondente = svgElement.querySelectorAll(`text[id="${pathId}"]`) as NodeListOf<SVGTextElement | null>;
       const municipio = Object.values(this.regionCities)
         .flatMap((region) => region.cities)
@@ -285,9 +285,10 @@ verificarSvgRenderizado(): void {
         // O path atual é referente a um município
         path.setAttribute('fill-opacity', municipio.active ? '1' : '0.25');
 
-        if (grupoCorrespondente) {
-          grupoCorrespondente.classList.toggle('hover-effect', municipio.active);
-        }
+        // if (grupoCorrespondente) {
+        //   grupoCorrespondente.classList.toggle('hover-effect', municipio.active);
+        // }
+        path.classList.toggle('hover-effect', municipio.active);
 
         if (textoDiretoCorrespondente) {
           textoDiretoCorrespondente.forEach((text) => {
@@ -297,6 +298,9 @@ verificarSvgRenderizado(): void {
       } else if (Object.keys(this.regionCities).includes(pathId)) {
         // O path atual é referente a uma região
         const currentRegion = this.regionCities[pathId];
+        path.setAttribute('fill-opacity', currentRegion.active ? '1' : '0.25');
+        path.classList.toggle('hover-effect', currentRegion.active);
+
         // if (grupoCorrespondente) {
         //   grupoCorrespondente.classList.toggle('hover-effect', currentRegion.active);
         //   grupoCorrespondente.setAttribute('fill-opacity', currentRegion.active ? '1' : '0.25');
@@ -349,7 +353,7 @@ verificarSvgRenderizado(): void {
           const municipio = municipiosList.find((city) => city.code === path.id);
           let pathEntity: { name: string; active: boolean; };
 
-          const grupoCorrespondente = svgElement.querySelector(`g[id="${path.id}"]`) as SVGGElement | null;
+          // const grupoCorrespondente = svgElement.querySelector(`g[id="${path.id}"]`) as SVGGElement | null;
           const textoDiretoCorrespondente = svgElement.querySelectorAll(`text[id="${path.id}"]`) as NodeListOf<SVGTextElement | null>;
 
           path.removeAllListeners();
@@ -382,11 +386,11 @@ verificarSvgRenderizado(): void {
           const actionsOnMouseEvent = (opacityLevel: string, newTextWeight: 'normal' | 'bold', hoverEffectAction?: 'add' | 'remove') => {
             if (!pathEntity.active) {
               path.setAttribute('fill-opacity', opacityLevel);
-              if (hoverEffectAction && grupoCorrespondente) {
+              if (hoverEffectAction) {
                 if (hoverEffectAction === 'add') {
-                  grupoCorrespondente.classList.add('hover-effect');
+                  path.classList.add('hover-effect');
                 } else if (hoverEffectAction === 'remove') {
-                  grupoCorrespondente.classList.remove('hover-effect');
+                  path.classList.remove('hover-effect');
                 }
               }
               if (textoDiretoCorrespondente) {
@@ -408,8 +412,7 @@ verificarSvgRenderizado(): void {
             path.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
             path.addEventListener('mouseleave', () => actionsOnMouseEvent(this.standardUnselectedPathOpacity, 'normal', 'remove'));
           } else {
-            const region = { name: this.regionCities[path.id].label, active: this.regionCities[path.id].active };
-            pathEntity = region;
+            pathEntity = this.regionCities[path.id];
 
             path.setAttribute('fill-opacity', pathEntity.active ? '1' : this.standardUnselectedPathOpacity);
             path.style.cursor = 'pointer';
@@ -473,6 +476,5 @@ verificarSvgRenderizado(): void {
     this.filter.localidades = [];
     this.filterChange.emit(this.filter);
     this.atualizarEstadosComBaseNoFilter();
-    this.adicionarEfeitos();
   }
 }

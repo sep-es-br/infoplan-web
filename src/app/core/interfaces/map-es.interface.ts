@@ -5,7 +5,7 @@ export interface City {
   }
   
 export interface Region {
-    label: string;
+    name: string;
     active: boolean;
     cities: City[];
   }

@@ -15,6 +15,7 @@ import { InvestmentBySelectedComponent } from './data-chart/investment-by-select
 import { FormsModule } from '@angular/forms';
 import { ThemeModule } from '../../@theme/theme.module';
 import { MapEsComponent } from './map-es/mapEs.component';
+import { TextTruncatePipe } from '../../@theme/pipes/text-truncate.pipe';
 
 
 @NgModule({
@@ -44,6 +45,7 @@ import { MapEsComponent } from './map-es/mapEs.component';
     NbInputModule,
     NbButtonModule,
     NbTooltipModule,
+    TextTruncatePipe,
   ]
 })
 export class StrategicProjectsModule { }

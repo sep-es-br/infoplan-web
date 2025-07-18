@@ -8,8 +8,21 @@
               <div class="tag-label">
                 {{ tag.label }}:
               </div>
+
               <div class="tag-value">
-                {{ tag.value }}
+                <ng-container *ngFor="let value of tag.displayValue; let index = index">
+                  <ng-container *ngIf="value.name?.length <= 17 else spanWithTooltip">
+                    <span>
+                      {{ (index > 0 ? ' ' : '') + (tag.displayValue.length > 1 ?  (value.name | TextTruncate : 17 : ';') : value.name) }}
+                    </span>
+                  </ng-container>
+
+                  <ng-template #spanWithTooltip>
+                    <span [nbTooltip]="value.fullName ? value.fullName : value.name">
+                      {{ (index > 0 ? ' ' : '') + (value.name | TextTruncate : 17 : ';') }}
+                    </span>
+                  </ng-template>
+                </ng-container>
               </div>
             </div>
             <button

@@ -1,5 +1,5 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontalBarChartModel.component';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectInvestmentSelected } from '../../../../core/interfaces/strategic-project.interface';
@@ -22,6 +22,8 @@ import { RequestStatus } from '../../strategicProjects.component';
 })
 export class InvestmentBySelectedComponent implements OnChanges {
   @Input() filter!: IStrategicProjectFilterValuesDto;
+
+  @Output() newFilter = new EventEmitter<IStrategicProjectFilterValuesDto>();
 
   flipTableContent: FlipTableContent;
 
@@ -198,6 +200,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
         originalPropertyName: 'nome',
         propertyName: 'firstColumn',
         displayName: this.selectedInvestmentOption,
+        enableEventClick: true,
       },
       data: finalData,
     };
@@ -230,5 +233,63 @@ export class InvestmentBySelectedComponent implements OnChanges {
       columns,
       `InfoPlan_Investimento_por_${this.selectedInvestmentOption}.xlsx`,
     );
+  }
+
+  handleCustomFiltering(value: string) {
+    const selectedItem = this.investmentData.find((item) => item.nome === value);
+    let newFilter: IStrategicProjectFilterValuesDto = {
+      areaId: '',
+      programaOriginalId: -1,
+      programaTransversalId: -1,
+      projetoId: -1,
+      entregaId: -1,
+      orgaoId: -1,
+      localidadeId: -1,
+      dataInicio: -1,
+      dataFim: -1,
+    };
+
+    switch (this.selectedInvestmentOption) {
+      case 'Área Temática':
+        newFilter = {
+          ...newFilter,
+          areaId: selectedItem.id.toString(),
+        };
+        this.selectedInvestmentOption = 'Programa';
+        break;
+      case 'Programa':
+        newFilter = {
+          ...newFilter,
+          programaOriginalId: selectedItem.id,
+        };
+        this.selectedInvestmentOption = 'Projeto';
+        break;
+      case 'Programas Transversais':
+        newFilter = {
+          ...newFilter,
+          programaTransversalId: selectedItem.id,
+        };
+        this.selectedInvestmentOption = 'Projeto';
+        break;
+      case 'Projeto':
+        newFilter = {
+          ...newFilter,
+          projetoId: selectedItem.id,
+        };
+        this.selectedInvestmentOption = 'Entrega';
+        break;
+      case 'Entrega':
+        newFilter = {
+          ...newFilter,
+          entregaId: selectedItem.id,
+        };
+        this.selectedInvestmentOption = 'Entrega';
+        break;
+      default:
+        console.warn('Opção não reconhecida:', this.selectedInvestmentOption);
+        break;
+    }
+
+    this.newFilter.emit(newFilter);
   }
 }

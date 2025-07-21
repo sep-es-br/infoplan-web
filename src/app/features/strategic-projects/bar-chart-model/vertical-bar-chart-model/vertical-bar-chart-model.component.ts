@@ -3,12 +3,12 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 import { NbThemeService } from '@nebular/theme';
 import { EChartsOption } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { AvailableThemes, getAvailableThemesStyles } from '../../../@theme/theme.module';
+import { AvailableThemes, getAvailableThemesStyles } from '../../../../@theme/theme.module';
 
 @Component({
   selector: 'ngx-vertical-bar-chart-model',
-  templateUrl: './barChartModel.component.html',
-  styleUrls: ['./barChartModel.component.scss'],
+  templateUrl: './vertical-bar-chart-model.component.html',
+  styles: [' .echarts { width: 100%; height: 100%; } '],
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })

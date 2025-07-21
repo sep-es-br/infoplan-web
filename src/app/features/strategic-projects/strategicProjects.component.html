@@ -446,7 +446,7 @@
      
     <div [ngClass]="{'col-xxxl-12': isMapOpen, 'col-xxxl-6': !isMapOpen}" class="col-md-12 pr-0 pl-0 d-flex flex-wrap">
       <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2 ">
-        <ngx-investment-by-selected [filter]="finalFilter"></ngx-investment-by-selected>
+        <ngx-investment-by-selected [filter]="finalFilter" (newFilter)="handleNewFilter($event)"></ngx-investment-by-selected>
       </div>
 
       <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2">

@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontalBarChartModel.component';
+import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectDeliveriesBySelected } from '../../../../core/interfaces/strategic-project.interface';

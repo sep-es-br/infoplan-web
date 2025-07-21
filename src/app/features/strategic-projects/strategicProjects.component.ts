@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { StrategicProjectsService } from '../../core/service/strategic-projects.service';
 import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
-import { IStrategicProjectFilterDataDto } from '../../core/interfaces/strategic-project-filter.interface';
+import { IStrategicProjectFilterDataDto, IStrategicProjectFilterValuesDto } from '../../core/interfaces/strategic-project-filter.interface';
 import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project-totals.interface';
 import { IStrategicProjectTimestamp } from '../../core/interfaces/strategic-project.interface';
 import { NbThemeService } from '@nebular/theme';
@@ -255,9 +255,9 @@ export class StrategicProjectsComponent {
     this.showFilters = !this.showFilters;
   }
 
-  filtrar(event: Event): void {
-    event.preventDefault();
-    this.showFilters = !this.showFilters;
+  filtrar(event?: Event): void {
+    if (event) event.preventDefault();
+    this.showFilters = false;
     this.finalFilter = { ...this.filter };
     this.updateActiveFilters();
     this.loadTotals()
@@ -362,5 +362,23 @@ export class StrategicProjectsComponent {
     this.updateActiveFilters();
 
     this.loadTotals();
+  }
+
+  handleNewFilter(newFilter: IStrategicProjectFilterValuesDto) {
+    let newLocalFilter: any = {
+      portfolio: environment.strategicProjectFilter.portfolio,
+      dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
+      dataFim: new Date(environment.strategicProjectFilter.dataFim),
+      previsaoConclusao: '',
+    };
+
+    if (newFilter.areaId) newLocalFilter.areaTematica = [Number(newFilter.areaId)];
+    if (newFilter.programaOriginalId) newLocalFilter.programaOrigem = [newFilter.programaOriginalId];
+    if (newFilter.programaTransversalId) newLocalFilter.programaTransversal = [newFilter.programaTransversalId];
+    if (newFilter.projetoId) newLocalFilter.projetos = [newFilter.projetoId];
+    if (newFilter.entregaId) newLocalFilter.entregas = [newFilter.entregaId];
+
+    this.filter = newLocalFilter;
+    this.filtrar();
   }
 }

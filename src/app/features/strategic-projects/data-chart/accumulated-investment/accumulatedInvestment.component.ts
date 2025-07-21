@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { VerticalBarChartModelComponent } from '../../bar-chart-model/verticalBarChartModel.component';
+import { VerticalBarChartModelComponent } from '../../bar-chart-model/vertical-bar-chart-model/vertical-bar-chart-model.component';
 import { IStrategicProjectAccumulatedInvestment } from '../../../../core/interfaces/strategic-project.interface';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';

@@ -6,6 +6,7 @@ import { IStrategicProjectDeliveriesBySelected } from '../../../../core/interfac
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
+import { RequestStatus } from '../../strategicProjects.component';
 
 @Component({
   selector: 'ngx-deliveries-by-selected',
@@ -30,6 +31,8 @@ export class DeliveriesBySelectedComponent implements OnChanges {
   deliveriesSelectedOption: string = 'Área Temática';
 
   flipTableContent: FlipTableContent;
+
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
@@ -70,49 +73,65 @@ export class DeliveriesBySelectedComponent implements OnChanges {
   };
 
   loadDeliveriesByArea(cleanedFilter: IStrategicProjectFilterValuesDto): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this.strategicProjectsService.getDeliveriesByArea(cleanedFilter).subscribe(
       (data: IStrategicProjectDeliveriesBySelected[]) => {
         this.deliveriesData = data;
         this.formatDeliveriesChartData();
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os dados das áreas de entrega:', error);
+        this.requestStatus = RequestStatus.ERROR;
       }
     );
   }
   
   loadDeliveriesByProgram(cleanedFilter: IStrategicProjectFilterValuesDto): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this.strategicProjectsService.getDeliveriesByProgram(cleanedFilter).subscribe(
       (data: IStrategicProjectDeliveriesBySelected[]) => {
         this.deliveriesData = data;
         this.formatDeliveriesChartData();
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os dados dos programas de entrega:', error);
+        this.requestStatus = RequestStatus.ERROR;
       }
     );
   }
   
   loadDeliveriesByCrossProgramAt(cleanedFilter: IStrategicProjectFilterValuesDto): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this.strategicProjectsService.getDeliveriesByProgramAt(cleanedFilter).subscribe(
       (data: IStrategicProjectDeliveriesBySelected[]) => {
         this.deliveriesData = data;
         this.formatDeliveriesChartData();
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os dados dos programas transversais de entrega:', error);
+        this.requestStatus = RequestStatus.ERROR;
       }
     );
   }
   
   loadDeliveriesByProject(cleanedFilter: IStrategicProjectFilterValuesDto): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this.strategicProjectsService.getDeliveriesByProject(cleanedFilter).subscribe(
       (data: IStrategicProjectDeliveriesBySelected[]) => {
         this.deliveriesData = data;
         this.formatDeliveriesChartData();
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os dados dos projetos de entrega:', error);
+        this.requestStatus = RequestStatus.ERROR;
       }
     );
   }

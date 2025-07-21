@@ -170,6 +170,7 @@ button:focus, select:focus, input:focus {
   padding: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   text-align: center;
+  height: 100%;
 
   .delivery-select {
     min-width: 200px;
@@ -187,6 +188,26 @@ button:focus, select:focus, input:focus {
     gap: 20px;
     width: 100%;
     padding: 5px 0 5px 5px;
+    height: 100%;
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+      border-width: 0.35em;
+
+      &.qt-programas,
+      &.qt-projetos,
+      &.total-entregas {
+        color: #005C99 !important;
+      }
+
+      &.total-previsto {
+        color: #487D7A !important;
+      }
+      &.total-realizado {
+        color: #00B26A !important;
+      }
+    }
 
     .portfolio-content {
       display: flex;

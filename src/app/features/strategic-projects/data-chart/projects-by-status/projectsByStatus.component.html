@@ -1,6 +1,7 @@
 <ngx-flip-table
   [cardTitle]="'Projetos por Status'"
   [tableContent]="flipTableContent"
+  [loadingStatus]="requestStatus"
   (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
 >

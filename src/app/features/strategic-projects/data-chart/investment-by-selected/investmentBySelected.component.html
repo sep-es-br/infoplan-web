@@ -1,6 +1,7 @@
 <ngx-flip-table
   [tableContent]="flipTableContent"
   [backCardHeight]="290"
+  [loadingStatus]="requestStatus"
   (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
 >

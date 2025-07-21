@@ -5,6 +5,7 @@ import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '..
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { ExportDataService } from '../../../../core/service/export-data';
+import { RequestStatus } from '../../strategicProjects.component';
 
 @Component({
   selector: 'ngx-critical-milestones-for-performance',
@@ -31,6 +32,8 @@ export class CriticalMilestonesForPerformanceComponent  implements OnChanges {
 
   flipTableContent: FlipTableContent;
 
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
+
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
@@ -43,6 +46,7 @@ export class CriticalMilestonesForPerformanceComponent  implements OnChanges {
   }
 
   loadData() {
+    this.requestStatus = RequestStatus.LOADING;
     const cleanedFilter = this.strategicProjectsService.removeEmptyValues(this.filter);
     this.chartColors = [];
     this.performanceShow = [];
@@ -81,10 +85,13 @@ export class CriticalMilestonesForPerformanceComponent  implements OnChanges {
         this.hasData = this.chartData.length > 0;
 
         this.assembleFlipTableContent(data);
+
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os dados das entregas por status:', error);
         this.hasData = false;
+        this.requestStatus = RequestStatus.ERROR;
       }
     );
   }

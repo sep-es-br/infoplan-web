@@ -1,7 +1,8 @@
 import { NgClass, NgFor, NgIf } from "@angular/common";
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { NbCardModule, NbColumnsService, NbFormFieldModule, NbIconModule, NbInputModule, NbSortDirection, NbSortRequest, NbTooltipModule, NbTreeGridModule } from "@nebular/theme";
+import { NbCardModule, NbColumnsService, NbFormFieldModule, NbIconModule, NbInputModule, NbSortDirection, NbSortRequest, NbSpinnerModule, NbTooltipModule, NbTreeGridModule } from "@nebular/theme";
 import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
+import { RequestStatus } from "../strategicProjects.component";
 
 export interface TreeNode {
   data: Array<{
@@ -54,6 +55,7 @@ export interface FlipTableContent {
     NbTreeGridModule,
     NbTooltipModule,
     TextTruncatePipe,
+    NbSpinnerModule,
   ]
 })
 export class FlipTableComponent implements OnChanges {
@@ -62,6 +64,8 @@ export class FlipTableComponent implements OnChanges {
   @Input() tableContent: FlipTableContent;
 
   @Input() backCardHeight: number = 150;
+
+  @Input() loadingStatus: RequestStatus = RequestStatus.LOADING;
 
   @Output() executeSearch = new EventEmitter<string>();
 

@@ -7,6 +7,7 @@ import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } fr
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { UtilitiesService } from '../../../../core/service/utilities.service';
+import { RequestStatus } from '../../strategicProjects.component';
 
 @Component({
   selector: 'ngx-investment-by-selected',
@@ -31,6 +32,8 @@ export class InvestmentBySelectedComponent implements OnChanges {
   chartColors: any;
 
   investmentData: IStrategicProjectInvestmentSelected[];
+
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
@@ -76,61 +79,81 @@ export class InvestmentBySelectedComponent implements OnChanges {
   }
 
   loadInvestmentByArea(cleanedFilter: IStrategicProjectFilterValuesDto): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this.strategicProjectsService.getInvestmentByArea(cleanedFilter).subscribe(
       (data: IStrategicProjectInvestmentSelected[]) => {
         this.investmentData = data;
         this.formatChartData();
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os dados das áreas temáticas:', error);
+        this.requestStatus = RequestStatus.ERROR;
       }
     );
   }
 
   loadInvestmentByProgram(cleanedFilter: IStrategicProjectFilterValuesDto): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this.strategicProjectsService.getInvestmentByProgram(cleanedFilter).subscribe(
       (data: IStrategicProjectInvestmentSelected[]) => {
         this.investmentData = data;
         this.formatChartData();
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os dados dos programas:', error);
+        this.requestStatus = RequestStatus.ERROR;
       }
     );
   }
 
   loadInvestmentByCrossProgramAt(cleanedFilter: IStrategicProjectFilterValuesDto): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this.strategicProjectsService.getInvestmentByProgramAt(cleanedFilter).subscribe(
       (data: IStrategicProjectInvestmentSelected[]) => {
         this.investmentData = data;
         this.formatChartData();
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os dados dos programas transversais:', error);
+        this.requestStatus = RequestStatus.ERROR;
       }
     );
   }
 
   loadInvestmentByProject(cleanedFilter: IStrategicProjectFilterValuesDto): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this.strategicProjectsService.getInvestmentByProject(cleanedFilter).subscribe(
       (data: IStrategicProjectInvestmentSelected[]) => {
         this.investmentData = data;
         this.formatChartData();
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os dados dos projetos:', error);
+        this.requestStatus = RequestStatus.ERROR;
       }
     );
   }
 
   loadInvestmentByDelivery(cleanedFilter: IStrategicProjectFilterValuesDto): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this.strategicProjectsService.getInvestmentByDelivery(cleanedFilter).subscribe(
       (data: IStrategicProjectInvestmentSelected[]) => {
         this.investmentData = data;
         this.formatChartData();
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os dados das entregas:', error);
+        this.requestStatus = RequestStatus.ERROR;
       }
     );
   }

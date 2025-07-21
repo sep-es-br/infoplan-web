@@ -1,6 +1,7 @@
 <ngx-flip-table
   [cardTitle]="'Entregas por Status'"
   [tableContent]="flipTableContent"
+  [loadingStatus]="requestStatus"
   (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
 >

@@ -6,6 +6,7 @@ import { StrategicProjectsService } from '../../../../core/service/strategic-pro
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { UtilitiesService } from '../../../../core/service/utilities.service';
+import { RequestStatus } from '../../strategicProjects.component';
 
 
 @Component({
@@ -31,6 +32,8 @@ export class AccumulatedInvestmentComponent implements OnChanges {
 
   flipTableContent: FlipTableContent;
 
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
+
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
@@ -44,6 +47,7 @@ export class AccumulatedInvestmentComponent implements OnChanges {
   }
 
   loadData() {
+    this.requestStatus = RequestStatus.LOADING;
     const cleanedFilter = this.strategicProjectsService.removeEmptyValues(this.filter);
     this.chartColors = [];
 
@@ -58,9 +62,12 @@ export class AccumulatedInvestmentComponent implements OnChanges {
         }));
 
         this.assembleFlipTableContent(this.accumulatedInvestmentData);
+
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       (error) => {
         console.error('Erro ao carregar os dados do investimento acumulado:', error);
+        this.requestStatus = RequestStatus.ERROR;
       });
 
     this.chartColors = ['#42726F', '#00A261'];

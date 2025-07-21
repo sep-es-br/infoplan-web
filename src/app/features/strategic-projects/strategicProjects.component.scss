@@ -194,6 +194,19 @@ button:focus, select:focus, input:focus {
       width: 3rem;
       height: 3rem;
       border-width: 0.35em;
+
+      &.qt-programas,
+      &.qt-projetos,
+      &.total-entregas {
+        color: #005C99 !important;
+      }
+
+      &.total-previsto {
+        color: #487D7A !important;
+      }
+      &.total-realizado {
+        color: #00B26A !important;
+      }
     }
 
     .portfolio-content {

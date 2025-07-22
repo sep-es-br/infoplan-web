@@ -13,13 +13,13 @@
                 <ng-container *ngFor="let value of tag.displayValue; let index = index">
                   <ng-container *ngIf="value.name?.length <= 20 else spanWithTooltip">
                     <span>
-                      {{ (index > 0 ? ' ' : '') + (tag.displayValue.length > 1 ?  (value.name | TextTruncate : 17 : ';') : value.name) }}
+                      {{ (index > 0 ? ' ' : '') + (tag.displayValue.length > 1 ?  (value.name | TextTruncate : 20 : ';') : value.name) }}
                     </span>
                   </ng-container>
 
                   <ng-template #spanWithTooltip>
                     <span [nbTooltip]="value.fullName ? value.fullName : value.name">
-                      {{ (index > 0 ? ' ' : '') + (value.name | TextTruncate : 17 : ';') }}
+                      {{ (index > 0 ? ' ' : '') + (value.name | TextTruncate : 20 : ';') }}
                     </span>
                   </ng-template>
                 </ng-container>

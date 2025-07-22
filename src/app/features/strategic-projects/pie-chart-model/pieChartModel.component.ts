@@ -78,7 +78,7 @@ export class PieChartModelComponent implements OnInit, OnChanges {
     this.currentTheme = (this.themeService.currentTheme as AvailableThemes);
   }
 
-  async ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges) {
     if (changes['data']) {
       this.initChartOptions(this.data, this.colors);
     }
@@ -130,12 +130,6 @@ export class PieChartModelComponent implements OnInit, OnChanges {
       : this.centerX - 1;
 
     const currentThemeStyles = getAvailableThemesStyles(this.currentTheme);
-
-    // this.echartsInstance.clear();
-
-    if (data?.some((el) => el.name === 'Em planejamento')) {
-      console.log('data: ', data.map((el) => `name: ${el.name}, value: ${el.value}`));
-    }
 
     this.chartOptions = {
       tooltip: {

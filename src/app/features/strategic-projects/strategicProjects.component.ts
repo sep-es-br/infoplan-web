@@ -7,6 +7,7 @@ import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project
 import { IStrategicProjectTimestamp } from '../../core/interfaces/strategic-project.interface';
 import { NbThemeService } from '@nebular/theme';
 import { AvailableThemes } from '../../@theme/theme.module';
+import { BehaviorSubject } from 'rxjs';
 
 enum AvailableFilters {
   PORTFOLIO = 'Portfolio',
@@ -28,6 +29,11 @@ export enum RequestStatus {
   LOADING = 'Loading',
   SUCCESS = 'Success',
   ERROR = 'Error',
+}
+
+export interface CustomTableFilteringTrigger {
+  source: 'InvestmentBy' | 'DeliveriesBy';
+  newSelectedEntity: 'Área Temática' | 'Programa' | 'Programas Transversais' | 'Projeto' | 'Entrega';
 }
 
 @Component({
@@ -93,6 +99,8 @@ export class StrategicProjectsComponent {
   requestStatus = {
     totals: RequestStatus.EMPTY,
   }
+
+  tableFilteringTrigger = new BehaviorSubject<CustomTableFilteringTrigger>(null);
 
   constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
     this.loadTimestamp();
@@ -364,21 +372,42 @@ export class StrategicProjectsComponent {
     this.loadTotals();
   }
 
-  handleNewFilter(newFilter: IStrategicProjectFilterValuesDto) {
+  handleNewTableFilter(newFilter: IStrategicProjectFilterValuesDto, source: 'InvestmentBy' | 'DeliveriesBy') {
     let newLocalFilter: any = {
       portfolio: environment.strategicProjectFilter.portfolio,
       dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
       dataFim: new Date(environment.strategicProjectFilter.dataFim),
-      previsaoConclusao: '',
     };
 
-    if (newFilter.areaId) newLocalFilter.areaTematica = [Number(newFilter.areaId)];
-    if (newFilter.programaOriginalId) newLocalFilter.programaOrigem = [newFilter.programaOriginalId];
-    if (newFilter.programaTransversalId) newLocalFilter.programaTransversal = [newFilter.programaTransversalId];
-    if (newFilter.projetoId) newLocalFilter.projetos = [newFilter.projetoId];
-    if (newFilter.entregaId) newLocalFilter.entregas = [newFilter.entregaId];
+    let newEntityToBeDisplayed;
+
+    if (newFilter.areaId) {
+      newLocalFilter = { ...newLocalFilter, areaTematica: [Number(newFilter.areaId)] }; 
+      newEntityToBeDisplayed = 'Programa';
+    }
+    if (newFilter.programaOriginalId) {
+      newLocalFilter = { ...newLocalFilter, programaOrigem: [newFilter.programaOriginalId] };
+      newEntityToBeDisplayed = 'Projeto';
+    }
+    if (newFilter.programaTransversalId) {
+      newLocalFilter = { ...newLocalFilter, programaTransversal: [newFilter.programaTransversalId] };
+      newEntityToBeDisplayed = 'Projeto';
+    }
+    if (newFilter.projetoId) {
+      newLocalFilter = { ...newLocalFilter, projetos: [newFilter.projetoId] };
+      newEntityToBeDisplayed = 'Entrega';
+    }
+    if (newFilter.entregaId) {
+      newLocalFilter = { ...newLocalFilter, entregas: [newFilter.entregaId] };
+      newEntityToBeDisplayed = 'Entrega';
+    }
 
     this.filter = newLocalFilter;
     this.filtrar();
+
+    this.tableFilteringTrigger.next({
+      source,
+      newSelectedEntity: newEntityToBeDisplayed,
+    });
   }
 }

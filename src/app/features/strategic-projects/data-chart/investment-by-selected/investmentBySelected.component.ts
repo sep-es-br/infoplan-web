@@ -7,7 +7,8 @@ import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } fr
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { UtilitiesService } from '../../../../core/service/utilities.service';
-import { RequestStatus } from '../../strategicProjects.component';
+import { CustomTableFilteringTrigger, RequestStatus } from '../../strategicProjects.component';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'ngx-investment-by-selected',
@@ -22,6 +23,11 @@ import { RequestStatus } from '../../strategicProjects.component';
 })
 export class InvestmentBySelectedComponent implements OnChanges {
   @Input() filter!: IStrategicProjectFilterValuesDto;
+
+  @Input() tableFilteringTrigger: BehaviorSubject<CustomTableFilteringTrigger>;
+  // ↳ Este BehaviorSubject é disparado toda vez que o usuário faz uma filtragem ao clicar em um elemento em uma das tabelas
+  // ↳ Todos os componentes que implementam essa filtragem pela tabela devem escutar esse Subject, afim de que quando
+  //   o usuário filtrar algo em qualquer uma das tabelas, a seleção da entidade seja alterada em todas as outras tabelas
 
   @Output() newFilter = new EventEmitter<IStrategicProjectFilterValuesDto>();
 
@@ -46,8 +52,16 @@ export class InvestmentBySelectedComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['filter'] && this.filter)) {
       if (this.selectedInvestmentOption != undefined) {
-        this.loadData(); 
+        this.loadData();
       }
+    }
+
+    if (changes['tableFilteringTrigger'] && this.tableFilteringTrigger) {
+      this.tableFilteringTrigger.subscribe((newFilter) => {
+        if (newFilter && newFilter.source !== 'InvestmentBy') {
+          this.selectedInvestmentOption = newFilter.newSelectedEntity;
+        }
+      });
     }
   }
 
@@ -237,17 +251,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   handleCustomFiltering(value: string) {
     const selectedItem = this.investmentData.find((item) => item.nome === value);
-    let newFilter: IStrategicProjectFilterValuesDto = {
-      areaId: '',
-      programaOriginalId: -1,
-      programaTransversalId: -1,
-      projetoId: -1,
-      entregaId: -1,
-      orgaoId: -1,
-      localidadeId: -1,
-      dataInicio: -1,
-      dataFim: -1,
-    };
+    let newFilter: IStrategicProjectFilterValuesDto;
 
     switch (this.selectedInvestmentOption) {
       case 'Área Temática':

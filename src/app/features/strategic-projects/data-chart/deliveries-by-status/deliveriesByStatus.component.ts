@@ -94,7 +94,7 @@ export class DeliveriesByStatusComponent implements OnChanges {
     );
   }
 
-  async assembleFlipTableContent(rawData: IStrategicProjectDeliveries[], shouldStartExpanded: boolean = false) {
+  assembleFlipTableContent(rawData: IStrategicProjectDeliveries[], shouldStartExpanded: boolean = false) {
     const tableColumns = [
       // { propertyName: 'nomeArea', displayName: 'Nome da Área' },
       { propertyName: 'nomeStatus', displayName: 'Status' },

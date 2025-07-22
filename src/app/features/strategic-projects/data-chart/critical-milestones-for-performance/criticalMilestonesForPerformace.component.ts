@@ -53,6 +53,7 @@ export class CriticalMilestonesForPerformanceComponent  implements OnChanges {
 
     this.strategicProjectsService.getCriticalMilestonesForPerformace(cleanedFilter)
       .subscribe((data: IStrategicProjectDeliveries[]) => {
+        this.performanceShow = [];
         this.performanceData = data;
 
         this.performanceData.forEach(performace => {

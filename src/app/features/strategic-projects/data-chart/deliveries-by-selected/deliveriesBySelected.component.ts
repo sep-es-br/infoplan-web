@@ -1,12 +1,13 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontalBarChartModel.component';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectDeliveriesBySelected } from '../../../../core/interfaces/strategic-project.interface';
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
-import { RequestStatus } from '../../strategicProjects.component';
+import { CustomTableFilteringTrigger, RequestStatus } from '../../strategicProjects.component';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'ngx-deliveries-by-selected',
@@ -21,6 +22,13 @@ import { RequestStatus } from '../../strategicProjects.component';
 })
 export class DeliveriesBySelectedComponent implements OnChanges {
   @Input() filter!: IStrategicProjectFilterValuesDto;
+
+  @Input() tableFilteringTrigger: BehaviorSubject<CustomTableFilteringTrigger>;
+  // ↳ Este BehaviorSubject é disparado toda vez que o usuário faz uma filtragem ao clicar em um elemento em uma das tabelas
+  // ↳ Todos os componentes que implementam essa filtragem pela tabela devem escutar esse Subject, afim de que quando
+  //   o usuário filtrar algo em qualquer uma das tabelas, a seleção da entidade seja alterada em todas as outras tabelas
+
+  @Output() newFilter = new EventEmitter<IStrategicProjectFilterValuesDto>();
 
   chartData: any;
 
@@ -44,6 +52,18 @@ export class DeliveriesBySelectedComponent implements OnChanges {
       if (this.deliveriesSelectedOption != undefined) {
         this.loadData(); 
       }
+    }
+
+    if (changes['tableFilteringTrigger'] && this.tableFilteringTrigger) {
+      this.tableFilteringTrigger.subscribe((newFilter) => {
+        if (newFilter && newFilter.source !== 'DeliveriesBy') {
+          if (newFilter.newSelectedEntity === 'Entrega') {
+            this.deliveriesSelectedOption = 'Projeto';
+          } else {
+            this.deliveriesSelectedOption = newFilter.newSelectedEntity;
+          }
+        }
+      });
     }
   }
 
@@ -182,6 +202,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
         originalPropertyName: 'nome',
         propertyName: 'firstColumn',
         displayName: this.deliveriesSelectedOption,
+        enableEventClick: true,
       },
       data: finalData,
     };
@@ -214,5 +235,46 @@ export class DeliveriesBySelectedComponent implements OnChanges {
       columns,
       `InfoPlan_Entregas_por_${this.deliveriesSelectedOption}.xlsx`,
     );
+  }
+
+  handleCustomFiltering(value: string) {
+    const selectedItem = this.deliveriesData.find((item) => item.nome === value);
+    let newFilter: IStrategicProjectFilterValuesDto;
+
+    switch (this.deliveriesSelectedOption) {
+      case 'Área Temática':
+        newFilter = {
+          ...newFilter,
+          areaId: selectedItem.id.toString(),
+        };
+        this.deliveriesSelectedOption = 'Programa';
+        break;
+      case 'Programa':
+        newFilter = {
+          ...newFilter,
+          programaOriginalId: selectedItem.id,
+        };
+        this.deliveriesSelectedOption = 'Projeto';
+        break;
+      case 'Programas Transversais':
+        newFilter = {
+          ...newFilter,
+          programaTransversalId: selectedItem.id,
+        };
+        this.deliveriesSelectedOption = 'Projeto';
+        break;
+      case 'Projeto':
+        newFilter = {
+          ...newFilter,
+          projetoId: selectedItem.id,
+        };
+        this.deliveriesSelectedOption = 'Projeto';
+        break;      
+      default:
+        console.warn('Opção não reconhecida:', this.deliveriesSelectedOption);
+        break;
+    }
+
+    this.newFilter.emit(newFilter);
   }
 }

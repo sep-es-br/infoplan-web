@@ -51,10 +51,10 @@ export class DeliveriesByStatusComponent implements OnChanges {
     this.statusShow = [];
 
     this.strategicProjectsService.getDeliveriesByStatus(cleanedFilter)
-      .subscribe((data: IStrategicProjectDeliveries[]) => {
-        this.statusData = data;
+      .subscribe((data: IStrategicProjectDeliveries[] = []) => {
+        this.statusShow = [];
 
-        this.statusData.forEach(status => {
+        data.forEach(status => {
           if (status.statusId !== 0 || status.nomeStatus !== 'null') {
             let sShow = this.statusShow.find((s) => s.nomeStatus == status.nomeStatus);
 
@@ -75,7 +75,7 @@ export class DeliveriesByStatusComponent implements OnChanges {
 
         this.statusShow.sort((a, b) => (a.statusId < b.statusId ? -1 : 1));
 
-        this.chartData = this.statusShow.map(val => <any> {
+        this.chartData = this.statusShow.map(val => <any>{
           value: val.count,
           name: val.nomeStatus
         });
@@ -83,8 +83,9 @@ export class DeliveriesByStatusComponent implements OnChanges {
         this.chartColors = this.statusShow.map(val => val.corStatus);
 
         this.assembleFlipTableContent(data);
-
+        
         this.requestStatus = RequestStatus.SUCCESS;
+        this.statusData = data;
       },
       (error) => {
         console.error('Erro ao carregar os dados das entregas por status:', error);

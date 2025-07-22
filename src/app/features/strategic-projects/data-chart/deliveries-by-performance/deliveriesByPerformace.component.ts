@@ -51,6 +51,8 @@ export class DeliveriesByPerformaceComponent implements OnChanges {
 
     this.strategicProjectsService.getDeliveriesByPerformace(cleanedFilter)
       .subscribe((data: IStrategicProjectDeliveries[]) => {
+        this.performanceShow = [];
+
         this.performanceData = data;
 
         this.performanceData.forEach(performace => {

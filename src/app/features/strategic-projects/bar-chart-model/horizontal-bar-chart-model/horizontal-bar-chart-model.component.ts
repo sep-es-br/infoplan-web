@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
-import { EChartsOption } from 'echarts';
+import { ECharts, EChartsOption } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { AvailableThemes, getAvailableThemesStyles } from '../../../@theme/theme.module';
+import { AvailableThemes, getAvailableThemesStyles } from '../../../../@theme/theme.module';
 
 @Component({
   selector: 'ngx-horizontal-bar-chart-model',
-  templateUrl: './barChartModel.component.html',
-  styleUrls: ['./barChartModel.component.scss'],
+  templateUrl: './horizontal-bar-chart-model.component.html',
+  styles: ['.echarts { width: 100%; height: 100%; }'],
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
@@ -21,7 +21,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
 
   chartOptions: EChartsOption;
 
-  echartsInstance: any = null
+  echartsInstance: ECharts = null
 
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
 
@@ -73,7 +73,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
     }
   }
 
-  onChartInit(chartInstance: any) {
+  onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
   }
 
@@ -134,6 +134,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
         },
         xAxis: {
           type: 'value',
+          
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
             fontSize: 9,
@@ -148,6 +149,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
             fontSize: 9,
+            
             formatter: function (value: string) {
               const maxLength = 50;
               if (value.length > maxLength) {

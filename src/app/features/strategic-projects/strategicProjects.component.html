@@ -11,7 +11,7 @@
 
               <div class="tag-value">
                 <ng-container *ngFor="let value of tag.displayValue; let index = index">
-                  <ng-container *ngIf="value.name?.length <= 17 else spanWithTooltip">
+                  <ng-container *ngIf="value.name?.length <= 20 else spanWithTooltip">
                     <span>
                       {{ (index > 0 ? ' ' : '') + (tag.displayValue.length > 1 ?  (value.name | TextTruncate : 17 : ';') : value.name) }}
                     </span>
@@ -446,11 +446,21 @@
      
     <div [ngClass]="{'col-xxxl-12': isMapOpen, 'col-xxxl-6': !isMapOpen}" class="col-md-12 pr-0 pl-0 d-flex flex-wrap">
       <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2 ">
-        <ngx-investment-by-selected [filter]="finalFilter"></ngx-investment-by-selected>
+        <ngx-investment-by-selected
+          [filter]="finalFilter"
+          [tableFilteringTrigger]="tableFilteringTrigger"
+          (newFilter)="handleNewTableFilter($event, 'InvestmentBy')"
+        >
+        </ngx-investment-by-selected>
       </div>
 
       <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2">
-        <ngx-deliveries-by-selected [filter]="finalFilter"></ngx-deliveries-by-selected>
+        <ngx-deliveries-by-selected
+          [filter]="finalFilter"
+          [tableFilteringTrigger]="tableFilteringTrigger"
+          (newFilter)="handleNewTableFilter($event, 'DeliveriesBy')"
+        >
+        </ngx-deliveries-by-selected>
       </div>
     </div>
 

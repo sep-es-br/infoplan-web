@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
-import { EChartsOption } from 'echarts';
+import { ECharts, EChartsOption } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { AvailableThemes, getAvailableThemesStyles } from '../../../@theme/theme.module';
 
@@ -26,7 +26,7 @@ export class PieChartModelComponent implements OnInit, OnChanges {
 
   chartOptions: EChartsOption;
 
-  echartsInstance: any = null
+  echartsInstance: ECharts = null
 
   centerX: number = 70;
 
@@ -79,12 +79,12 @@ export class PieChartModelComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['data'] || changes['colors']) {
+    if (changes['data']) {
       this.initChartOptions(this.data, this.colors);
     }
   }
 
-  onChartInit(chartInstance: any) {
+  onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
 
     chartInstance.on('legendselectchanged', (params: any) => {
@@ -203,7 +203,7 @@ export class PieChartModelComponent implements OnInit, OnChanges {
             fontSize: 9,
           },
           labelLine: { show: false },
-        }
+        },
       ],
       color: colors || [],
     };

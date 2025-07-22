@@ -6,7 +6,7 @@ export class TextTruncatePipe implements PipeTransform {
     let finalString = element;
 
     if (element.length > numOfChars) {
-      finalString = `${element.slice(0, numOfChars - 1)}...`;
+      finalString = `${element.slice(0, numOfChars)}...`;
     }
 
     if (customLastChar) {

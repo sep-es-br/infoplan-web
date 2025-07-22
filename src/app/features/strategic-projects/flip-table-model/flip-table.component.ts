@@ -28,6 +28,7 @@ interface FlipTableColumn {
     header: FlipTableAlignment;
     data: FlipTableAlignment;
   };
+  enableEventClick?: boolean;
 }
 
 export interface FlipTableContent {
@@ -70,6 +71,8 @@ export class FlipTableComponent implements OnChanges {
   @Output() executeSearch = new EventEmitter<string>();
 
   @Output() executeDownload = new EventEmitter<any>();
+
+  @Output() executeCustomFiltering = new EventEmitter<string>();
   
   isFlipCardFlipped: boolean = false;
 
@@ -151,6 +154,10 @@ export class FlipTableComponent implements OnChanges {
   handleSortClick(sortRequest: NbSortRequest): void {
     this.sortColumn = sortRequest.column;
     this.sortDirection = sortRequest.direction;
+  }
+
+  handleCustomColumnClick(value: string) {
+    this.executeCustomFiltering.emit(value);
   }
 
   /* Getters */

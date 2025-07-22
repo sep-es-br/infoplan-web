@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { StrategicProjectsService } from '../../core/service/strategic-projects.service';
 import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
-import { IStrategicProjectFilterDataDto } from '../../core/interfaces/strategic-project-filter.interface';
+import { IStrategicProjectFilterDataDto, IStrategicProjectFilterValuesDto } from '../../core/interfaces/strategic-project-filter.interface';
 import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project-totals.interface';
 import { IStrategicProjectTimestamp } from '../../core/interfaces/strategic-project.interface';
 import { NbThemeService } from '@nebular/theme';
 import { AvailableThemes } from '../../@theme/theme.module';
+import { BehaviorSubject } from 'rxjs';
 
 enum AvailableFilters {
   PORTFOLIO = 'Portfolio',
@@ -28,6 +29,11 @@ export enum RequestStatus {
   LOADING = 'Loading',
   SUCCESS = 'Success',
   ERROR = 'Error',
+}
+
+export interface CustomTableFilteringTrigger {
+  source: 'InvestmentBy' | 'DeliveriesBy';
+  newSelectedEntity: 'Área Temática' | 'Programa' | 'Programas Transversais' | 'Projeto' | 'Entrega';
 }
 
 @Component({
@@ -93,6 +99,8 @@ export class StrategicProjectsComponent {
   requestStatus = {
     totals: RequestStatus.EMPTY,
   }
+
+  tableFilteringTrigger = new BehaviorSubject<CustomTableFilteringTrigger>(null);
 
   constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
     this.loadTimestamp();
@@ -255,9 +263,9 @@ export class StrategicProjectsComponent {
     this.showFilters = !this.showFilters;
   }
 
-  filtrar(event: Event): void {
-    event.preventDefault();
-    this.showFilters = !this.showFilters;
+  filtrar(event?: Event): void {
+    if (event) event.preventDefault();
+    this.showFilters = false;
     this.finalFilter = { ...this.filter };
     this.updateActiveFilters();
     this.loadTotals()
@@ -362,5 +370,44 @@ export class StrategicProjectsComponent {
     this.updateActiveFilters();
 
     this.loadTotals();
+  }
+
+  handleNewTableFilter(newFilter: IStrategicProjectFilterValuesDto, source: 'InvestmentBy' | 'DeliveriesBy') {
+    let newLocalFilter: any = {
+      portfolio: environment.strategicProjectFilter.portfolio,
+      dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
+      dataFim: new Date(environment.strategicProjectFilter.dataFim),
+    };
+
+    let newEntityToBeDisplayed;
+
+    if (newFilter.areaId) {
+      newLocalFilter = { ...newLocalFilter, areaTematica: [Number(newFilter.areaId)] }; 
+      newEntityToBeDisplayed = 'Programa';
+    }
+    if (newFilter.programaOriginalId) {
+      newLocalFilter = { ...newLocalFilter, programaOrigem: [newFilter.programaOriginalId] };
+      newEntityToBeDisplayed = 'Projeto';
+    }
+    if (newFilter.programaTransversalId) {
+      newLocalFilter = { ...newLocalFilter, programaTransversal: [newFilter.programaTransversalId] };
+      newEntityToBeDisplayed = 'Projeto';
+    }
+    if (newFilter.projetoId) {
+      newLocalFilter = { ...newLocalFilter, projetos: [newFilter.projetoId] };
+      newEntityToBeDisplayed = 'Entrega';
+    }
+    if (newFilter.entregaId) {
+      newLocalFilter = { ...newLocalFilter, entregas: [newFilter.entregaId] };
+      newEntityToBeDisplayed = 'Entrega';
+    }
+
+    this.filter = newLocalFilter;
+    this.filtrar();
+
+    this.tableFilteringTrigger.next({
+      source,
+      newSelectedEntity: newEntityToBeDisplayed,
+    });
   }
 }

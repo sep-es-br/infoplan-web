@@ -1,0 +1,10 @@
+<div [ngStyle]="{ 'height': height + 'px' }" >
+  <div
+    echarts
+    class="echart"
+    [ngStyle]="{ 'height': height + 'px' }"
+    [options]="chartOptions"
+    (chartInit)="onChartInit($event)"
+  >
+  </div>
+</div>

@@ -91,8 +91,9 @@
                 nbTooltipPlacement="right"
                 nbTooltipStatus="basic"
                 [nbTooltip]="getCellValue(row.data, tableContent.customColumn.propertyName)"
-                [ngClass]="{ 'cursor-pointer': row.children }"
+                [ngClass]="{ 'cursor-pointer': row.children || tableContent.customColumn.enableEventClick }"
                 [style]="{ 'text-align': tableContent.customColumn.alignment?.data || 'left' }"
+                (click)="tableContent.customColumn.enableEventClick ? handleCustomColumnClick(row.data[0].value) : ''"
               >
                 <div class="d-flex align-items-center text-truncate" [ngClass]="{ 'pl-2': !row.children }">
                   <ng-container *ngIf="row.children">

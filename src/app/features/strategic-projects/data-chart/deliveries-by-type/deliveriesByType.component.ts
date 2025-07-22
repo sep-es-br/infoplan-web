@@ -51,6 +51,7 @@ export class DeliveriesByTypeComponent implements OnChanges {
 
     this.strategicProjectsService.getDeliveriesByType(cleanedFilter)
       .subscribe((data: IStrategicProjectDeliveries[]) => {
+        this.typeShow = [];
         this.typeData = data;
       
         this.typeData.forEach(type => {

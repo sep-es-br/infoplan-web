@@ -51,6 +51,7 @@ export class ProjectsByStatusComponent implements OnChanges {
 
     this.strategicProjectsService.getProjectByStatus(cleanedFilter)
       .subscribe((data: IStrategicProjectDeliveries[]) => {
+        this.statusShow = [];
         this.statusData = data;
 
         this.statusData.forEach(status => {

@@ -51,6 +51,7 @@ export class RisksByClassificationComponent implements OnChanges {
 
     this.strategicProjectsService.getRisksByClassification(cleanedFilter)
       .subscribe((data: IStrategicProjectRisksByClassification[]) => {
+        this.riskShow = [];
         this.riskData = data;
 
         this.riskData.forEach(risk => {

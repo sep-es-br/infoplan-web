@@ -11,7 +11,7 @@
 
               <div class="tag-value">
                 <ng-container *ngFor="let value of tag.displayValue; let index = index">
-                  <ng-container *ngIf="value.name?.length <= 17 else spanWithTooltip">
+                  <ng-container *ngIf="value.name?.length <= 20 else spanWithTooltip">
                     <span>
                       {{ (index > 0 ? ' ' : '') + (tag.displayValue.length > 1 ?  (value.name | TextTruncate : 17 : ';') : value.name) }}
                     </span>

@@ -51,8 +51,8 @@ export class DeliveriesByStatusComponent implements OnChanges {
     this.statusShow = [];
 
     this.strategicProjectsService.getDeliveriesByStatus(cleanedFilter)
-      .subscribe((data: IStrategicProjectDeliveries[]) => {
-        this.chartData = [];
+      .subscribe((data: IStrategicProjectDeliveries[] = []) => {
+        this.statusShow = [];
 
         data.forEach(status => {
           if (status.statusId !== 0 || status.nomeStatus !== 'null') {

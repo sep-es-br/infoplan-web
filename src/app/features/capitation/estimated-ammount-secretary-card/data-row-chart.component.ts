@@ -48,7 +48,7 @@ export class DataRowChartComponent implements AfterViewInit{
         chartBar.style.backgroundColor = this.color;
         chartBar.style.width = Math.max(1, (this.value/this.maxValue)*100) + '%';
         chartBar.style.height = '1rem';
-        chartBar.classList.add('mr-3');
+        chartBar.classList.add('me-3');
         this.animarBarra(chartBar);
 
         this.item.nativeElement.appendChild(chartBar);

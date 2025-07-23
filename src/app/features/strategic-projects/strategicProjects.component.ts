@@ -281,8 +281,26 @@ export class StrategicProjectsComponent {
         ];
         this.programaTList = allFilterList.programasTransversal;
         this.entregaList = allFilterList.entregas;
-        this.orgaoList = allFilterList.orgaos;
-        this.localidadeList = allFilterList.localidades;
+        this.orgaoList = allFilterList.orgaos.sort((a, b) => a.name.localeCompare(b.name));
+        
+        // Monta a lista de localidades, ordenando por ordem alfabética todas as microregiões, e os municípios que pertencem àquela microregião
+
+        const localidadesList = [allFilterList.localidades.find((el) => el.tipo === 'ESTADO')];
+        
+        const microregioes = allFilterList.localidades
+          .filter((localidade) => localidade?.tipo === 'MICRORREGIÃO')
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        microregioes.forEach((regiao) => {
+          localidadesList.push(regiao);
+
+          allFilterList.localidades
+          .filter((localidade) => localidade?.microregiaoId === regiao.microregiaoId && localidade?.name !== regiao.name)
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .forEach((localidade) => localidadesList.push(localidade));
+        });
+
+        this.localidadeList = localidadesList;
         this.projetoList = allFilterList.projetos;
       },
       (error) => {

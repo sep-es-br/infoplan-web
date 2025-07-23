@@ -206,7 +206,11 @@
                 size="tiny"
                 [(ngModel)]="filter.localidades"
               >
-                <nb-option *ngFor="let localidade of localidadeList" [value]="localidade.id">
+                <nb-option
+                  *ngFor="let localidade of localidadeList"
+                  [value]="localidade.id"
+                  [ngClass]="{ 'pl-4': localidade.tipo === 'MUNICÍPIO' }"
+                >
                   {{ localidade.name }}
                 </nb-option>
               </nb-select>

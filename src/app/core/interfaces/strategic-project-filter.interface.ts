@@ -1,4 +1,4 @@
-import { IIdAndName } from "./id-and-name.interface";
+import { IIdAndName, StrategicProjectsLocalidades } from "./id-and-name.interface";
 
 export interface IStrategicProjectFilterDataDto {
   area: IIdAndName[];
@@ -7,7 +7,7 @@ export interface IStrategicProjectFilterDataDto {
   projetos: IIdAndName[];
   entregas: IIdAndName[];
   orgaos: IIdAndName[];
-  localidades: IIdAndName[];
+  localidades: StrategicProjectsLocalidades[];
 }
 
 export interface IStrategicProjectFilterValuesDto {

@@ -17,6 +17,30 @@
     </nb-select>
   </div>
 
-  <ngx-horizontal-bar-chart-model [data]="chartData" [colors]="chartColors" [height]="290" card-front>
+  <ngx-horizontal-bar-chart-model
+    card-front
+    [data]="chartData"
+    [colors]="chartColors"
+    [height]="290"
+    (labelClick)="handleChartLabelClick($event)"
+  >
   </ngx-horizontal-bar-chart-model>
 </ngx-flip-table>
+
+<!-- Esse botão não aparece no HTML, mas é usado para abrir o offcanvas -->
+<!-- É possível abrir o offcanvas sem o botão (direto no código), só que aí o offcanvas abre sem o backdrop e o scroll -->
+<button
+  class="offcanvas-trigger"
+  type="button"
+  data-bs-toggle="offcanvas"
+  data-bs-target="#offcanvasInfoModel"
+  aria-controls="offcanvasInfoModel"
+  #offcanvasTrigger
+>
+</button>
+
+<ngx-offcanvas-info-model
+  [selectedOption]="selectedChartOptionDetails"
+>
+</ngx-offcanvas-info-model>
+

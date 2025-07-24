@@ -6,9 +6,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { IStrategicProjectFilterDataDto, IStrategicProjectFilterValuesDto } from '../interfaces/strategic-project-filter.interface';
 import { IStrategicProjectTotals } from '../interfaces/strategic-project-totals.interface';
-import { IStrategicProjectAccumulatedInvestment, IStrategicProjectDeliveries, IStrategicProjectDeliveriesBySelected, IStrategicProjectInvestmentSelected, IStrategicProjectRisksByClassification, IStrategicProjectTimestamp } from '../interfaces/strategic-project.interface';
-
-
+import { IStrategicProjectAccumulatedInvestment, IStrategicProjectDeliveries, IStrategicProjectDeliveriesBySelected, IStrategicProjectInvestmentSelected, IStrategicProjectRisksByClassification, IStrategicProjectTimestamp, StrategicProjectProgramDetails } from '../interfaces/strategic-project.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -182,6 +180,15 @@ export class StrategicProjectsService {
     return this.http.get<Array<IStrategicProjectDeliveriesBySelected>>(this._urlBase + 'deliveriesByProject', {
       params: { 
         filterJson: JSON.stringify(filter) 
+      }
+    }).pipe(catchError(err => this.handleError(err, this.router)));
+  }
+
+  public getProgramDetails(programId: Number): Observable<StrategicProjectProgramDetails> {
+    return this.http.get<StrategicProjectProgramDetails>(this._urlBase + 'programDetails', {
+      params: {
+        filterJson: JSON.stringify({ programId })
+        // programId: programId.toString(),
       }
     }).pipe(catchError(err => this.handleError(err, this.router)));
   }

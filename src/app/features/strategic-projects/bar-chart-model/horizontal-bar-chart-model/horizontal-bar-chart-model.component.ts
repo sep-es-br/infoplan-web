@@ -1,9 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 import { ECharts, EChartsOption } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { AvailableThemes, getAvailableThemesStyles } from '../../../../@theme/theme.module';
+
+export interface HorizontalBarChartBarClick {
+  labelName: string;
+  seriesName: string;
+  value: string | number;
+}
+
+export interface HorizontalBarChartLabelClick {
+  axis: 'yAxis' | 'xAxis';
+  value: string | number;
+}
 
 @Component({
   selector: 'ngx-horizontal-bar-chart-model',
@@ -18,6 +29,10 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
   @Input() colors:  string[] = [];
 
   @Input() height: number;
+
+  @Output() barClick = new EventEmitter<HorizontalBarChartBarClick>();
+
+  @Output() labelClick = new EventEmitter<HorizontalBarChartLabelClick>();
 
   chartOptions: EChartsOption;
 
@@ -68,13 +83,21 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['data'] || changes['colors']) {
+    if (changes['data']) {
       this.initChartOptions(this.data, this.colors);
     }
   }
 
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
+
+    this.echartsInstance.on('click', (event) => {
+      if (event.componentType === 'yAxis' || event.componentType === 'xAxis') {
+        this.labelClick.emit({ axis: event.componentType, value: event.value.toString() });
+      } else if (event.componentType === 'series') {
+        this.barClick.emit({ labelName: event.name, seriesName: event.seriesName, value: event.value.toString() });
+      }
+    });
   }
 
   formatNumber(value: number): string {
@@ -159,6 +182,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
             },
           },
           data: data.map(item => item.category),
+          triggerEvent: true,
         },
         series: [
           {
@@ -266,6 +290,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
             },
           },
           data: data.map(item => item.category),
+          triggerEvent: true,
         },
         series: [
           {

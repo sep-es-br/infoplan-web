@@ -68,7 +68,7 @@ export class VerticalBarChartModelComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['data'] || changes['colors']) {
+    if (changes['data']) {
       this.initChartOptions(this.data, this.colors);
     }
   }

@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { HorizontalBarChartLabelClick, HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectInvestmentSelected } from '../../../../core/interfaces/strategic-project.interface';
@@ -9,6 +9,7 @@ import { ExportDataService } from '../../../../core/service/export-data';
 import { UtilitiesService } from '../../../../core/service/utilities.service';
 import { CustomTableFilteringTrigger, RequestStatus } from '../../strategicProjects.component';
 import { BehaviorSubject } from 'rxjs';
+import { OffcanvasInfoModelComponent } from '../../offcanvas-info-model/offcanvas-info-model.components';
 
 @Component({
   selector: 'ngx-investment-by-selected',
@@ -17,6 +18,7 @@ import { BehaviorSubject } from 'rxjs';
   standalone: true,
   imports: [
     HorizontalBarChartModelComponent,
+    OffcanvasInfoModelComponent,
     FlipTableComponent,
     NbSelectModule,
   ],
@@ -31,6 +33,8 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   @Output() newFilter = new EventEmitter<IStrategicProjectFilterValuesDto>();
 
+  @ViewChild('offcanvasTrigger') offcanvasTrigger: ElementRef;
+
   flipTableContent: FlipTableContent;
 
   selectedInvestmentOption: string = 'Área Temática';
@@ -42,6 +46,8 @@ export class InvestmentBySelectedComponent implements OnChanges {
   investmentData: IStrategicProjectInvestmentSelected[];
 
   requestStatus: RequestStatus = RequestStatus.EMPTY;
+
+  selectedChartOptionDetails: IStrategicProjectInvestmentSelected;
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
@@ -295,5 +301,27 @@ export class InvestmentBySelectedComponent implements OnChanges {
     }
 
     this.newFilter.emit(newFilter);
+  }
+
+  handleChartLabelClick(event: HorizontalBarChartLabelClick) {
+    const selectedInvestment = this.investmentData.find((el) => el.nome === event.value);
+    console.log('event: ', event);
+    console.log('this.investmentData: ', this.investmentData);
+
+    if (selectedInvestment) {
+      this.offcanvasTrigger.nativeElement.click();
+
+      if (this.selectedInvestmentOption === 'Programa') {
+        this.strategicProjectsService.getProgramDetails(selectedInvestment.id)
+          .subscribe({
+            next: (res) => {
+              console.log('res: ', res);
+            },
+            error: (err) => {
+              console.error('Ocorreu um erro! \n', err);
+            },
+          });
+      }
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
+import { HorizontalBarChartLabelClick, HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectDeliveriesBySelected } from '../../../../core/interfaces/strategic-project.interface';
@@ -276,5 +276,9 @@ export class DeliveriesBySelectedComponent implements OnChanges {
     }
 
     this.newFilter.emit(newFilter);
+  }
+
+  handleChartLabelClick(event: HorizontalBarChartLabelClick) {
+    console.log('event: ', event);
   }
 }

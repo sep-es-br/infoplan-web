@@ -16,6 +16,12 @@
     </nb-select>
   </div>
 
-  <ngx-horizontal-bar-chart-model [data]="chartData" [colors]="chartColors" [height]="290" card-front>
+  <ngx-horizontal-bar-chart-model
+    card-front
+    [data]="chartData"
+    [colors]="chartColors"
+    [height]="290"
+    (labelClick)="handleChartLabelClick($event)"
+  >
   </ngx-horizontal-bar-chart-model>
 </ngx-flip-table>

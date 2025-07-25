@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleCh
 import { HorizontalBarChartLabelClick, HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
-import { IStrategicProjectInvestmentSelected } from '../../../../core/interfaces/strategic-project.interface';
+import { IStrategicProjectInvestmentSelected, StrategicProjectProgramDetails } from '../../../../core/interfaces/strategic-project.interface';
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
@@ -48,6 +48,10 @@ export class InvestmentBySelectedComponent implements OnChanges {
   requestStatus: RequestStatus = RequestStatus.EMPTY;
 
   selectedChartOptionDetails: IStrategicProjectInvestmentSelected;
+
+  isOffcanvasOpen: boolean = false;
+
+  selectedProgramDetails: StrategicProjectProgramDetails;
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
@@ -305,17 +309,20 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   handleChartLabelClick(event: HorizontalBarChartLabelClick) {
     const selectedInvestment = this.investmentData.find((el) => el.nome === event.value);
-    console.log('event: ', event);
-    console.log('this.investmentData: ', this.investmentData);
 
-    if (selectedInvestment) {
+    /**
+     * É necessário verificar e controlar se o offcanvas está aberto ou não porque por algum motivo
+     * o evento de click está sendo disparado 2x ao clicar.
+    */
+    if (selectedInvestment && !this.isOffcanvasOpen) {
       this.offcanvasTrigger.nativeElement.click();
+      this.isOffcanvasOpen = true;
 
       if (this.selectedInvestmentOption === 'Programa') {
         this.strategicProjectsService.getProgramDetails(this.filter, selectedInvestment.id)
           .subscribe({
-            next: (res) => {
-              console.log('res: ', res);
+            next: (res: StrategicProjectProgramDetails) => {
+              this.selectedProgramDetails = res;
             },
             error: (err) => {
               console.error('Ocorreu um erro! \n', err);
@@ -323,5 +330,9 @@ export class InvestmentBySelectedComponent implements OnChanges {
           });
       }
     }
+  }
+
+  handleOffcanvasClose() {
+    this.isOffcanvasOpen = false;
   }
 }

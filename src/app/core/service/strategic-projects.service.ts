@@ -177,6 +177,7 @@ export class StrategicProjectsService {
   }
 
   public getDeliveriesByProject(filter: IStrategicProjectFilterValuesDto): Observable<Array<IStrategicProjectDeliveriesBySelected>> {
+    console.log('getDeliveriesByProject: ', JSON.stringify(filter));
     return this.http.get<Array<IStrategicProjectDeliveriesBySelected>>(this._urlBase + 'deliveriesByProject', {
       params: { 
         filterJson: JSON.stringify(filter) 
@@ -184,11 +185,13 @@ export class StrategicProjectsService {
     }).pipe(catchError(err => this.handleError(err, this.router)));
   }
 
-  public getProgramDetails(programId: Number): Observable<StrategicProjectProgramDetails> {
+  public getProgramDetails(filter: IStrategicProjectFilterValuesDto, programId: number): Observable<StrategicProjectProgramDetails> {
+    console.log('getProgramDetails: ', JSON.stringify(filter));
+    filter = this.removeEmptyValues(filter);
+    
     return this.http.get<StrategicProjectProgramDetails>(this._urlBase + 'programDetails', {
       params: {
-        filterJson: JSON.stringify({ programId })
-        // programId: programId.toString(),
+        filterJson: JSON.stringify({ programaOrigem: [programId], dataInicio: filter.dataInicio, dataFim: filter.dataFim, })
       }
     }).pipe(catchError(err => this.handleError(err, this.router)));
   }

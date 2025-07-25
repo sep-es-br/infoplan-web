@@ -312,7 +312,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
       this.offcanvasTrigger.nativeElement.click();
 
       if (this.selectedInvestmentOption === 'Programa') {
-        this.strategicProjectsService.getProgramDetails(selectedInvestment.id)
+        this.strategicProjectsService.getProgramDetails(this.filter, selectedInvestment.id)
           .subscribe({
             next: (res) => {
               console.log('res: ', res);

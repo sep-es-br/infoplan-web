@@ -137,7 +137,9 @@ export class VerticalBarChartModelComponent implements OnInit, OnChanges {
         axisLabel: {
           color: currentThemeStyles.textPrimaryColor,
           fontSize: 10,
-          formatter: (value: number) => this.formatNumber(value),
+          formatter: function (value: number) {
+            return formatValue(value); 
+          },
         },
       },
       series: [
@@ -161,5 +163,15 @@ export class VerticalBarChartModelComponent implements OnInit, OnChanges {
         },
       ],
     };
+
+    function formatValue(value: number): string {
+      if (value >= 1_000_000_000) {
+        return (value / 1_000_000_000).toFixed(2) + ' B'; 
+      } else if (value >= 1_000_000) {
+        return (value / 1_000_000).toFixed(2) + ' M'; 
+      } else {
+        return value.toString();
+      }
+    }
   }
 }

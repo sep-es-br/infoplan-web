@@ -160,7 +160,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
-            fontSize: 9,
+            fontSize: 10,
             formatter: function (value: number) {
               return formatValue(value); 
             },
@@ -171,10 +171,10 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           inverse: true,
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
-            fontSize: 9,
+            fontSize: 10,
             
             formatter: function (value: string) {
-              const maxLength = 50;
+              const maxLength = 15;
               if (value.length > maxLength) {
                 return value.substring(0, maxLength) + '...'; 
               }
@@ -269,7 +269,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           type: 'value',
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
-            fontSize: 9, 
+            fontSize: 10, 
             formatter: function (value: number) {
               return formatValue(value); 
             },
@@ -280,9 +280,9 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           inverse: true, 
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
-            fontSize: 9,
+            fontSize: 10,
             formatter: function (value: string) {
-              const maxLength = 50;
+              const maxLength = 15;
               if (value.length > maxLength) {
                 return value.substring(0, maxLength) + '...';
               }
@@ -338,9 +338,9 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
 
     function formatValue(value: number): string {
       if (value >= 1_000_000_000) {
-        return (value / 1_000_000_000).toFixed(2) + ' B'; 
+        return (value / 1_000_000_000).toFixed(1) + 'B'; 
       } else if (value >= 1_000_000) {
-        return (value / 1_000_000).toFixed(2) + ' M'; 
+        return (value / 1_000_000).toFixed(1) + 'M'; 
       } else {
         return value.toString();
       }

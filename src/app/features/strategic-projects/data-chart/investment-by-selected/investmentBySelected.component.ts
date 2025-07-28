@@ -1,5 +1,5 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { HorizontalBarChartLabelClick, HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { HorizontalBarChartCustomConfig, HorizontalBarChartLabelClick, HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectInvestmentSelected, StrategicProjectProgramDetails } from '../../../../core/interfaces/strategic-project.interface';
@@ -43,20 +43,23 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   chartColors: any;
 
+  chartCustomConfig: HorizontalBarChartCustomConfig;
+
   investmentData: IStrategicProjectInvestmentSelected[];
 
   requestStatus: RequestStatus = RequestStatus.EMPTY;
-
-  selectedChartOptionDetails: IStrategicProjectInvestmentSelected;
 
   isOffcanvasOpen: boolean = false;
 
   selectedProgramDetails: StrategicProjectProgramDetails;
 
+  offcanvasRequestStatus: RequestStatus = RequestStatus.EMPTY;
+
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
     private utilitiesService: UtilitiesService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -218,13 +221,17 @@ export class InvestmentBySelectedComponent implements OnChanges {
       expanded: shouldStartExpanded,
     }));
 
+    this.chartCustomConfig = {
+      yAxisTriggerEvent: ['Programa', 'Projeto'].includes(this.selectedInvestmentOption),
+    };
+
     this.flipTableContent = {
       defaultColumns: tableColumns,
       customColumn: {
         originalPropertyName: 'nome',
         propertyName: 'firstColumn',
         displayName: this.selectedInvestmentOption,
-        enableEventClick: true,
+        enableEventClick: this.chartCustomConfig.yAxisTriggerEvent,
       },
       data: finalData,
     };
@@ -315,6 +322,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
      * o evento de click está sendo disparado 2x ao clicar.
     */
     if (selectedInvestment && !this.isOffcanvasOpen) {
+      this.offcanvasRequestStatus = RequestStatus.LOADING;      
       this.offcanvasTrigger.nativeElement.click();
       this.isOffcanvasOpen = true;
 
@@ -323,9 +331,12 @@ export class InvestmentBySelectedComponent implements OnChanges {
           .subscribe({
             next: (res: StrategicProjectProgramDetails) => {
               this.selectedProgramDetails = res;
+              this.offcanvasRequestStatus = RequestStatus.SUCCESS;
+              this.changeDetectorRef.detectChanges();
             },
             error: (err) => {
               console.error('Ocorreu um erro! \n', err);
+              this.offcanvasRequestStatus = RequestStatus.ERROR;
             },
           });
       }

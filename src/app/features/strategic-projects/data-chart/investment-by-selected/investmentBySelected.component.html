@@ -22,6 +22,7 @@
     [data]="chartData"
     [colors]="chartColors"
     [height]="290"
+    [customConfig]="chartCustomConfig"
     (labelClick)="handleChartLabelClick($event)"
   >
   </ngx-horizontal-bar-chart-model>
@@ -33,14 +34,17 @@
   class="offcanvas-trigger"
   type="button"
   data-bs-toggle="offcanvas"
-  data-bs-target="#offcanvasInfoModel"
-  aria-controls="offcanvasInfoModel"
+  data-bs-target="#investmentOffcanvas"
+  aria-controls="investmentOffcanvas"
   #offcanvasTrigger
 >
 </button>
 
 <ngx-offcanvas-info-model
-  [selectedOption]="selectedChartOptionDetails"
+  [customOffcanvasIdentifier]="'investmentOffcanvas'"
+  [selectedProgramDetails]="selectedProgramDetails"
+  [requestStatus]="offcanvasRequestStatus"
+  (requestStatusChange)="offcanvasRequestStatus = $event"
   (offcanvasWasClosed)="handleOffcanvasClose()"
 >
 </ngx-offcanvas-info-model>

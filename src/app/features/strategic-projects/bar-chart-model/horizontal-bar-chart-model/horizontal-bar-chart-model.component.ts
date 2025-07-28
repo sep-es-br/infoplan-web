@@ -16,6 +16,11 @@ export interface HorizontalBarChartLabelClick {
   value: string | number;
 }
 
+export interface HorizontalBarChartCustomConfig {
+  yAxisTriggerEvent?: boolean;
+  xAxisTriggerEvent?: boolean;
+}
+
 @Component({
   selector: 'ngx-horizontal-bar-chart-model',
   templateUrl: './horizontal-bar-chart-model.component.html',
@@ -29,6 +34,8 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
   @Input() colors:  string[] = [];
 
   @Input() height: number;
+
+  @Input() customConfig: HorizontalBarChartCustomConfig;
 
   @Output() barClick = new EventEmitter<HorizontalBarChartBarClick>();
 
@@ -165,6 +172,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
               return formatValue(value); 
             },
           },
+          triggerEvent: this.customConfig?.xAxisTriggerEvent || false,
         },
         yAxis: {
           type: 'category',
@@ -182,7 +190,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
             },
           },
           data: data.map(item => item.category),
-          triggerEvent: true,
+          triggerEvent: this.customConfig?.yAxisTriggerEvent || false,
         },
         series: [
           {
@@ -274,6 +282,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
               return formatValue(value); 
             },
           },
+          triggerEvent: this.customConfig?.xAxisTriggerEvent || false,
         },
         yAxis: {
           type: 'category',
@@ -290,7 +299,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
             },
           },
           data: data.map(item => item.category),
-          triggerEvent: true,
+          triggerEvent: this.customConfig?.yAxisTriggerEvent || false,
         },
         series: [
           {

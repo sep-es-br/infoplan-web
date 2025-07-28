@@ -1,15 +1,80 @@
 <div
-  class="offcanvas offcanvas-end"
+  class="offcanvas offcanvas-end px-2"
   data-bs-scroll="true"
   tabindex="-1"
-  id="offcanvasInfoModel"
-  aria-labelledby="offcanvasInfoModelLabel"
+  [id]="customOffcanvasIdentifier"
+  [attr.aria-labelledby]="customOffcanvasIdentifier + 'Label'"
+  [attr.data-bs-theme]="currentAppTheme !== 'default' ? 'dark' : ''"
 >
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasInfoModelLabel">Backdrop with scrolling</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body">
-    <p>Try scrolling the rest of the page to see this option in action.</p>
-  </div>
+  <nb-card class="my-2 h-100" [nbSpinner]="requestStatus === 'Loading'" [nbSpinnerStatus]="'success'">
+    <ng-container *ngIf="requestStatus === 'Success'">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" [id]="customOffcanvasIdentifier + 'Label'">
+          {{ detailsToBeDisplayed.offcanvasTitle }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="property col-12 mb-1">
+          <span class="property-label me-1">Área Temática:</span>
+          <span class="property-value">{{ detailsToBeDisplayed.nomeArea | ngxCapitalize }}</span>
+        </div>
+
+        <div class="property col-12 mb-3">
+          <span class="property-label me-1">Id Área:</span>
+          <span class="property-value">{{ detailsToBeDisplayed.areaId }}</span>
+        </div>
+
+        <div class="property col-12 mb-1">
+          <span class="property-label me-1">Nome do Programa:</span>
+          <span class="property-value">{{ detailsToBeDisplayed.nomePrograma | ngxCapitalize }}</span>
+        </div>
+
+        <div class="property col-12 mb-3">
+          <span class="property-label me-1">Id Programa:</span>
+          <span class="property-value">{{ detailsToBeDisplayed.programaId }}</span>
+        </div>
+
+        <div class="property col-12 mb-3">
+          <span class="property-label me-1">Objetivo:</span>
+          <span class="property-value">{{ detailsToBeDisplayed.objetivo | ngxCapitalize }}</span>
+        </div>
+
+        <div class="property col-12 mb-3">
+          <span class="property-label me-1">Quantidade Projetos:</span>
+          <span class="property-value">{{ detailsToBeDisplayed.qtdeProjetos }}</span>
+        </div>
+
+        <div class="property col-12 mb-1">
+          <span class="property-label me-1">Pessoa Responsável:</span>
+          <span class="property-value">{{ detailsToBeDisplayed.responsavel | ngxCapitalize }}</span>
+        </div>
+
+        <div class="property col-12 mb-3">
+          <span class="property-label me-1">Função da Pessoa Responsável:</span>
+          <span class="property-value">{{ detailsToBeDisplayed.funcaoResponsavel | ngxCapitalize }}</span>
+        </div>
+
+        <div class="property col-12 mb-3">
+          <span class="property-label me-1">Contagem PE:</span>
+          <span class="property-value">{{ detailsToBeDisplayed.contagemPE }}</span>
+        </div>
+
+        <div class="property col-12 mb-1">
+          <span class="property-label me-1">Custo Previsto:</span>
+          <span class="property-value">{{ formatNumber(detailsToBeDisplayed.custoPrevisto) }}</span>
+        </div>
+
+        <div class="property col-12 mb-3">
+          <span class="property-label me-1">Custo Realizado:</span>
+          <span class="property-value">{{ formatNumber(detailsToBeDisplayed.custoRealizado) }}</span>
+        </div>
+
+        <div class="property col-12 mb-3">
+          <span class="property-label me-1">É Transversal:</span>
+          <span class="property-value">{{ detailsToBeDisplayed.isTransversal ? 'Sim' : 'Não' }}</span>
+        </div>
+      </div>
+    </ng-container>
+  </nb-card>
 </div>

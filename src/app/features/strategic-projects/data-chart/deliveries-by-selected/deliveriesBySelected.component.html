@@ -21,7 +21,29 @@
     [data]="chartData"
     [colors]="chartColors"
     [height]="290"
+    [customConfig]="chartCustomConfig"
     (labelClick)="handleChartLabelClick($event)"
   >
   </ngx-horizontal-bar-chart-model>
 </ngx-flip-table>
+
+<!-- Esse botão não aparece no HTML, mas é usado para abrir o offcanvas -->
+<!-- É possível abrir o offcanvas sem o botão (direto no código), só que aí o offcanvas abre sem o backdrop e o scroll -->
+<button
+  class="offcanvas-trigger"
+  type="button"
+  data-bs-toggle="offcanvas"
+  data-bs-target="#deliveriesOffcanvas"
+  aria-controls="deliveriesOffcanvas"
+  #offcanvasTrigger2
+>
+</button>
+
+<ngx-offcanvas-info-model
+  [customOffcanvasIdentifier]="'deliveriesOffcanvas'"
+  [selectedProgramDetails]="selectedProgramDetails"
+  [requestStatus]="offcanvasRequestStatus"
+  (requestStatusChange)="offcanvasRequestStatus = $event"
+  (offcanvasWasClosed)="handleOffcanvasClose()"
+>
+</ngx-offcanvas-info-model>

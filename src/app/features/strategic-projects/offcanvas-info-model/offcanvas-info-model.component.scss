@@ -1,0 +1,21 @@
+.offcanvas {
+  background-color: var(--card-background-color);
+  color: var(--card-text-color);
+  border: none;
+  width: 500px;
+  
+  nb-card{
+    border: none;
+
+    .offcanvas-body {
+      font-size: 14px;
+  
+      .property {
+        .property-label {
+          font-weight: bold;
+          border-bottom: 1px solid #ccc;
+        }
+      }
+    }
+  }
+}

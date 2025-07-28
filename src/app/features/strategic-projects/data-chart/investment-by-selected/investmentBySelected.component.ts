@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChange
 import { HorizontalBarChartCustomConfig, HorizontalBarChartLabelClick, HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
-import { IStrategicProjectInvestmentSelected, StrategicProjectProgramDetails } from '../../../../core/interfaces/strategic-project.interface';
+import { IStrategicProjectInvestmentSelected, StrategicProjectProgramDetails, StrategicProjectProjectDetails } from '../../../../core/interfaces/strategic-project.interface';
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
@@ -52,6 +52,8 @@ export class InvestmentBySelectedComponent implements OnChanges {
   isOffcanvasOpen: boolean = false;
 
   selectedProgramDetails: StrategicProjectProgramDetails;
+
+  selectedProjectDetails: StrategicProjectProjectDetails;
 
   offcanvasRequestStatus: RequestStatus = RequestStatus.EMPTY;
 
@@ -336,6 +338,19 @@ export class InvestmentBySelectedComponent implements OnChanges {
             },
             error: (err) => {
               console.error('Ocorreu um erro! \n', err);
+              this.offcanvasRequestStatus = RequestStatus.ERROR;
+            },
+          });
+      } else if (this.selectedInvestmentOption === 'Projeto') {
+        this.strategicProjectsService.getProjectDetails(this.filter, selectedInvestment.id)
+          .subscribe({
+            next: (res: StrategicProjectProjectDetails) => {
+              this.selectedProjectDetails = res;
+              this.offcanvasRequestStatus = RequestStatus.SUCCESS;
+              this.changeDetectorRef.detectChanges();
+            },
+            error: (err) => {
+              console.error("Ocorreu um erro! \n", err);
               this.offcanvasRequestStatus = RequestStatus.ERROR;
             },
           });

@@ -85,3 +85,21 @@ export interface StrategicProjectProgramDetails {
   funcaoResponsavel: string;
 }
 
+export interface StrategicProjectProjectDetails {
+  contagemPE: number;
+  custoPrevisto: number;
+  custoRealizado: number;
+  programaId: number;
+  nomePrograma: string;
+  orgaoId: number;
+  nomeOrgao: string;
+  areaId: number;
+  nomeArea: string;
+  projetoId: number;
+  nomeProjeto: string;
+  descricaoProjeto: string;
+  statusProjeto: string;
+  responsavel: string;
+  funcaoResponsavel: string;
+}
+

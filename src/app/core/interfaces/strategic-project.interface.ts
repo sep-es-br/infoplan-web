@@ -89,8 +89,10 @@ export interface StrategicProjectProjectDetails {
   contagemPE: number;
   custoPrevisto: number;
   custoRealizado: number;
-  programaId: number;
-  nomePrograma: string;
+  programas: Array<{
+    programaId: number;
+    nomePrograma: string;
+  }>;
   orgaoId: number;
   nomeOrgao: string;
   areaId: number;

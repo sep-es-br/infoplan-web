@@ -80,14 +80,15 @@
         </ng-container>
         <ng-template #ProgramasLayout>
           <div class="property col-12 mb-1">
-            <span class="property-label me-1">Nome do Programa:</span>
-            <span class="property-value">{{ selectedItemDetails.nomePrograma | ngxCapitalize }}</span>
+            <span class="property-label me-1">Programas:</span>
           </div>
   
-          <div class="property col-12 mb-3">
-            <span class="property-label me-1">Id Programa:</span>
-            <span class="property-value">{{ selectedItemDetails.programaId }}</span>
-          </div>
+          <ng-container *ngFor="let programa of selectedItemDetails.programas; let index = index">
+            <div class="property col-12 px-2" [ngClass]="index === selectedItemDetails.programas.length - 1 ? 'mb-3' : 'mb-1'">
+              <span class="property-value me-1">{{ programa.programaId }} - </span>
+              <span class="property-value">{{ programa.nomePrograma | ngxCapitalize}}</span>
+            </div>
+          </ng-container>
         </ng-template>       
 
         <div class="property col-12 mb-3">

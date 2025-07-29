@@ -26,22 +26,6 @@ export class OffcanvasInfoModelComponent implements AfterViewInit {
 
   currentAppTheme: string;
 
-  detailsToBeDisplayed = {
-    offcanvasTitle: '',
-    nomeArea: '',
-    areaId: '',
-    nomePrograma: '',
-    programaId: '',
-    objetivo: '',
-    qtdeProjetos: -1,
-    responsavel: '',
-    funcaoResponsavel: '',
-    contagemPE: -1,
-    custoPrevisto: -1,
-    custoRealizado: -1,
-    isTransversal: false,
-  };
-
   constructor(private themeService: NbThemeService) {
     this.themeService.onThemeChange().subscribe((newTheme: { name: AvailableThemes; previous: string; }) => {
       this.currentAppTheme = newTheme.name;
@@ -57,6 +41,20 @@ export class OffcanvasInfoModelComponent implements AfterViewInit {
   }
 
   formatNumber(value: number): string {
-    return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (value >= 1_000_000_000) {
+      return (value / 1_000_000_000).toFixed(1) + 'B'; 
+    } else if (value >= 1_000_000) {
+      return (value / 1_000_000).toFixed(1) + 'M'; 
+    } else {
+      return value.toString();
+    }
+  }
+
+  getProgramasFormatado(programas: Array<{ programaId: number; nomePrograma: string; }>): string {
+    if (programas.length > 1) {
+      return programas.map((el) => el.nomePrograma).join(', ');
+    }
+
+    return programas[0].nomePrograma;
   }
 }

@@ -1,25 +1,70 @@
 .offcanvas {
-  background-color: var(--card-background-color);
+  background-color: var(--card-border-color);
   color: var(--card-text-color);
   border: none;
   width: 500px;
   
-  nb-card{
+  nb-card {
     border: none;
+    background-color: var(--card-border-color);
+
+    .offcanvas-header {
+      .offcanvas-entity-title {
+        font-size: 14px;
+      }
+      .offcanvas-message {
+        &.italic {
+          font-style: italic;
+          font-size: 12px;
+        }
+      }
+    }
 
     .offcanvas-body {
       font-size: 14px;
   
       .property {
+        nb-card {
+          background-color: var(--card-background-color);
+          margin: 0;
+
+          &.card-number-box {
+            // background-color: var(--card-border-color);
+            
+            &.previsto {
+              background-color: #487D7A;
+            }
+            &.realizado {
+              background-color: #00B26A;
+            }
+          }
+        }
+
         .property-label {
           font-weight: bold;
-          border-bottom: 1px solid #ccc;
+          font-size: 14px;
+
+          &.justify-end {
+            text-align: end;
+          }
         }
 
         .property-value {
-          &.italic {
-            font-style: italic;
-            font-size: 12px;
+          font-size: 12px;
+
+          &.justify {
+            text-align: justify;
+          }
+
+          &.number-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            height: 3rem;
+            // background-color: var(--card-border-color);
+            border-radius: var(--card-border-radius);
           }
         }
       }

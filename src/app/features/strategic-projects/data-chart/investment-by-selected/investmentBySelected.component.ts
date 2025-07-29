@@ -222,7 +222,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
     }));
 
     this.chartCustomConfig = {
-      yAxisTriggerEvent: ['Programa', 'Projeto'].includes(this.selectedInvestmentOption),
+      yAxisTriggerEvent: ['Programa', 'Programas Transversais', 'Projeto'].includes(this.selectedInvestmentOption),
     };
 
     this.flipTableContent = {
@@ -326,7 +326,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
       this.offcanvasTrigger.nativeElement.click();
       this.isOffcanvasOpen = true;
 
-      if (this.selectedInvestmentOption === 'Programa') {
+      if (['Programa', 'Programas Transversais'].includes(this.selectedInvestmentOption)) {
         this.strategicProjectsService.getProgramDetails(this.filter, selectedInvestment.id)
           .subscribe({
             next: (res: StrategicProjectProgramDetails) => {

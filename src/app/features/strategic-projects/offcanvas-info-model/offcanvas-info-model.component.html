@@ -10,70 +10,107 @@
     <ng-container *ngIf="requestStatus === 'Success'">
       <div class="offcanvas-header">
         <h5 class="offcanvas-title" [id]="customOffcanvasIdentifier + 'Label'">
-          {{ detailsToBeDisplayed.offcanvasTitle }}
+          {{ 'Detalhes do ' + (selectedItemDetails.objetivo ? 'Programa' : 'Projeto') }}
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
-        <div class="property col-12 mb-1">
-          <span class="property-label me-1">Área Temática:</span>
-          <span class="property-value">{{ detailsToBeDisplayed.nomeArea | ngxCapitalize }}</span>
-        </div>
-
         <div class="property col-12 mb-3">
-          <span class="property-label me-1">Id Área:</span>
-          <span class="property-value">{{ detailsToBeDisplayed.areaId }}</span>
-        </div>
-
-        <div class="property col-12 mb-1">
-          <span class="property-label me-1">Nome do Programa:</span>
-          <span class="property-value">{{ detailsToBeDisplayed.nomePrograma | ngxCapitalize }}</span>
-        </div>
-
-        <div class="property col-12 mb-3">
-          <span class="property-label me-1">Id Programa:</span>
-          <span class="property-value">{{ detailsToBeDisplayed.programaId }}</span>
-        </div>
-
-        <div class="property col-12 mb-3">
-          <span class="property-label me-1">Objetivo:</span>
-          <span class="property-value">{{ detailsToBeDisplayed.objetivo | ngxCapitalize }}</span>
-        </div>
-
-        <div class="property col-12 mb-3">
-          <span class="property-label me-1">Quantidade Projetos:</span>
-          <span class="property-value">{{ detailsToBeDisplayed.qtdeProjetos }}</span>
+          <ng-container *ngIf="selectedItemDetails.objetivo else ProjectLayout">
+            <span class="property-label me-1">Nome do Programa:</span>
+            <span class="property-value">{{ selectedItemDetails.nomePrograma | ngxCapitalize }}</span>
+          </ng-container>
+          <ng-template #ProjectLayout>
+            <span class="property-label me-1">Nome do Projeto:</span>
+            <span class="property-value">{{ selectedItemDetails.nomeProjeto | ngxCapitalize }}</span>
+          </ng-template>
         </div>
 
         <div class="property col-12 mb-1">
           <span class="property-label me-1">Pessoa Responsável:</span>
-          <span class="property-value">{{ detailsToBeDisplayed.responsavel | ngxCapitalize }}</span>
+          <span class="property-value">{{ selectedItemDetails.responsavel | ngxCapitalize }}</span>
         </div>
 
         <div class="property col-12 mb-3">
           <span class="property-label me-1">Função da Pessoa Responsável:</span>
-          <span class="property-value">{{ detailsToBeDisplayed.funcaoResponsavel | ngxCapitalize }}</span>
+          <span class="property-value">{{ selectedItemDetails.funcaoResponsavel | ngxCapitalize }}</span>
         </div>
 
         <div class="property col-12 mb-3">
+          <ng-container *ngIf="selectedItemDetails.objetivo else DescriptionLayout">
+            <span class="property-label me-1">Objetivo:</span>
+            <span class="property-value">{{ selectedItemDetails.objetivo | ngxCapitalize }}</span>
+          </ng-container>
+          <ng-template #DescriptionLayout>
+            <ng-container *ngIf="selectedItemDetails.descricaoProjeto">
+              <span class="property-label me-1">Descrição do Projeto:</span>
+              <span class="property-value">{{ selectedItemDetails.descricaoProjeto | ngxCapitalize }}</span>
+            </ng-container>
+          </ng-template>
+        </div>
+
+        <ng-container *ngIf="selectedItemDetails.nomeOrgao">
+          <div class="property col-12 mb-1">
+            <span class="property-label me-1">Órgão:</span>
+            <span class="property-value">{{ selectedItemDetails.nomeOrgao }}</span>
+          </div>
+          <div class="property col-12 mb-3">
+            <span class="property-label me-1">Id Órgão:</span>
+            <span class="property-value">{{ selectedItemDetails.orgaoId || '--' }}</span>
+          </div>
+        </ng-container>
+
+        <div class="property col-12 mb-1">
+          <span class="property-label me-1">{{ 'Área Temática' + (selectedItemDetails.transversal ? ' Principal:' : ':') }}</span>
+          <span class="property-value">{{ selectedItemDetails.nomeArea | ngxCapitalize }}</span>
+          <ng-container *ngIf="selectedItemDetails.transversal">
+            <p class="property-value italic">Este é um programa transversal, contemplando projetos em áreas temáticas diversas, além desta.</p>
+          </ng-container>
+        </div>
+        <div class="property col-12 mb-3">
+          <span class="property-label me-1">Id Área:</span>
+          <span class="property-value">{{ selectedItemDetails.areaId }}</span>
+        </div>
+
+        <ng-container *ngIf="selectedItemDetails.qtdeProjetos else ProgramasLayout">
+          <div class="property col-12 mb-3">
+            <span class="property-label me-1">Quantidade Projetos:</span>
+            <span class="property-value">{{ selectedItemDetails.qtdeProjetos }}</span>
+          </div>
+        </ng-container>
+        <ng-template #ProgramasLayout>
+          <div class="property col-12 mb-1">
+            <span class="property-label me-1">Nome do Programa:</span>
+            <span class="property-value">{{ selectedItemDetails.nomePrograma | ngxCapitalize }}</span>
+          </div>
+  
+          <div class="property col-12 mb-3">
+            <span class="property-label me-1">Id Programa:</span>
+            <span class="property-value">{{ selectedItemDetails.programaId }}</span>
+          </div>
+        </ng-template>       
+
+        <div class="property col-12 mb-3">
           <span class="property-label me-1">Contagem PE:</span>
-          <span class="property-value">{{ detailsToBeDisplayed.contagemPE }}</span>
+          <span class="property-value">{{ selectedItemDetails.contagemPE }}</span>
         </div>
 
         <div class="property col-12 mb-1">
           <span class="property-label me-1">Custo Previsto:</span>
-          <span class="property-value">{{ formatNumber(detailsToBeDisplayed.custoPrevisto) }}</span>
+          <span class="property-value">{{ formatNumber(selectedItemDetails.custoPrevisto) }}</span>
         </div>
 
         <div class="property col-12 mb-3">
           <span class="property-label me-1">Custo Realizado:</span>
-          <span class="property-value">{{ formatNumber(detailsToBeDisplayed.custoRealizado) }}</span>
+          <span class="property-value">{{ formatNumber(selectedItemDetails.custoRealizado) }}</span>
         </div>
 
-        <div class="property col-12 mb-3">
-          <span class="property-label me-1">É Transversal:</span>
-          <span class="property-value">{{ detailsToBeDisplayed.isTransversal ? 'Sim' : 'Não' }}</span>
-        </div>
+        <ng-container *ngIf="selectedItemDetails.statusProjeto">
+          <div class="property col-12 mb-3">
+            <span class="property-label me-1">Status do Projeto:</span>
+            <span class="property-value">{{ selectedItemDetails.statusProjeto }}</span>
+          </div>
+        </ng-container>
       </div>
     </ng-container>
   </nb-card>

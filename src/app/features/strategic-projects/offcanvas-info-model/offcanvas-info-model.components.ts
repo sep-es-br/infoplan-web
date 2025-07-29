@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { StrategicProjectProgramDetails } from "../../../core/interfaces/strategic-project.interface";
+import { StrategicProjectProgramDetails, StrategicProjectProjectDetails } from "../../../core/interfaces/strategic-project.interface";
 import { NbCardModule, NbSpinnerModule, NbThemeService } from "@nebular/theme";
 import { AvailableThemes, ThemeModule } from "../../../@theme/theme.module";
 import { RequestStatus } from "../strategicProjects.component";
@@ -18,9 +18,7 @@ import { RequestStatus } from "../strategicProjects.component";
 export class OffcanvasInfoModelComponent implements OnChanges, AfterViewInit {
   @Input() customOffcanvasIdentifier: string;
 
-  @Input() selectedProgramDetails: StrategicProjectProgramDetails;
-
-  @Input() selectedProjectDetails: any;
+  @Input() selectedItemDetails: StrategicProjectProgramDetails | StrategicProjectProjectDetails;
 
   @Input() requestStatus: RequestStatus;
 
@@ -51,12 +49,12 @@ export class OffcanvasInfoModelComponent implements OnChanges, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedProgramDetails'] && this.selectedProgramDetails) {
-      this.assembleOffcanvasContent(this.selectedProgramDetails);
+    if (changes['selectedProgramDetails'] && this.selectedItemDetails) {
+      // this.assembleOffcanvasContent(this.selectedProgramDetails);
     }
 
-    if (changes['selectedProjectDetails'] && this.selectedProjectDetails) {
-      this.assembleOffcanvasContent(this.selectedProjectDetails);
+    if (changes['selectedProjectDetails'] && this.selectedItemDetails) {
+      // this.assembleOffcanvasContent(this.selectedProjectDetails);
     }
   }
 
@@ -66,24 +64,6 @@ export class OffcanvasInfoModelComponent implements OnChanges, AfterViewInit {
     offcanvasRef.addEventListener('hidden.bs.offcanvas', () => {
       this.offcanvasWasClosed.emit();
     });
-  }
-
-  assembleOffcanvasContent(source: StrategicProjectProgramDetails | any) {
-    this.detailsToBeDisplayed = {
-      offcanvasTitle: source?.nomePrograma || source.nomeProjeto,
-      nomeArea: source.nomeArea,
-      areaId: source.areaId,
-      nomePrograma: source.nomePrograma,
-      programaId: source.programaId,
-      objetivo: source.objetivo,
-      qtdeProjetos: source.qtdeProjetos,
-      responsavel: source.responsavel,
-      funcaoResponsavel: source.funcaoResponsavel,
-      contagemPE: source.contagemPE,
-      custoPrevisto: source.custoPrevisto,
-      custoRealizado: source.custoRealizado,
-      isTransversal: source.transversal === 1,
-    };
   }
 
   formatNumber(value: number): string {

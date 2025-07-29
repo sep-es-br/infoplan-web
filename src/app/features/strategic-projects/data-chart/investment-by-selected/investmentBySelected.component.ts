@@ -51,9 +51,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   isOffcanvasOpen: boolean = false;
 
-  selectedProgramDetails: StrategicProjectProgramDetails;
-
-  selectedProjectDetails: StrategicProjectProjectDetails;
+  selectedItemDetails: StrategicProjectProgramDetails | StrategicProjectProjectDetails;
 
   offcanvasRequestStatus: RequestStatus = RequestStatus.EMPTY;
 
@@ -332,7 +330,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
         this.strategicProjectsService.getProgramDetails(this.filter, selectedInvestment.id)
           .subscribe({
             next: (res: StrategicProjectProgramDetails) => {
-              this.selectedProgramDetails = res;
+              this.selectedItemDetails = res;
               this.offcanvasRequestStatus = RequestStatus.SUCCESS;
               this.changeDetectorRef.detectChanges();
             },
@@ -345,7 +343,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
         this.strategicProjectsService.getProjectDetails(this.filter, selectedInvestment.id)
           .subscribe({
             next: (res: StrategicProjectProjectDetails) => {
-              this.selectedProjectDetails = res;
+              this.selectedItemDetails = res;
               this.offcanvasRequestStatus = RequestStatus.SUCCESS;
               this.changeDetectorRef.detectChanges();
             },

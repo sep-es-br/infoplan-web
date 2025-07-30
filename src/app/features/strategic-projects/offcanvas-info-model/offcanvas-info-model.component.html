@@ -24,27 +24,32 @@
       </div>
 
       <div class="offcanvas-body">
-        <div class="property col-12 mb-3">
-          <nb-card class="p-2">
-            <ng-container *ngIf="selectedItemDetails.objetivo else DescriptionLayout">
+        <ng-container *ngIf="selectedItemDetails.objetivo && selectedItemDetails.objetivo !== 'null'">
+          <div class="property col-12 mb-3">
+            <nb-card class="p-2">
               <span class="property-label">Objetivo</span>
               <span class="property-value">{{ selectedItemDetails.objetivo | ngxCapitalize }}</span>
-            </ng-container>
-            <ng-template #DescriptionLayout>
-              <ng-container *ngIf="selectedItemDetails.descricaoProjeto">
-                <span class="property-label me-1">Descrição</span>
-                <span class="property-value justify">{{ selectedItemDetails.descricaoProjeto | ngxCapitalize }}</span>
-              </ng-container>
-            </ng-template>
-          </nb-card>
-        </div>
+            </nb-card>
+          </div>
+        </ng-container>
 
-        <div class="property col-12 mb-3">
-          <nb-card class="p-2">
-            <span class="property-label">Gerente(s)</span>
-            <span class="property-value">{{ selectedItemDetails.responsavel | ngxCapitalize }}</span>
-          </nb-card>
-        </div>
+        <ng-container *ngIf="selectedItemDetails.descricaoProjeto && selectedItemDetails.descricaoProjeto !== 'null'">
+          <div class="property col-12 mb-3">
+            <nb-card class="p-2">
+              <span class="property-label me-1">Descrição</span>
+              <span class="property-value justify">{{ selectedItemDetails.descricaoProjeto | ngxCapitalize }}</span>
+            </nb-card>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="selectedItemDetails.responsavel !== 'null'">
+          <div class="property col-12 mb-3">
+            <nb-card class="p-2">
+              <span class="property-label">Gerente(s)</span>
+              <span class="property-value">{{ selectedItemDetails.responsavel | ngxCapitalize }}</span>
+            </nb-card>
+          </div>
+        </ng-container>
 
         <div class="d-flex flex-row mb-3">
           <div class="property col-4 pe-1">

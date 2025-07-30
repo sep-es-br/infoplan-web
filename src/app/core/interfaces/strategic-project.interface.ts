@@ -82,7 +82,6 @@ export interface StrategicProjectProgramDetails {
   objetivo: string;
   transversal: number;
   responsavel: string;
-  funcaoResponsavel: string;
 }
 
 export interface StrategicProjectProjectDetails {
@@ -102,6 +101,5 @@ export interface StrategicProjectProjectDetails {
   descricaoProjeto: string;
   statusProjeto: string;
   responsavel: string;
-  funcaoResponsavel: string;
 }
 

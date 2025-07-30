@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { HorizontalBarChartCustomConfig, HorizontalBarChartLabelClick, HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
+import { HorizontalBarChartBarClick, HorizontalBarChartCustomConfig, HorizontalBarChartLabelClick, HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
 import { IStrategicProjectDeliveriesBySelected, StrategicProjectProgramDetails, StrategicProjectProjectDetails } from '../../../../core/interfaces/strategic-project.interface';
@@ -53,6 +53,8 @@ export class DeliveriesBySelectedComponent implements OnChanges {
   offcanvasRequestStatus: RequestStatus = RequestStatus.EMPTY;
 
   requestStatus: RequestStatus = RequestStatus.EMPTY;
+
+  isDoingDrillDownActions: boolean = false;
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
@@ -334,6 +336,17 @@ export class DeliveriesBySelectedComponent implements OnChanges {
             },
           });
       }
+    }
+  }
+
+  handleChartBarClick(event: HorizontalBarChartBarClick): void {
+    if (!this.isDoingDrillDownActions) {
+      this.isDoingDrillDownActions = true;
+      this.handleCustomFiltering(event.labelName);
+      
+      setTimeout(() => {
+        this.isDoingDrillDownActions = false;
+      }, 500);
     }
   }
 

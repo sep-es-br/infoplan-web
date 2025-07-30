@@ -98,6 +98,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
 
+    // https://apache.github.io/echarts-handbook/en/concepts/event/
     this.echartsInstance.on('click', (event) => {
       if (event.componentType === 'yAxis' || event.componentType === 'xAxis') {
         this.labelClick.emit({ axis: event.componentType, value: event.value.toString() });

@@ -176,7 +176,7 @@ export class StrategicProjectsComponent {
       });
   }
 
-  handleFilterChange(origin: AvailableFilters, newValue: Array<number>) {
+  handleFilterChange(origin: AvailableFilters | string, newValue: Array<number>) {
     const selectedValue = newValue.length === 0 ? '' : newValue.toString();
     
     switch (origin) {

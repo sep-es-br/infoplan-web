@@ -126,7 +126,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
         tooltip: {
           trigger: 'axis',
           axisPointer: {
-            type: 'shadow',
+            type: 'cross',
           },
           textStyle: {
             color: currentThemeStyles.textPrimaryColor,
@@ -238,7 +238,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
         tooltip: {
           trigger: 'axis',
           axisPointer: {
-            type: 'shadow',
+            type: 'cross',
           },
           textStyle: {
             color: currentThemeStyles.textPrimaryColor,

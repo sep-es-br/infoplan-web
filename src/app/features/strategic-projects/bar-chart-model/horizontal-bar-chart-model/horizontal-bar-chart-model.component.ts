@@ -126,7 +126,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
         tooltip: {
           trigger: 'axis',
           axisPointer: {
-            type: 'cross',
+            type: 'shadow',
           },
           textStyle: {
             color: currentThemeStyles.textPrimaryColor,
@@ -181,14 +181,11 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
             fontSize: 10,
-            
-            formatter: function (value: string) {
-              const maxLength = 15;
-              if (value.length > maxLength) {
-                return value.substring(0, maxLength) + '...'; 
-              }
-              return value;
-            },
+            overflow: 'truncate',
+            width: 100,
+          },
+          tooltip: {
+            show: true,
           },
           data: data.map(item => item.category),
           triggerEvent: this.customConfig?.yAxisTriggerEvent || false,
@@ -238,7 +235,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
         tooltip: {
           trigger: 'axis',
           axisPointer: {
-            type: 'cross',
+            type: 'shadow',
           },
           textStyle: {
             color: currentThemeStyles.textPrimaryColor,
@@ -291,13 +288,11 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
             fontSize: 10,
-            formatter: function (value: string) {
-              const maxLength = 15;
-              if (value.length > maxLength) {
-                return value.substring(0, maxLength) + '...';
-              }
-              return value;
-            },
+            overflow: 'truncate',
+            width: 100,
+          },
+          tooltip: {
+            show: true,
           },
           data: data.map(item => item.category),
           triggerEvent: this.customConfig?.yAxisTriggerEvent || false,

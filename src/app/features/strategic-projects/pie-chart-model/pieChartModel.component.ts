@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
-import { ECharts, EChartsOption } from 'echarts';
+import { ECharts, EChartsOption, EChartsType } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { AvailableThemes, getAvailableThemesStyles } from '../../../@theme/theme.module';
 
@@ -84,7 +84,7 @@ export class PieChartModelComponent implements OnInit, OnChanges {
     }
   }
 
-  onChartInit(chartInstance: ECharts) {
+  onChartInit(chartInstance: EChartsType) {
     this.echartsInstance = chartInstance;
 
     chartInstance.on('legendselectchanged', (params: any) => {
@@ -102,6 +102,8 @@ export class PieChartModelComponent implements OnInit, OnChanges {
         });
       }
     });
+
+    // Tá faltando fazer com que a animação do gráfico só seja habilitada quando a mesma tiver terminado de renderizar
   }
 
   updateTitlePosition() {

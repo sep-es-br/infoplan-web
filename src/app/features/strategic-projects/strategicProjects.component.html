@@ -421,12 +421,11 @@
         </div>
       </div>
     </div>
-    
   </div>
   
   <!-- Cards de gráficos -->
   <div class="row px-4">
-    <div class="d-flex col-12 p-0 map" *ngIf="isMapOpen">
+    <div class="d-flex col-12 col-xxxl-6 p-0 map" *ngIf="isMapOpen">
       <div class="col-12 px-1 mb-1">
         <div class="card">
           <ngx-map-es [filter]="finalFilter" [localidadeList]="localidadeList" (filterChange)="onMapFilterChange($event)"></ngx-map-es>
@@ -460,8 +459,8 @@
       </div>
     </div>
      
-    <div class="d-flex flex-wrap col-12 col-xxxl-6 p-0">
-      <div class="col-12 px-1 mb-1">
+    <div class="d-flex flex-wrap col-12 p-0" [ngClass]="isMapOpen ? '' : 'col-xxxl-6'">
+      <div class="col-12 px-1 mb-1" [ngClass]="isMapOpen ? 'col-xxxl-6' : ''">
         <ngx-investment-by-selected
           [filter]="finalFilter"
           [tableFilteringTrigger]="tableFilteringTrigger"
@@ -470,7 +469,7 @@
         </ngx-investment-by-selected>
       </div>
 
-      <div class="col-12 px-1 mb-1">
+      <div class="col-12 px-1 mb-1" [ngClass]="isMapOpen ? 'col-xxxl-6' : ''">
         <ngx-deliveries-by-selected
           [filter]="finalFilter"
           [tableFilteringTrigger]="tableFilteringTrigger"

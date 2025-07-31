@@ -5,6 +5,7 @@ import { IIdAndName, StrategicProjectsLocalidades } from '../../../core/interfac
 import { Region } from '../../../core/interfaces/map-es.interface';
 import { NbThemeService } from '@nebular/theme';
 import { AvailableThemes } from '../../../@theme/theme.module';
+import { StrategicProjectsFilter } from '../strategicProjects.component';
 
 @Component({
   selector: 'ngx-map-es',
@@ -25,7 +26,7 @@ import { AvailableThemes } from '../../../@theme/theme.module';
   `,
 })
 export class MapEsComponent implements OnInit, OnChanges {
-  @Input() filter!: any;
+  @Input() filter: StrategicProjectsFilter;
 
   @Input() localidadeList!: StrategicProjectsLocalidades[];
 
@@ -498,20 +499,22 @@ verificarSvgRenderizado(): void {
         });
 
         microrregioesText.addEventListener('click', () => {
+          if (!this.filter.localidades) this.filter.localidades = [];
+          
           const areAllRegionsSelected = Object.keys(this.regionCities)
             .filter((region) => region !== 'Todo_o_Estado')
             .every((region) => this.regionCities[region].active);
 
           if (areAllRegionsSelected) {
             // Todas as microrregiões já estão selecionadas, então precisa de-selecioná-las
-            const currentlySelectedLocalidades = this.localidadeList.filter((local) => this.filter.localidades.includes(local.id));
+            const currentlySelectedLocalidades = this.localidadeList.filter((local) => this.filter.localidades?.includes(local.id));
             this.filter.localidades = currentlySelectedLocalidades.filter((local) => local.tipo !== "MICRORREGIÃO").map((local) => local.id);
             microrregioesText.style.fontWeight = 'normal';
           } else {
             // Precisa selecionar todas as microrregiões
-            const missingLocalidades = this.localidadeList.filter((local) => local.tipo === "MICRORREGIÃO" && !this.filter.localidades.includes(local.id));
+            const missingLocalidades = this.localidadeList.filter((local) => local.tipo === "MICRORREGIÃO" && !this.filter.localidades?.includes(local.id));
             this.filter.localidades = [
-              ...this.filter.localidades,
+              ...this.filter?.localidades,
               ...missingLocalidades.map((local) => local.id),
             ];
             microrregioesText.style.fontWeight = 'bold';
@@ -559,20 +562,22 @@ verificarSvgRenderizado(): void {
         });
 
         municipiosText.addEventListener('click', () => {
+          if (!this.filter.localidades) this.filter.localidades = [];
+
           const citiesList = Object.keys(this.regionCities)
             .filter((region) => region !== 'Todo_o_Estado')
             .flatMap((region) => this.regionCities[region].cities);
 
           if (citiesList.every((city) => city.active)) {
             // Todas os municípios estão selecionados, então precisa de-selecioná-los
-            const currentlySelectedLocalidades = this.localidadeList.filter((local) => this.filter.localidades.includes(local.id));
+            const currentlySelectedLocalidades = this.localidadeList.filter((local) => this.filter.localidades?.includes(local.id));
             this.filter.localidades = currentlySelectedLocalidades.filter((local) => local.tipo !== "MUNICÍPIO").map((local) => local.id);
             municipiosText.style.fontWeight = 'normal';
           } else {
             // Precisa selecionar todos os municípios
-            const missingLocalidades = this.localidadeList.filter((local) => local.tipo === "MUNICÍPIO" && !this.filter.localidades.includes(local.id));
+            const missingLocalidades = this.localidadeList.filter((local) => local.tipo === "MUNICÍPIO" && !this.filter.localidades?.includes(local.id));
             this.filter.localidades = [
-              ...this.filter.localidades,
+              ...this.filter?.localidades,
               ...missingLocalidades.map((local) => local.id),
             ];
             municipiosText.style.fontWeight = 'bold';

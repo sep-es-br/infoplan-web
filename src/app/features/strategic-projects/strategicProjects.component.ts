@@ -36,6 +36,21 @@ export interface CustomTableFilteringTrigger {
   newSelectedEntity: 'Área Temática' | 'Programa' | 'Programas Transversais' | 'Projeto' | 'Entrega';
 }
 
+export interface StrategicProjectsFilter {
+  portfolio: string,
+  dataInicio: Date | string,
+  dataFim: Date | string,
+  previsaoConclusao: string,
+  areaTematica?: Array<Number>,
+  programaOrigem?: Array<Number>,
+  projetos?: Array<Number>,
+  entregas?: Array<Number>,
+  programaTransversal?: Array<Number>,
+  localidades?: Array<Number>,
+  orgaos?: Array<Number>,
+  acompanhamentos?: Array<Number>,
+}
+
 @Component({
   selector: 'ngx-strategic-projects',
   templateUrl: './strategicProjects.component.html',
@@ -66,7 +81,7 @@ export class StrategicProjectsComponent {
     totalRealizado: 0,
   };
 
-  filter = {
+  filter: StrategicProjectsFilter = {
     portfolio: environment.strategicProjectFilter.portfolio,
     dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
     dataFim: new Date(environment.strategicProjectFilter.dataFim),
@@ -81,7 +96,7 @@ export class StrategicProjectsComponent {
     acompanhamentos: [],
   };
 
-  finalFilter = {
+  finalFilter: StrategicProjectsFilter = {
     portfolio: environment.strategicProjectFilter.portfolio,
     dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
     dataFim: new Date(environment.strategicProjectFilter.dataFim),

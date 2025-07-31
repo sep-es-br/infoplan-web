@@ -2,18 +2,6 @@
   .cdk-overlay-container {
     z-index: 1060;
   }
-
-  .option-list {
-    ::-webkit-scrollbar {
-      width: var(--card-scrollbar-width);
-    }
-    ::-webkit-scrollbar-thumb {
-      background-color: var(--card-scrollbar-color);
-    }
-    ::-webkit-scrollbar-track {
-      background-color: var(--card-scrollbar-background-color);
-    }
-  }
 }
 
 button:focus, select:focus, input:focus {
@@ -131,10 +119,10 @@ button:focus, select:focus, input:focus {
 
   .modal {
     .modal-dialog {
-      max-width: 60vw;
+      max-width: 70vw;
 
       .modal-content {
-        width: 60vw;
+        width: 70vw;
         background-color: var(--card-background-color);
         color: var(--card-text-color);
   

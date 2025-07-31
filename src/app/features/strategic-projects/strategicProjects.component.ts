@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { StrategicProjectsService } from '../../core/service/strategic-projects.service';
 import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
@@ -42,11 +42,21 @@ export interface CustomTableFilteringTrigger {
   styleUrls: ['./strategicProjects.component.scss']
 })
 export class StrategicProjectsComponent {
+  @ViewChild('modalCloseButton') modalCloseButtonRef: ElementRef;
+
+  @HostListener('show.bs.modal')
+  onModalOpen() {
+    this.isFilterModalOpen = true;
+  }
+
+  @HostListener('hide.bs.modal')
+  onModalClose() {
+    this.isFilterModalOpen = false;
+  }
+
   timestamp: string;
 
   isMapOpen = false;
-
-  showFilters = false;
 
   totals: IStrategicProjectTotals = {
     qdeProgramas: 0,
@@ -101,6 +111,8 @@ export class StrategicProjectsComponent {
   }
 
   tableFilteringTrigger = new BehaviorSubject<CustomTableFilteringTrigger>(null);
+
+  isFilterModalOpen: boolean = false;
 
   constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
     this.loadTimestamp();
@@ -199,7 +211,7 @@ export class StrategicProjectsComponent {
         break;
       case AvailableFilters.PROGRAMAS_ORIGINAIS:
         // Faz uma requisição para pegar uma lista de Projetos e Entregas baseado nas Áreas Temáticas e Programas Originais selecionados
-        const selectedAreasTematicas = this.filter.areaTematica?.length === 0 ? '' : this.filter.areaTematica.toString();
+        const selectedAreasTematicas = this.filter.areaTematica?.length === 0 ? '' : this.filter.areaTematica?.toString();
 
         this.strategicProjectsService.getProjectsDeliveries(selectedAreasTematicas, selectedValue)
           .subscribe(
@@ -214,8 +226,8 @@ export class StrategicProjectsComponent {
         break;
       case AvailableFilters.PROJETOS:
         // Faz uma requisição para pegar uma lista de Entregas baseado nas Áreas Temáticas, Programas Originais e Projetos selecionados
-        const selectedAreas = this.filter.areaTematica?.length === 0 ? '' : this.filter.areaTematica.toString();
-        const selectedProgramas = this.filter.programaOrigem?.length === 0 ? '' : this.filter.programaOrigem.toString();
+        const selectedAreas = this.filter.areaTematica?.length === 0 ? '' : this.filter.areaTematica?.toString();
+        const selectedProgramas = this.filter.programaOrigem?.length === 0 ? '' : this.filter.programaOrigem?.toString();
 
         this.strategicProjectsService.getDeliveries(selectedAreas, selectedProgramas, selectedValue)
           .subscribe(
@@ -259,13 +271,9 @@ export class StrategicProjectsComponent {
     this.handleFilterChange(key, []);
   }
 
-  toggleFiltroPanel() {
-    this.showFilters = !this.showFilters;
-  }
-
   filtrar(event?: Event): void {
     if (event) event.preventDefault();
-    this.showFilters = false;
+    this.closeFilterModal();
     this.finalFilter = { ...this.filter };
     this.updateActiveFilters();
     this.loadTotals()
@@ -310,7 +318,8 @@ export class StrategicProjectsComponent {
   }
 
   resetFilters(): void {
-    this.showFilters = !this.showFilters;
+    this.closeFilterModal();
+
     this.finalFilter = {
       portfolio: environment.strategicProjectFilter.portfolio,
       dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
@@ -427,5 +436,17 @@ export class StrategicProjectsComponent {
       source,
       newSelectedEntity: newEntityToBeDisplayed,
     });
+  }
+
+  closeFilterModal() {
+    (document.activeElement as HTMLElement)?.blur();
+    /*
+     * Isso serve pra evitar um erro de "Blocked aria-hidden on an element because its descendent retained focus..."
+     * que ocorre quando se fecha um elemento/componente (tipo um offcanvas ou nesse caso um modal) com aria-hidden="true" (utilizado por leitores de telas)
+     * enquanto um elemento dentro desse componente ainda está com foco.
+     * Por isso se faz necessário remover o foco desse elemento antes de fechar o componente.
+     */
+
+    if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
   }
 }

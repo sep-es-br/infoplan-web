@@ -41,10 +41,6 @@
           <img src="/assets/images/app/es-logo.svg" alt="Mapa do Espírito Santo" class="map-icon">
         </button>
       
-        <!-- <button (click)="toggleFiltroPanel()" class="filter-toggle p-0">
-          Filtros
-          <nb-icon [icon]="'funnel-outline'"></nb-icon>
-        </button> -->
         <button class="filter-toggle p-0" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
           Filtros
           <nb-icon [icon]="'funnel-outline'"></nb-icon>
@@ -54,23 +50,25 @@
 
     <!-- Painel de Filtros -->
     <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
-          <!-- <div class="modal-header">
-            <h1 class="modal-title fs-5" id="filtrosModalLabel">Modal title</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div> -->
           <div class="modal-body">
             <form class="w-100">
               <div class="form-header w-100 d-flex justify-content-end">
-                <button class="btn p-0 close-filter-button" (click)="toggleFiltroPanel()">
+                <button
+                  class="btn p-0 close-filter-button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#filtrosModal"
+                  #modalCloseButton
+                  (click)="closeFilterModal()"
+                >
                   <nb-icon [icon]="'close-outline'"></nb-icon>
                 </button>
               </div>
 
               <div class="d-flex flex-column w-100">
-                <div class="filter-row d-flex flex-column flex-md-row w-100">
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3">
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Portfólio</span>
                     <nb-select
                       name="portfolio"
@@ -83,7 +81,7 @@
                     </nb-select>
                   </div>
 
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">De</span>
                     <input
                       nbInput
@@ -96,7 +94,7 @@
                     <nb-datepicker size="tiny" #initialDatePicker></nb-datepicker>
                   </div>
           
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Até</span>
                     <input
                       nbInput
@@ -110,7 +108,7 @@
                     </nb-datepicker>
                   </div>
           
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3 invisible-tag">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 invisible-tag">
                     <span class="mb-1">Previsão de Conclusão</span>
                     <input
                       nbInput
@@ -125,8 +123,8 @@
                   </div>
                 </div>
 
-                <div class="filter-row d-flex flex-column flex-md-row w-100">
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3">
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Áreas Temáticas</span>
                     <nb-select
                       multiple
@@ -142,7 +140,7 @@
                     </nb-select>
                   </div>
           
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Programas Originais</span>
                     <nb-select
                       multiple
@@ -158,7 +156,7 @@
                     </nb-select>
                   </div>
 
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Projetos</span>
                     <nb-select
                       multiple
@@ -174,7 +172,7 @@
                     </nb-select>
                   </div>
                 
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Entregas</span>
                     <nb-select
                       multiple
@@ -191,8 +189,8 @@
                   </div>
                 </div>
 
-                <div class="filter-row d-flex flex-column flex-md-row w-100">
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3">
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Programas Transversais</span>
                     <nb-select
                       multiple
@@ -208,7 +206,7 @@
                     </nb-select>
                   </div>
 
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Localidades</span>
                     <nb-select
                       multiple
@@ -227,7 +225,7 @@
                     </nb-select>
                   </div>
                 
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Órgãos</span>
                     <nb-select
                       multiple
@@ -242,7 +240,7 @@
                     </nb-select>
                   </div>
           
-                  <div class="filter-entity d-flex flex-column col-12 col-md-3 invisible-tag">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 invisible-tag">
                     <span class="mb-1">Acompanhado Por</span>
                     <nb-select
                       multiple

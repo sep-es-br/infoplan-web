@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { IIdAndName } from '../../../core/interfaces/id-and-name.interface';
+import { IIdAndName, StrategicProjectsLocalidades } from '../../../core/interfaces/id-and-name.interface';
 import { Region } from '../../../core/interfaces/map-es.interface';
 import { NbThemeService } from '@nebular/theme';
 import { AvailableThemes } from '../../../@theme/theme.module';
@@ -27,7 +27,7 @@ import { AvailableThemes } from '../../../@theme/theme.module';
 export class MapEsComponent implements OnInit, OnChanges {
   @Input() filter!: any;
 
-  @Input() localidadeList!: IIdAndName[];
+  @Input() localidadeList!: StrategicProjectsLocalidades[];
 
   @Output() filterChange = new EventEmitter<any>();
 
@@ -265,12 +265,15 @@ verificarSvgRenderizado(): void {
     
     Object.values(this.regionCities).forEach((region) => {
       const regionId = this.localidadeList.find((el) => el.name === region.name).id;
-      region.active = this.filter.localidades.includes(regionId);
+      region.active = this.filter.localidades?.includes(regionId);
       region.cities.forEach((city) => {
         const cityId = this.localidadeList.find((el) => el.name === city.name)?.id;
-        city.active = this.filter.localidades.includes(cityId);
+        city.active = this.filter.localidades?.includes(cityId);
       });
     });
+
+    const microrregioesPaths = [];
+    const municipiosPaths = [];
 
     const paths = svgElement.querySelectorAll('path');
     paths.forEach((path: SVGPathElement) => {
@@ -283,6 +286,7 @@ verificarSvgRenderizado(): void {
 
       if (municipio) {
         // O path atual é referente a um município
+        municipiosPaths.push(path);
         path.setAttribute('fill-opacity', municipio.active ? '1' : '0.25');
 
         // if (grupoCorrespondente) {
@@ -297,6 +301,7 @@ verificarSvgRenderizado(): void {
         }
       } else if (Object.keys(this.regionCities).includes(pathId)) {
         // O path atual é referente a uma região
+        microrregioesPaths.push(path);
         const currentRegion = this.regionCities[pathId];
         path.setAttribute('fill-opacity', currentRegion.active ? '1' : '0.25');
         path.classList.toggle('hover-effect', currentRegion.active);
@@ -313,6 +318,15 @@ verificarSvgRenderizado(): void {
         }
       }
     });
+
+    // Aqui é necessário criar um procedimento especial pros textos "Microrregiões" e "Municípios"
+    const microrregioesText = svgElement.querySelector('text[id="Microrregiões"]') as SVGTextElement;
+    const municipiosText = svgElement.querySelector('text[id="Municípios"]') as SVGTextElement;
+    
+    const areAllRegionsActive = Object.keys(this.regionCities).every((prop) => this.regionCities[prop].active);
+    const areAllCitiesActive = Object.keys(this.regionCities).every((prop) => this.regionCities[prop].cities.every((city) => city.active));
+    microrregioesText.style.fontWeight = areAllRegionsActive ? 'bold' : 'normal';
+    municipiosText.style.fontWeight = areAllCitiesActive ? 'bold' : 'normal';
 
     this.alterStylesBasedOnTheme();
   }
@@ -348,6 +362,10 @@ verificarSvgRenderizado(): void {
       if (svgElement) {
         const municipiosList = Object.values(this.regionCities).flatMap((region) => region.cities);
         const paths = svgElement.querySelectorAll('path');
+
+        const regionsPaths = [];
+        const municipiosPaths = [];
+        const bothTexts = [];
 
         paths.forEach((path: SVGPathElement) => {
           const municipio = municipiosList.find((city) => city.code === path.id);
@@ -402,6 +420,7 @@ verificarSvgRenderizado(): void {
           };
 
           if (municipio) {
+            municipiosPaths.push(path);
             pathEntity = municipio;
 
             path.setAttribute('fill-opacity', pathEntity.active ? '1' : this.standardUnselectedPathOpacity);
@@ -412,6 +431,7 @@ verificarSvgRenderizado(): void {
             path.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold', 'add'));
             path.addEventListener('mouseleave', () => actionsOnMouseEvent(this.standardUnselectedPathOpacity, 'normal', 'remove'));
           } else {
+            regionsPaths.push(path);
             pathEntity = this.regionCities[path.id];
 
             path.setAttribute('fill-opacity', pathEntity.active ? '1' : this.standardUnselectedPathOpacity);
@@ -424,6 +444,7 @@ verificarSvgRenderizado(): void {
           }
 
           if (textoDiretoCorrespondente) {
+            bothTexts.push(textoDiretoCorrespondente);
             textoDiretoCorrespondente.forEach((text) => {
               text.style.cursor = 'pointer';
               text.addEventListener('mouseenter', () => actionsOnMouseEvent('1', 'bold'));
@@ -433,6 +454,132 @@ verificarSvgRenderizado(): void {
               }
             });
           }
+        });
+
+        // Aqui precisa fazer um procedimento específico pros textos de "Microrregiões" e "Municípios"
+        const microrregioesText = svgElement.querySelector('text[id="Microrregiões"]') as SVGTextElement;
+        const municipiosText = svgElement.querySelector('text[id="Municípios"]') as SVGTextElement;
+
+        // Quando passar o cursor em cima do texto "Microrregiões", deve mostrar o cursor como pointer,
+        // e deve destacar todas as microrregiões.
+        microrregioesText.style.cursor = 'pointer';
+        microrregioesText.addEventListener('mouseover', () => {
+          Object.keys(this.regionCities)
+            .filter((region) => region !== 'Todo_o_Estado')
+            .forEach((region) => {
+              const regionPath = regionsPaths.find((path) => path.id === region);
+              if (regionPath && !this.regionCities[region].active) {
+                regionPath.setAttribute('fill-opacity', 1);
+                regionPath.classList.add('hover-effect');
+                const regionTexts = bothTexts.filter((texts) => texts.id === region);
+                
+                if (regionTexts) {
+                  regionTexts.forEach((text) => text.style.fontWeight = 'bold');
+                }
+              }
+            });
+        });
+
+        microrregioesText.addEventListener('mouseleave', () => {
+          Object.keys(this.regionCities)
+            .filter((region) => region !== 'Todo_o_Estado')
+            .forEach((region) => {
+              const regionPath = regionsPaths.find((path) => path.id === region);
+              if (regionPath && !this.regionCities[region].active) {
+                regionPath.setAttribute('fill-opacity', this.standardUnselectedPathOpacity);
+                regionPath.classList.remove('hover-effect');
+                const regionTexts = bothTexts.filter((texts) => texts.id === region);
+
+                if (regionTexts) {
+                  regionTexts.forEach((text) => text.style.fontWeight = 'normal');
+                }
+              }
+            });
+        });
+
+        microrregioesText.addEventListener('click', () => {
+          const areAllRegionsSelected = Object.keys(this.regionCities)
+            .filter((region) => region !== 'Todo_o_Estado')
+            .every((region) => this.regionCities[region].active);
+
+          if (areAllRegionsSelected) {
+            // Todas as microrregiões já estão selecionadas, então precisa de-selecioná-las
+            const currentlySelectedLocalidades = this.localidadeList.filter((local) => this.filter.localidades.includes(local.id));
+            this.filter.localidades = currentlySelectedLocalidades.filter((local) => local.tipo !== "MICRORREGIÃO").map((local) => local.id);
+            microrregioesText.style.fontWeight = 'normal';
+          } else {
+            // Precisa selecionar todas as microrregiões
+            const missingLocalidades = this.localidadeList.filter((local) => local.tipo === "MICRORREGIÃO" && !this.filter.localidades.includes(local.id));
+            this.filter.localidades = [
+              ...this.filter.localidades,
+              ...missingLocalidades.map((local) => local.id),
+            ];
+            microrregioesText.style.fontWeight = 'bold';
+          }
+
+          this.atualizarEstadosComBaseNoFilter();
+          this.filterChange.emit(this.filter);
+        });
+
+        municipiosText.style.cursor = 'pointer';
+        municipiosText.addEventListener('mouseover', () => {
+          Object.keys(this.regionCities)
+            .filter((region) => region !== 'Todo_o_Estado')
+            .flatMap((region) => this.regionCities[region].cities)
+            .forEach((city) => {
+              const cityPath = municipiosPaths.find((path) => path.id === city.code);
+              if (cityPath && !city.active) {
+                cityPath.setAttribute('fill-opacity', 1);
+                cityPath.classList.add('hover-effect');
+                const cityTexts = bothTexts.filter((texts) => texts.id === city.code);
+
+                if (cityTexts) {
+                  cityTexts.forEach((text) => text.style.fontWeight = 'bold');
+                }
+              }
+            })
+          });
+
+        municipiosText.addEventListener('mouseleave', () => {
+          Object.keys(this.regionCities)
+            .filter((region) => region !== 'Todo_o_Estado')
+            .flatMap((region) => this.regionCities[region].cities)
+            .forEach((city) => {
+              const cityPath = municipiosPaths.find((path) => path.id === city.code);
+              if (cityPath && !city.active) {
+                cityPath.setAttribute('fill-opacity', this.standardUnselectedPathOpacity);
+                cityPath.classList.remove('hover-effect');
+                const cityTexts = bothTexts.filter((texts) => texts.id === city.code);
+
+                if (cityTexts) {
+                  cityTexts.forEach((text) => text.style.fontWeight = 'normal');
+                }
+              }
+            });
+        });
+
+        municipiosText.addEventListener('click', () => {
+          const citiesList = Object.keys(this.regionCities)
+            .filter((region) => region !== 'Todo_o_Estado')
+            .flatMap((region) => this.regionCities[region].cities);
+
+          if (citiesList.every((city) => city.active)) {
+            // Todas os municípios estão selecionados, então precisa de-selecioná-los
+            const currentlySelectedLocalidades = this.localidadeList.filter((local) => this.filter.localidades.includes(local.id));
+            this.filter.localidades = currentlySelectedLocalidades.filter((local) => local.tipo !== "MUNICÍPIO").map((local) => local.id);
+            municipiosText.style.fontWeight = 'normal';
+          } else {
+            // Precisa selecionar todos os municípios
+            const missingLocalidades = this.localidadeList.filter((local) => local.tipo === "MUNICÍPIO" && !this.filter.localidades.includes(local.id));
+            this.filter.localidades = [
+              ...this.filter.localidades,
+              ...missingLocalidades.map((local) => local.id),
+            ];
+            municipiosText.style.fontWeight = 'bold';
+          }
+
+          this.atualizarEstadosComBaseNoFilter();
+          this.filterChange.emit(this.filter);
         });
       }
     }, 0);

@@ -1,13 +1,14 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { HorizontalBarChartBarClick, HorizontalBarChartCustomConfig, HorizontalBarChartLabelClick, HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
-import { IStrategicProjectDeliveriesBySelected } from '../../../../core/interfaces/strategic-project.interface';
+import { IStrategicProjectDeliveriesBySelected, StrategicProjectProgramDetails, StrategicProjectProjectDetails } from '../../../../core/interfaces/strategic-project.interface';
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { CustomTableFilteringTrigger, RequestStatus } from '../../strategicProjects.component';
 import { BehaviorSubject } from 'rxjs';
+import { OffcanvasInfoModelComponent } from '../../offcanvas-info-model/offcanvas-info-model.components';
 
 @Component({
   selector: 'ngx-deliveries-by-selected',
@@ -18,6 +19,7 @@ import { BehaviorSubject } from 'rxjs';
     HorizontalBarChartModelComponent,
     FlipTableComponent,
     NbSelectModule,
+    OffcanvasInfoModelComponent,
   ],
 })
 export class DeliveriesBySelectedComponent implements OnChanges {
@@ -30,9 +32,13 @@ export class DeliveriesBySelectedComponent implements OnChanges {
 
   @Output() newFilter = new EventEmitter<IStrategicProjectFilterValuesDto>();
 
+  @ViewChild('offcanvasTrigger2') offcanvasTrigger: ElementRef;
+
   chartData: any;
 
   chartColors: any;
+
+  chartCustomConfig: HorizontalBarChartCustomConfig;
 
   deliveriesData: IStrategicProjectDeliveriesBySelected[];
 
@@ -40,11 +46,20 @@ export class DeliveriesBySelectedComponent implements OnChanges {
 
   flipTableContent: FlipTableContent;
 
+  isOffcanvasOpen: boolean = false;
+  
+  selectedItemDetails: StrategicProjectProgramDetails | StrategicProjectProjectDetails;
+  
+  offcanvasRequestStatus: RequestStatus = RequestStatus.EMPTY;
+
   requestStatus: RequestStatus = RequestStatus.EMPTY;
+
+  isDoingDrillDownActions: boolean = false;
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -196,13 +211,17 @@ export class DeliveriesBySelectedComponent implements OnChanges {
       expanded: shouldStartExpanded,
     }));
 
+    this.chartCustomConfig = {
+      yAxisTriggerEvent: ['Programa', 'Programas Transversais', 'Projeto'].includes(this.deliveriesSelectedOption),
+    };
+
     this.flipTableContent = {
       defaultColumns: tableColumns,
       customColumn: {
         originalPropertyName: 'nome',
         propertyName: 'firstColumn',
         displayName: this.deliveriesSelectedOption,
-        enableEventClick: true,
+        enableEventClick: this.chartCustomConfig.yAxisTriggerEvent,
       },
       data: finalData,
     };
@@ -276,5 +295,62 @@ export class DeliveriesBySelectedComponent implements OnChanges {
     }
 
     this.newFilter.emit(newFilter);
+  }
+
+  handleChartLabelClick(event: HorizontalBarChartLabelClick) {
+    const selectedDelivery = this.deliveriesData.find((el) => el.nome === event.value);
+    
+    /**
+     * É necessário verificar e controlar se o offcanvas está aberto ou não porque por algum motivo
+     * o evento de click está sendo disparado 2x ao clicar.
+    */
+    if (selectedDelivery && !this.isOffcanvasOpen) {
+      this.offcanvasRequestStatus = RequestStatus.LOADING;      
+      this.offcanvasTrigger.nativeElement.click();
+      this.isOffcanvasOpen = true;
+
+      if (['Programa', 'Programas Transversais'].includes(this.deliveriesSelectedOption)) {
+        this.strategicProjectsService.getProgramDetails(this.filter, selectedDelivery.id)
+          .subscribe({
+            next: (res: StrategicProjectProgramDetails) => {
+              this.selectedItemDetails = res;
+              this.offcanvasRequestStatus = RequestStatus.SUCCESS;
+              this.changeDetectorRef.detectChanges();
+            },
+            error: (err) => {
+              console.error('Ocorreu um erro! \n', err);
+              this.offcanvasRequestStatus = RequestStatus.ERROR;
+            },
+          });
+      } else if (this.deliveriesSelectedOption === 'Projeto') {
+        this.strategicProjectsService.getProjectDetails(this.filter, selectedDelivery.id)
+          .subscribe({
+            next: (res: StrategicProjectProjectDetails) => {
+              this.selectedItemDetails = res;
+              this.offcanvasRequestStatus = RequestStatus.SUCCESS;
+              this.changeDetectorRef.detectChanges();
+            },
+            error: (err) => {
+              console.error("Ocorreu um erro! \n", err);
+              this.offcanvasRequestStatus = RequestStatus.ERROR;
+            },
+          });
+      }
+    }
+  }
+
+  handleChartBarClick(event: HorizontalBarChartBarClick): void {
+    if (!this.isDoingDrillDownActions) {
+      this.isDoingDrillDownActions = true;
+      this.handleCustomFiltering(event.labelName);
+      
+      setTimeout(() => {
+        this.isDoingDrillDownActions = false;
+      }, 500);
+    }
+  }
+
+  handleOffcanvasClose() {
+    this.isOffcanvasOpen = false;
   }
 }

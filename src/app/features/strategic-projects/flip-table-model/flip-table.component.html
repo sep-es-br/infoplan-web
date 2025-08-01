@@ -1,4 +1,4 @@
-<nb-card class="outer-card m-0" [nbSpinner]="loadingStatus === 'Loading'" [nbSpinnerStatus]="'success'">
+<nb-card class="outer-card m-0 pb-5" [nbSpinner]="loadingStatus === 'Loading'" [nbSpinnerStatus]="'success'">
   <nb-card-header class="card-header d-flex justify-content-between align-items-start p-2 px-3">
     <ng-container *ngIf="cardTitle else customHeader">
       <span class="card-title text-truncate w-50 m-0">{{ cardTitle }}</span>
@@ -33,7 +33,7 @@
 
         <ng-container *ngIf="!isSearchFieldVisible">
           <nb-icon
-            class="search-button m-0 ml-3 p-0"
+            class="search-button m-0 ms-3 p-0"
             [icon]="'search-outline'"
             (click)="isSearchFieldVisible = true"
           >
@@ -42,17 +42,17 @@
       </ng-container>
 
       <nb-icon
-        class="export-button m-0 ml-3 p-0"
+        class="export-button m-0 ms-3 p-0"
         [icon]="'cloud-download-outline'"
         (click)="handleDownloadButtonClick()"
       >
       </nb-icon>
 
       <ng-container *ngIf="isFlipCardFlipped else tableIcon">
-        <i class="flip-button fas fa-chart-pie m-0 ml-3 p-0" (click)="handleFlipButtonClick()"></i>
+        <i class="flip-button fas fa-chart-pie m-0 ms-3 p-0" (click)="handleFlipButtonClick()"></i>
       </ng-container>
       <ng-template #tableIcon>
-        <i class="flip-button fas fa-table m-0 ml-3 p-0" (click)="handleFlipButtonClick()"></i>
+        <i class="flip-button fas fa-table m-0 ms-3 p-0" (click)="handleFlipButtonClick()"></i>
       </ng-template>
     </div>
   </nb-card-header>
@@ -95,7 +95,7 @@
                 [style]="{ 'text-align': tableContent.customColumn.alignment?.data || 'left' }"
                 (click)="tableContent.customColumn.enableEventClick ? handleCustomColumnClick(row.data[0].value) : ''"
               >
-                <div class="d-flex align-items-center text-truncate" [ngClass]="{ 'pl-2': !row.children }">
+                <div class="d-flex align-items-center text-truncate" [ngClass]="{ 'ps-2': !row.children }">
                   <ng-container *ngIf="row.children">
                     <nb-icon class="icon" [icon]="row.expanded ? 'chevron-down-outline' : 'chevron-right-outline'">
                     </nb-icon>

@@ -62,6 +62,13 @@
     .search-button, .close-icon, .export-button, .flip-button {
       cursor: pointer;
     }
+
+    .flip-button {
+      width: 15.94px;
+      // Largura do ícone de gráfico, que é maior que o ícone de tabela (15px)
+      // Ao definir a largura do ícone pra sempre ser o maior (15.94), isso impede dos outros ícones
+      // ficarem movendo pro lado toda vez que clica pra trocar a visualização
+    }
   }
   
   

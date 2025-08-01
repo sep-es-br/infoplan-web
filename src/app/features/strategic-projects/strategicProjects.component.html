@@ -1,6 +1,6 @@
 <div class="col-12">
   <div class="filter-container">
-    <div class="filter-button">
+    <div class="filter-button px-3">
       <div class="filter-tags">
         <div *ngFor="let tag of activeFilters; let i = index">
           <div class="filter-tag" [ngClass]="{ 'invisible-tag': showFilters }">
@@ -41,7 +41,7 @@
           <img src="/assets/images/app/es-logo.svg" alt="Mapa do Espírito Santo" class="map-icon">
         </button>
       
-        <button (click)="toggleFiltroPanel()" class="filter-toggle p-0">
+        <button class="filter-toggle p-0" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
           Filtros
           <nb-icon [icon]="'funnel-outline'"></nb-icon>
         </button>
@@ -49,407 +49,418 @@
     </div>
 
     <!-- Painel de Filtros -->
-    <div *ngIf="showFilters" class="overlay-panel py-2 px-4 box-limited">
-      <form class="w-100">
-        <div class="form-header w-100 d-flex justify-content-end">
-          <button class="btn p-0 close-filter-button" (click)="toggleFiltroPanel()">
-            <nb-icon [icon]="'close-outline'"></nb-icon>
-          </button>
-        </div>
-
-        <div class="d-flex flex-column w-100">
-          <div class="filter-row d-flex flex-column flex-md-row w-100">
-            <div class="filter-entity d-flex flex-column col-12 col-md-3">
-              <span class="mb-1">Portfólio</span>
-              <nb-select
-                name="portfolio"
-                placeholder="Selecionar"
-                size="tiny"
-                [(ngModel)]="filter.portfolio"
-                (selectedChange)="handleFilterChange('Portfolio', $event)"
-              >
-                <nb-option value="Realiza+">Realiza+</nb-option>
-              </nb-select>
-            </div>
-
-            <div class="filter-entity d-flex flex-column col-12 col-md-3">
-              <span class="mb-1">De</span>
-              <input
-                nbInput
-                name="dataInicial"
-                placeholder="Data Inicial"
-                size="tiny"
-                [nbDatepicker]="initialDatePicker"
-                [(ngModel)]="filter.dataInicio"
-              />
-              <nb-datepicker size="tiny" #initialDatePicker></nb-datepicker>
-            </div>
-    
-            <div class="filter-entity d-flex flex-column col-12 col-md-3">
-              <span class="mb-1">Até</span>
-              <input
-                nbInput
-                name="dataFim"
-                placeholder="Data Final"
-                size="tiny"
-                [nbDatepicker]="endDatePicker"
-                [(ngModel)]="filter.dataFim"
-              />
-              <nb-datepicker #endDatePicker>
-              </nb-datepicker>
-            </div>
-    
-            <div class="filter-entity d-flex flex-column col-12 col-md-3 invisible-tag">
-              <span class="mb-1">Previsão de Conclusão</span>
-              <input
-                nbInput
-                name="previsaoConclusao"
-                placeholder="Previs. Conclusão"
-                size="tiny"
-                [nbDatepicker]="conclusaoDatePicker"
-                [(ngModel)]="filter.previsaoConclusao"
-              />
-              <nb-datepicker #conclusaoDatePicker>
-              </nb-datepicker>
-            </div>
-          </div>
-
-          <div class="filter-row d-flex flex-column flex-md-row w-100">
-            <div class="filter-entity d-flex flex-column col-12 col-md-3">
-              <span class="mb-1">Áreas Temáticas</span>
-              <nb-select
-                multiple
-                name="areaTematica"
-                placeholder="Selecionar"
-                size="tiny"
-                [(ngModel)]="filter.areaTematica"
-                (selectedChange)="handleFilterChange('Areas_Tematicas', $event)"
-              >
-                <nb-option *ngFor="let area of areaList" [value]="area.id">
-                  {{ area.name }}
-                </nb-option>
-              </nb-select>
-            </div>
-    
-            <div class="filter-entity d-flex flex-column col-12 col-md-3">
-              <span class="mb-1">Programas Originais</span>
-              <nb-select
-                multiple
-                name="programaOrigem"
-                placeholder="Selecionar"
-                size="tiny"
-                [(ngModel)]="filter.programaOrigem"
-                (selectedChange)="handleFilterChange('Programas_Originais', $event)"
-              >
-                <nb-option *ngFor="let programa of programaOList" [value]="programa.id">
-                  {{ programa.name }}
-                </nb-option>
-              </nb-select>
-            </div>
-
-            <div class="filter-entity d-flex flex-column col-12 col-md-3">
-              <span class="mb-1">Projetos</span>
-              <nb-select
-                multiple
-                name="projetos"
-                placeholder="Selecionar"
-                size="tiny"
-                [(ngModel)]="filter.projetos"
-                (selectedChange)="handleFilterChange('Projetos', $event)"
-              >
-                <nb-option *ngFor="let projeto of projetoList" [value]="projeto.id">
-                  {{ projeto.name }}
-                </nb-option>
-              </nb-select>
-            </div>
-          
-            <div class="filter-entity d-flex flex-column col-12 col-md-3">
-              <span class="mb-1">Entregas</span>
-              <nb-select
-                multiple
-                name="entregas"
-                placeholder="Selecionar"
-                size="tiny"
-                [(ngModel)]="filter.entregas"
-                (selectedChange)="handleFilterChange('Entregas', $event)"
-              >
-                <nb-option *ngFor="let entrega of entregaList" [value]="entrega.id">
-                  {{ entrega.name }}
-                </nb-option>
-              </nb-select>
-            </div>
-          </div>
-
-          <div class="filter-row d-flex flex-column flex-md-row w-100">
-            <div class="filter-entity d-flex flex-column col-12 col-md-3">
-              <span class="mb-1">Programas Transversais</span>
-              <nb-select
-                multiple
-                name="programaTransversal"
-                placeholder="Selecionar"
-                size="tiny"
-                [(ngModel)]="filter.programaTransversal"
-                (selectedChange)="handleFilterChange('Programas_Transversais', $event)"
-              >
-                <nb-option *ngFor="let programa of programaTList" [value]="programa.id">
-                  {{ programa.name }}
-                </nb-option>
-              </nb-select>
-            </div>
-
-            <div class="filter-entity d-flex flex-column col-12 col-md-3">
-              <span class="mb-1">Localidades</span>
-              <nb-select
-                multiple
-                name="localidades"
-                placeholder="Selecionar"
-                size="tiny"
-                [(ngModel)]="filter.localidades"
-              >
-                <nb-option
-                  *ngFor="let localidade of localidadeList"
-                  [value]="localidade.id"
-                  [ngClass]="{ 'pl-4': localidade.tipo === 'MUNICÍPIO' }"
+    <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-body">
+            <form class="w-100">
+              <div class="form-header w-100 d-flex justify-content-end">
+                <button
+                  class="btn p-0 close-filter-button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#filtrosModal"
+                  #modalCloseButton
+                  (click)="closeFilterModal()"
                 >
-                  {{ localidade.name }}
-                </nb-option>
-              </nb-select>
-            </div>
+                  <nb-icon [icon]="'close-outline'"></nb-icon>
+                </button>
+              </div>
+
+              <div class="d-flex flex-column w-100">
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Portfólio</span>
+                    <nb-select
+                      name="portfolio"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.portfolio"
+                      (selectedChange)="handleFilterChange('Portfolio', $event)"
+                    >
+                      <nb-option value="Realiza+">Realiza+</nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">De</span>
+                    <input
+                      nbInput
+                      name="dataInicial"
+                      placeholder="Data Inicial"
+                      size="tiny"
+                      [nbDatepicker]="initialDatePicker"
+                      [(ngModel)]="filter.dataInicio"
+                    />
+                    <nb-datepicker size="tiny" #initialDatePicker></nb-datepicker>
+                  </div>
           
-            <div class="filter-entity d-flex flex-column col-12 col-md-3">
-              <span class="mb-1">Órgãos</span>
-              <nb-select
-                multiple
-                name="orgaos"
-                placeholder="Selecionar"
-                size="tiny"
-                [(ngModel)]="filter.orgaos"
-              >
-                <nb-option *ngFor="let orgao of orgaoList" [value]="orgao.id">
-                  {{ orgao.name }}
-                </nb-option>
-              </nb-select>
-            </div>
-    
-            <div class="filter-entity d-flex flex-column col-12 col-md-3 invisible-tag">
-              <span class="mb-1">Acompanhado Por</span>
-              <nb-select
-                multiple
-                name="acompanhamentos"
-                placeholder="Selecione"
-                size="tiny"
-                [(ngModel)]="filter.acompanhamentos"
-              >
-                <nb-option>Nenhuma</nb-option>
-              </nb-select>
-            </div>
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Até</span>
+                    <input
+                      nbInput
+                      name="dataFim"
+                      placeholder="Data Final"
+                      size="tiny"
+                      [nbDatepicker]="endDatePicker"
+                      [(ngModel)]="filter.dataFim"
+                    />
+                    <nb-datepicker #endDatePicker>
+                    </nb-datepicker>
+                  </div>
+          
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 invisible-tag">
+                    <span class="mb-1">Previsão de Conclusão</span>
+                    <input
+                      nbInput
+                      name="previsaoConclusao"
+                      placeholder="Previs. Conclusão"
+                      size="tiny"
+                      [nbDatepicker]="conclusaoDatePicker"
+                      [(ngModel)]="filter.previsaoConclusao"
+                    />
+                    <nb-datepicker #conclusaoDatePicker>
+                    </nb-datepicker>
+                  </div>
+                </div>
+
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Áreas Temáticas</span>
+                    <nb-select
+                      multiple
+                      name="areaTematica"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.areaTematica"
+                      (selectedChange)="handleFilterChange('Areas_Tematicas', $event)"
+                    >
+                      <nb-option *ngFor="let area of areaList" [value]="area.id">
+                        {{ area.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+          
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Programas Originais</span>
+                    <nb-select
+                      multiple
+                      name="programaOrigem"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.programaOrigem"
+                      (selectedChange)="handleFilterChange('Programas_Originais', $event)"
+                    >
+                      <nb-option *ngFor="let programa of programaOList" [value]="programa.id">
+                        {{ programa.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Projetos</span>
+                    <nb-select
+                      multiple
+                      name="projetos"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.projetos"
+                      (selectedChange)="handleFilterChange('Projetos', $event)"
+                    >
+                      <nb-option *ngFor="let projeto of projetoList" [value]="projeto.id">
+                        {{ projeto.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+                
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Entregas</span>
+                    <nb-select
+                      multiple
+                      name="entregas"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.entregas"
+                      (selectedChange)="handleFilterChange('Entregas', $event)"
+                    >
+                      <nb-option *ngFor="let entrega of entregaList" [value]="entrega.id">
+                        {{ entrega.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+                </div>
+
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Programas Transversais</span>
+                    <nb-select
+                      multiple
+                      name="programaTransversal"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.programaTransversal"
+                      (selectedChange)="handleFilterChange('Programas_Transversais', $event)"
+                    >
+                      <nb-option *ngFor="let programa of programaTList" [value]="programa.id">
+                        {{ programa.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Localidades</span>
+                    <nb-select
+                      multiple
+                      name="localidades"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.localidades"
+                    >
+                      <nb-option
+                        *ngFor="let localidade of localidadeList"
+                        [value]="localidade.id"
+                        [ngClass]="{ 'ps-4': localidade.tipo === 'MUNICÍPIO' }"
+                      >
+                        {{ localidade.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+                
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Órgãos</span>
+                    <nb-select
+                      multiple
+                      name="orgaos"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.orgaos"
+                    >
+                      <nb-option *ngFor="let orgao of orgaoList" [value]="orgao.id">
+                        {{ orgao.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+          
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 invisible-tag">
+                    <span class="mb-1">Acompanhado Por</span>
+                    <nb-select
+                      multiple
+                      name="acompanhamentos"
+                      placeholder="Selecione"
+                      size="tiny"
+                      [(ngModel)]="filter.acompanhamentos"
+                    >
+                      <nb-option>Nenhuma</nb-option>
+                    </nb-select>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer d-flex justify-content-end">
+            <button class="mx-4" nbButton size="small" status="warning" outline shape="semi-round" (click)="resetFilters()">Restaurar Filtros</button>
+            <button nbButton size="small" status="success" hero shape="semi-round" (click)="filtrar($event)">Filtrar</button>
           </div>
         </div>
-
-        <!-- Botão de Ações -->
-        <div class="d-flex justify-content-end">
-          <button class="mx-4" nbButton size="small" status="warning" outline shape="semi-round" (click)="resetFilters()">Restaurar Filtros</button>
-          <button nbButton size="small" status="success" hero shape="semi-round" (click)="filtrar($event)">Filtrar</button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
   
-  <div class="row">
-    <div class="col-12 pr-0 pl-0 mt-1 d-flex flex-wrap">
-      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-        <div class="card">
-          <div class="icon-top-right">
-            <i class="fas fa-briefcase"></i>
+  <!-- Cards de números -->
+  <div class="row px-4">
+    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+      <div class="card">
+        <div class="icon-top-right">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <div class="card-content">
+          <div class="portfolio-content">
+            <img class="portfolio-logo w-100" [src]="portfolioLogoUrl">
           </div>
-          <div class="card-content">
-            <div class="portfolio-content">
-              <img class="portfolio-logo w-100" [src]="portfolioLogoUrl">
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+      <div class="card">
+        <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
+          <i class="fas fa-cogs"></i>
+        </div>
+        <div class="card-content">
+          <ng-container *ngIf="requestStatus.totals === 'Loading' else programasContent">
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div class="spinner-border qt-programas" role="status">
+                <span class="sr-only">Carregando...</span>
+              </div>
             </div>
-          </div>
+          </ng-container>
+
+          <ng-template #programasContent>
+            <div class="number-box">{{totals.qdeProgramas}}</div>
+
+            <div class="text-section">
+              <span>{{totals.qdeProgramas === 1 ? 'Programa' : 'Programas'}}</span>
+            </div>
+          </ng-template>
         </div>
       </div>
+    </div>
 
-      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-        <div class="card">
-          <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
-            <i class="fas fa-cogs"></i>
-          </div>
-          <div class="card-content">
-            <ng-container *ngIf="requestStatus.totals === 'Loading' else programasContent">
-              <div class="d-flex justify-content-center align-items-center w-100">
-                <div class="spinner-border qt-programas" role="status">
-                  <span class="sr-only">Carregando...</span>
-                </div>
+    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+      <div class="card">
+        <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
+          <i class="fas fa-cog"></i>
+        </div>
+        <div class="card-content">
+          <ng-container *ngIf="requestStatus.totals === 'Loading' else projetosContent">
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div class="spinner-border qt-projetos" role="status">
+                <span class="sr-only">Carregando...</span>
               </div>
-            </ng-container>
+            </div>
+          </ng-container>
 
-            <ng-template #programasContent>
-              <div class="number-box">{{totals.qdeProgramas}}</div>
+          <ng-template #projetosContent>
+            <div class="number-box">{{totals.qdeProjetos}}</div>
 
-              <div class="text-section">
-                <span>{{totals.qdeProgramas === 1 ? 'Programa' : 'Programas'}}</span>
-              </div>
-            </ng-template>
-          </div>
+            <div class="text-section">
+              <span>{{totals.qdeProjetos === 1 ? 'Projeto' : 'Projetos'}}</span>
+            </div>
+          </ng-template>
         </div>
       </div>
+    </div>
 
-      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-        <div class="card">
-          <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
-            <i class="fas fa-cog"></i>
-          </div>
-          <div class="card-content">
-            <ng-container *ngIf="requestStatus.totals === 'Loading' else projetosContent">
-              <div class="d-flex justify-content-center align-items-center w-100">
-                <div class="spinner-border qt-projetos" role="status">
-                  <span class="sr-only">Carregando...</span>
-                </div>
+    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+      <div class="card">
+        <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
+          <i class="fas fa-cubes"></i>
+        </div>
+        <div class="card-content">
+          <ng-container *ngIf="requestStatus.totals === 'Loading' else entregasContent">
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div class="spinner-border total-entregas" role="status">
+                <span class="sr-only">Carregando...</span>
               </div>
-            </ng-container>
+            </div>
+          </ng-container>
 
-            <ng-template #projetosContent>
-              <div class="number-box">{{totals.qdeProjetos}}</div>
+          <ng-template #entregasContent>
+            <div class="number-box">{{totals.totalEntregasPE}}</div>
 
-              <div class="text-section">
-                <span>{{totals.qdeProjetos === 1 ? 'Projeto' : 'Projetos'}}</span>
-              </div>
-            </ng-template>
-          </div>
+            <div class="text-section">
+              <span>{{totals.totalEntregasPE === 1 ? 'Entrega' : 'Entregas'}}</span>
+            </div>
+          </ng-template>
         </div>
       </div>
+    </div>
 
-      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-        <div class="card">
-          <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
-            <i class="fas fa-cubes"></i>
-          </div>
-          <div class="card-content">
-            <ng-container *ngIf="requestStatus.totals === 'Loading' else entregasContent">
-              <div class="d-flex justify-content-center align-items-center w-100">
-                <div class="spinner-border total-entregas" role="status">
-                  <span class="sr-only">Carregando...</span>
-                </div>
+    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+      <div class="card">
+        <div class="icon-top-right previsto" *ngIf="requestStatus.totals !== 'Loading'">
+          <i class="fas fa-calculator"></i>
+        </div>
+        <div class="card-content">
+          <ng-container *ngIf="requestStatus.totals === 'Loading' else previstoContent">
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div class="spinner-border total-previsto" role="status">
+                <span class="sr-only">Carregando...</span>
               </div>
-            </ng-container>
+            </div>
+          </ng-container>
 
-            <ng-template #entregasContent>
-              <div class="number-box">{{totals.totalEntregasPE}}</div>
-
-              <div class="text-section">
-                <span>{{totals.totalEntregasPE === 1 ? 'Entrega' : 'Entregas'}}</span>
+          <ng-template #previstoContent>
+            <div class="number-box previsto">
+              <div
+                class="d-flex"
+                style="flex-direction: column; align-items: start"
+              >
+                <div class="currency">R$</div>
+                <div class="value" [title]="'R$ ' + (totals.totalPrevisto | number:'1.2-2')">{{formatNumber(totals.totalPrevisto)}}</div>
               </div>
-            </ng-template>
-          </div>
+            </div>
+          
+            <div class="text-section previsto">
+              <span>Previsto</span>
+            </div>
+          </ng-template>
         </div>
       </div>
+    </div>
 
-      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-        <div class="card">
-          <div class="icon-top-right previsto" *ngIf="requestStatus.totals !== 'Loading'">
-            <i class="fas fa-calculator"></i>
-          </div>
-          <div class="card-content">
-            <ng-container *ngIf="requestStatus.totals === 'Loading' else previstoContent">
-              <div class="d-flex justify-content-center align-items-center w-100">
-                <div class="spinner-border total-previsto" role="status">
-                  <span class="sr-only">Carregando...</span>
-                </div>
+    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+      <div class="card">
+        <div class="icon-top-right realizado" *ngIf="requestStatus.totals !== 'Loading'">
+          <i class="fas fa-database"></i>
+        </div>
+        <div class="card-content">
+          <ng-container *ngIf="requestStatus.totals === 'Loading' else realizadoContent">
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div class="spinner-border total-realizado" role="status">
+                <span class="sr-only">Carregando...</span>
               </div>
-            </ng-container>
+            </div>
+          </ng-container>
 
-            <ng-template #previstoContent>
-              <div class="number-box previsto">
-                <div
-                  class="d-flex"
-                  style="flex-direction: column; align-items: start"
-                >
-                  <div class="currency">R$</div>
-                  <div class="value" [title]="'R$ ' + (totals.totalPrevisto | number:'1.2-2')">{{formatNumber(totals.totalPrevisto)}}</div>
-                </div>
+          <ng-template #realizadoContent>
+            <div class="number-box realizado">
+              <div
+                class="d-flex"
+                style="flex-direction: column; align-items: start"
+              >
+                <div class="currency">R$</div>
+                <div class="value" [title]="'R$ ' + (totals.totalRealizado| number:'1.0-2')">{{formatNumber(totals.totalRealizado)}}</div>
               </div>
+            </div>
             
-              <div class="text-section previsto">
-                <span>Previsto</span>
-              </div>
-            </ng-template>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-xxl-2 col-md-4 col-sm-6 mb-2 pr-1 pl-1">
-        <div class="card">
-          <div class="icon-top-right realizado" *ngIf="requestStatus.totals !== 'Loading'">
-            <i class="fas fa-database"></i>
-          </div>
-          <div class="card-content">
-            <ng-container *ngIf="requestStatus.totals === 'Loading' else realizadoContent">
-              <div class="d-flex justify-content-center align-items-center w-100">
-                <div class="spinner-border total-realizado" role="status">
-                  <span class="sr-only">Carregando...</span>
-                </div>
-              </div>
-            </ng-container>
-
-            <ng-template #realizadoContent>
-              <div class="number-box realizado">
-                <div
-                  class="d-flex"
-                  style="flex-direction: column; align-items: start"
-                >
-                  <div class="currency">R$</div>
-                  <div class="value" [title]="'R$ ' + (totals.totalRealizado| number:'1.0-2')">{{formatNumber(totals.totalRealizado)}}</div>
-                </div>
-              </div>
-              
-              <div class="text-section realizado">
-                <span>Realizado</span>
-              </div>
-            </ng-template>
-          </div>
+            <div class="text-section realizado">
+              <span>Realizado</span>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
   </div>
   
-  <div class="row">
-    <div class="map col-xxxl-6 col-xxl-12 pr-0 pl-0 d-flex flex-wrap" *ngIf="isMapOpen">
-      <div class="col-xxxl-12 col-xxl-12 col-md-12 pr-1 pl-1 mb-2">
+  <!-- Cards de gráficos -->
+  <div class="row px-4">
+    <div class="d-flex col-12 col-xxxl-6 p-0 map" *ngIf="isMapOpen">
+      <div class="col-12 px-1 mb-1">
         <div class="card">
           <ngx-map-es [filter]="finalFilter" [localidadeList]="localidadeList" (filterChange)="onMapFilterChange($event)"></ngx-map-es>
         </div>
       </div>
     </div>
 
-    <div class="col-xxxl-6 col-xxl-12 pr-0 pl-0 d-flex flex-wrap">
-      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2 align-self-start">
+    <div class="d-flex flex-wrap col-12 col-xxxl-6 p-0">
+      <div class="col-12 col-md-6 px-1 mb-1 align-self-start">
         <ngx-deliveries-by-status [filter]="finalFilter"></ngx-deliveries-by-status>
       </div>
 
-      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2 align-self-start">
+      <div class="col-12 col-md-6 px-1 mb-1 align-self-start">
         <ngx-deliveries-by-performace [filter]="finalFilter"></ngx-deliveries-by-performace>
       </div>
 
-      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2 align-self-center">
+      <div class="col-12 col-md-6 px-1 mb-1 align-self-center">
         <ngx-projects-by-status [filter]="finalFilter"></ngx-projects-by-status>
       </div>
 
-      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2 align-self-center">
+      <div class="col-12 col-md-6 px-1 mb-1 align-self-center">
         <ngx-critical-milestones-for-performance [filter]="finalFilter"></ngx-critical-milestones-for-performance>
       </div>
 
-      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2 align-self-end">
+      <div class="col-12 col-md-6 px-1 mb-1 align-self-end">
         <ngx-deliveries-by-type [filter]="finalFilter"></ngx-deliveries-by-type>
       </div>
 
-      <div class="col-xxxl-6 col-xxl-4 col-md-6 pr-1 pl-1 mb-2 align-self-end">
+      <div class="col-12 col-md-6 px-1 mb-1 align-self-end">
         <ngx-risks-by-classification [filter]="finalFilter"></ngx-risks-by-classification>
       </div>
     </div>
      
-    <div [ngClass]="{'col-xxxl-12': isMapOpen, 'col-xxxl-6': !isMapOpen}" class="col-md-12 pr-0 pl-0 d-flex flex-wrap">
-      <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2 ">
+    <div class="d-flex flex-wrap col-12 p-0" [ngClass]="isMapOpen ? '' : 'col-xxxl-6'">
+      <div class="col-12 px-1 mb-1" [ngClass]="isMapOpen ? 'col-xxxl-6' : ''">
         <ngx-investment-by-selected
           [filter]="finalFilter"
           [tableFilteringTrigger]="tableFilteringTrigger"
@@ -458,7 +469,7 @@
         </ngx-investment-by-selected>
       </div>
 
-      <div [ngClass]="{'col-xxxl-6': isMapOpen, 'col-xxxl-12': !isMapOpen}" class="col-xxl-6 col-12 pr-1 pl-1 mb-2">
+      <div class="col-12 px-1 mb-1" [ngClass]="isMapOpen ? 'col-xxxl-6' : ''">
         <ngx-deliveries-by-selected
           [filter]="finalFilter"
           [tableFilteringTrigger]="tableFilteringTrigger"
@@ -468,8 +479,10 @@
       </div>
     </div>
 
-    <div class="col-12 pr-1 pl-1 mb-2">
-      <ngx-accumulated-investment [filter]="finalFilter"></ngx-accumulated-investment>
+    <div class="d-flex flex-wrap col-12 p-0">
+      <div class="col-12 px-1 mb-1">
+        <ngx-accumulated-investment [filter]="finalFilter"></ngx-accumulated-investment>
+      </div>
     </div>
   </div>
 </div>

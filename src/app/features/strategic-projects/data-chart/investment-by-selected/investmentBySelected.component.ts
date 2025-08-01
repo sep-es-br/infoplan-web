@@ -1,14 +1,15 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { HorizontalBarChartBarClick, HorizontalBarChartCustomConfig, HorizontalBarChartLabelClick, HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
-import { IStrategicProjectInvestmentSelected } from '../../../../core/interfaces/strategic-project.interface';
+import { IStrategicProjectInvestmentSelected, StrategicProjectProgramDetails, StrategicProjectProjectDetails } from '../../../../core/interfaces/strategic-project.interface';
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { UtilitiesService } from '../../../../core/service/utilities.service';
 import { CustomTableFilteringTrigger, RequestStatus } from '../../strategicProjects.component';
 import { BehaviorSubject } from 'rxjs';
+import { OffcanvasInfoModelComponent } from '../../offcanvas-info-model/offcanvas-info-model.components';
 
 @Component({
   selector: 'ngx-investment-by-selected',
@@ -17,6 +18,7 @@ import { BehaviorSubject } from 'rxjs';
   standalone: true,
   imports: [
     HorizontalBarChartModelComponent,
+    OffcanvasInfoModelComponent,
     FlipTableComponent,
     NbSelectModule,
   ],
@@ -31,6 +33,8 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   @Output() newFilter = new EventEmitter<IStrategicProjectFilterValuesDto>();
 
+  @ViewChild('offcanvasTrigger') offcanvasTrigger: ElementRef;
+
   flipTableContent: FlipTableContent;
 
   selectedInvestmentOption: string = 'Área Temática';
@@ -39,14 +43,25 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   chartColors: any;
 
+  chartCustomConfig: HorizontalBarChartCustomConfig;
+
   investmentData: IStrategicProjectInvestmentSelected[];
 
   requestStatus: RequestStatus = RequestStatus.EMPTY;
+
+  isOffcanvasOpen: boolean = false;
+
+  selectedItemDetails: StrategicProjectProgramDetails | StrategicProjectProjectDetails;
+
+  offcanvasRequestStatus: RequestStatus = RequestStatus.EMPTY;
+
+  isDoingDrillDownActions: boolean = false;
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
     private utilitiesService: UtilitiesService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -208,13 +223,17 @@ export class InvestmentBySelectedComponent implements OnChanges {
       expanded: shouldStartExpanded,
     }));
 
+    this.chartCustomConfig = {
+      yAxisTriggerEvent: ['Programa', 'Programas Transversais', 'Projeto'].includes(this.selectedInvestmentOption),
+    };
+
     this.flipTableContent = {
       defaultColumns: tableColumns,
       customColumn: {
         originalPropertyName: 'nome',
         propertyName: 'firstColumn',
         displayName: this.selectedInvestmentOption,
-        enableEventClick: true,
+        enableEventClick: this.chartCustomConfig.yAxisTriggerEvent,
       },
       data: finalData,
     };
@@ -295,5 +314,62 @@ export class InvestmentBySelectedComponent implements OnChanges {
     }
 
     this.newFilter.emit(newFilter);
+  }
+
+  handleChartLabelClick(event: HorizontalBarChartLabelClick) {
+    const selectedInvestment = this.investmentData.find((el) => el.nome === event.value);
+
+    /**
+     * É necessário verificar e controlar se o offcanvas está aberto ou não porque por algum motivo
+     * o evento de click está sendo disparado 2x ao clicar.
+    */
+    if (selectedInvestment && !this.isOffcanvasOpen) {
+      this.offcanvasRequestStatus = RequestStatus.LOADING;      
+      this.offcanvasTrigger.nativeElement.click();
+      this.isOffcanvasOpen = true;
+
+      if (['Programa', 'Programas Transversais'].includes(this.selectedInvestmentOption)) {
+        this.strategicProjectsService.getProgramDetails(this.filter, selectedInvestment.id)
+          .subscribe({
+            next: (res: StrategicProjectProgramDetails) => {
+              this.selectedItemDetails = res;
+              this.offcanvasRequestStatus = RequestStatus.SUCCESS;
+              this.changeDetectorRef.detectChanges();
+            },
+            error: (err) => {
+              console.error('Ocorreu um erro! \n', err);
+              this.offcanvasRequestStatus = RequestStatus.ERROR;
+            },
+          });
+      } else if (this.selectedInvestmentOption === 'Projeto') {
+        this.strategicProjectsService.getProjectDetails(this.filter, selectedInvestment.id)
+          .subscribe({
+            next: (res: StrategicProjectProjectDetails) => {
+              this.selectedItemDetails = res;
+              this.offcanvasRequestStatus = RequestStatus.SUCCESS;
+              this.changeDetectorRef.detectChanges();
+            },
+            error: (err) => {
+              console.error("Ocorreu um erro! \n", err);
+              this.offcanvasRequestStatus = RequestStatus.ERROR;
+            },
+          });
+      }
+    }
+  }
+
+  handleChartBarClick(event: HorizontalBarChartBarClick) {
+    if (!this.isDoingDrillDownActions) {
+      this.isDoingDrillDownActions = true;
+      this.handleCustomFiltering(event.labelName);
+      
+      setTimeout(() => {
+        this.isDoingDrillDownActions = false;
+      }, 500);
+    }
+  }
+
+  handleOffcanvasClose() {
+    this.isOffcanvasOpen = false;
   }
 }

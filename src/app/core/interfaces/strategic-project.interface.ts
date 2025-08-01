@@ -70,3 +70,36 @@ export interface IStrategicProjectTimestamp{
   timestamp: string
 }
 
+export interface StrategicProjectProgramDetails {
+  contagemPE: number;
+  custoPrevisto: number;
+  custoRealizado: number;
+  qtdeProjetos: number;
+  areaId: number;
+  nomeArea: string;
+  programaId: number;
+  nomePrograma: string;
+  objetivo: string;
+  transversal: number;
+  responsavel: string;
+}
+
+export interface StrategicProjectProjectDetails {
+  contagemPE: number;
+  custoPrevisto: number;
+  custoRealizado: number;
+  programas: Array<{
+    programaId: number;
+    nomePrograma: string;
+  }>;
+  orgaoId: number;
+  nomeOrgao: string;
+  areaId: number;
+  nomeArea: string;
+  projetoId: number;
+  nomeProjeto: string;
+  descricaoProjeto: string;
+  statusProjeto: string;
+  responsavel: string;
+}
+

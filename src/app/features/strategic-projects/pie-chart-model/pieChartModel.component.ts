@@ -87,7 +87,7 @@ export class PieChartModelComponent implements OnInit, OnChanges {
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
 
-    chartInstance.on('legendselectchanged', (params: any) => {
+    this.echartsInstance.on('legendselectchanged', (params: any) => {
       const selected = params.selected;
 
       if (Array.isArray(this.data) && this.data.length > 0) {

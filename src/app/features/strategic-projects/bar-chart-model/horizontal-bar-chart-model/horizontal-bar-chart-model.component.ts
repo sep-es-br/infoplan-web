@@ -1,9 +1,25 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 import { ECharts, EChartsOption } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { AvailableThemes, getAvailableThemesStyles } from '../../../../@theme/theme.module';
+
+export interface HorizontalBarChartBarClick {
+  labelName: string;
+  seriesName: string;
+  value: string | number;
+}
+
+export interface HorizontalBarChartLabelClick {
+  axis: 'yAxis' | 'xAxis';
+  value: string | number;
+}
+
+export interface HorizontalBarChartCustomConfig {
+  yAxisTriggerEvent?: boolean;
+  xAxisTriggerEvent?: boolean;
+}
 
 @Component({
   selector: 'ngx-horizontal-bar-chart-model',
@@ -18,6 +34,12 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
   @Input() colors:  string[] = [];
 
   @Input() height: number;
+
+  @Input() customConfig: HorizontalBarChartCustomConfig;
+
+  @Output() barClick = new EventEmitter<HorizontalBarChartBarClick>();
+
+  @Output() labelClick = new EventEmitter<HorizontalBarChartLabelClick>();
 
   chartOptions: EChartsOption;
 
@@ -68,13 +90,22 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['data'] || changes['colors']) {
+    if (changes['data']) {
       this.initChartOptions(this.data, this.colors);
     }
   }
 
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
+
+    // https://apache.github.io/echarts-handbook/en/concepts/event/
+    this.echartsInstance.on('click', (event) => {
+      if (event.componentType === 'yAxis' || event.componentType === 'xAxis') {
+        this.labelClick.emit({ axis: event.componentType, value: event.value.toString() });
+      } else if (event.componentType === 'series') {
+        this.barClick.emit({ labelName: event.name, seriesName: event.seriesName, value: event.value.toString() });
+      }
+    });
   }
 
   formatNumber(value: number): string {
@@ -137,28 +168,27 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
-            fontSize: 9,
+            fontSize: 10,
             formatter: function (value: number) {
               return formatValue(value); 
             },
           },
+          triggerEvent: this.customConfig?.xAxisTriggerEvent || false,
         },
         yAxis: {
           type: 'category',
           inverse: true,
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
-            fontSize: 9,
-            
-            formatter: function (value: string) {
-              const maxLength = 50;
-              if (value.length > maxLength) {
-                return value.substring(0, maxLength) + '...'; 
-              }
-              return value;
-            },
+            fontSize: 10,
+            overflow: 'truncate',
+            width: 100,
+          },
+          tooltip: {
+            show: true,
           },
           data: data.map(item => item.category),
+          triggerEvent: this.customConfig?.yAxisTriggerEvent || false,
         },
         series: [
           {
@@ -245,27 +275,27 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           type: 'value',
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
-            fontSize: 9, 
+            fontSize: 10, 
             formatter: function (value: number) {
               return formatValue(value); 
             },
           },
+          triggerEvent: this.customConfig?.xAxisTriggerEvent || false,
         },
         yAxis: {
           type: 'category',
           inverse: true, 
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
-            fontSize: 9,
-            formatter: function (value: string) {
-              const maxLength = 50;
-              if (value.length > maxLength) {
-                return value.substring(0, maxLength) + '...';
-              }
-              return value;
-            },
+            fontSize: 10,
+            overflow: 'truncate',
+            width: 100,
+          },
+          tooltip: {
+            show: true,
           },
           data: data.map(item => item.category),
+          triggerEvent: this.customConfig?.yAxisTriggerEvent || false,
         },
         series: [
           {
@@ -313,9 +343,9 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
 
     function formatValue(value: number): string {
       if (value >= 1_000_000_000) {
-        return (value / 1_000_000_000).toFixed(2) + ' B'; 
+        return (value / 1_000_000_000).toFixed(1) + 'B'; 
       } else if (value >= 1_000_000) {
-        return (value / 1_000_000).toFixed(2) + ' M'; 
+        return (value / 1_000_000).toFixed(1) + 'M'; 
       } else {
         return value.toString();
       }

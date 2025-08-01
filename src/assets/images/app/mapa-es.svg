@@ -1300,5 +1300,37 @@
         y="137.53151"
       />
     </text>
+
+    <text
+      id="Microrregiões"
+      xml:space="preserve"
+      text-anchor="start"
+      font-size="14px"
+      x="-79.068"
+      y="30.452517"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan146"
+        x="-79.068"
+        y="30.452517"
+      >Microrregiões</tspan>
+    </text>
+    
+    <text
+      id="Municípios"
+      xml:space="preserve"
+      text-anchor="start"
+      font-size="14px"
+      x="280.954"
+      y="22.452654"
+    >
+      <tspan
+        sodipodi:role="line"
+        id="tspan147"
+        x="280.954"
+        y="22.452654"
+      >Municípios</tspan>
+    </text>
   </g>
 </svg>

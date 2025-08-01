@@ -19,7 +19,7 @@
                   <p class="title" [ngClass]="{'small-title': menuItem.subTitle}">{{menuItem.name}}</p>
                   <p *ngIf="menuItem.subTitle" class="subititle">{{menuItem.subTitle}}</p>
                 </div>
-                <img *ngIf="menuItem.url" [src]="'assets/images/app/external-link.svg'">
+                <nb-icon *ngIf="menuItem.url" icon="external-link-outline"></nb-icon>
               </div>
                 <p class="font" [tooltip]="!menuItem.status ? '': menuItem.src " >Fonte: {{menuItem.src}}</p>
             </div>

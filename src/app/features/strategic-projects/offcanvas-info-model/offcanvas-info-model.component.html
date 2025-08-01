@@ -6,7 +6,11 @@
   [attr.aria-labelledby]="customOffcanvasIdentifier + 'Label'"
   [attr.data-bs-theme]="currentAppTheme !== 'default' ? 'dark' : ''"
 >
-  <nb-card class="my-2 h-100" [nbSpinner]="requestStatus === 'Loading'" [nbSpinnerStatus]="'success'">
+  <nb-card
+    class="my-2 h-100"
+    [nbSpinner]="requestStatus === 'Loading'"
+    [nbSpinnerStatus]="'success'"
+  >
     <ng-container *ngIf="requestStatus === 'Success'">
       <div class="offcanvas-header">
         <div class="d-flex flex-column">
@@ -101,14 +105,30 @@
           <div class="property" [ngClass]="selectedItemDetails.nomeOrgao ? 'col-4 px-1' : 'col-6 pe-1'">
             <nb-card class="p-2 h-100 card-number-box previsto">
               <span class="property-label mb-1">Previsto</span>
-              <span class="property-value number-box">R$ {{ formatNumber(selectedItemDetails.custoPrevisto) }}</span>
+              <span
+                class="property-value number-box"
+                nbTooltipPlacement="top"
+                nbTooltipStatus="basic"
+                [nbTooltip]="formatNumber(selectedItemDetails.custoPrevisto, 'decimal')"
+                #tooltip1="nbTooltip"
+              >
+                R$ {{ formatNumber(selectedItemDetails.custoPrevisto, 'minimal') }}
+              </span>
             </nb-card>
           </div>
 
           <div class="property ps-1" [ngClass]="selectedItemDetails.nomeOrgao ? 'col-4' : 'col-6'">
             <nb-card class="p-2 h-100 card-number-box realizado">
               <span class="property-label mb-1">Realizado</span>
-              <span class="property-value number-box">R$ {{ formatNumber(selectedItemDetails.custoRealizado) }}</span>
+              <span
+                class="property-value number-box"
+                nbTooltipPlacement="top"
+                nbTooltipStatus="basic"
+                [nbTooltip]="formatNumber(selectedItemDetails.custoRealizado, 'decimal')"
+                #tooltip2="nbTooltip"
+              >
+                R$ {{ formatNumber(selectedItemDetails.custoRealizado, 'minimal') }}
+              </span>
             </nb-card>
           </div>
         </div>

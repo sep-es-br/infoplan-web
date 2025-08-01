@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, Input, Output, QueryList, ViewChildren } from "@angular/core";
 import { StrategicProjectProgramDetails, StrategicProjectProjectDetails } from "../../../core/interfaces/strategic-project.interface";
-import { NbCardModule, NbSpinnerModule, NbThemeService } from "@nebular/theme";
+import { NbCardModule, NbSpinnerModule, NbThemeService, NbTooltipDirective, NbTooltipModule } from "@nebular/theme";
 import { AvailableThemes, ThemeModule } from "../../../@theme/theme.module";
 import { RequestStatus } from "../strategicProjects.component";
 
@@ -13,6 +13,7 @@ import { RequestStatus } from "../strategicProjects.component";
     ThemeModule,
     NbCardModule,
     NbSpinnerModule,
+    NbTooltipModule,
   ],
 })
 export class OffcanvasInfoModelComponent implements AfterViewInit {
@@ -23,6 +24,8 @@ export class OffcanvasInfoModelComponent implements AfterViewInit {
   @Input() requestStatus: RequestStatus;
 
   @Output() offcanvasWasClosed = new EventEmitter();
+
+  @ViewChildren(NbTooltipDirective) tooltips: QueryList<NbTooltipDirective>;
 
   currentAppTheme: string;
 
@@ -35,18 +38,36 @@ export class OffcanvasInfoModelComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     const offcanvasRef = document.getElementById(this.customOffcanvasIdentifier);
 
+    offcanvasRef.addEventListener('shown.bs.offcanvas', () => {
+      /**
+       * Isso é necessário pra fazer os tooltips serem carregados na posição certa.
+       * Como estão sendo inseridos no offcanvas, caso não faça isso abaixo,
+       * ao abrir o offcanvas os tooltips aparecem no lugar errado.
+       */
+      this.tooltips.forEach((tooltip: NbTooltipDirective) => {
+        setTimeout(() => {
+          tooltip.show();
+          setTimeout(() => tooltip.hide(), 10);
+        }, 400);
+      });
+    });
+
     offcanvasRef.addEventListener('hidden.bs.offcanvas', () => {
       this.offcanvasWasClosed.emit();
     });
   }
 
-  formatNumber(value: number): string {
-    if (value >= 1_000_000_000) {
-      return (value / 1_000_000_000).toFixed(1) + 'B'; 
-    } else if (value >= 1_000_000) {
-      return (value / 1_000_000).toFixed(1) + 'M'; 
-    } else {
-      return value.toString();
+  formatNumber(value: number, format: 'minimal' | 'decimal'): string {
+    if (format === 'minimal') {
+      if (value >= 1_000_000_000) {
+        return (value / 1_000_000_000).toFixed(1) + 'B'; 
+      } else if (value >= 1_000_000) {
+        return (value / 1_000_000).toFixed(1) + 'M'; 
+      } else {
+        return value.toString();
+      }
+    } else if (format === 'decimal') {
+      return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
   }
 

@@ -204,6 +204,8 @@ export class MapEsComponent implements OnInit, OnChanges {
 
   standardUnselectedPathOpacity = '0.25';
 
+  applyNewFilterTimeout: NodeJS.Timeout;
+
   constructor(
     private http: HttpClient,
     private sanitizer: DomSanitizer,
@@ -398,8 +400,12 @@ verificarSvgRenderizado(): void {
               this.filter.localidades = this.filter.localidades.filter((el: number) => el !== localidade.id);
             }
 
-            this.atualizarEstadosComBaseNoFilter();
-            this.filterChange.emit(this.filter);
+            // Caso o usuário clique em vários municípios/regiões sucessivamente, espera-se um tempo antes de chamar a requisição
+            clearTimeout(this.applyNewFilterTimeout);
+            this.applyNewFilterTimeout = setTimeout(() => {
+              this.atualizarEstadosComBaseNoFilter();
+              this.filterChange.emit(this.filter);
+            }, 800);
           };
 
           const actionsOnMouseEvent = (opacityLevel: string, newTextWeight: 'normal' | 'bold', hoverEffectAction?: 'add' | 'remove') => {

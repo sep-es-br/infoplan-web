@@ -6,6 +6,7 @@ import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '..
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { RequestStatus } from '../../strategicProjects.component';
+import { ECharts } from 'echarts';
 
 @Component({
   selector: 'ngx-deliveries-by-status',

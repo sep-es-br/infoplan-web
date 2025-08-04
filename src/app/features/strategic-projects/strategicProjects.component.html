@@ -83,29 +83,66 @@
 
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">De</span>
-                    <input
-                      nbInput
-                      name="dataInicial"
-                      placeholder="Data Inicial"
-                      size="tiny"
-                      [nbDatepicker]="initialDatePicker"
-                      [(ngModel)]="filter.dataInicio"
-                    />
-                    <nb-datepicker size="tiny" #initialDatePicker></nb-datepicker>
+                    <div class="d-flex flex-row w-100 pe-2">
+                      <div class="col-6">
+                        <nb-select
+                          name="MêsInicial"
+                          size="tiny"
+                          placeholder="Mês"
+                          [(ngModel)]="dateController.mesInicial"
+                          (selectedChange)="handleFilterChange('DataInicioMes', $event)"
+                        >
+                          <nb-option *ngFor="let mes of monthsList; let index = index" [value]="mes.num">
+                            {{ mes.name }}
+                          </nb-option>
+                        </nb-select>
+                      </div>
+                      <div class="col-6">
+                        <nb-select
+                          name="AnoInicial"
+                          size="tiny"
+                          placeholder="Ano"
+                          [(ngModel)]="dateController.anoInicial"
+                          (selectedChange)="handleFilterChange('DataInicioAno', $event)"
+                        >
+                          <nb-option *ngFor="let ano of yearsList" [value]="ano">
+                            {{ ano }}
+                          </nb-option>
+                        </nb-select>
+                      </div>
+                    </div>
                   </div>
           
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Até</span>
-                    <input
-                      nbInput
-                      name="dataFim"
-                      placeholder="Data Final"
-                      size="tiny"
-                      [nbDatepicker]="endDatePicker"
-                      [(ngModel)]="filter.dataFim"
-                    />
-                    <nb-datepicker #endDatePicker>
-                    </nb-datepicker>
+                    <div class="d-flex flex-row w-100 pe-2">
+                      <div class="col-6">
+                        <nb-select
+                          name="MêsFinal"
+                          size="tiny"
+                          placeholder="Mês"
+                          [(ngModel)]="dateController.mesFinal"
+                          (selectedChange)="handleFilterChange('DataFinalMes', $event)"
+                        >
+                          <nb-option *ngFor="let mes of monthsList; let index = index" [value]="mes.num">
+                            {{ mes.name }}
+                          </nb-option>
+                        </nb-select>
+                      </div>
+                      <div class="col-6">
+                        <nb-select
+                          name="AnoFinal"
+                          size="tiny"
+                          placeholder="Ano"
+                          [(ngModel)]="dateController.anoFinal"
+                          (selectedChange)="handleFilterChange('DataFinalAno', $event)"
+                        >
+                          <nb-option *ngFor="let ano of yearsList" [value]="ano">
+                            {{ ano }}
+                          </nb-option>
+                        </nb-select>
+                      </div>
+                    </div>
                   </div>
           
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 invisible-tag">

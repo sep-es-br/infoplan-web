@@ -38,8 +38,8 @@ export interface CustomTableFilteringTrigger {
 
 export interface StrategicProjectsFilter {
   portfolio: string,
-  dataInicio: Date | string,
-  dataFim: Date | string,
+  dataInicio: string,
+  dataFim: string,
   previsaoConclusao: string,
   areaTematica?: Array<Number>,
   programaOrigem?: Array<Number>,
@@ -83,8 +83,8 @@ export class StrategicProjectsComponent {
 
   filter: StrategicProjectsFilter = {
     portfolio: environment.strategicProjectFilter.portfolio,
-    dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
-    dataFim: new Date(environment.strategicProjectFilter.dataFim),
+    dataInicio: environment.strategicProjectFilter.dataInicio,
+    dataFim: environment.strategicProjectFilter.dataFim,
     previsaoConclusao: '',
     areaTematica: [],
     programaOrigem: [],
@@ -98,8 +98,8 @@ export class StrategicProjectsComponent {
 
   finalFilter: StrategicProjectsFilter = {
     portfolio: environment.strategicProjectFilter.portfolio,
-    dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
-    dataFim: new Date(environment.strategicProjectFilter.dataFim),
+    dataInicio: environment.strategicProjectFilter.dataInicio,
+    dataFim: environment.strategicProjectFilter.dataFim,
     previsaoConclusao: '',
     areaTematica: [],
     programaOrigem: [],
@@ -111,6 +111,13 @@ export class StrategicProjectsComponent {
     acompanhamentos: [],
   };
 
+  dateController = {
+    mesInicial: environment.strategicProjectFilter.dataInicio.slice(5, 7),
+    anoInicial: environment.strategicProjectFilter.dataInicio.slice(0, 4),
+    mesFinal: environment.strategicProjectFilter.dataFim.slice(5, 7),
+    anoFinal: environment.strategicProjectFilter.dataFim.slice(0, 4),
+  };
+
   areaList: IIdAndName[] = [];
   programaOList: IIdAndName[] = [];
   programaTList: IIdAndName[] = [];
@@ -118,6 +125,20 @@ export class StrategicProjectsComponent {
   orgaoList: IIdAndName[] = [];
   localidadeList: IIdAndName[] = [];
   projetoList: IIdAndName[] = [];
+  monthsList = [
+    { num: '01', name: 'Janeiro' },
+    { num: '02', name: 'Fevereiro' },
+    { num: '03', name: 'Março' },
+    { num: '04', name: 'Abril' },
+    { num: '05', name: 'Maio' },
+    { num: '06', name: 'Junho' },
+    { num: '07', name: 'Julho' },
+    { num: '08', name: 'Agosto' },
+    { num: '09', name: 'Setembro' },
+    { num: '10', name: 'Outubro' },
+    { num: '11', name: 'Novembro' },
+    { num: '12', name: 'Dezembro' }
+  ];
 
   activeFilters: { key: string; label: string; displayValue: Array<{name: string; fullName?: string; }>; }[] = [];
 
@@ -128,6 +149,10 @@ export class StrategicProjectsComponent {
   tableFilteringTrigger = new BehaviorSubject<CustomTableFilteringTrigger>(null);
 
   isFilterModalOpen: boolean = false;
+
+  get yearsList(): Array<string> {
+    return Array.from({ length: 10 }, (_, index) => (2020 + index).toString());
+  }
 
   constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
     this.loadTimestamp();
@@ -169,9 +194,8 @@ export class StrategicProjectsComponent {
 
         if (directValueKeys.includes(key)) {
           if (key === 'dataInicio' || key === 'dataFim') {
-            const year = ((value as Date).getFullYear()).toString();
-            let month = ((value as Date).getMonth() + 1).toString();
-            if (Number(month) < 10) month = `0${month}`;
+            const year = value.slice(0, 4);
+            const month = value.slice(5, 7);
             displayValue = [{ name: `${month}-${year}` }];
           } else {
             displayValue = [{ name: (value as string) }];
@@ -203,7 +227,7 @@ export class StrategicProjectsComponent {
       });
   }
 
-  handleFilterChange(origin: AvailableFilters | string, newValue: Array<number>) {
+  handleFilterChange(origin: AvailableFilters | string, newValue: Array<number> | string) {
     const selectedValue = newValue.length === 0 ? '' : newValue.toString();
     
     switch (origin) {
@@ -253,6 +277,18 @@ export class StrategicProjectsComponent {
               console.error('Erro ao tentar carregar Entregas: ', error);
             }
           );
+        break;
+      case 'DataInicioMes':
+        this.filter.dataInicio = `${this.filter.dataInicio.toString().slice(0, 4)}-${newValue}`;
+        break;
+      case 'DataInicioAno':
+        this.filter.dataInicio = `${newValue}-${this.filter.dataInicio.toString().slice(5, 7)}`;
+        break;
+      case 'DataFinalMes':
+        this.filter.dataFim = `${this.filter.dataFim.slice(0, 4)}-${newValue}`;
+        break;
+      case 'DataFinalAno':
+        this.filter.dataFim = `${newValue}-${this.filter.dataFim.slice(5, 7)}`;
         break;
       default:
         break;
@@ -337,8 +373,8 @@ export class StrategicProjectsComponent {
 
     this.finalFilter = {
       portfolio: environment.strategicProjectFilter.portfolio,
-      dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
-      dataFim: new Date(environment.strategicProjectFilter.dataFim),
+      dataInicio: environment.strategicProjectFilter.dataInicio,
+      dataFim: environment.strategicProjectFilter.dataFim,
       previsaoConclusao: '',
       areaTematica: [],
       programaOrigem: [],

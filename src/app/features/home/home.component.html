@@ -1,31 +1,40 @@
 <div class="container">
   <div class="align-content-center">
-    <div class="row mt-5 mb-5 justify-content-center">
+    <div class="row justify-content-center">
       <ng-container *ngFor="let menuItem of menulinks">
-        <div class=" col-9 col-xl-4 col-lg-6 col-md-6 col-sm-9 mt-4 menu-card" [ngClass]="{'unavaliable': !menuItem.status}"  (click)="handleClick(menuItem.id)" >
-          <div class="row bg-menu rounded p-3 pointer">
-            <div class="col-3 col-md-3 col-sm-3 col-is-3 align-content-center card-logo">
-              <div class="card rounded iconText" [ngStyle]="{'background-color': menuItem.status ? menuItem.color : 'red'}">
-                <div class="card-body p-0">
-                  <div class="card-text text-center iconText p-0">
-                    <img [src]="'assets/images/app/' + menuItem.icon" alt="{{menuItem.name}} Icon" class="icon-image">
-                  </div>
-                </div>
-              </div>
+        <nb-card
+          class="col-10 col-md-6 col-xl-4 mt-4 d-flex flex-column flex-md-row p-4 rounded"
+          (click)="handleClick(menuItem.id)"
+        >
+          <nb-card-header class="d-flex align-items-center justify-content-center col-12 col-md-2 p-0 mb-2 mb-md-0 header">
+            <div class="img-box">
+              <img class="p-2 rounded" [ngStyle]="{ 'background-color': menuItem.status ? menuItem.color : 'red' }" [src]="'assets/images/app/' + menuItem.icon" [alt]="menuItem.name + ' Icon'">
             </div>
-            <div class="col-9 col-md-9 col-sm-9 col-is-9 card-title-subtitle">
-              <div class="d-flex card-title-img">
-                <div class="title-subtitle">
-                  <p class="title" [ngClass]="{'small-title': menuItem.subTitle}">{{menuItem.name}}</p>
-                  <p *ngIf="menuItem.subTitle" class="subititle">{{menuItem.subTitle}}</p>
-                </div>
-                <nb-icon *ngIf="menuItem.url" icon="external-link-outline"></nb-icon>
+          </nb-card-header>
+          <div class="d-flex flex-column col-12 col-md-10">
+            <nb-card-body class="body d-flex flex-column align-items-center align-items-md-start p-0 ps-md-4">
+              <div class="d-flex w-100 justify-content-center justify-content-md-between">
+                <span class="title">{{ menuItem.name }}</span>
+                <nb-icon
+                  *ngIf="menuItem.url"
+                  icon="external-link-outline"
+                  class="icon-external mx-2"
+                >
+                </nb-icon>
               </div>
-                <p class="font" [tooltip]="!menuItem.status ? '': menuItem.src " >Fonte: {{menuItem.src}}</p>
-            </div>
+              <span
+                *ngIf="menuItem.subTitle"
+                class="subtitle"
+              >
+                {{ menuItem.subTitle }}
+              </span>
+            </nb-card-body>
+            <nb-card-footer class="footer p-0 mt-2 text-end">
+              <span class="italic">Fonte: {{ menuItem.src }}</span>
+            </nb-card-footer>
           </div>
-        </div>
-      </ng-container >
+        </nb-card>
+      </ng-container>
     </div>
   </div>
 </div>

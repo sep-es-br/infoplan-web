@@ -1,14 +1,11 @@
-import { DatePipe } from '@angular/common';
-import { ImplicitReceiver } from '@angular/compiler';
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NbThemeService } from '@nebular/theme';
+import { Component, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'ngx-footer',
   styleUrls: ['./footer.component.scss'],
   template: `
-    <div id="footer">
+    <div class="d-flex flex-column flex-sm-row" id="footer">
       <p>Central de Informações de Planejamento</p>
       <div>
         <span>Fonte: {{ dataSrc }}</span>
@@ -17,15 +14,12 @@ import { NbThemeService } from '@nebular/theme';
     </div>
   `,
 })
-export class FooterComponent{
-
+export class FooterComponent {
   @Input() timestamp: string;
 
   dataSrc : string;
 
-  constructor(private route : ActivatedRoute,  private datePipe: DatePipe) {  
+  constructor(private route : ActivatedRoute) {  
     this.dataSrc = this.route.snapshot.data['dataSource'];
   }
-
-
 }

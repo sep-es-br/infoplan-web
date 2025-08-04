@@ -5,7 +5,9 @@
 }
 
 .investment-select {
-  min-width: 200px;
+  @media screen and (min-width: 576px) {
+    min-width: 200px;
+  }
 }
 
 .offcanvas-trigger {

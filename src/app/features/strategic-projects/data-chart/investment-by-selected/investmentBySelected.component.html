@@ -6,8 +6,8 @@
   (executeDownload)="handleUserTableDownload()"
   (executeCustomFiltering)="handleCustomFiltering($event)"
 >
-  <div class="d-flex p-0" custom-header>
-    <span class="text-card me-2">Investimento por</span>
+  <div class="d-flex flex-column flex-sm-row p-0" custom-header>
+    <span class="text-card text-truncate me-2">Investimento por</span>
     <nb-select class="investment-select" size="tiny" shape="semi-round" [(selected)]="selectedInvestmentOption" (selectedChange)="loadData()">
       <nb-option value="Área Temática">Área Temática</nb-option>
       <nb-option value="Programa">Programa</nb-option>

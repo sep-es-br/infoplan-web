@@ -324,9 +324,9 @@ export class InvestmentBySelectedComponent implements OnChanges {
      * o evento de click está sendo disparado 2x ao clicar.
     */
     if (selectedInvestment && !this.isOffcanvasOpen) {
+      this.isOffcanvasOpen = true;
       this.offcanvasRequestStatus = RequestStatus.LOADING;      
       this.offcanvasTrigger.nativeElement.click();
-      this.isOffcanvasOpen = true;
 
       if (['Programa', 'Programas Transversais'].includes(this.selectedInvestmentOption)) {
         this.strategicProjectsService.getProgramDetails(this.filter, selectedInvestment.id)

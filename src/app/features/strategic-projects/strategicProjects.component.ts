@@ -111,13 +111,6 @@ export class StrategicProjectsComponent {
     acompanhamentos: [],
   };
 
-  dateController = {
-    mesInicial: environment.strategicProjectFilter.dataInicio.slice(5, 7),
-    anoInicial: environment.strategicProjectFilter.dataInicio.slice(0, 4),
-    mesFinal: environment.strategicProjectFilter.dataFim.slice(5, 7),
-    anoFinal: environment.strategicProjectFilter.dataFim.slice(0, 4),
-  };
-
   areaList: IIdAndName[] = [];
   programaOList: IIdAndName[] = [];
   programaTList: IIdAndName[] = [];
@@ -126,18 +119,32 @@ export class StrategicProjectsComponent {
   localidadeList: IIdAndName[] = [];
   projetoList: IIdAndName[] = [];
   monthsList = [
-    { num: '01', name: 'Janeiro' },
-    { num: '02', name: 'Fevereiro' },
-    { num: '03', name: 'Março' },
-    { num: '04', name: 'Abril' },
-    { num: '05', name: 'Maio' },
-    { num: '06', name: 'Junho' },
-    { num: '07', name: 'Julho' },
-    { num: '08', name: 'Agosto' },
-    { num: '09', name: 'Setembro' },
-    { num: '10', name: 'Outubro' },
-    { num: '11', name: 'Novembro' },
-    { num: '12', name: 'Dezembro' }
+    { num: 1, name: 'Janeiro', disabledInicial: false, disabledFinal: false },
+    { num: 2, name: 'Fevereiro', disabledInicial: false, disabledFinal: false },
+    { num: 3, name: 'Março', disabledInicial: false, disabledFinal: false },
+    { num: 4, name: 'Abril', disabledInicial: false, disabledFinal: false },
+    { num: 5, name: 'Maio', disabledInicial: false, disabledFinal: false },
+    { num: 6, name: 'Junho', disabledInicial: false, disabledFinal: false },
+    { num: 7, name: 'Julho', disabledInicial: false, disabledFinal: false },
+    { num: 8, name: 'Agosto', disabledInicial: false, disabledFinal: false },
+    { num: 9, name: 'Setembro', disabledInicial: false, disabledFinal: false },
+    { num: 10, name: 'Outubro', disabledInicial: false, disabledFinal: false },
+    { num: 11, name: 'Novembro', disabledInicial: false, disabledFinal: false },
+    { num: 12, name: 'Dezembro', disabledInicial: false, disabledFinal: false }
+  ];
+  yearsList = [
+    { num: 2020, disabledInicial: false, disabledFinal: false },
+    { num: 2021, disabledInicial: false, disabledFinal: false },
+    { num: 2022, disabledInicial: false, disabledFinal: false },
+    { num: 2023, disabledInicial: false, disabledFinal: false },
+    { num: 2024, disabledInicial: false, disabledFinal: false },
+    { num: 2025, disabledInicial: false, disabledFinal: false },
+    { num: 2026, disabledInicial: false, disabledFinal: false },
+    { num: 2027, disabledInicial: false, disabledFinal: false },
+    { num: 2028, disabledInicial: false, disabledFinal: false },
+    { num: 2029, disabledInicial: false, disabledFinal: false },
+    { num: 2030, disabledInicial: false, disabledFinal: false },
+    { num: 2031, disabledInicial: false, disabledFinal: false },
   ];
 
   activeFilters: { key: string; label: string; displayValue: Array<{name: string; fullName?: string; }>; }[] = [];
@@ -150,13 +157,19 @@ export class StrategicProjectsComponent {
 
   isFilterModalOpen: boolean = false;
 
-  get yearsList(): Array<string> {
-    return Array.from({ length: 10 }, (_, index) => (2020 + index).toString());
-  }
+  get dateController(): { mesInicial: number; anoInicial: number; mesFinal: number; anoFinal: number} {
+    return {
+      mesInicial: Number(this.filter.dataInicio.slice(5, 7)),
+      anoInicial: Number(this.filter.dataInicio.slice(0, 4)),
+      mesFinal: Number(this.filter.dataFim.slice(5, 7)),
+      anoFinal: Number(this.filter.dataFim.slice(0, 4)),
+    };
+  };
 
   constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
     this.loadTimestamp();
     this.updateActiveFilters();
+    this.filterOutDisabledDates();
     this.loadAll();
     this.loadTotals();
   }
@@ -227,8 +240,8 @@ export class StrategicProjectsComponent {
       });
   }
 
-  handleFilterChange(origin: AvailableFilters | string, newValue: Array<number> | string) {
-    const selectedValue = newValue.length === 0 ? '' : newValue.toString();
+  handleFilterChange(origin: AvailableFilters | string, newValue: Array<number>) {
+    const selectedValue = Array.isArray(newValue) && newValue.length === 0 ? '' : newValue.toString();
     
     switch (origin) {
       case AvailableFilters.AREAS_TEMATICAS:
@@ -279,20 +292,26 @@ export class StrategicProjectsComponent {
           );
         break;
       case 'DataInicioMes':
-        this.filter.dataInicio = `${this.filter.dataInicio.toString().slice(0, 4)}-${newValue}`;
+        let inicioMesValue = newValue[0].toString();
+        if (newValue[0] < 10) inicioMesValue = `0${inicioMesValue}`;
+        this.filter.dataInicio = `${this.filter.dataInicio.slice(0, 4)}-${inicioMesValue}`;
         break;
       case 'DataInicioAno':
-        this.filter.dataInicio = `${newValue}-${this.filter.dataInicio.toString().slice(5, 7)}`;
+        this.filter.dataInicio = `${newValue[0]}-${this.filter.dataInicio.slice(5, 7)}`;
         break;
       case 'DataFinalMes':
-        this.filter.dataFim = `${this.filter.dataFim.slice(0, 4)}-${newValue}`;
+        let finalMesValue = newValue[0].toString();
+        if (newValue[0] < 10) finalMesValue = `0${finalMesValue}`;
+        this.filter.dataFim = `${this.filter.dataFim.slice(0, 4)}-${finalMesValue}`;
         break;
       case 'DataFinalAno':
-        this.filter.dataFim = `${newValue}-${this.filter.dataFim.slice(5, 7)}`;
+        this.filter.dataFim = `${newValue[0]}-${this.filter.dataFim.slice(5, 7)}`;
         break;
       default:
         break;
     }
+
+    this.filterOutDisabledDates();
   }
 
   getFilterLabel(key: string): string {
@@ -499,5 +518,36 @@ export class StrategicProjectsComponent {
      */
 
     if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
+  }
+
+  filterOutDisabledDates() {
+    // ↳ Essa função controla quais meses e anos, iniciais e finais, devem estar desabilitados para seleção
+    const currentDate = this.dateController;
+    
+    if (currentDate.anoInicial === currentDate.anoFinal) {
+    // ↳ Se tiver selecionado anos iguais
+      this.monthsList.filter((month) => month.num > currentDate.mesFinal).forEach((month) => month.disabledInicial = true);
+      this.monthsList.filter((month) => month.num < currentDate.mesInicial).forEach((month) => month.disabledFinal = true);
+
+      this.yearsList.filter((year) => year.num > currentDate.anoFinal).forEach((year) => year.disabledInicial = true);
+      this.yearsList.filter((year) => year.num < currentDate.anoInicial).forEach((year) => year.disabledFinal = true);
+    } else if (currentDate.mesInicial > currentDate.mesFinal) {
+      // ↳ Se tiver selecionado um mês inicial posterior ao mês final (ou um mês final anterior ao mês inicial)
+      this.yearsList.filter((year) => year.num >= currentDate.anoFinal).forEach((year) => year.disabledInicial = true);
+      this.yearsList.filter((year) => year.num <= currentDate.anoInicial).forEach((year) => year.disabledFinal = true);
+    } else {
+      this.monthsList.forEach((month) => {
+        month.disabledInicial = false;
+        month.disabledFinal = false;
+      });
+
+      this.yearsList.forEach((year) => {
+        year.disabledInicial = false;
+        year.disabledFinal = false;
+      });
+
+      this.yearsList.filter((year) => year.num > currentDate.anoFinal).forEach((year) => year.disabledInicial = true);
+      this.yearsList.filter((year) => year.num < currentDate.anoInicial).forEach((year) => year.disabledFinal = true);
+    }
   }
 }

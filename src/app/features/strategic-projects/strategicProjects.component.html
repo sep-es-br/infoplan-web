@@ -90,9 +90,9 @@
                           size="tiny"
                           placeholder="Mês"
                           [(ngModel)]="dateController.mesInicial"
-                          (selectedChange)="handleFilterChange('DataInicioMes', $event)"
+                          (selectedChange)="handleFilterChange('DataInicioMes', [$event])"
                         >
-                          <nb-option *ngFor="let mes of monthsList; let index = index" [value]="mes.num">
+                          <nb-option *ngFor="let mes of monthsList; let index = index" [value]="mes.num" [disabled]="mes.disabledInicial">
                             {{ mes.name }}
                           </nb-option>
                         </nb-select>
@@ -103,10 +103,10 @@
                           size="tiny"
                           placeholder="Ano"
                           [(ngModel)]="dateController.anoInicial"
-                          (selectedChange)="handleFilterChange('DataInicioAno', $event)"
+                          (selectedChange)="handleFilterChange('DataInicioAno', [$event])"
                         >
-                          <nb-option *ngFor="let ano of yearsList" [value]="ano">
-                            {{ ano }}
+                          <nb-option *ngFor="let ano of yearsList" [value]="ano.num" [disabled]="ano.disabledInicial">
+                            {{ ano.num }}
                           </nb-option>
                         </nb-select>
                       </div>
@@ -122,9 +122,9 @@
                           size="tiny"
                           placeholder="Mês"
                           [(ngModel)]="dateController.mesFinal"
-                          (selectedChange)="handleFilterChange('DataFinalMes', $event)"
+                          (selectedChange)="handleFilterChange('DataFinalMes', [$event])"
                         >
-                          <nb-option *ngFor="let mes of monthsList; let index = index" [value]="mes.num">
+                          <nb-option *ngFor="let mes of monthsList; let index = index" [value]="mes.num" [disabled]="mes.disabledFinal">
                             {{ mes.name }}
                           </nb-option>
                         </nb-select>
@@ -135,10 +135,10 @@
                           size="tiny"
                           placeholder="Ano"
                           [(ngModel)]="dateController.anoFinal"
-                          (selectedChange)="handleFilterChange('DataFinalAno', $event)"
+                          (selectedChange)="handleFilterChange('DataFinalAno', [$event])"
                         >
-                          <nb-option *ngFor="let ano of yearsList" [value]="ano">
-                            {{ ano }}
+                          <nb-option *ngFor="let ano of yearsList" [value]="ano.num" [disabled]="ano.disabledFinal">
+                            {{ ano.num }}
                           </nb-option>
                         </nb-select>
                       </div>

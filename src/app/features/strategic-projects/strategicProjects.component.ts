@@ -472,8 +472,8 @@ export class StrategicProjectsComponent {
   handleNewTableFilter(newFilter: IStrategicProjectFilterValuesDto, source: 'InvestmentBy' | 'DeliveriesBy') {
     let newLocalFilter: any = {
       portfolio: environment.strategicProjectFilter.portfolio,
-      dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
-      dataFim: new Date(environment.strategicProjectFilter.dataFim),
+      dataInicio: environment.strategicProjectFilter.dataInicio,
+      dataFim: environment.strategicProjectFilter.dataFim,
     };
 
     let newEntityToBeDisplayed;

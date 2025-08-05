@@ -97,6 +97,7 @@ export class VerticalBarChartModelComponent implements OnInit, OnChanges {
         textStyle: {
           color: currentThemeStyles.textPrimaryColor,
         },
+        confine: true,
         backgroundColor: currentThemeStyles.themePrimaryColor,
         borderColor: currentThemeStyles.themePrimaryColor,
         formatter: (params: any) => {

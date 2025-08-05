@@ -131,6 +131,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           textStyle: {
             color: currentThemeStyles.textPrimaryColor,
           },
+          confine: true,
           backgroundColor: currentThemeStyles.themePrimaryColor,
           borderColor: currentThemeStyles.themePrimaryColor,
           formatter: (params: any) => {
@@ -240,6 +241,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           textStyle: {
             color: currentThemeStyles.textPrimaryColor,
           },
+          confine: true,
           backgroundColor: currentThemeStyles.themePrimaryColor,
           borderColor: currentThemeStyles.themePrimaryColor,
           formatter: (params: any) => {

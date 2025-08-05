@@ -120,6 +120,7 @@ button:focus, select:focus, input:focus {
   .modal {
     .modal-dialog {
       max-width: 70vw;
+      justify-self: center;
 
       .modal-content {
         width: 70vw;

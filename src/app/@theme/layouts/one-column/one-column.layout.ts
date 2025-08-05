@@ -26,7 +26,11 @@ export class OneColumnLayoutComponent implements AfterViewInit {
   constructor(private sidebarService: NbSidebarService, private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit() {
-    this.sidebarService.compact('menu-sidebar');
+    if (window.innerWidth < 576) {
+      this.sidebarService.collapse();
+    } else {
+      this.sidebarService.compact('menu-sidebar');
+    }
     this.cdr.detectChanges();
   }
 

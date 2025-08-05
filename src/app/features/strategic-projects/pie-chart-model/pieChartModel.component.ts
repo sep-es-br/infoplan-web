@@ -80,6 +80,7 @@ export class PieChartModelComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data']) {
+      this.updateTitlePosition();
       this.initChartOptions(this.data, this.colors);
     }
   }
@@ -106,6 +107,16 @@ export class PieChartModelComponent implements OnInit, OnChanges {
 
   updateTitlePosition() {
     const screenWidth = window.innerWidth;
+    if (screenWidth < 420) {
+      this.centerX = 50;
+      this.centerY = 70;
+      this.height = screenWidth > 350 ? 480 : 390;
+    } else {
+      this.centerX = 70;
+      this.centerY = 50;
+      this.height = 150;
+    }
+
     const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
       ? this.centerX - 2
       : this.centerX - 1;
@@ -114,7 +125,11 @@ export class PieChartModelComponent implements OnInit, OnChanges {
       this.echartsInstance.setOption({
         title: {
           left: `${offset}%`,
-        }
+          top: `${this.centerY}%`,
+        },
+        series: {
+          center: [`${this.centerX}%`, `${this.centerY}%`],
+        },
       });
     }
   }

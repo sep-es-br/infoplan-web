@@ -321,7 +321,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
     /**
      * É necessário verificar e controlar se o offcanvas está aberto ou não porque por algum motivo
-     * o evento de click está sendo disparado 2x ao clicar.
+     * o evento de click está sendo disparado 2x ao clicar no label.
     */
     if (selectedInvestment && !this.isOffcanvasOpen) {
       this.isOffcanvasOpen = true;
@@ -335,6 +335,8 @@ export class InvestmentBySelectedComponent implements OnChanges {
               this.selectedItemDetails = res;
               this.offcanvasRequestStatus = RequestStatus.SUCCESS;
               this.changeDetectorRef.detectChanges();
+              // É necessário chamar o detectChanges pois às vezes acontece de já ter alterado o valor da propriedade, porém o
+              // offcanvas não muda de estado
             },
             error: (err) => {
               console.error('Ocorreu um erro! \n', err);
@@ -348,6 +350,8 @@ export class InvestmentBySelectedComponent implements OnChanges {
               this.selectedItemDetails = res;
               this.offcanvasRequestStatus = RequestStatus.SUCCESS;
               this.changeDetectorRef.detectChanges();
+              // É necessário chamar o detectChanges pois às vezes acontece de já ter alterado o valor da propriedade, porém o
+              // offcanvas não muda de estado
             },
             error: (err) => {
               console.error("Ocorreu um erro! \n", err);

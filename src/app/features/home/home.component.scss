@@ -1,6 +1,8 @@
 @import '../../@theme/styles/themes';
 
 nb-card {
+  cursor: pointer;
+
   .icon-external {
     width: 16px;
   }

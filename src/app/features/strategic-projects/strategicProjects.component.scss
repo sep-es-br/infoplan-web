@@ -43,13 +43,18 @@ button:focus, select:focus, input:focus {
         background-color: var(--card-background-color);
         border: 1px solid #CED4DA;
         color: var(--card-text-color);
-        padding: 4px 12px; 
+        padding: 4px 12px;
         border-radius: 20px; 
         font-weight: bold;
         display: flex;
         align-items: center;
         font-size: 10px; 
         white-space: nowrap;
+
+        @media screen and (max-width: 576px) {
+          padding: 2px 12px;
+          font-size: 9px;
+        }
 
         .tag-label {
           font-weight: normal;

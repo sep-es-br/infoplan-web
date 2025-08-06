@@ -32,6 +32,8 @@ export class PieChartModelComponent implements OnInit, OnChanges {
 
   centerY: number = 50;
 
+  pieRadius = ['60%', '100%'];
+
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
 
   constructor(private themeService: NbThemeService) {
@@ -108,13 +110,9 @@ export class PieChartModelComponent implements OnInit, OnChanges {
   updateTitlePosition() {
     const screenWidth = window.innerWidth;
     if (screenWidth < 420) {
-      this.centerX = 50;
-      this.centerY = 70;
-      this.height = screenWidth > 350 ? 480 : 390;
+      this.pieRadius = ['40%', '80%'];
     } else {
-      this.centerX = 70;
-      this.centerY = 50;
-      this.height = 150;
+      this.pieRadius = ['60%', '100%'];
     }
 
     const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
@@ -129,6 +127,7 @@ export class PieChartModelComponent implements OnInit, OnChanges {
         },
         series: {
           center: [`${this.centerX}%`, `${this.centerY}%`],
+          radius: this.pieRadius,
         },
       });
     }
@@ -204,7 +203,7 @@ export class PieChartModelComponent implements OnInit, OnChanges {
         {
           name: 'Status',
           type: 'pie',
-          radius: ['60%', '100%'],
+          radius: this.pieRadius,
           center: [`${this.centerX}%`, `${this.centerY}%`],
           data: data || [],
           emphasis: { scale: false },

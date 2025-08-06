@@ -71,11 +71,13 @@
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Portfólio</span>
                     <nb-select
+                      class="w-100"
                       name="portfolio"
                       placeholder="Selecionar"
                       size="tiny"
                       [(ngModel)]="filter.portfolio"
                       (selectedChange)="handleFilterChange('Portfolio', $event)"
+                      #customSelect
                     >
                       <nb-option value="Realiza+">Realiza+</nb-option>
                     </nb-select>
@@ -83,7 +85,7 @@
 
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">De</span>
-                    <div class="d-flex flex-row w-100 pe-2">
+                    <div class="d-flex flex-row w-100 gap-2 pe-2">
                       <div class="col-6">
                         <nb-select
                           name="MêsInicial"
@@ -91,6 +93,7 @@
                           placeholder="Mês"
                           [(ngModel)]="dateController.mesInicial"
                           (selectedChange)="handleFilterChange('DataInicioMes', [$event])"
+                          #customSelect
                         >
                           <nb-option *ngFor="let mes of monthsList; let index = index" [value]="mes.num" [disabled]="mes.disabledInicial">
                             {{ mes.name }}
@@ -104,6 +107,7 @@
                           placeholder="Ano"
                           [(ngModel)]="dateController.anoInicial"
                           (selectedChange)="handleFilterChange('DataInicioAno', [$event])"
+                          #customSelect
                         >
                           <nb-option *ngFor="let ano of yearsList" [value]="ano.num" [disabled]="ano.disabledInicial">
                             {{ ano.num }}
@@ -115,7 +119,7 @@
           
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Até</span>
-                    <div class="d-flex flex-row w-100 pe-2">
+                    <div class="d-flex flex-row w-100 gap-2 pe-2">
                       <div class="col-6">
                         <nb-select
                           name="MêsFinal"
@@ -123,6 +127,7 @@
                           placeholder="Mês"
                           [(ngModel)]="dateController.mesFinal"
                           (selectedChange)="handleFilterChange('DataFinalMes', [$event])"
+                          #customSelect
                         >
                           <nb-option *ngFor="let mes of monthsList; let index = index" [value]="mes.num" [disabled]="mes.disabledFinal">
                             {{ mes.name }}
@@ -136,6 +141,7 @@
                           placeholder="Ano"
                           [(ngModel)]="dateController.anoFinal"
                           (selectedChange)="handleFilterChange('DataFinalAno', [$event])"
+                          #customSelect
                         >
                           <nb-option *ngFor="let ano of yearsList" [value]="ano.num" [disabled]="ano.disabledFinal">
                             {{ ano.num }}
@@ -170,6 +176,7 @@
                       size="tiny"
                       [(ngModel)]="filter.areaTematica"
                       (selectedChange)="handleFilterChange('Areas_Tematicas', $event)"
+                      #customSelect
                     >
                       <nb-option *ngFor="let area of areaList" [value]="area.id">
                         {{ area.name }}
@@ -186,6 +193,7 @@
                       size="tiny"
                       [(ngModel)]="filter.programaOrigem"
                       (selectedChange)="handleFilterChange('Programas_Originais', $event)"
+                      #customSelect
                     >
                       <nb-option *ngFor="let programa of programaOList" [value]="programa.id">
                         {{ programa.name }}
@@ -202,6 +210,7 @@
                       size="tiny"
                       [(ngModel)]="filter.projetos"
                       (selectedChange)="handleFilterChange('Projetos', $event)"
+                      #customSelect
                     >
                       <nb-option *ngFor="let projeto of projetoList" [value]="projeto.id">
                         {{ projeto.name }}
@@ -218,6 +227,7 @@
                       size="tiny"
                       [(ngModel)]="filter.entregas"
                       (selectedChange)="handleFilterChange('Entregas', $event)"
+                      #customSelect
                     >
                       <nb-option *ngFor="let entrega of entregaList" [value]="entrega.id">
                         {{ entrega.name }}
@@ -236,6 +246,7 @@
                       size="tiny"
                       [(ngModel)]="filter.programaTransversal"
                       (selectedChange)="handleFilterChange('Programas_Transversais', $event)"
+                      #customSelect
                     >
                       <nb-option *ngFor="let programa of programaTList" [value]="programa.id">
                         {{ programa.name }}
@@ -251,6 +262,7 @@
                       placeholder="Selecionar"
                       size="tiny"
                       [(ngModel)]="filter.localidades"
+                      #customSelect
                     >
                       <nb-option
                         *ngFor="let localidade of localidadeList"
@@ -270,6 +282,7 @@
                       placeholder="Selecionar"
                       size="tiny"
                       [(ngModel)]="filter.orgaos"
+                      #customSelect
                     >
                       <nb-option *ngFor="let orgao of orgaoList" [value]="orgao.id">
                         {{ orgao.name }}

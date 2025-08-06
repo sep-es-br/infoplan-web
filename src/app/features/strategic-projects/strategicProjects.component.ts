@@ -1,11 +1,11 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { StrategicProjectsService } from '../../core/service/strategic-projects.service';
 import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
 import { IStrategicProjectFilterDataDto, IStrategicProjectFilterValuesDto } from '../../core/interfaces/strategic-project-filter.interface';
 import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project-totals.interface';
 import { IStrategicProjectTimestamp } from '../../core/interfaces/strategic-project.interface';
-import { NbThemeService } from '@nebular/theme';
+import { NbSelectComponent, NbThemeService } from '@nebular/theme';
 import { AvailableThemes } from '../../@theme/theme.module';
 import { BehaviorSubject } from 'rxjs';
 
@@ -59,6 +59,8 @@ export interface StrategicProjectsFilter {
 export class StrategicProjectsComponent {
   @ViewChild('modalCloseButton') modalCloseButtonRef: ElementRef;
 
+  @ViewChildren('customSelect') customSelectRefs: QueryList<NbSelectComponent>;
+
   @HostListener('show.bs.modal')
   onModalOpen() {
     this.isFilterModalOpen = true;
@@ -67,6 +69,27 @@ export class StrategicProjectsComponent {
   @HostListener('hide.bs.modal')
   onModalClose() {
     this.isFilterModalOpen = false;
+  }
+
+  @HostListener('document:touchmove', ['$event'])
+  handleDrag(event: TouchEvent) {
+    if (this.isFilterModalOpen) {
+      // Deve limitar essa verificação à apenas quando o modal de filtros estiver aberto
+
+      const optionListElements = document.getElementsByTagName('nb-option-list');
+  
+      if (
+        optionListElements &&
+        optionListElements.length > 0 &&
+        !optionListElements[0].contains((event.target as any))
+      ) {
+        // Se optionListElements possui elementos, quer dizer que tem uma lista de options (select) aberto
+        // Se o evento touchmove foi disparado, e não foi dentro do select aberto, tem que fechar o select
+        this.customSelectRefs
+          .filter((select: NbSelectComponent) => select.isOpen)
+          .forEach((select: NbSelectComponent) => select.button.nativeElement.click());
+      }
+    }
   }
 
   timestamp: string;
@@ -166,14 +189,6 @@ export class StrategicProjectsComponent {
     };
   };
 
-  constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
-    this.loadTimestamp();
-    this.updateActiveFilters();
-    this.filterOutDisabledDates();
-    this.loadAll();
-    this.loadTotals();
-  }
-
   get portfolioLogoUrl(): string {
     const currentTheme = this.themeService.currentTheme;
     switch (currentTheme) {
@@ -185,6 +200,14 @@ export class StrategicProjectsComponent {
       default:
         return 'assets/images/app/realiza+_transparente.png';
     }
+  }
+
+  constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
+    this.loadTimestamp();
+    this.updateActiveFilters();
+    this.filterOutDisabledDates();
+    this.loadAll();
+    this.loadTotals();
   }
 
   updateActiveFilters() {

@@ -22,8 +22,11 @@
     .menu-item a.active::before{
       background: #DC3545 !important;
     }
+
+    @media screen and (max-width: 767.98px) {
+      nb-layout.window-mode .scrollable-container {
+        overflow-x: hidden;
+      }
+    }
   }   
 }
-
-
-

@@ -141,12 +141,16 @@ button:focus, select:focus, input:focus {
             margin-bottom: .75em;
       
             .filter-entity {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+
               span {
                 font-size: 12px;
               }
       
               nb-select, input {
-                width: 95%;
+                width: 100%;
+                max-width: 100%;
                 height: 2.5em;
                 font-size: 12px;
               }

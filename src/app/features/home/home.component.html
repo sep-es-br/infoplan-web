@@ -1,39 +1,45 @@
 <div class="container">
   <div class="align-content-center">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center card-outer-format">
       <ng-container *ngFor="let menuItem of menulinks">
-        <nb-card
-          class="col-10 col-md-6 col-xl-4 mt-4 d-flex flex-column flex-md-row p-4 rounded"
-          (click)="handleClick(menuItem.id)"
-        >
-          <nb-card-header class="d-flex align-items-center justify-content-center col-12 col-md-2 p-0 mb-2 mb-md-0 header">
-            <div class="img-box">
-              <img class="p-2 rounded" [ngStyle]="{ 'background-color': menuItem.status ? menuItem.color : 'red' }" [src]="'assets/images/app/' + menuItem.icon" [alt]="menuItem.name + ' Icon'">
-            </div>
-          </nb-card-header>
-          <div class="d-flex flex-column col-12 col-md-10">
-            <nb-card-body class="body d-flex flex-column align-items-center align-items-md-start p-0 ps-md-4">
-              <div class="d-flex w-100 justify-content-center justify-content-md-between">
-                <span class="title">{{ menuItem.name }}</span>
-                <nb-icon
-                  *ngIf="menuItem.url"
-                  icon="external-link-outline"
-                  class="icon-external mx-2"
-                >
-                </nb-icon>
-              </div>
-              <span
-                *ngIf="menuItem.subTitle"
-                class="subtitle"
+        <div class="col-10 col-md-6 col-xl-4 mt-2">
+          <nb-card
+            class="d-flex flex-column p-4 rounded"
+            (click)="handleClick(menuItem.id)"
+          >
+            <div class="d-flex justify-content-end w-100 icon-box">
+              <nb-icon
+                *ngIf="menuItem.url"
+                icon="external-link-outline"
+                class="icon-external"
               >
-                {{ menuItem.subTitle }}
-              </span>
-            </nb-card-body>
-            <nb-card-footer class="footer p-0 mt-2 text-end">
-              <span class="italic">Fonte: {{ menuItem.src }}</span>
-            </nb-card-footer>
-          </div>
-        </nb-card>
+              </nb-icon>
+            </div>
+            <div class="d-flex flex-column flex-md-row">
+              <nb-card-header class="d-flex align-items-center justify-content-center col-12 col-md-2 p-0 mb-2 mb-md-0 header">
+                <div class="img-box">
+                  <img class="p-2 rounded" [ngStyle]="{ 'background-color': menuItem.status ? menuItem.color : 'red' }" [src]="'assets/images/app/' + menuItem.icon" [alt]="menuItem.name + ' Icon'">
+                </div>
+              </nb-card-header>
+              <div class="d-flex flex-column col-12 col-md-10">
+                <nb-card-body class="body d-flex flex-column align-items-center align-items-md-start p-0 ps-md-4">
+                  <div class="d-flex w-100 justify-content-center justify-content-md-start">
+                    <span class="title">{{ menuItem.name }}</span>
+                  </div>
+                  <span
+                    *ngIf="menuItem.subTitle"
+                    class="subtitle"
+                  >
+                    {{ menuItem.subTitle }}
+                  </span>
+                </nb-card-body>
+                <nb-card-footer class="footer p-0 mt-2 text-end">
+                  <span class="italic">Fonte: {{ menuItem.src }}</span>
+                </nb-card-footer>
+              </div>
+            </div>
+          </nb-card>
+        </div>
       </ng-container>
     </div>
   </div>

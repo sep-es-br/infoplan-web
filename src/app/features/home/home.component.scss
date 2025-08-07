@@ -1,37 +1,55 @@
 @import '../../@theme/styles/themes';
 
-nb-card {
-  cursor: pointer;
+.card-outer-format {
+  padding: 0;
 
-  .icon-external {
-    width: 16px;
+  @media screen and (min-width: 768px) {
+    :nth-child(odd) {
+      padding-right: 0.5rem;
+    }
+    :nth-child(even) {
+      padding-left: 0.5rem;
+    }
   }
+  
+  nb-card {
+    cursor: pointer;
 
-  .header {
-    border: none;
+    .icon-box {
+      position: relative;
 
-    .img-box {
-      img {
-        width: 70px;
+      .icon-external {
+        width: 16px;
+        position: absolute;
       }
     }
-  }
-
-  .body {
-    .title {
-      font-size: 14px;
+  
+    .header {
+      border: none;
+  
+      .img-box {
+        img {
+          width: 70px;
+        }
+      }
     }
-    .subtitle {
-      font-size: 12px;
+  
+    .body {
+      .title {
+        font-size: 14px;
+      }
+      .subtitle {
+        font-size: 12px;
+      }
     }
-  }
-
-  .footer {
-    border: none;
-
-    .italic {
-      font-size: 12px;
-      font-style: italic;
+  
+    .footer {
+      border: none;
+  
+      .italic {
+        font-size: 12px;
+        font-style: italic;
+      }
     }
   }
 }

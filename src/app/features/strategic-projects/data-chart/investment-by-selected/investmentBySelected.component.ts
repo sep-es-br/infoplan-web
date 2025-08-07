@@ -49,8 +49,6 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   requestStatus: RequestStatus = RequestStatus.EMPTY;
 
-  isOffcanvasOpen: boolean = false;
-
   selectedItemDetails: StrategicProjectProgramDetails | StrategicProjectProjectDetails;
 
   offcanvasRequestStatus: RequestStatus = RequestStatus.EMPTY;
@@ -318,47 +316,39 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   handleChartLabelClick(event: HorizontalBarChartLabelClick) {
     const selectedInvestment = this.investmentData.find((el) => el.nome === event.value);
+    this.offcanvasRequestStatus = RequestStatus.LOADING;      
+    setTimeout(() => this.offcanvasTrigger.nativeElement.click(), 50);
 
-    /**
-     * É necessário verificar e controlar se o offcanvas está aberto ou não porque por algum motivo
-     * o evento de click está sendo disparado 2x ao clicar no label.
-    */
-    if (selectedInvestment && !this.isOffcanvasOpen) {
-      this.isOffcanvasOpen = true;
-      this.offcanvasRequestStatus = RequestStatus.LOADING;      
-      this.offcanvasTrigger.nativeElement.click();
-
-      if (['Programa', 'Programas Transversais'].includes(this.selectedInvestmentOption)) {
-        this.strategicProjectsService.getProgramDetails(this.filter, selectedInvestment.id)
-          .subscribe({
-            next: (res: StrategicProjectProgramDetails) => {
-              this.selectedItemDetails = res;
-              this.offcanvasRequestStatus = RequestStatus.SUCCESS;
-              this.changeDetectorRef.detectChanges();
-              // É necessário chamar o detectChanges pois às vezes acontece de já ter alterado o valor da propriedade, porém o
-              // offcanvas não muda de estado
-            },
-            error: (err) => {
-              console.error('Ocorreu um erro! \n', err);
-              this.offcanvasRequestStatus = RequestStatus.ERROR;
-            },
-          });
-      } else if (this.selectedInvestmentOption === 'Projeto') {
-        this.strategicProjectsService.getProjectDetails(this.filter, selectedInvestment.id)
-          .subscribe({
-            next: (res: StrategicProjectProjectDetails) => {
-              this.selectedItemDetails = res;
-              this.offcanvasRequestStatus = RequestStatus.SUCCESS;
-              this.changeDetectorRef.detectChanges();
-              // É necessário chamar o detectChanges pois às vezes acontece de já ter alterado o valor da propriedade, porém o
-              // offcanvas não muda de estado
-            },
-            error: (err) => {
-              console.error("Ocorreu um erro! \n", err);
-              this.offcanvasRequestStatus = RequestStatus.ERROR;
-            },
-          });
-      }
+    if (['Programa', 'Programas Transversais'].includes(this.selectedInvestmentOption)) {
+      this.strategicProjectsService.getProgramDetails(this.filter, selectedInvestment.id)
+        .subscribe({
+          next: (res: StrategicProjectProgramDetails) => {
+            this.selectedItemDetails = res;
+            this.offcanvasRequestStatus = RequestStatus.SUCCESS;
+            this.changeDetectorRef.detectChanges();
+            // É necessário chamar o detectChanges pois às vezes acontece de já ter alterado o valor da propriedade, porém o
+            // offcanvas não muda de estado
+          },
+          error: (err) => {
+            console.error('Ocorreu um erro! \n', err);
+            this.offcanvasRequestStatus = RequestStatus.ERROR;
+          },
+        });
+    } else if (this.selectedInvestmentOption === 'Projeto') {
+      this.strategicProjectsService.getProjectDetails(this.filter, selectedInvestment.id)
+        .subscribe({
+          next: (res: StrategicProjectProjectDetails) => {
+            this.selectedItemDetails = res;
+            this.offcanvasRequestStatus = RequestStatus.SUCCESS;
+            this.changeDetectorRef.detectChanges();
+            // É necessário chamar o detectChanges pois às vezes acontece de já ter alterado o valor da propriedade, porém o
+            // offcanvas não muda de estado
+          },
+          error: (err) => {
+            console.error("Ocorreu um erro! \n", err);
+            this.offcanvasRequestStatus = RequestStatus.ERROR;
+          },
+        });
     }
   }
 
@@ -371,9 +361,5 @@ export class InvestmentBySelectedComponent implements OnChanges {
         this.isDoingDrillDownActions = false;
       }, 500);
     }
-  }
-
-  handleOffcanvasClose() {
-    this.isOffcanvasOpen = false;
   }
 }

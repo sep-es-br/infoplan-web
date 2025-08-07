@@ -3,8 +3,8 @@
 @import '../../styles/themes';
 
 @include nb-install-component() {
-  display: flex;
-  justify-content: space-between;
+  // display: flex;
+  // justify-content: space-between;
   width: 100%;
 
   .logo-container {

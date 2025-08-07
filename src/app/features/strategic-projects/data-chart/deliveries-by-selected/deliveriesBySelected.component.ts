@@ -45,8 +45,6 @@ export class DeliveriesBySelectedComponent implements OnChanges {
   deliveriesSelectedOption: string = 'Área Temática';
 
   flipTableContent: FlipTableContent;
-
-  isOffcanvasOpen: boolean = false;
   
   selectedItemDetails: StrategicProjectProgramDetails | StrategicProjectProjectDetails;
   
@@ -299,43 +297,35 @@ export class DeliveriesBySelectedComponent implements OnChanges {
 
   handleChartLabelClick(event: HorizontalBarChartLabelClick) {
     const selectedDelivery = this.deliveriesData.find((el) => el.nome === event.value);
-    
-    /**
-     * É necessário verificar e controlar se o offcanvas está aberto ou não porque por algum motivo
-     * o evento de click está sendo disparado 2x ao clicar.
-    */
-    if (selectedDelivery && !this.isOffcanvasOpen) {
-      this.offcanvasRequestStatus = RequestStatus.LOADING;      
-      this.offcanvasTrigger.nativeElement.click();
-      this.isOffcanvasOpen = true;
+    this.offcanvasRequestStatus = RequestStatus.LOADING;      
+    setTimeout(() => this.offcanvasTrigger.nativeElement.click(), 50);
 
-      if (['Programa', 'Programas Transversais'].includes(this.deliveriesSelectedOption)) {
-        this.strategicProjectsService.getProgramDetails(this.filter, selectedDelivery.id)
-          .subscribe({
-            next: (res: StrategicProjectProgramDetails) => {
-              this.selectedItemDetails = res;
-              this.offcanvasRequestStatus = RequestStatus.SUCCESS;
-              this.changeDetectorRef.detectChanges();
-            },
-            error: (err) => {
-              console.error('Ocorreu um erro! \n', err);
-              this.offcanvasRequestStatus = RequestStatus.ERROR;
-            },
-          });
-      } else if (this.deliveriesSelectedOption === 'Projeto') {
-        this.strategicProjectsService.getProjectDetails(this.filter, selectedDelivery.id)
-          .subscribe({
-            next: (res: StrategicProjectProjectDetails) => {
-              this.selectedItemDetails = res;
-              this.offcanvasRequestStatus = RequestStatus.SUCCESS;
-              this.changeDetectorRef.detectChanges();
-            },
-            error: (err) => {
-              console.error("Ocorreu um erro! \n", err);
-              this.offcanvasRequestStatus = RequestStatus.ERROR;
-            },
-          });
-      }
+    if (['Programa', 'Programas Transversais'].includes(this.deliveriesSelectedOption)) {
+      this.strategicProjectsService.getProgramDetails(this.filter, selectedDelivery.id)
+        .subscribe({
+          next: (res: StrategicProjectProgramDetails) => {
+            this.selectedItemDetails = res;
+            this.offcanvasRequestStatus = RequestStatus.SUCCESS;
+            this.changeDetectorRef.detectChanges();
+          },
+          error: (err) => {
+            console.error('Ocorreu um erro! \n', err);
+            this.offcanvasRequestStatus = RequestStatus.ERROR;
+          },
+        });
+    } else if (this.deliveriesSelectedOption === 'Projeto') {
+      this.strategicProjectsService.getProjectDetails(this.filter, selectedDelivery.id)
+        .subscribe({
+          next: (res: StrategicProjectProjectDetails) => {
+            this.selectedItemDetails = res;
+            this.offcanvasRequestStatus = RequestStatus.SUCCESS;
+            this.changeDetectorRef.detectChanges();
+          },
+          error: (err) => {
+            console.error("Ocorreu um erro! \n", err);
+            this.offcanvasRequestStatus = RequestStatus.ERROR;
+          },
+        });
     }
   }
 
@@ -348,9 +338,5 @@ export class DeliveriesBySelectedComponent implements OnChanges {
         this.isDoingDrillDownActions = false;
       }, 500);
     }
-  }
-
-  handleOffcanvasClose() {
-    this.isOffcanvasOpen = false;
   }
 }

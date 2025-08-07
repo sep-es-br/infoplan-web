@@ -43,13 +43,18 @@ button:focus, select:focus, input:focus {
         background-color: var(--card-background-color);
         border: 1px solid #CED4DA;
         color: var(--card-text-color);
-        padding: 4px 12px; 
+        padding: 4px 12px;
         border-radius: 20px; 
         font-weight: bold;
         display: flex;
         align-items: center;
         font-size: 10px; 
         white-space: nowrap;
+
+        @media screen and (max-width: 576px) {
+          padding: 2px 12px;
+          font-size: 9px;
+        }
 
         .tag-label {
           font-weight: normal;
@@ -120,6 +125,7 @@ button:focus, select:focus, input:focus {
   .modal {
     .modal-dialog {
       max-width: 70vw;
+      justify-self: center;
 
       .modal-content {
         width: 70vw;
@@ -135,12 +141,16 @@ button:focus, select:focus, input:focus {
             margin-bottom: .75em;
       
             .filter-entity {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+
               span {
                 font-size: 12px;
               }
       
               nb-select, input {
-                width: 95%;
+                width: 100%;
+                max-width: 100%;
                 height: 2.5em;
                 font-size: 12px;
               }

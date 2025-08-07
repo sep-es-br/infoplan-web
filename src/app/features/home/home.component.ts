@@ -8,8 +8,7 @@ import { menulinks } from '../../@core/utils/menuLinks';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent  {
-
-  public menulinks = menulinks;
+  menulinks = menulinks;
 
   constructor(private router: Router) { 
     this.menulinks = this.menulinks.filter(item => item.status);
@@ -17,13 +16,13 @@ export class HomeComponent  {
 
   handleClick(id: number) {
     const menuClicked = menulinks[id-1];
-    if(menuClicked.link != ''){
+
+    if (menuClicked.link != '') {
       this.router.navigate([menuClicked.link]);
-    }else{
-      if(menuClicked.url != ''){
+    } else {
+      if (menuClicked.url != '') {
         window.open(menuClicked.url, '_blank');
       }
     }
   }
-
 }

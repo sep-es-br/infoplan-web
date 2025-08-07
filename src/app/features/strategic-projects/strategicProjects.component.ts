@@ -1,11 +1,11 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { StrategicProjectsService } from '../../core/service/strategic-projects.service';
 import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
 import { IStrategicProjectFilterDataDto, IStrategicProjectFilterValuesDto } from '../../core/interfaces/strategic-project-filter.interface';
 import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project-totals.interface';
 import { IStrategicProjectTimestamp } from '../../core/interfaces/strategic-project.interface';
-import { NbThemeService } from '@nebular/theme';
+import { NbSelectComponent, NbThemeService } from '@nebular/theme';
 import { AvailableThemes } from '../../@theme/theme.module';
 import { BehaviorSubject } from 'rxjs';
 
@@ -38,8 +38,8 @@ export interface CustomTableFilteringTrigger {
 
 export interface StrategicProjectsFilter {
   portfolio: string,
-  dataInicio: Date | string,
-  dataFim: Date | string,
+  dataInicio: string,
+  dataFim: string,
   previsaoConclusao: string,
   areaTematica?: Array<Number>,
   programaOrigem?: Array<Number>,
@@ -59,6 +59,8 @@ export interface StrategicProjectsFilter {
 export class StrategicProjectsComponent {
   @ViewChild('modalCloseButton') modalCloseButtonRef: ElementRef;
 
+  @ViewChildren('customSelect') customSelectRefs: QueryList<NbSelectComponent>;
+
   @HostListener('show.bs.modal')
   onModalOpen() {
     this.isFilterModalOpen = true;
@@ -67,6 +69,27 @@ export class StrategicProjectsComponent {
   @HostListener('hide.bs.modal')
   onModalClose() {
     this.isFilterModalOpen = false;
+  }
+
+  @HostListener('document:touchmove', ['$event'])
+  handleDrag(event: TouchEvent) {
+    if (this.isFilterModalOpen) {
+      // Deve limitar essa verificação à apenas quando o modal de filtros estiver aberto
+
+      const optionListElements = document.getElementsByTagName('nb-option-list');
+  
+      if (
+        optionListElements &&
+        optionListElements.length > 0 &&
+        !optionListElements[0].contains((event.target as any))
+      ) {
+        // Se optionListElements possui elementos, quer dizer que tem uma lista de options (select) aberto
+        // Se o evento touchmove foi disparado, e não foi dentro do select aberto, tem que fechar o select
+        this.customSelectRefs
+          .filter((select: NbSelectComponent) => select.isOpen)
+          .forEach((select: NbSelectComponent) => select.button.nativeElement.click());
+      }
+    }
   }
 
   timestamp: string;
@@ -83,8 +106,8 @@ export class StrategicProjectsComponent {
 
   filter: StrategicProjectsFilter = {
     portfolio: environment.strategicProjectFilter.portfolio,
-    dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
-    dataFim: new Date(environment.strategicProjectFilter.dataFim),
+    dataInicio: environment.strategicProjectFilter.dataInicio,
+    dataFim: environment.strategicProjectFilter.dataFim,
     previsaoConclusao: '',
     areaTematica: [],
     programaOrigem: [],
@@ -98,8 +121,8 @@ export class StrategicProjectsComponent {
 
   finalFilter: StrategicProjectsFilter = {
     portfolio: environment.strategicProjectFilter.portfolio,
-    dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
-    dataFim: new Date(environment.strategicProjectFilter.dataFim),
+    dataInicio: environment.strategicProjectFilter.dataInicio,
+    dataFim: environment.strategicProjectFilter.dataFim,
     previsaoConclusao: '',
     areaTematica: [],
     programaOrigem: [],
@@ -118,6 +141,34 @@ export class StrategicProjectsComponent {
   orgaoList: IIdAndName[] = [];
   localidadeList: IIdAndName[] = [];
   projetoList: IIdAndName[] = [];
+  monthsList = [
+    { num: 1, name: 'Janeiro', disabledInicial: false, disabledFinal: false },
+    { num: 2, name: 'Fevereiro', disabledInicial: false, disabledFinal: false },
+    { num: 3, name: 'Março', disabledInicial: false, disabledFinal: false },
+    { num: 4, name: 'Abril', disabledInicial: false, disabledFinal: false },
+    { num: 5, name: 'Maio', disabledInicial: false, disabledFinal: false },
+    { num: 6, name: 'Junho', disabledInicial: false, disabledFinal: false },
+    { num: 7, name: 'Julho', disabledInicial: false, disabledFinal: false },
+    { num: 8, name: 'Agosto', disabledInicial: false, disabledFinal: false },
+    { num: 9, name: 'Setembro', disabledInicial: false, disabledFinal: false },
+    { num: 10, name: 'Outubro', disabledInicial: false, disabledFinal: false },
+    { num: 11, name: 'Novembro', disabledInicial: false, disabledFinal: false },
+    { num: 12, name: 'Dezembro', disabledInicial: false, disabledFinal: false }
+  ];
+  yearsList = [
+    { num: 2020, disabledInicial: false, disabledFinal: false },
+    { num: 2021, disabledInicial: false, disabledFinal: false },
+    { num: 2022, disabledInicial: false, disabledFinal: false },
+    { num: 2023, disabledInicial: false, disabledFinal: false },
+    { num: 2024, disabledInicial: false, disabledFinal: false },
+    { num: 2025, disabledInicial: false, disabledFinal: false },
+    { num: 2026, disabledInicial: false, disabledFinal: false },
+    { num: 2027, disabledInicial: false, disabledFinal: false },
+    { num: 2028, disabledInicial: false, disabledFinal: false },
+    { num: 2029, disabledInicial: false, disabledFinal: false },
+    { num: 2030, disabledInicial: false, disabledFinal: false },
+    { num: 2031, disabledInicial: false, disabledFinal: false },
+  ];
 
   activeFilters: { key: string; label: string; displayValue: Array<{name: string; fullName?: string; }>; }[] = [];
 
@@ -129,12 +180,14 @@ export class StrategicProjectsComponent {
 
   isFilterModalOpen: boolean = false;
 
-  constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
-    this.loadTimestamp();
-    this.updateActiveFilters();
-    this.loadAll();
-    this.loadTotals();
-  }
+  get dateController(): { mesInicial: number; anoInicial: number; mesFinal: number; anoFinal: number} {
+    return {
+      mesInicial: Number(this.filter.dataInicio.slice(5, 7)),
+      anoInicial: Number(this.filter.dataInicio.slice(0, 4)),
+      mesFinal: Number(this.filter.dataFim.slice(5, 7)),
+      anoFinal: Number(this.filter.dataFim.slice(0, 4)),
+    };
+  };
 
   get portfolioLogoUrl(): string {
     const currentTheme = this.themeService.currentTheme;
@@ -147,6 +200,14 @@ export class StrategicProjectsComponent {
       default:
         return 'assets/images/app/realiza+_transparente.png';
     }
+  }
+
+  constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
+    this.loadTimestamp();
+    this.updateActiveFilters();
+    this.filterOutDisabledDates();
+    this.loadAll();
+    this.loadTotals();
   }
 
   updateActiveFilters() {
@@ -169,9 +230,8 @@ export class StrategicProjectsComponent {
 
         if (directValueKeys.includes(key)) {
           if (key === 'dataInicio' || key === 'dataFim') {
-            const year = ((value as Date).getFullYear()).toString();
-            let month = ((value as Date).getMonth() + 1).toString();
-            if (Number(month) < 10) month = `0${month}`;
+            const year = value.slice(0, 4);
+            const month = value.slice(5, 7);
             displayValue = [{ name: `${month}-${year}` }];
           } else {
             displayValue = [{ name: (value as string) }];
@@ -204,7 +264,7 @@ export class StrategicProjectsComponent {
   }
 
   handleFilterChange(origin: AvailableFilters | string, newValue: Array<number>) {
-    const selectedValue = newValue.length === 0 ? '' : newValue.toString();
+    const selectedValue = Array.isArray(newValue) && newValue.length === 0 ? '' : newValue.toString();
     
     switch (origin) {
       case AvailableFilters.AREAS_TEMATICAS:
@@ -254,9 +314,27 @@ export class StrategicProjectsComponent {
             }
           );
         break;
+      case 'DataInicioMes':
+        let inicioMesValue = newValue[0].toString();
+        if (newValue[0] < 10) inicioMesValue = `0${inicioMesValue}`;
+        this.filter.dataInicio = `${this.filter.dataInicio.slice(0, 4)}-${inicioMesValue}`;
+        break;
+      case 'DataInicioAno':
+        this.filter.dataInicio = `${newValue[0]}-${this.filter.dataInicio.slice(5, 7)}`;
+        break;
+      case 'DataFinalMes':
+        let finalMesValue = newValue[0].toString();
+        if (newValue[0] < 10) finalMesValue = `0${finalMesValue}`;
+        this.filter.dataFim = `${this.filter.dataFim.slice(0, 4)}-${finalMesValue}`;
+        break;
+      case 'DataFinalAno':
+        this.filter.dataFim = `${newValue[0]}-${this.filter.dataFim.slice(5, 7)}`;
+        break;
       default:
         break;
     }
+
+    this.filterOutDisabledDates();
   }
 
   getFilterLabel(key: string): string {
@@ -337,8 +415,8 @@ export class StrategicProjectsComponent {
 
     this.finalFilter = {
       portfolio: environment.strategicProjectFilter.portfolio,
-      dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
-      dataFim: new Date(environment.strategicProjectFilter.dataFim),
+      dataInicio: environment.strategicProjectFilter.dataInicio,
+      dataFim: environment.strategicProjectFilter.dataFim,
       previsaoConclusao: '',
       areaTematica: [],
       programaOrigem: [],
@@ -417,8 +495,8 @@ export class StrategicProjectsComponent {
   handleNewTableFilter(newFilter: IStrategicProjectFilterValuesDto, source: 'InvestmentBy' | 'DeliveriesBy') {
     let newLocalFilter: any = {
       portfolio: environment.strategicProjectFilter.portfolio,
-      dataInicio: new Date(environment.strategicProjectFilter.dataInicio),
-      dataFim: new Date(environment.strategicProjectFilter.dataFim),
+      dataInicio: environment.strategicProjectFilter.dataInicio,
+      dataFim: environment.strategicProjectFilter.dataFim,
     };
 
     let newEntityToBeDisplayed;
@@ -463,5 +541,36 @@ export class StrategicProjectsComponent {
      */
 
     if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
+  }
+
+  filterOutDisabledDates() {
+    // ↳ Essa função controla quais meses e anos, iniciais e finais, devem estar desabilitados para seleção
+    const currentDate = this.dateController;
+    
+    if (currentDate.anoInicial === currentDate.anoFinal) {
+    // ↳ Se tiver selecionado anos iguais
+      this.monthsList.filter((month) => month.num > currentDate.mesFinal).forEach((month) => month.disabledInicial = true);
+      this.monthsList.filter((month) => month.num < currentDate.mesInicial).forEach((month) => month.disabledFinal = true);
+
+      this.yearsList.filter((year) => year.num > currentDate.anoFinal).forEach((year) => year.disabledInicial = true);
+      this.yearsList.filter((year) => year.num < currentDate.anoInicial).forEach((year) => year.disabledFinal = true);
+    } else if (currentDate.mesInicial > currentDate.mesFinal) {
+      // ↳ Se tiver selecionado um mês inicial posterior ao mês final (ou um mês final anterior ao mês inicial)
+      this.yearsList.filter((year) => year.num >= currentDate.anoFinal).forEach((year) => year.disabledInicial = true);
+      this.yearsList.filter((year) => year.num <= currentDate.anoInicial).forEach((year) => year.disabledFinal = true);
+    } else {
+      this.monthsList.forEach((month) => {
+        month.disabledInicial = false;
+        month.disabledFinal = false;
+      });
+
+      this.yearsList.forEach((year) => {
+        year.disabledInicial = false;
+        year.disabledFinal = false;
+      });
+
+      this.yearsList.filter((year) => year.num > currentDate.anoFinal).forEach((year) => year.disabledInicial = true);
+      this.yearsList.filter((year) => year.num < currentDate.anoInicial).forEach((year) => year.disabledFinal = true);
+    }
   }
 }

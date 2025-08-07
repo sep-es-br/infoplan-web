@@ -1,6 +1,6 @@
 <div class="col-12">
   <div class="filter-container">
-    <div class="filter-button px-3">
+    <div class="filter-button px-2">
       <div class="filter-tags">
         <div *ngFor="let tag of activeFilters; let i = index">
           <div class="filter-tag" [ngClass]="{ 'invisible-tag': showFilters }">
@@ -71,11 +71,13 @@
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Portfólio</span>
                     <nb-select
+                      class="w-100"
                       name="portfolio"
                       placeholder="Selecionar"
                       size="tiny"
                       [(ngModel)]="filter.portfolio"
                       (selectedChange)="handleFilterChange('Portfolio', $event)"
+                      #customSelect
                     >
                       <nb-option value="Realiza+">Realiza+</nb-option>
                     </nb-select>
@@ -83,29 +85,70 @@
 
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">De</span>
-                    <input
-                      nbInput
-                      name="dataInicial"
-                      placeholder="Data Inicial"
-                      size="tiny"
-                      [nbDatepicker]="initialDatePicker"
-                      [(ngModel)]="filter.dataInicio"
-                    />
-                    <nb-datepicker size="tiny" #initialDatePicker></nb-datepicker>
+                    <div class="d-flex flex-row w-100 gap-2 pe-2">
+                      <div class="col-6">
+                        <nb-select
+                          name="MêsInicial"
+                          size="tiny"
+                          placeholder="Mês"
+                          [(ngModel)]="dateController.mesInicial"
+                          (selectedChange)="handleFilterChange('DataInicioMes', [$event])"
+                          #customSelect
+                        >
+                          <nb-option *ngFor="let mes of monthsList; let index = index" [value]="mes.num" [disabled]="mes.disabledInicial">
+                            {{ mes.name }}
+                          </nb-option>
+                        </nb-select>
+                      </div>
+                      <div class="col-6">
+                        <nb-select
+                          name="AnoInicial"
+                          size="tiny"
+                          placeholder="Ano"
+                          [(ngModel)]="dateController.anoInicial"
+                          (selectedChange)="handleFilterChange('DataInicioAno', [$event])"
+                          #customSelect
+                        >
+                          <nb-option *ngFor="let ano of yearsList" [value]="ano.num" [disabled]="ano.disabledInicial">
+                            {{ ano.num }}
+                          </nb-option>
+                        </nb-select>
+                      </div>
+                    </div>
                   </div>
           
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
                     <span class="mb-1">Até</span>
-                    <input
-                      nbInput
-                      name="dataFim"
-                      placeholder="Data Final"
-                      size="tiny"
-                      [nbDatepicker]="endDatePicker"
-                      [(ngModel)]="filter.dataFim"
-                    />
-                    <nb-datepicker #endDatePicker>
-                    </nb-datepicker>
+                    <div class="d-flex flex-row w-100 gap-2 pe-2">
+                      <div class="col-6">
+                        <nb-select
+                          name="MêsFinal"
+                          size="tiny"
+                          placeholder="Mês"
+                          [(ngModel)]="dateController.mesFinal"
+                          (selectedChange)="handleFilterChange('DataFinalMes', [$event])"
+                          #customSelect
+                        >
+                          <nb-option *ngFor="let mes of monthsList; let index = index" [value]="mes.num" [disabled]="mes.disabledFinal">
+                            {{ mes.name }}
+                          </nb-option>
+                        </nb-select>
+                      </div>
+                      <div class="col-6">
+                        <nb-select
+                          name="AnoFinal"
+                          size="tiny"
+                          placeholder="Ano"
+                          [(ngModel)]="dateController.anoFinal"
+                          (selectedChange)="handleFilterChange('DataFinalAno', [$event])"
+                          #customSelect
+                        >
+                          <nb-option *ngFor="let ano of yearsList" [value]="ano.num" [disabled]="ano.disabledFinal">
+                            {{ ano.num }}
+                          </nb-option>
+                        </nb-select>
+                      </div>
+                    </div>
                   </div>
           
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 invisible-tag">
@@ -133,6 +176,7 @@
                       size="tiny"
                       [(ngModel)]="filter.areaTematica"
                       (selectedChange)="handleFilterChange('Areas_Tematicas', $event)"
+                      #customSelect
                     >
                       <nb-option *ngFor="let area of areaList" [value]="area.id">
                         {{ area.name }}
@@ -149,6 +193,7 @@
                       size="tiny"
                       [(ngModel)]="filter.programaOrigem"
                       (selectedChange)="handleFilterChange('Programas_Originais', $event)"
+                      #customSelect
                     >
                       <nb-option *ngFor="let programa of programaOList" [value]="programa.id">
                         {{ programa.name }}
@@ -165,6 +210,7 @@
                       size="tiny"
                       [(ngModel)]="filter.projetos"
                       (selectedChange)="handleFilterChange('Projetos', $event)"
+                      #customSelect
                     >
                       <nb-option *ngFor="let projeto of projetoList" [value]="projeto.id">
                         {{ projeto.name }}
@@ -181,6 +227,7 @@
                       size="tiny"
                       [(ngModel)]="filter.entregas"
                       (selectedChange)="handleFilterChange('Entregas', $event)"
+                      #customSelect
                     >
                       <nb-option *ngFor="let entrega of entregaList" [value]="entrega.id">
                         {{ entrega.name }}
@@ -199,6 +246,7 @@
                       size="tiny"
                       [(ngModel)]="filter.programaTransversal"
                       (selectedChange)="handleFilterChange('Programas_Transversais', $event)"
+                      #customSelect
                     >
                       <nb-option *ngFor="let programa of programaTList" [value]="programa.id">
                         {{ programa.name }}
@@ -214,6 +262,7 @@
                       placeholder="Selecionar"
                       size="tiny"
                       [(ngModel)]="filter.localidades"
+                      #customSelect
                     >
                       <nb-option
                         *ngFor="let localidade of localidadeList"
@@ -233,6 +282,7 @@
                       placeholder="Selecionar"
                       size="tiny"
                       [(ngModel)]="filter.orgaos"
+                      #customSelect
                     >
                       <nb-option *ngFor="let orgao of orgaoList" [value]="orgao.id">
                         {{ orgao.name }}
@@ -257,7 +307,7 @@
             </form>
           </div>
 
-          <div class="modal-footer d-flex justify-content-end">
+          <div class="modal-footer d-flex flex-column flex-sm-row justify-content-center justify-content-sm-end">
             <button class="mx-4" nbButton size="small" status="warning" outline shape="semi-round" (click)="resetFilters()">Restaurar Filtros</button>
             <button nbButton size="small" status="success" hero shape="semi-round" (click)="filtrar($event)">Filtrar</button>
           </div>
@@ -267,8 +317,8 @@
   </div>
   
   <!-- Cards de números -->
-  <div class="row px-4">
-    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+  <div class="row px-2">
+    <div class="col-6 col-md-4 col-xxl-2 mb-2 px-1">
       <div class="card">
         <div class="icon-top-right">
           <i class="fas fa-briefcase"></i>
@@ -281,7 +331,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+    <div class="col-6 col-md-4 col-xxl-2 mb-2 px-1">
       <div class="card">
         <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fas fa-cogs"></i>
@@ -306,7 +356,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+    <div class="col-6 col-md-4 col-xxl-2 mb-2 px-1">
       <div class="card">
         <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fas fa-cog"></i>
@@ -331,7 +381,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+    <div class="col-6 col-md-4 col-xxl-2 mb-2 px-1">
       <div class="card">
         <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fas fa-cubes"></i>
@@ -356,7 +406,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+    <div class="col-6 col-md-4 col-xxl-2 mb-2 px-1">
       <div class="card">
         <div class="icon-top-right previsto" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fas fa-calculator"></i>
@@ -389,7 +439,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+    <div class="col-6 col-md-4 col-xxl-2 mb-2 px-1">
       <div class="card">
         <div class="icon-top-right realizado" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fas fa-database"></i>
@@ -424,7 +474,7 @@
   </div>
   
   <!-- Cards de gráficos -->
-  <div class="row px-4">
+  <div class="row px-2">
     <div class="d-flex col-12 col-xxxl-6 p-0 map" *ngIf="isMapOpen">
       <div class="col-12 px-1 mb-1">
         <div class="card">

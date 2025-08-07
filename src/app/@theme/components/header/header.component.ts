@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NbMediaBreakpointsService, NbMenuComponent, NbMenuItem, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
 import { LayoutService } from '../../../@core/utils';
@@ -12,6 +12,8 @@ import { Subject } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild(NbMenuComponent) menuComponent: NbMenuComponent | undefined;
+
+  @ViewChild('headerBox') headerBox: ElementRef;
 
   private destroy$: Subject<void> = new Subject<void>();
 
@@ -141,5 +143,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   logout() {
     localStorage.removeItem('infoPlanCurrentTheme');
     window.location.href = 'https://acessocidadao.es.gov.br/is/logout';
+  }
+
+  getHeaderBoxReference() {
+    return this.headerBox;
   }
 }

@@ -20,3 +20,10 @@
   background-color: transparent !important;
   padding: 0 !important;
 }
+
+@media screen and (max-width: 576px) {
+  nb-layout-column {
+    padding-left: .25rem !important;
+    padding-right: .25rem !important;
+  }
+}

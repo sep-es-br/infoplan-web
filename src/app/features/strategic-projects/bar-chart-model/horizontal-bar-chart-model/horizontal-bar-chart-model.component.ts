@@ -99,6 +99,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
     this.echartsInstance = chartInstance;
 
     // https://apache.github.io/echarts-handbook/en/concepts/event/
+    this.echartsInstance.off('click');
     this.echartsInstance.on('click', (event) => {
       if (event.componentType === 'yAxis' || event.componentType === 'xAxis') {
         this.labelClick.emit({ axis: event.componentType, value: event.value.toString() });
@@ -131,6 +132,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           textStyle: {
             color: currentThemeStyles.textPrimaryColor,
           },
+          confine: true,
           backgroundColor: currentThemeStyles.themePrimaryColor,
           borderColor: currentThemeStyles.themePrimaryColor,
           formatter: (params: any) => {
@@ -240,6 +242,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           textStyle: {
             color: currentThemeStyles.textPrimaryColor,
           },
+          confine: true,
           backgroundColor: currentThemeStyles.themePrimaryColor,
           borderColor: currentThemeStyles.themePrimaryColor,
           formatter: (params: any) => {

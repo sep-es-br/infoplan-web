@@ -32,6 +32,8 @@ export class PieChartModelComponent implements OnInit, OnChanges {
 
   centerY: number = 50;
 
+  pieRadius = ['60%', '100%'];
+
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
 
   constructor(private themeService: NbThemeService) {
@@ -80,6 +82,7 @@ export class PieChartModelComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data']) {
+      this.updateTitlePosition();
       this.initChartOptions(this.data, this.colors);
     }
   }
@@ -106,6 +109,12 @@ export class PieChartModelComponent implements OnInit, OnChanges {
 
   updateTitlePosition() {
     const screenWidth = window.innerWidth;
+    if (screenWidth < 420) {
+      this.pieRadius = ['40%', '80%'];
+    } else {
+      this.pieRadius = ['60%', '100%'];
+    }
+
     const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
       ? this.centerX - 2
       : this.centerX - 1;
@@ -114,7 +123,12 @@ export class PieChartModelComponent implements OnInit, OnChanges {
       this.echartsInstance.setOption({
         title: {
           left: `${offset}%`,
-        }
+          top: `${this.centerY}%`,
+        },
+        series: {
+          center: [`${this.centerX}%`, `${this.centerY}%`],
+          radius: this.pieRadius,
+        },
       });
     }
   }
@@ -189,7 +203,7 @@ export class PieChartModelComponent implements OnInit, OnChanges {
         {
           name: 'Status',
           type: 'pie',
-          radius: ['60%', '100%'],
+          radius: this.pieRadius,
           center: [`${this.centerX}%`, `${this.centerY}%`],
           data: data || [],
           emphasis: { scale: false },

@@ -223,10 +223,9 @@ export class StrategicProjectsService {
         if (key === 'portfolio' && filter[key] === 'Realiza+') {
           cleanedFilter[key] = 2572;
         } else if ((key === 'dataInicio' || key === 'dataFim')) {
-          const date = (filter[key] as Date);
-          const year = date.getFullYear().toString();
-          let month = (date.getMonth() + 1).toString();
-          if (Number(month) < 10) month = `0${month}`;
+          const year = filter[key].slice(0, 4);
+          let month = filter[key].slice(5, 7);
+          if (Number(month) < 10 && !month.startsWith('0')) month = `0${month}`;
           cleanedFilter[key] = `${year}${month}`;
         } else {
           cleanedFilter[key] = filter[key];

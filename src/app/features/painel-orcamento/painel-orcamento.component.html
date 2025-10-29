@@ -1,0 +1,97 @@
+<div class="container">
+  <aside class="filter-container">
+    <nb-card class="filters-wrapper">
+      <nb-card-header>
+        <h6>Filtros</h6>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="filters-grid">
+          <div class="filter-item filter-ano">
+            <label for="ano">Ano</label>
+            <nb-select
+              placeholder="Selecione o ano"
+              (selectedChange)="onSelectionAnoChange($event)"
+            >
+              <nb-option *ngFor="let item of ano; let i = index" [value]="i">
+                {{ item.name }}
+              </nb-option>
+            </nb-select>
+          </div>
+
+          <div class="filter-item filter-mes">
+            <label for="mes">Mês</label>
+            <nb-select
+              placeholder="Selecione o Mês"
+              (selectedChange)="onSelectionMesChange($event)"
+            >
+              <nb-option *ngFor="let item of meses; let i = index" [value]="i">
+                {{ item.name }}
+              </nb-option>
+            </nb-select>
+          </div>
+
+          <div class="filter-item filter-tipo-fonte">
+            <label for="tipo-fonte">Tipo de Fonte</label>
+            <nb-select
+              placeholder="Selecione o Tipo Caixa"
+              (selectedChange)="onSelectionTipoCaixaChange($event)"
+            >
+              <nb-option
+                *ngFor="let item of tipoCaixa; let i = index"
+                [value]="i"
+              >
+                {{ item.name }}
+              </nb-option>
+            </nb-select>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </aside>
+
+  <nb-card>
+    <nb-card-body>
+      <div class="cards-container">
+        <ngx-cards-component
+          *ngFor="let card of cards"
+          [value]="card.value"
+          [description]="card.description"
+          [cor]="card.cor"
+          [icone]="card.icone"
+        >
+        </ngx-cards-component>
+      </div>
+    </nb-card-body>
+  </nb-card>
+
+  <div class="chart-container">
+  <div class="chart-receita-prevista">
+    <nb-card>
+      <nb-card-body>
+        <ngx-org-chart-vertical
+          [chart]="dadosChart.receitaTotal"
+        ></ngx-org-chart-vertical>
+      </nb-card-body>
+    </nb-card>
+  </div>
+
+  <div class="chart-receita-categoria">
+    <nb-card>
+      <nb-card-body>
+        <ngx-org-chart-horizontal [chart]="dadosChart.receitaCategoria">
+        </ngx-org-chart-horizontal>
+      </nb-card-body>
+    </nb-card>
+  </div>
+
+  <div class="chart-principais-origens">
+    <nb-card>
+      <nb-card-body>
+        <ngx-org-chart-horizontal
+          [chart]="dadosChart.receitaOrigem"
+        ></ngx-org-chart-horizontal>
+      </nb-card-body>
+    </nb-card>
+  </div>
+</div>
+</div>

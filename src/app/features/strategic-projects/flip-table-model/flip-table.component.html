@@ -99,7 +99,7 @@
                   <ng-container *ngIf="row.children">
                     <nb-icon class="icon" [icon]="row.expanded ? 'chevron-down-outline' : 'chevron-right-outline'">
                     </nb-icon>
-                  </ng-container> 
+                  </ng-container>
                   {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
                 </div>
               </td>

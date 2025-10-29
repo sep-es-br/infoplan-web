@@ -1,0 +1,75 @@
+.card-dinamico {
+  // margin: 0.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 10px;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.card-dinamico-body {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-value {
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.card-description {
+  font-size: 0.9rem;
+  color: #8f9bb3;
+  // text-transform: uppercase;
+  // letter-spacing: 0.5px;
+}
+
+// Cores dinâmicas
+.card-primary {
+  // border-left: 4px solid #3366ff;
+  background-color: var(--receita-prevista);
+
+}
+
+.card-success {
+  // border-left: 4px solid #00d68f;
+  background-color: var(--receita-realizada);
+
+}
+
+.card-warning {
+  // border-left: 4px solid #ffaa00;
+  background-color: var(--receita-realizada-prevista);
+
+}
+
+.card-info {
+  // border-left: 4px solid #0095ff;
+  background-color: var(--despesa-empenhada-autorizada);
+}
+
+
+.card-danger {
+  // border-left: 4px solid #ff3d71;
+  background-color: var(--despesa-liquida-autorizada);
+
+}
+
+
+.card-value, .card-description {
+  color: whitesmoke;
+}

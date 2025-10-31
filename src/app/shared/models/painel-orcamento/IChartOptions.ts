@@ -9,7 +9,7 @@ interface IData {
 }
 
 interface IDataset {
-  label: string;
+  label?: string;
   data: number[];
   backgroundColor: string;
 }

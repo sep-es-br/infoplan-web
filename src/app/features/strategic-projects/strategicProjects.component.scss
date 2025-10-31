@@ -5,12 +5,12 @@
 }
 
 button:focus, select:focus, input:focus {
-  outline: none; 
-  box-shadow: none; 
+  outline: none;
+  box-shadow: none;
 }
 
 .invisible-tag {
-  visibility: hidden; 
+  visibility: hidden;
 }
 
 @media (max-width: 767px) {
@@ -35,20 +35,20 @@ button:focus, select:focus, input:focus {
       overflow-x: auto;
       white-space: nowrap;
       gap: 8px;
-      padding: 6px 0; 
-      scrollbar-width: thin; 
-      scrollbar-color: #005c99 transparent; 
+      padding: 6px 0;
+      scrollbar-width: thin;
+      scrollbar-color: #005c99 transparent;
 
       .filter-tag {
         background-color: var(--card-background-color);
         border: 1px solid #CED4DA;
         color: var(--card-text-color);
         padding: 4px 12px;
-        border-radius: 20px; 
+        border-radius: 20px;
         font-weight: bold;
         display: flex;
         align-items: center;
-        font-size: 10px; 
+        font-size: 10px;
         white-space: nowrap;
 
         @media screen and (max-width: 576px) {
@@ -71,7 +71,7 @@ button:focus, select:focus, input:focus {
           margin-left: 4px;
           font-size: 17px;
           cursor: pointer;
-          color: #005C99; 
+          color: #005C99;
 
           transition: color .35s ease;
 
@@ -93,9 +93,9 @@ button:focus, select:focus, input:focus {
       }
 
       .map-icon {
-        width: 24px; 
-        height: 50px; 
-        vertical-align: middle; 
+        width: 24px;
+        height: 50px;
+        vertical-align: middle;
       }
 
       &:hover {
@@ -131,15 +131,15 @@ button:focus, select:focus, input:focus {
         width: 70vw;
         background-color: var(--card-background-color);
         color: var(--card-text-color);
-  
+
         .modal-body {
           .close-filter-button {
             color: var(--card-text-color);
           }
-  
+
           .filter-row {
             margin-bottom: .75em;
-      
+
             .filter-entity {
               padding-left: 0.5rem;
               padding-right: 0.5rem;
@@ -147,7 +147,7 @@ button:focus, select:focus, input:focus {
               span {
                 font-size: 12px;
               }
-      
+
               nb-select, input {
                 width: 100%;
                 max-width: 100%;
@@ -233,7 +233,7 @@ button:focus, select:focus, input:focus {
 
       &.previsto { background-color: #487D7A !important; }
       &.realizado { background-color: #00B26A !important; }
-      
+
       .currency {
         font-size: 15px;
       }
@@ -256,7 +256,7 @@ button:focus, select:focus, input:focus {
     &.previsto { color: #487D7A !important };
     &.realizado { color: #00B26A !important };
   }
-  
+
   .text-section {
     color: #005C99 !important;
 

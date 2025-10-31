@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { NbCardModule, NbSelectModule } from "@nebular/theme"; // <-- ESSENCIAL
+import { NbCardModule, NbSelectModule, NbIconModule } from "@nebular/theme"; // <-- ESSENCIAL
 
 import { NgxChartsModule } from "@swimlane/ngx-charts";
 import { NgxEchartsModule } from "ngx-echarts";
@@ -10,6 +10,7 @@ import { OrgChartHorizontalComponent } from "./org-chart-bar/org-chart-horizonta
 import { OrgChartVerticalComponent } from "./org-chart-bar/org-chart-vertical/org-chart-vertical.component";
 import { PainelOrcamentoComponent } from "./painel-orcamento.component";
 import { VerticalBarChartModelComponent } from "../strategic-projects/bar-chart-model/vertical-bar-chart-model/vertical-bar-chart-model.component";
+import { OrgChartPieComponent } from "./org-chart-pie/org-chart-pie.component";
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { VerticalBarChartModelComponent } from "../strategic-projects/bar-chart-
     OrgChartHorizontalComponent,
     OrgChartHorizontalComponent,
     OrgChartVerticalComponent,
+    OrgChartPieComponent
   ],
   imports: [
     CommonModule,
@@ -26,7 +28,8 @@ import { VerticalBarChartModelComponent } from "../strategic-projects/bar-chart-
     NgxChartsModule,
     NgxEchartsModule,
     NbSelectModule,
-    VerticalBarChartModelComponent
+    VerticalBarChartModelComponent,
+    NbIconModule
 ],
 })
 export class PainelOrcamentoModule {}

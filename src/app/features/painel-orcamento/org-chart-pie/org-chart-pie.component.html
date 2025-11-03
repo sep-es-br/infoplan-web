@@ -1,11 +1,20 @@
-<!-- <div [ngStyle]="{ 'height': height + 'px' }">
-  <div echarts [options]="chartOptions" (chartInit)="onChartInit($event)" class="echart"></div>
-</div> -->
-<div [style.height.px]="height" class="chart-container">
-  <div echarts
-       [options]="chartOptions"
-       [style.height.px]="height"
-       (chartInit)="onChartInit($event)"
-       class="echart">
+<div
+  class="pie-chart-container"
+  [style.height]="height"
+  [style.width]="width"
+>
+  <div
+    *ngIf="!data || data.length === 0"
+    class="no-data-message"
+  >
+    Nenhum dado disponível
   </div>
+
+  <div
+    echarts
+    [options]="chartOptions"
+    (chartInit)="onChartInit($event)"
+    class="chart"
+    *ngIf="data && data.length > 0"
+  ></div>
 </div>

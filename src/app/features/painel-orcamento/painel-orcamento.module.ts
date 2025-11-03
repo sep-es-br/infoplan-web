@@ -10,7 +10,8 @@ import { OrgChartHorizontalComponent } from "./org-chart-bar/org-chart-horizonta
 import { OrgChartVerticalComponent } from "./org-chart-bar/org-chart-vertical/org-chart-vertical.component";
 import { PainelOrcamentoComponent } from "./painel-orcamento.component";
 import { VerticalBarChartModelComponent } from "../strategic-projects/bar-chart-model/vertical-bar-chart-model/vertical-bar-chart-model.component";
-import { OrgChartPieComponent } from "./org-chart-pie/org-chart-pie.component";
+import { FilterComponent } from "../../shared/components/filter/filter.component";
+import { PieChartComponent } from "./org-chart-pie/org-chart-pie.component";
 
 @NgModule({
   declarations: [
@@ -18,7 +19,6 @@ import { OrgChartPieComponent } from "./org-chart-pie/org-chart-pie.component";
     OrgChartHorizontalComponent,
     OrgChartHorizontalComponent,
     OrgChartVerticalComponent,
-    OrgChartPieComponent
   ],
   imports: [
     CommonModule,
@@ -29,7 +29,9 @@ import { OrgChartPieComponent } from "./org-chart-pie/org-chart-pie.component";
     NgxEchartsModule,
     NbSelectModule,
     VerticalBarChartModelComponent,
-    NbIconModule
-],
+    NbIconModule,
+    FilterComponent,
+    PieChartComponent,
+  ],
 })
 export class PainelOrcamentoModule {}

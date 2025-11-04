@@ -62,76 +62,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
   }
-  // initChartOptions(chart: IChartOptions) {
-  //   if (!chart?.data || chart.data.datasets.length === 0) {
-  //     this.chartOptions = null!;
-  //     return;
-  //   }
-
-  //   const theme = getAvailableThemesStyles(this.currentTheme);
-  //   const { labels, datasets } = chart.data;
-
-  //   this.chartOptions = {
-  //     tooltip: {
-  //       trigger: "axis",
-  //       axisPointer: { type: "shadow" },
-  //       backgroundColor: theme.themePrimaryColor,
-  //       borderColor: theme.themePrimaryColor,
-  //       textStyle: { color: theme.textPrimaryColor },
-  //       confine: true,
-  //       formatter: (params: any) => {
-  //         let tooltip = `${params[0].name}<br>`;
-  //         params.forEach((p: any) => {
-  //           tooltip += `${p.seriesName}: ${this.formatNumber(p.value)}<br>`;
-  //         });
-  //         return tooltip;
-  //       },
-  //     },
-
-  //     legend: {
-  //       orient: "horizontal",
-  //       top: "bottom",
-  //       data: datasets.map((d) => d.label),
-  //       itemWidth: 10,
-  //       itemHeight: 10,
-  //       textStyle: { color: theme.textPrimaryColor },
-  //     },
-
-  //     xAxis: {
-  //       type: "category",
-  //       data: labels,
-  //       axisLabel: {
-  //         color: theme.textPrimaryColor,
-  //         fontSize: 10,
-  //       },
-  //     },
-
-  //     yAxis: {
-  //       type: "value",
-  //       axisLabel: {
-  //         color: theme.textPrimaryColor,
-  //         fontSize: 10,
-  //         overflow: "truncate",
-  //         width: 100,
-  //         formatter: (v: number) => this.formatValue(v),
-  //       },
-  //     },
-
-  //     series: datasets.map((dataset, index) => ({
-  //       name: dataset.label,
-  //       type: "bar",
-  //       data: dataset.data,
-  //       itemStyle: {
-  //         color: dataset.backgroundColor || this.getDefaultColor(index),
-  //       },
-  //     })),
-  //   };
-  // }
-
-  // private getDefaultColor(index: number): string {
-  //   const colors = ["#4DB6D2", "#F58B9B", "#82C43C", "#F5B041", "#AF7AC5"];
-  //   return colors[index % colors.length];
-  // }
 
   initChartOptions(chart: IChartOptions) {
     if (!chart?.data || chart.data.datasets.length < 2) {
@@ -140,7 +70,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
     }
 
     const theme = getAvailableThemesStyles(this.currentTheme);
-
     const data = chart.data.labels.map((label: string, i: number) => ({
       category: label,
       previsaoInicial: chart.data.datasets[0]?.data[i] ?? 0,

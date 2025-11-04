@@ -58,7 +58,7 @@
       </nb-card>
     </div>
 
-    <div class="chart-principais-origens col-12 col-xl-4">
+    <div class="chart-receita-impostos col-12 col-xl-4">
       <h4>Imposto, Taxas e Contribuições de Melhoria</h4>
       <nb-card>
         <nb-card-body>
@@ -69,24 +69,51 @@
       </nb-card>
     </div>
 
-        <div class="chart-principais-origens col-12 col-xl-4">
-      <h4>Imposto, Taxas e Contribuições de Melhoria</h4>
+    <div class="chart-receita-icms-participacao col-12 col-xl-4">
+      <h4>Participação ICMS - Receita Total</h4>
+      <nb-card>
+        <nb-card-body>
+          <ngx-pie-chart
+            [data]="dadosChart.receitaParticipacao"
+            [height]="400"
+            [colors]="['#F58B9B', '#4DB6D2']"
+            [config]="chartConfig"
+          >
+          </ngx-pie-chart>
+        </nb-card-body>
+      </nb-card>
+    </div>
+
+    <div class="chart-receita-icms col-12 col-xl-4">
+      <h4>ICMS</h4>
       <nb-card>
         <nb-card-body>
           <ngx-pie-chart
             [data]="dadosChart.receitaICMS"
             [height]="400"
-            [colors]="['#F58B9B', '#4DB6D2','#e4c26b', '#2E88B9', '#77D4B0', '#A671C4', '#F6D25A']"
+            [colors]="colors"
             [config]="chartConfig"
           >
           </ngx-pie-chart>
-            <!-- <ngx-org-chart-pie
-                  [data]="dadosChart.receitaICMS"
-                  [height]="400"
-            >
-            </ngx-org-chart-pie> -->
         </nb-card-body>
       </nb-card>
+    </div>
+
+    <div class="chart-receita-impostos col-12 col-xl-4">
+      <h4>Transfêrencias Correntes</h4>
+      <nb-card>
+        <nb-card-body>
+          <ngx-org-chart-horizontal
+            [chart]="dadosChart.receitaTransferenciaCorrente"
+          ></ngx-org-chart-horizontal>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap col-12 col-xxl-6 p-0">
+    <div class="col-12 col-md-6  px-x1 mb-1 align-self-start">
+      <!-- <ngx-receita-total [charData]="" [responseTable]="apiResponse.receitaTotal"></ngx-receita-total> -->
     </div>
   </div>
 </div>

@@ -12,6 +12,7 @@ import {
   IReceitaDespesaGNDTotalOrcamentoResponse,
   IReceitaICMSOrcamentoResponse,
   IReceitaImpostoOrcamentoResponse,
+  IReceitaTransfereciaCorrenteOrcamentoResponse,
 } from "../../interfaces/painel-orcamento/painel-orcamento";
 
 @Injectable({
@@ -54,7 +55,7 @@ export class PainelOrcamentoService {
     );
   }
 
-  public getRceitaPorParticipacao(
+  public getReceitaPorParticipacao(
     request: IPainelOrcamentoRequest
   ): Observable<IReceitaParticipacaoOrcamentoResponse> {
     const params: HttpParams = this.returnParams(request);
@@ -104,6 +105,16 @@ export class PainelOrcamentoService {
     );
   }
 
+  public getRceitaPorTransferenciaCorrente(
+    request: IPainelOrcamentoRequest
+  ): Observable<IReceitaTransfereciaCorrenteOrcamentoResponse> {
+    const params: HttpParams = this.returnParams(request);
+    return this._http.get<IReceitaTransfereciaCorrenteOrcamentoResponse>(
+      `${this._URI}/receita-transferencia-corrente`,
+      { params }
+    );
+  }
+
   private returnParams(painelOrcamento: IPainelOrcamentoRequest): HttpParams {
     let params = new HttpParams()
       .set("ano", String(painelOrcamento.ano))
@@ -116,4 +127,5 @@ export class PainelOrcamentoService {
       .set("tipoFonte", String(painelOrcamento.tipoFonte));
     return params;
   }
+
 }

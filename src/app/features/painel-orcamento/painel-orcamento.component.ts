@@ -26,6 +26,7 @@ import {
   IReceitaParticipacaoOrcamentoResponse,
   IReceitaDespesaGNDOrcamentoResponse,
   IReceitaDespesaGNDTotalOrcamentoResponse,
+  IReceitaTransfereciaCorrenteOrcamentoResponse,
 } from "../../core/interfaces/painel-orcamento/painel-orcamento";
 import { forkJoin, of, Subject } from "rxjs";
 import { catchError, finalize, takeUntil } from "rxjs/operators";
@@ -33,15 +34,16 @@ import { NbSelectComponent } from "@nebular/theme";
 import { PieChartData } from "./org-chart-pie/org-chart-pie.component";
 
 // ==================== INTERFACES ====================
-interface IChartData {
+export interface IChartData {
   receitaTotal: IChartOptions;
   receitaOrigem: IChartOptions;
   receitaCategoria: IChartOptions;
   receitaImpostos: IChartOptions;
   receitaICMS: PieChartData[];
-  receitaParticipacao: IChartOptions;
+  receitaParticipacao: PieChartData[];
   receitaDespesaGND: IChartOptions;
   receitaDespesaGNDTotal: IChartOptions;
+  receitaTransferenciaCorrente: IChartOptions;
 }
 
 interface IFilterTag {
@@ -71,6 +73,7 @@ interface IApiResponses {
   receitaParticipacao: IReceitaParticipacaoOrcamentoResponse[];
   receitaDespesaGND: IReceitaDespesaGNDOrcamentoResponse[];
   receitaDespesaGNDTotal: IReceitaDespesaGNDTotalOrcamentoResponse[];
+  receitaTransferenciaCorrente: IReceitaTransfereciaCorrenteOrcamentoResponse[];
 }
 
 // ==================== CONSTANTES ====================
@@ -101,12 +104,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   readonly meses = MESES_DATA;
   readonly ano = ANO_DATA;
   readonly tipoCaixa = TIPO_CAIXA_DATA;
-  readonly colors: string[] = [
-    CHART_COLORS.PRIMARY,
-    CHART_COLORS.SECONDARY,
-    CHART_COLORS.TERTIARY,
-    CHART_COLORS.QUATERNARY,
-  ];
+  readonly colors: string[] = [];
 
   @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
   @ViewChildren("customSelect") customSelectRefs!: QueryList<NbSelectComponent>;
@@ -118,6 +116,8 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   isMapOpen = false;
 
   dadosChart: IChartData = this.initializeChartData();
+
+  apiResponse: IApiResponses;
 
   filterConfigs: IFilterConfig[] = [
     {
@@ -168,6 +168,17 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   private readonly painelOrcamentoService = inject(PainelOrcamentoService);
 
+  constructor() {
+    this.colors = [
+      CHART_COLORS.PRIMARY,
+      CHART_COLORS.SECONDARY,
+      CHART_COLORS.TERTIARY,
+      CHART_COLORS.QUATERNARY,
+      CHART_COLORS.QUINTERNARY,
+      CHART_COLORS.SECTATERNARY,
+      CHART_COLORS.SETIMATERNARY,
+    ];
+  }
   // ==================== LIFECYCLE HOOKS ====================
   ngOnInit(): void {
     this.loadData();
@@ -180,21 +191,18 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
   // ==================== MÉTODOS PÚBLICOS - FILTROS ====================
   onFilterChange(filters: Record<string, any>): void {
-    console.log("Filtros aplicados:", filters);
     this.currentFilters = { ...filters };
     this.activeFilters = this.buildActiveFilters(filters);
     this.loadDataWithFilters();
   }
 
   onFilterRemove(filterKey: string): void {
-    console.log("Filtro removido:", filterKey);
     delete this.currentFilters[filterKey];
     this.activeFilters = this.activeFilters.filter((f) => f.key !== filterKey);
     this.loadDataWithFilters();
   }
 
   onFilterReset(): void {
-    console.log("Filtros resetados");
     this.currentFilters = {};
     this.activeFilters = [];
     this.loadDataWithFilters();
@@ -343,7 +351,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
           )
         ),
       receitaParticipacao: this.painelOrcamentoService
-        .getRceitaPorParticipacao(requestParams)
+        .getReceitaPorParticipacao(requestParams)
         .pipe(
           catchError(
             this.handleError<IReceitaParticipacaoOrcamentoResponse[]>(
@@ -372,6 +380,16 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
             )
           )
         ),
+      receitaTransferenciaCorrente: this.painelOrcamentoService
+        .getRceitaPorTransferenciaCorrente(requestParams)
+        .pipe(
+          catchError(
+            this.handleError<IReceitaTransfereciaCorrenteOrcamentoResponse[]>(
+              "receita transferência corrente",
+              []
+            )
+          )
+        ),
     })
       .pipe(
         takeUntil(this.destroy$),
@@ -383,13 +401,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
       });
   }
 
-  // private handleError<T>(operacao: string, valorPadrao: T) {
-  //   return (error: any) => {
-  //     console.error(`Erro ${operacao}:`, error);
-  //     return [valorPadrao];
-  //   };
-  // }
-
   private handleError<T>(operacao: string, valorPadrao: T) {
     return (error: any) => {
       console.error(`Erro ${operacao}:`, error);
@@ -398,6 +409,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   }
   // ==================== MÉTODOS PRIVADOS - PROCESSAMENTO ====================
   private processarDados(dados: IApiResponses): void {
+    this.apiResponse =  dados;
     if (dados.receitaTotal) {
       this.buildChartReceitaTotal(dados.receitaTotal);
     }
@@ -419,6 +431,18 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
         dados: dados.receitaICMS,
         builder: this.buildChartReceitaICMS.bind(this),
       },
+      {
+        dados: dados.receitaParticipacao,
+        builder: this.buildChartReceitaParticipacao.bind(this),
+      },
+      {
+        dados: dados.receitaTransferenciaCorrente,
+        builder: this.buildChartReceitaTransferenciaCorrente.bind(this),
+      },
+      {
+        dados: dados.receitaDespesaGNDTotal,
+        builder: this.buildChartReceitaDespesaGNDTotal.bind(this),
+      }
     ];
 
     processadores.forEach(({ dados, builder }) => {
@@ -427,6 +451,41 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
         builder(dadosArray);
       }
     });
+  }
+
+  private buildChartReceitaDespesaGNDTotal(
+    dados: IReceitaDespesaGNDTotalOrcamentoResponse[]
+  ): void {
+
+    // const chartData = this.
+
+  }
+
+  private buildChartReceitaTransferenciaCorrente(
+    dados: IReceitaTransfereciaCorrenteOrcamentoResponse[]
+  ): void {
+    const chartData = this.processarDadosComparativo(
+      dados,
+      "nome_item_patrimonial",
+      "receitaLiquida"
+    );
+    if (chartData) {
+      this.dadosChart.receitaTransferenciaCorrente = chartData;
+    }
+  }
+  private buildChartReceitaParticipacao(
+    dados: IReceitaParticipacaoOrcamentoResponse[]
+  ): void {
+    console.log("Dados de Participação Recebidos:", dados);
+    const pieChartData = this.processarDadosPieChart(
+      dados,
+      "nome_item_patrimonial", // campo do nome
+      ["receitaLiquida", "vlr_receita_liquida"] // campos do valor (ordem de prioridade)
+    );
+
+    console.log("Receita PARTICIPAÇÃO", pieChartData);
+
+    this.dadosChart.receitaParticipacao = pieChartData;
   }
 
   private buildChartReceitaTotal(dados: IReceitaTotalOrcamentoResponse): void {
@@ -458,7 +517,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
       "Receita Líquida"
     );
     if (chartData) {
-      console.log("Chart Data Origem:", chartData);
       this.dadosChart.receitaOrigem = chartData;
     }
   }
@@ -485,7 +543,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
       "Receita Líquida"
     );
     if (chartData) {
-      console.log("Chart Data Impostos:", chartData);
       this.dadosChart.receitaImpostos = chartData;
     }
   }
@@ -513,7 +570,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     this.dadosChart.receitaICMS = pieChartData;
   }
 
-    /**
+  /**
    * Processa dados para formato PieChart
    * @param dados Array de dados da API
    * @param campoNome Campo que contém o nome/label
@@ -531,9 +588,9 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
     // Agrupa os dados por nome (caso haja múltiplos anos, soma os valores)
     const dadosAgrupados = new Map<string, number>();
-
     dados.forEach((item) => {
       const nome = item[campoNome];
+
       if (!nome) return;
 
       // Busca o valor no primeiro campo disponível
@@ -552,7 +609,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
         dadosAgrupados.set(nome, valor);
       }
     });
-
     // Converte o Map para o formato PieChartData
     const pieData: PieChartData[] = Array.from(dadosAgrupados.entries())
       .map(([name, value], index) => ({
@@ -566,8 +622,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
     // Ordena do maior para o menor valor
     pieData.sort((a, b) => b.value - a.value);
-
-    console.log("Dados processados para PieChart:", pieData);
 
     return pieData;
   }
@@ -624,18 +678,17 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
       return null;
     }
 
-    console.log("DADOS DE VERIFICAÇÃO:", dados);
     return {
       data: {
         labels: categorias,
         datasets: [
           {
-            label: `Previsão ${ano}`,
+            label: `${ano}`,
             data: dadosPrevisao,
             backgroundColor: this.colors[0],
           },
           {
-            label: `Arrecadação ${ano}`,
+            label: `${ano}`,
             data: dadosArrecadacao,
             backgroundColor: this.colors[1],
           },
@@ -660,7 +713,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
         "vlr_receita_liquida"
       );
       return {
-        label: `Arrecadação ${ano}`,
+        label: `${ano}`,
         data: dadosAno,
         backgroundColor: this.colors[index % this.colors.length],
       };
@@ -712,9 +765,10 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
       receitaCategoria: {} as IChartOptions,
       receitaImpostos: {} as IChartOptions,
       receitaICMS: {} as PieChartData[],
-      receitaParticipacao: {} as IChartOptions,
+      receitaParticipacao: {} as PieChartData[],
       receitaDespesaGND: {} as IChartOptions,
       receitaDespesaGNDTotal: {} as IChartOptions,
+      receitaTransferenciaCorrente:{} as IChartOptions,
     };
   }
 }

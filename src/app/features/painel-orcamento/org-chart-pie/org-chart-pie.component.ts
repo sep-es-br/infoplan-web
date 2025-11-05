@@ -4,7 +4,6 @@ import { NbThemeService } from '@nebular/theme';
 import { ECharts, EChartsOption } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { AvailableThemes, getAvailableThemesStyles } from '../../../@theme/theme.module';
-import { animation } from '@angular/animations';
 
 export interface PieChartData {
   value: number;
@@ -80,12 +79,12 @@ export class PieChartComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.currentTheme = (this.themeService.currentTheme as AvailableThemes);
+    console.log('Tema atual no ngOnInit:', this.colors);
     this.initChart();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['colors'] || changes['config']) {
-      console.log('Changes detected in PieChartComponent:', changes['data']);
       this.initChart();
     }
   }
@@ -151,7 +150,7 @@ export class PieChartComponent implements OnInit, OnChanges {
     const position = positionMap[config.legendPosition] || positionMap.left;
     return {
       ...position,
-      data: this.data.map(item => item.name) || [],
+      // data: this.data.map(item => item.name) || [],
       textStyle: {
         color: themeStyles.textPrimaryColor,
 
@@ -189,7 +188,7 @@ export class PieChartComponent implements OnInit, OnChanges {
         show: false,
       },
       animation: false,
-
+      color: this.colors
     };
   }
 

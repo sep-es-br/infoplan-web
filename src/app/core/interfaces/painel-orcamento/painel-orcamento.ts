@@ -71,3 +71,10 @@ export interface IReceitaImpostoOrcamentoResponse {
   nome_item_patrimonial: string;
   receitaLiquida: number;
 }
+
+export interface IReceitaTransfereciaCorrenteOrcamentoResponse {
+  ano: number;
+  nome_item_patrimonial: string;
+  receitaLiquida: number;
+}
+

@@ -12,6 +12,8 @@ import { PainelOrcamentoComponent } from "./painel-orcamento.component";
 import { VerticalBarChartModelComponent } from "../strategic-projects/bar-chart-model/vertical-bar-chart-model/vertical-bar-chart-model.component";
 import { FilterComponent } from "../../shared/components/filter/filter.component";
 import { PieChartComponent } from "./org-chart-pie/org-chart-pie.component";
+import { ReceitaTotalComponent } from "./data/receita-total/receita-total.component";
+import { FlipTableComponent } from "../strategic-projects/flip-table-model/flip-table.component";
 
 @NgModule({
   declarations: [
@@ -19,6 +21,7 @@ import { PieChartComponent } from "./org-chart-pie/org-chart-pie.component";
     OrgChartHorizontalComponent,
     OrgChartHorizontalComponent,
     OrgChartVerticalComponent,
+    ReceitaTotalComponent
   ],
   imports: [
     CommonModule,
@@ -32,6 +35,7 @@ import { PieChartComponent } from "./org-chart-pie/org-chart-pie.component";
     NbIconModule,
     FilterComponent,
     PieChartComponent,
-  ],
+    FlipTableComponent
+],
 })
 export class PainelOrcamentoModule {}

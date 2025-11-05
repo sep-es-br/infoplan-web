@@ -1,14 +1,14 @@
-<!-- <div class="container">
-  <ngx-app-filter
-  [filterConfigs]="filterConfigs"
-  [activeFilters]="activeFilters"
-  [showMapButton]="false"
-  [isMapOpen]="isMapOpen"
-  (filterChange)="onFilterChange($event)"
-  (filterRemove)="onFilterRemove($event)"
-  (filterReset)="onFilterReset()"
-  (mapToggle)="onMapToggle($event)"
-  ></ngx-app-filter>
+<div class="container">
+  <!-- <ngx-app-filter
+    [filterConfigs]="filterConfigs"
+    [activeFilters]="activeFilters"
+    [showMapButton]="false"
+    [isMapOpen]="isMapOpen"
+    (filterChange)="onFilterChange($event)"
+    (filterRemove)="onFilterRemove($event)"
+    (filterReset)="onFilterReset()"
+    (mapToggle)="onMapToggle($event)"
+  ></ngx-app-filter> -->
   <nb-card>
     <nb-card-body>
       <div class="row g-3">
@@ -27,50 +27,51 @@
   </nb-card>
   <div class="chart-container row g-3">
     <div class="chart-receita-prevista col-12 col-xl-4">
-      <h3>Receita Prevista x Realizada</h3>
+        <ngx-receita-total [filter]="currentRequestParams"></ngx-receita-total>
+      <!-- <h3>Receita Prevista x Realizada</h3>
       <nb-card>
         <nb-card-body>
           <ngx-org-chart-vertical
             [chart]="dadosChart.receitaTotal"
           ></ngx-org-chart-vertical>
         </nb-card-body>
-      </nb-card>
+      </nb-card> -->
     </div>
 
     <div class="chart-receita-categoria col-12 col-xl-4">
-      <h3>Receita Por Categoria</h3>
+      <!-- <h3>Receita Por Categoria</h3>
       <nb-card>
         <nb-card-body>
           <ngx-org-chart-horizontal [chart]="dadosChart.receitaCategoria">
           </ngx-org-chart-horizontal>
         </nb-card-body>
-      </nb-card>
+      </nb-card> -->
     </div>
 
     <div class="chart-principais-origens col-12 col-xl-4">
-      <h3>Receita Por Origem</h3>
+      <!-- <h3>Receita Por Origem</h3>
       <nb-card>
         <nb-card-body>
           <ngx-org-chart-horizontal
             [chart]="dadosChart.receitaOrigem"
           ></ngx-org-chart-horizontal>
         </nb-card-body>
-      </nb-card>
+      </nb-card> -->
     </div>
 
     <div class="chart-receita-impostos col-12 col-xl-4">
-      <h4>Imposto, Taxas e Contribuições de Melhoria</h4>
+      <!-- <h4>Imposto, Taxas e Contribuições de Melhoria</h4>
       <nb-card>
         <nb-card-body>
           <ngx-org-chart-horizontal
             [chart]="dadosChart.receitaImpostos"
           ></ngx-org-chart-horizontal>
         </nb-card-body>
-      </nb-card>
+      </nb-card> -->
     </div>
 
     <div class="chart-receita-icms-participacao col-12 col-xl-4">
-      <h4>Participação ICMS - Receita Total</h4>
+      <!-- <h4>Participação ICMS - Receita Total</h4>
       <nb-card>
         <nb-card-body>
           <ngx-pie-chart
@@ -81,11 +82,11 @@
           >
           </ngx-pie-chart>
         </nb-card-body>
-      </nb-card>
+      </nb-card> -->
     </div>
 
     <div class="chart-receita-icms col-12 col-xl-4">
-      <h4>ICMS</h4>
+      <!-- <h4>ICMS</h4>
       <nb-card>
         <nb-card-body>
           <ngx-pie-chart
@@ -96,10 +97,10 @@
           >
           </ngx-pie-chart>
         </nb-card-body>
-      </nb-card>
+      </nb-card> -->
     </div>
 
-    <div class="chart-receita-impostos col-12 col-xl-4">
+    <!-- <div class="chart-receita-impostos col-12 col-xl-4">
       <h4>Transfêrencias Correntes</h4>
       <nb-card>
         <nb-card-body>
@@ -108,19 +109,17 @@
           ></ngx-org-chart-horizontal>
         </nb-card-body>
       </nb-card>
-    </div>
+    </div> -->
   </div>
 
   <div class="d-flex flex-wrap col-12 col-xxl-6 p-0">
-    <div class="col-12 col-md-6  px-x1 mb-1 align-self-start">
-    </div>
+    <div class="col-12 col-md-6 px-x1 mb-1 align-self-start"></div>
   </div>
-</div> -->
+</div>
 
+<!-- <div class="painel-container">
 
-<div class="painel-container">
-
-  <div class="row mb-4">
+  <!-- <div class="row mb-4">
     <div class="col-12">
       <ngx-app-filter
         [filterConfigs]="filterConfigs"
@@ -130,73 +129,4 @@
         (filterReset)="onFilterReset()">
       </ngx-app-filter>
     </div>
-  </div>
-
-  <div class="charts-grid">
-
-    <div class="chart-card">
-      <div class="card-header">
-      </div>
-      <div class="card-body">
-        <ngx-receita-total [filter]="currentRequestParams"></ngx-receita-total>
-      </div>
-    </div>
-
-    <div class="chart-card">
-      <div class="card-header">
-      </div>
-      <div class="card-body">
-        <ngx-receita-origem [filter]="currentRequestParams"></ngx-receita-origem>
-      </div>
-    </div>
-
-    <div class="chart-card">
-      <div class="card-header">
-      </div>
-      <div class="card-body">
-        <ngx-receita-categoria [filter]="currentRequestParams"></ngx-receita-categoria>
-      </div>
-    </div>
-
-    <div class="chart-card">
-      <div class="card-header">
-      </div>
-      <div class="card-body">
-        <ngx-receita-impostos [filter]="currentRequestParams"></ngx-receita-impostos>
-      </div>
-    </div>
-
-    <div class="chart-card">
-      <div class="card-header">
-      </div>
-      <div class="card-body">
-        <ngx-receita-icms [filter]="currentRequestParams"></ngx-receita-icms>
-      </div>
-    </div>
-
-    <div class="chart-card">
-      <div class="card-header">
-      </div>
-      <div class="card-body">
-        <ngx-receita-participacao [filter]="currentRequestParams"></ngx-receita-participacao>
-      </div>
-    </div>
-
-    <div class="chart-card">
-      <div class="card-header">
-      </div>
-      <div class="card-body">
-        <ngx-receita-transferencia [filter]="currentRequestParams"></ngx-receita-transferencia>
-      </div>
-    </div>
-
-    <div class="chart-card">
-      <div class="card-header">
-      </div>
-      <div class="card-body">
-        <ngx-receita-despesa-gnd-total [filter]="currentRequestParams"></ngx-receita-despesa-gnd-total>
-      </div>
-    </div>
-
-  </div>
-</div>
+  </div> -->

@@ -56,23 +56,23 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   private loadData(): void {
     this.loadingStatus = 'loading';
 
-    this.painelService
-      .getRceitaPorICMS(this.filter)
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus = this.chartData.length > 0 ? 'loaded' : 'error';
-        })
-      )
-      .subscribe({
-        next: (response: IReceitaICMSOrcamentoResponse) => {
-          this.processData([response]);
-        },
-        error: (err) => {
-          console.error('Erro ao carregar receita ICMS:', err);
-          this.loadingStatus = 'error';
-        },
-      });
+    // this.painelService
+    //   .getRceitaPorICMS(this.filter)
+    //   .pipe(
+    //     takeUntil(this.destroy$),
+    //     finalize(() => {
+    //       this.loadingStatus = this.chartData.length > 0 ? 'loaded' : 'error';
+    //     })
+    //   )
+    //   .subscribe({
+    //     next: (response: IReceitaICMSOrcamentoResponse) => {
+    //       this.processData([response]);
+    //     },
+    //     error: (err) => {
+    //       console.error('Erro ao carregar receita ICMS:', err);
+    //       this.loadingStatus = 'error';
+    //     },
+    //   });
   }
 
   private processData(dados: IReceitaICMSOrcamentoResponse[]): void {

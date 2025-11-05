@@ -41,23 +41,23 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
   private loadData(): void {
     this.loadingStatus = 'loading';
 
-    this.painelService
-      .getReceitaOrigem(this.filter)
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus = this.chartData ? 'loaded' : 'error';
-        })
-      )
-      .subscribe({
-        next: (response) => {
-          this.processData([response]);
-        },
-        error: (err) => {
-          console.error('Erro ao carregar receita origem:', err);
-          this.loadingStatus = 'error';
-        },
-      });
+    // this.painelService
+    //   .getReceitaOrigem(this.filter)
+    //   .pipe(
+    //     takeUntil(this.destroy$),
+    //     finalize(() => {
+    //       this.loadingStatus = this.chartData ? 'loaded' : 'error';
+    //     })
+    //   )
+    //   .subscribe({
+    //     next: (response) => {
+    //       this.processData([response]);
+    //     },
+    //     error: (err) => {
+    //       console.error('Erro ao carregar receita origem:', err);
+    //       this.loadingStatus = 'error';
+    //     },
+    //   });
   }
 
   private processData(dados: IReceitaOrigemOrcamentoResponse[]): void {

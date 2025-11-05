@@ -776,7 +776,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { IPainelOrcamentoRequest } from '../../core/interfaces/painel-orcamento/painel-orcamento';
-import { ANO_DATA, MESES_DATA, TIPO_CAIXA_DATA } from './data/datasets';
+import { ANO_DATA, CARDS_DATA, MESES_DATA, TIPO_CAIXA_DATA } from './data/datasets';
 
 interface IFilterTag {
   key: string;
@@ -808,16 +808,15 @@ const DEFAULT_REQUEST_PARAMS: IPainelOrcamentoRequest = {
   styleUrls: ['./painel-orcamento.component.scss'],
 })
 export class PainelOrcamentoComponent implements OnInit, OnDestroy {
-  // ==================== PROPRIEDADES PÚBLICAS ====================
   readonly meses = MESES_DATA;
   readonly ano = ANO_DATA;
   readonly tipoCaixa = TIPO_CAIXA_DATA;
+  readonly cards = CARDS_DATA;
 
   currentFilters: Record<string, any> = {};
   activeFilters: IFilterTag[] = [];
   showFilters = false;
 
-  // Filtros atuais formatados para passar aos componentes filhos
   currentRequestParams: IPainelOrcamentoRequest = DEFAULT_REQUEST_PARAMS;
 
   filterConfigs: IFilterConfig[] = [

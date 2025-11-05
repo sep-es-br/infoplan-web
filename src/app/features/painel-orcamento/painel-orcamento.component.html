@@ -1,4 +1,14 @@
 <div class="container">
+  <!-- <ngx-app-filter
+  [filterConfigs]="filterConfigs"
+  [activeFilters]="activeFilters"
+  [showMapButton]="false"
+  [isMapOpen]="isMapOpen"
+  (filterChange)="onFilterChange($event)"
+  (filterRemove)="onFilterRemove($event)"
+  (filterReset)="onFilterReset()"
+  (mapToggle)="onMapToggle($event)"
+  ></ngx-app-filter> -->
   <nb-card>
     <nb-card-body>
       <div class="row g-3">
@@ -63,11 +73,18 @@
       <h4>Imposto, Taxas e Contribuições de Melhoria</h4>
       <nb-card>
         <nb-card-body>
-            <ngx-org-chart-pie
+          <ngx-pie-chart
+            [data]="dadosChart.receitaICMS"
+            [height]="400"
+            [colors]="['#F58B9B', '#4DB6D2','#e4c26b', '#2E88B9', '#77D4B0', '#A671C4', '#F6D25A']"
+            [config]="chartConfig"
+          >
+          </ngx-pie-chart>
+            <!-- <ngx-org-chart-pie
                   [data]="dadosChart.receitaICMS"
                   [height]="400"
             >
-            </ngx-org-chart-pie>
+            </ngx-org-chart-pie> -->
         </nb-card-body>
       </nb-card>
     </div>

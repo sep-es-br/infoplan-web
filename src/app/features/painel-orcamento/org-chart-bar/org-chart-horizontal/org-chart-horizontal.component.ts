@@ -185,7 +185,6 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
 
     // ✅ Obtém os labels dos datasets dinamicamente
     const datasetLabels = chart.data.datasets.map(dataset => dataset.label);
-    console.log("Labels dos datasets:", datasetLabels);
 
     // ✅ Cria estrutura de dados genérica (não mais com nomes fixos)
     const data = chart.data.labels.map((label: string, i: number) => ({
@@ -193,14 +192,12 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
       valores: chart.data.datasets.map(dataset => dataset.data[i] ?? 0)
     }));
 
-    console.log("Dados processados:", data);
 
     // ✅ Obtém cores dinamicamente
     const colors = chart.data.datasets.map(dataset =>
       dataset.backgroundColor || "#4DB6D2"
     );
 
-    console.log("Iniciando opções do gráfico com dados:", data);
 
     this.chartOptions = {
       tooltip: {

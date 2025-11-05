@@ -152,7 +152,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
       chart.data.datasets[1].backgroundColor || "#F58B9B",
     ];
 
-    console.log(data);
+    // console.log(data);
     this.chartOptions = {
       tooltip: {
         trigger: "axis",

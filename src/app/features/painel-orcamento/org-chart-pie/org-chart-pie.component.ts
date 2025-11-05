@@ -1,227 +1,256 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  HostListener,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-} from "@angular/core";
-import { IChartOptions } from "../../../shared/models/painel-orcamento/IChartOptions";
-import {
-  AvailableThemes,
-  getAvailableThemesStyles,
-} from "../../../@theme/theme.module";
-import { ECharts, EChartsOption } from "echarts";
-import { NbThemeService } from "@nebular/theme";
+import { CommonModule } from '@angular/common';
+import { Component, HostListener, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { NbThemeService } from '@nebular/theme';
+import { ECharts, EChartsOption } from 'echarts';
+import { NgxEchartsModule } from 'ngx-echarts';
+import { AvailableThemes, getAvailableThemesStyles } from '../../../@theme/theme.module';
+import { animation } from '@angular/animations';
+
+export interface PieChartData {
+  value: number;
+  name: string;
+  itemStyle?: any;
+  [key: string]: any;
+}
+
+export interface PieChartConfig {
+  showTitle?: boolean;
+  titleText?: string;
+  titleSubtext?: string;
+  titlePosition?: 'left' | 'center' | 'right';
+  showLegend?: boolean;
+  legendPosition?: 'left' | 'right' | 'top' | 'bottom';
+  legendOrient?: 'vertical' | 'horizontal';
+  showTooltip?: boolean;
+  showLabels?: boolean;
+  radius?: string | number;
+  isDonut?: boolean;
+  donutRadius?: [string | number, string | number];
+  animation?: boolean;
+  emphasisScale?: boolean;
+}
 
 @Component({
-  selector: "ngx-org-chart-pie",
-  templateUrl: "./org-chart-pie.component.html",
-  styleUrls: ["./org-chart-pie.component.scss"], // Corrigi para .scss
+  selector: 'ngx-pie-chart',
+  templateUrl: './org-chart-pie.component.html',
+  styleUrls: ['./org-chart-pie.component.scss'],
+  standalone: true,
+  imports: [NgxEchartsModule, CommonModule],
 })
-export class OrgChartPieComponent implements OnInit, OnChanges {
-  @Input() data!: IChartOptions;
+export class PieChartComponent implements OnInit, OnChanges {
+  @Input() data: PieChartData[] = [];
+  @Input() colors: string[] = [];
+  @Input() height: string | number = '400px';
+  @Input() width: string | number = '100%';
+  @Input() config: PieChartConfig = {};
 
-   @Input() height: number;
-
-  @HostListener("window:resize", ["$event"])
-  onResize(event: any) {
-    this.updateTitlePosition();
+  @HostListener('window:resize')
+  onResize() {
+    this.updateChart();
   }
 
   chartOptions: EChartsOption;
-
   echartsInstance: ECharts = null;
-
-  centerX: number = 50;
-  centerY: number = 50;
-  pieRadius = ["60%", "100%"];
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
 
-  constructor(private themeService: NbThemeService) {
-    this.themeService
-      .onThemeChange()
-      .subscribe((newTheme: { name: AvailableThemes; previous: string }) => {
-        if (this.echartsInstance) {
-          this.currentTheme = newTheme.name;
-          const newStyles = getAvailableThemesStyles(newTheme.name);
-          const newTextColor = newStyles.textPrimaryColor;
-          const newBackgroundColor = newStyles.themePrimaryColor;
+  private defaultConfig: PieChartConfig = {
+    showTitle: true,
+    titleText: '',
+    titleSubtext: '',
+    titlePosition: 'left',
+    showLegend: true,
+    legendPosition: 'top',
+    legendOrient: 'vertical',
+    showTooltip: true,
+    showLabels: true,
+    radius: '50%',
+    isDonut: false,
+    donutRadius: ['40%', '70%'],
+    animation: true,
+    emphasisScale: true,
+  };
 
-          this.echartsInstance.setOption({
-            tooltip: {
-              textStyle: { color: newTextColor },
-              backgroundColor: newBackgroundColor,
-              borderColor: newBackgroundColor,
-            },
-            title: {
-              textStyle: { color: newTextColor },
-            },
-            legend: {
-              textStyle: { color: newTextColor },
-              tooltip: {
-                backgroundColor: newBackgroundColor,
-                borderColor: newBackgroundColor,
-                textStyle: { color: newTextColor },
-              },
-            },
-          });
-        }
+  constructor(private themeService: NbThemeService) {
+    this.themeService.onThemeChange()
+      .subscribe((newTheme: { name: AvailableThemes }) => {
+        this.currentTheme = newTheme.name;
+        this.updateChartTheme();
       });
   }
 
   ngOnInit() {
-    this.currentTheme = this.themeService.currentTheme as AvailableThemes;
+    this.currentTheme = (this.themeService.currentTheme as AvailableThemes);
+    this.initChart();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes["data"] && this.data) {
-      this.updateTitlePosition();
-      this.initChartOptions(this.data);
-    }
-  }
-
-  initChartOptions(chart: IChartOptions) {
-    if (!chart?.data?.labels || !chart?.data?.datasets?.[0]?.data) {
-      console.warn("Dados inválidos para o gráfico de pizza");
-      return;
-    }
-
-    // Converte os dados para o formato que o ECharts espera
-    const pieData = chart.data.labels.map((label: string, index: number) => ({
-      name: label,
-      value: chart.data.datasets[0].data[index] || 0
-    }));
-
-    // Calcula o total
-    const total = pieData.reduce((sum, item) => sum + item.value, 0);
-
-    const screenWidth = window.innerWidth;
-    const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
-      ? this.centerX - 2
-      : this.centerX - 1;
-
-    // Obtém as cores do dataset ou usa cores padrão
-    const colors = chart.data.datasets[0].backgroundColor
-      ? [chart.data.datasets[0].backgroundColor]
-      : ["#4DB6D2", "#F58B9B"];
-
-    const currentThemeStyles = getAvailableThemesStyles(this.currentTheme);
-
-    this.chartOptions = {
-      tooltip: {
-        trigger: "item",
-        formatter: (params: any) => {
-          return `${params.name}: ${params.value} (${params.percent}%)`;
-        },
-        textStyle: {
-          color: currentThemeStyles.textPrimaryColor,
-        },
-        backgroundColor: currentThemeStyles.themePrimaryColor,
-        borderColor: currentThemeStyles.themePrimaryColor,
-      },
-      title: {
-        text: `${total.toFixed(2)}%`,
-        left: `${offset}%`,
-        top: `${this.centerY}%`,
-        textAlign: "center",
-        textVerticalAlign: "middle",
-        textStyle: {
-          fontSize: 16,
-          fontWeight: "bold",
-          color: currentThemeStyles.textPrimaryColor,
-        },
-      },
-      legend: {
-        orient: "vertical",
-        left: "left",
-        top: "top",
-        tooltip: {
-          show: true,
-          formatter: (params: any) => {
-            const item = pieData.find(item => item.name === params.name);
-            if (item) {
-              const percent = (item.value / total) * 100;
-              return `${item.name}: ${item.value}% (${percent.toFixed(2)}%)`;
-            }
-            return "";
-          },
-          textStyle: {
-            color: currentThemeStyles.textPrimaryColor,
-          },
-          backgroundColor: currentThemeStyles.themePrimaryColor,
-          borderColor: currentThemeStyles.themePrimaryColor,
-        },
-        data: pieData.map(item => item.name),
-        textStyle: {
-          fontSize: 9,
-          color: currentThemeStyles.textPrimaryColor,
-        },
-        itemWidth: 10,
-        itemHeight: 10,
-        itemGap: 10,
-        selectedMode: true,
-      },
-      series: [
-        {
-          name: "Distribuição",
-          type: "pie",
-          radius: this.pieRadius,
-          center: [`${this.centerX}%`, `${this.centerY}%`],
-          data: pieData,
-          emphasis: {
-            scale: false,
-            itemStyle: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)'
-            }
-          },
-          label: {
-            show: true,
-            position: "inside",
-            formatter: (params: any) => {
-              return params.percent >= 6 ? Math.round(params.percent) + "%" : "";
-            },
-            color: "#FFFFFF",
-            fontSize: 9,
-            fontWeight: 'bold'
-          },
-          labelLine: { show: false },
-        },
-      ],
-      color: colors,
-    };
-  }
-
-  updateTitlePosition() {
-    const screenWidth = window.innerWidth;
-    if (screenWidth < 420) {
-      this.pieRadius = ["40%", "80%"];
-    } else {
-      this.pieRadius = ["60%", "100%"];
-    }
-
-    const offset = screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
-      ? this.centerX - 2
-      : this.centerX - 1;
-
-    if (this.echartsInstance) {
-      this.echartsInstance.setOption({
-        title: {
-          left: `${offset}%`,
-          top: `${this.centerY}%`,
-        },
-        series: [{
-          center: [`${this.centerX}%`, `${this.centerY}%`],
-          radius: this.pieRadius,
-        }],
-      });
+    if (changes['data'] || changes['colors'] || changes['config']) {
+      console.log('Changes detected in PieChartComponent:', changes['data']);
+      this.initChart();
     }
   }
 
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
+  }
+
+  private initChart() {
+    const mergedConfig = { ...this.defaultConfig, ...this.config };
+    const themeStyles = getAvailableThemesStyles(this.currentTheme);
+
+    this.chartOptions = {
+      title: this.getTitleConfig(mergedConfig, themeStyles),
+      tooltip: this.getTooltipConfig(mergedConfig, themeStyles),
+      legend: this.getLegendConfig(mergedConfig, themeStyles),
+      series: [this.getSeriesConfig(mergedConfig)],
+      color: this.colors?.length ? this.colors : undefined,
+      animation: mergedConfig.animation,
+    };
+  }
+
+  private getTitleConfig(config: PieChartConfig, themeStyles: any): any {
+    if (!config.showTitle) return { show: false };
+
+    return {
+      text: config.titleText,
+      subtext: config.titleSubtext,
+      left: config.titlePosition,
+      textStyle: {
+        color: themeStyles.textPrimaryColor,
+      },
+      subtextStyle: {
+        color: themeStyles.textSecondaryColor,
+      },
+    };
+  }
+
+  private getTooltipConfig(config: PieChartConfig, themeStyles: any): any {
+    if (!config.showTooltip) return { show: false };
+
+    return {
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {c} ({d}%)',
+      backgroundColor: themeStyles.themePrimaryColor,
+      borderColor: themeStyles.borderColor,
+      textStyle: {
+        color: themeStyles.textPrimaryColor,
+      },
+    };
+  }
+
+  private getLegendConfig(config: PieChartConfig, themeStyles: any): any {
+    if (!config.showLegend) return { show: false };
+
+    const positionMap = {
+      left: { left: 'left', top: 'center', orient: 'vertical' },
+      right: { left: 'right', top: 'center', orient: 'vertical' },
+      top: { left: 'center', top: 'top', orient: 'horizontal' },
+      bottom: { left: 'center', top: 'bottom', orient: 'horizontal' },
+    };
+
+    const position = positionMap[config.legendPosition] || positionMap.left;
+    return {
+      ...position,
+      data: this.data.map(item => item.name) || [],
+      textStyle: {
+        color: themeStyles.textPrimaryColor,
+
+      },
+    };
+  }
+
+  private getSeriesConfig(config: PieChartConfig): any {
+    const radius = config.isDonut ? config.donutRadius : config.radius;
+
+    return {
+      name: 'Data',
+      type: 'pie',
+      radius: ['40%', '70%'],
+      data: this.data || [],
+      center: ['50%', '40%'],
+      emphasis: {
+        scale: false,
+        scaleSize:0,
+        itemStyle: {
+          shadowBlur: 0,
+          shadowOffsetX: 0,
+        },
+      },
+      label: {
+        show: true,
+        position: 'inside',
+        formatter: function(params) {
+          // Mostra porcentagem apenas se a fatia for maior que 5%
+          return params.percent > 5 ? params.percent + '%' : '';
+        },
+        fontSize: 14,
+      },
+      labelLine: {
+        show: false,
+      },
+      animation: false,
+
+    };
+  }
+
+  private updateChart() {
+    if (this.echartsInstance) {
+      this.initChart();
+      this.echartsInstance.setOption(this.chartOptions);
+    }
+  }
+
+  private updateChartTheme() {
+    if (!this.echartsInstance) return;
+
+    const themeStyles = getAvailableThemesStyles(this.currentTheme);
+
+    this.echartsInstance.setOption({
+      title: {
+        textStyle: {
+          color: themeStyles.textPrimaryColor,
+        },
+        subtextStyle: {
+          color: themeStyles.textSecondaryColor,
+        },
+      },
+      tooltip: {
+        backgroundColor: themeStyles.themePrimaryColor,
+        borderColor: "",
+        textStyle: {
+          color: themeStyles.textPrimaryColor,
+        },
+      },
+      legend: {
+        textStyle: {
+          color: themeStyles.textPrimaryColor,
+        },
+      },
+    });
+  }
+
+  // Métodos públicos para API
+  public setData(newData: PieChartData[]) {
+    this.data = newData;
+    this.initChart();
+    if (this.echartsInstance) {
+      this.echartsInstance.setOption(this.chartOptions);
+    }
+  }
+
+  public setConfig(newConfig: PieChartConfig) {
+    this.config = { ...this.config, ...newConfig };
+    this.initChart();
+    if (this.echartsInstance) {
+      this.echartsInstance.setOption(this.chartOptions);
+    }
+  }
+
+  public refresh() {
+    this.updateChart();
+  }
+
+  public getInstance(): ECharts {
+    return this.echartsInstance;
   }
 }

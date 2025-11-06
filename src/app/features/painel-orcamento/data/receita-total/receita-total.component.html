@@ -1,4 +1,4 @@
-<ngx-flip-table
+<!-- <ngx-flip-table
   [cardTitle]="title"
   [tableContent]="tableContent"
   [loadingStatus]="loadingStatus"
@@ -7,10 +7,10 @@
 >
   <ngx-org-chart-vertical [chart]="charData" card-front></ngx-org-chart-vertical>
 </ngx-flip-table>
-
+ -->
 
 <!-- receita-total.component.html -->
-<!-- <ngx-flip-table
+<ngx-flip-table
   [cardTitle]="title"
   [tableContent]="tableContent"
   [loadingStatus]="loadingStatus"
@@ -18,7 +18,9 @@
   (executeDownload)="handleTableDownload()"
 >
   <ngx-org-chart-vertical
-    [chart]="chartData"
+    [chart]="this.chartData"
+    [height]="300"
+    [width]="400"
     card-front
   ></ngx-org-chart-vertical>
-</ngx-flip-table> -->
+</ngx-flip-table>

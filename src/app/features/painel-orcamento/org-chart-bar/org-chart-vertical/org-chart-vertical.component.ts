@@ -16,10 +16,12 @@ import { IChartOptions } from "./../../../../shared/models/painel-orcamento/ICha
 @Component({
   selector: "ngx-org-chart-vertical",
   templateUrl: "./org-chart-vertical.component.html",
-  styleUrls: ["./org-chart-vertical.component.scss"],
+  styles: ['.echarts { width: 100%; height: 100%; }'],
 })
 export class OrgChartVerticalComponent implements OnInit, OnChanges {
   @Input() chart!: IChartOptions;
+  @Input() height: string = '500px';
+  @Input() width: string = '500px';
 
   echartsInstance: ECharts | null = null;
 
@@ -55,7 +57,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["chart"] && this.chart) {
-      this.initChartOptions(this.chart); // 🌀 atualiza automaticamente quando o Input mudar
+      this.initChartOptions(this.chart);
     }
   }
 
@@ -81,8 +83,10 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
       chart.data.datasets[1].backgroundColor || "#F58B9B",
     ];
 
-    // console.log(data);
     this.chartOptions = {
+      grid: {
+        containLabel: true
+      },
       tooltip: {
         trigger: "axis",
         axisPointer: { type: "shadow" },

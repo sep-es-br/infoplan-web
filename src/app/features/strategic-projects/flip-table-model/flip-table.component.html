@@ -56,7 +56,12 @@
       </ng-template>
     </div>
   </nb-card-header>
-  <nb-flip-card class="flip-card" [showToggleButton]="false" [flipped]="isFlipCardFlipped">
+  <nb-flip-card
+   [ngClass]="(customTableStyles?.cardBack?.verticalAlignTable && isFlipCardFlipped) ? 'align-table-vertically' : ''"
+   class="flip-card"
+   [showToggleButton]="false"
+   [flipped]="isFlipCardFlipped"
+  >
     <nb-card-front>
       <nb-card class="card-front px-3 pb-2 m-0">
         <ng-content select="[card-front]"></ng-content>

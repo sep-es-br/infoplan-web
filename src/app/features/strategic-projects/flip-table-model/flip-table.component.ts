@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf } from "@angular/common";
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from "@angular/core";
 import { NbCardModule, NbColumnsService, NbFormFieldModule, NbIconModule, NbInputModule, NbSortDirection, NbSortRequest, NbSpinnerModule, NbTooltipModule, NbTreeGridModule } from "@nebular/theme";
 import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
 import { RequestStatus } from "../strategicProjects.component";
@@ -37,6 +37,13 @@ export interface FlipTableContent {
   data: Array<TreeNode>;
 }
 
+export interface FlipTableCustomStyles {
+  cardFront?: {};
+  cardBack?: {
+    verticalAlignTable?: boolean;
+  };
+}
+
 @Component({
   selector: 'ngx-flip-table',
   templateUrl: './flip-table.component.html',
@@ -66,6 +73,12 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() backCardHeight: number = 150;
 
+  @Input() customTableStyles: FlipTableCustomStyles = {
+    cardBack: {
+      verticalAlignTable: true,
+    }
+  };
+
   @Input() loadingStatus: RequestStatus = RequestStatus.LOADING;
 
   @Output() executeSearch = new EventEmitter<string>();
@@ -73,7 +86,9 @@ export class FlipTableComponent implements OnChanges {
   @Output() executeDownload = new EventEmitter<any>();
 
   @Output() executeCustomFiltering = new EventEmitter<string>();
-  
+
+  // @ViewChild({})
+
   isFlipCardFlipped: boolean = false;
 
   isSearchFieldVisible: boolean = false;
@@ -103,7 +118,7 @@ export class FlipTableComponent implements OnChanges {
         this.defaultColumnsList = [];
         this.columnLabels = {};
       }
-      
+
       this.tableContent.defaultColumns.forEach((el) => {
         this.columnLabels[el.propertyName] = el.displayName;
         this.defaultColumnsList.push({
@@ -185,7 +200,7 @@ export class FlipTableComponent implements OnChanges {
 
   debounceOnInput(event: KeyboardEvent) {
     clearTimeout(this.debounceTimer);
-    
+
     this.debounceTimer = setTimeout(() => {
       const searchTerm = (event.target as any).value;
       this.executeSearch.emit(searchTerm);

@@ -1,8 +1,16 @@
-<div>
-  <div
-    echarts
-    class="echart"
-    [options]="chartOptions"
-    (chartInit)="onChartInit($event)"
-  ></div>
-</div>
+<!-- <div
+  echarts
+  class="echart"
+  [options]="chartOptions"
+  [ngStyle]="{ 'height': height, 'width': width }"
+  (chartInit)="onChartInit($event)"
+></div> -->
+
+<div
+  echarts
+  class="echart"
+  [options]="chartOptions"
+  [style.height.px]="height"
+  [style.width.px]="width"
+  (chartInit)="onChartInit($event)"
+></div>

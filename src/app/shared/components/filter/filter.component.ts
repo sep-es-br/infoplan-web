@@ -1,13 +1,19 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { NbDatepickerModule, NbIconModule } from "@nebular/theme";
+import {
+  NbDatepickerModule,
+  NbIconModule,
+  NbSelectModule,
+  NbInputModule,
+  NbButtonModule,
+  NbTooltipModule
+} from "@nebular/theme";
 
-// filter-config.interface.ts
 export interface FilterConfig {
   key: string;
   label: string;
-  type: 'select' | 'multiselect' | 'date' | 'date-range' | 'text' | 'number';
+  type: 'select' | 'multiselect' | 'date' | 'date-range' | 'text' | 'number' | 'month' | 'year';
   placeholder?: string;
   options?: { value: any; label: string; disabled?: boolean }[];
   multiple?: boolean;
@@ -24,8 +30,9 @@ export interface ActiveFilter {
   key: string;
   label: string;
   value: any;
-  displayValue: string;
+  displayValue: string | any[];
   type: string;
+  removable?: boolean;
 }
 
 @Component({
@@ -38,7 +45,11 @@ export interface ActiveFilter {
     FormsModule,
     ReactiveFormsModule,
     NbIconModule,
-    NbDatepickerModule
+    NbDatepickerModule,
+    NbSelectModule,
+    NbInputModule,
+    NbButtonModule,
+    NbTooltipModule
   ],
 })
 export class FilterComponent implements OnInit {
@@ -61,7 +72,12 @@ export class FilterComponent implements OnInit {
 
   private initializeFilterModel() {
     this.filterConfigs.forEach(config => {
-      this.filterModel[config.key] = config.multiple ? [] : null;
+      if (config.type === 'date-range') {
+        this.filterModel[config.key + 'Start'] = null;
+        this.filterModel[config.key + 'End'] = null;
+      } else {
+        this.filterModel[config.key] = config.multiple ? [] : null;
+      }
     });
   }
 
@@ -72,10 +88,14 @@ export class FilterComponent implements OnInit {
   removeFilter(key: string) {
     this.filterRemove.emit(key);
 
-    // Resetar o valor no modelo
     const config = this.getFilterConfig(key);
     if (config) {
-      this.filterModel[key] = config.multiple ? [] : null;
+      if (config.type === 'date-range') {
+        this.filterModel[key + 'Start'] = null;
+        this.filterModel[key + 'End'] = null;
+      } else {
+        this.filterModel[key] = config.multiple ? [] : null;
+      }
     }
   }
 
@@ -94,9 +114,22 @@ export class FilterComponent implements OnInit {
     const filters: any = {};
 
     this.filterConfigs.forEach(config => {
-      const value = this.filterModel[config.key];
-      if (value && (config.multiple ? value.length > 0 : value !== null && value !== '')) {
-        filters[config.key] = value;
+      if (config.type === 'date-range') {
+        const startValue = this.filterModel[config.key + 'Start'];
+        const endValue = this.filterModel[config.key + 'End'];
+
+        if (startValue || endValue) {
+          filters[config.key] = {
+            start: startValue,
+            end: endValue
+          };
+        }
+      } else {
+        const value = this.filterModel[config.key];
+        if (value !== null && value !== '' &&
+            (config.multiple ? value.length > 0 : true)) {
+          filters[config.key] = value;
+        }
       }
     });
 
@@ -120,21 +153,27 @@ export class FilterComponent implements OnInit {
     this.mapToggle.emit(this.isMapOpen);
   }
 
-  // MÉTODO ADICIONADO PARA CORRIGIR O ERRO
   getFilterRows(): FilterConfig[][] {
+    if (!this.filterConfigs) return [];
+
     const rows: FilterConfig[][] = [];
     let currentRow: FilterConfig[] = [];
 
     this.filterConfigs.forEach((config, index) => {
-      currentRow.push(config);
+      if (!config.hidden) {
+        currentRow.push(config);
 
-      // 4 filtros por linha (col-xl-3)
-      if ((index + 1) % 4 === 0 || index === this.filterConfigs.length - 1) {
-        rows.push(currentRow);
-        currentRow = [];
+        if ((index + 1) % 4 === 0 || index === this.filterConfigs.length - 1) {
+          rows.push(currentRow);
+          currentRow = [];
+        }
       }
     });
 
     return rows;
+  }
+
+  isArray(value: any): boolean {
+    return Array.isArray(value);
   }
 }

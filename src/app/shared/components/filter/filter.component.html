@@ -2,33 +2,45 @@
 <div class="filter-container">
   <div class="filter-button px-2">
     <div class="filter-tags">
-      <div *ngFor="let tag of activeFilters; let i = index">
+      <div *ngFor="let tag of activeFilters" class="d-inline-block">
         <div class="filter-tag" [ngClass]="{ 'invisible-tag': showFilters }">
-          <div>
-            <div class="tag-label">
-              {{ tag.label }}:
-            </div>
+          <div class="d-flex align-items-center">
+            <span class="tag-label">{{ tag.label }}:</span>
+            <div class="tag-value ms-1">
+              <ng-container *ngIf="isArray(tag.displayValue); else singleValue">
+                <ng-container *ngFor="let value of tag.displayValue; let index = index; let last = last">
+                  <ng-container *ngIf="value?.name?.length <= 20; else spanWithTooltip">
+                    <span>
+                      {{ (index > 0 ? ' ' : '') + (value.name + (last ? '' : ';')) }}
+                    </span>
+                  </ng-container>
 
-            <div class="tag-value">
-              <ng-container *ngFor="let value of tag.displayValue; let index = index">
-                <ng-container *ngIf="value.name?.length <= 20 else spanWithTooltip">
-                  <span>
-                    {{ (index > 0 ? ' ' : '') + (tag.displayValue.length > 1 ?  (value.name + ';') : value.name) }}
-                  </span>
+                  <ng-template #spanWithTooltip>
+                    <span [nbTooltip]="value.fullName ? value.fullName : value.name">
+                      {{ (index > 0 ? ' ' : '') + (value.name | textTruncate:17:'...') }}
+                    </span>
+                  </ng-template>
+                </ng-container>
+              </ng-container>
+
+              <ng-template #singleValue>
+                <ng-container *ngIf="tag.displayValue?.length <= 20; else singleWithTooltip">
+                  <span>{{ tag.displayValue }}</span>
                 </ng-container>
 
-                <ng-template #spanWithTooltip>
-                  <span [nbTooltip]="value.fullName ? value.fullName : value.name">
-                    {{ (index > 0 ? ' ' : '') + (value.name | textTruncate : 17 : ';') }}
+                <ng-template #singleWithTooltip>
+                  <span [nbTooltip]="tag.displayValue">
+                    {{ tag.displayValue | textTruncate:17:'...' }}
                   </span>
                 </ng-template>
-              </ng-container>
+              </ng-template>
             </div>
           </div>
           <button
             *ngIf="tag.removable !== false"
             class="remove-button"
             (click)="removeFilter(tag.key)"
+            type="button"
           >
             ×
           </button>
@@ -36,12 +48,13 @@
       </div>
     </div>
 
-    <div class="filter-button">
+    <div class="filter-actions">
       <button
         *ngIf="showMapButton"
         (click)="toggleMap()"
         class="map-btn"
         [ngClass]="{'map-btn-clicked': isMapOpen}"
+        type="button"
       >
         <img src="/assets/images/app/es-logo.svg" alt="Mapa do Espírito Santo" class="map-icon">
       </button>
@@ -67,6 +80,7 @@
               <button
                 class="btn p-0 close-filter-button"
                 (click)="closeFilterModal()"
+                type="button"
               >
                 <nb-icon [icon]="'close-outline'"></nb-icon>
               </button>
@@ -131,6 +145,7 @@
                     [placeholder]="config.placeholder || ''"
                     [size]="config.size || 'tiny'"
                     [(ngModel)]="filterModel[config.key]"
+                    (input)="handleFilterChange(config.key, $event.target.value)"
                   >
 
                   <!-- Input Numérico -->
@@ -144,9 +159,10 @@
                     [min]="config.validation?.min"
                     [max]="config.validation?.max"
                     [(ngModel)]="filterModel[config.key]"
+                    (input)="handleFilterChange(config.key, $event.target.value)"
                   >
 
-                  <!-- Datepicker Corrigido -->
+                  <!-- Datepicker -->
                   <div *ngIf="config.type === 'date'">
                     <input
                       nbInput
@@ -155,11 +171,12 @@
                       [size]="config.size || 'tiny'"
                       [nbDatepicker]="datepicker"
                       [(ngModel)]="filterModel[config.key]"
+                      (dateChange)="handleFilterChange(config.key, $event)"
                     >
                     <nb-datepicker #datepicker></nb-datepicker>
                   </div>
 
-                  <!-- Date Range Corrigido -->
+                  <!-- Date Range -->
                   <div *ngIf="config.type === 'date-range'">
                     <div class="d-flex flex-row w-100 gap-2 pe-2">
                       <div class="col-6">
@@ -171,6 +188,7 @@
                           [size]="config.size || 'tiny'"
                           [nbDatepicker]="startDatepicker"
                           [(ngModel)]="filterModel[config.key + 'Start']"
+                          (dateChange)="handleFilterChange(config.key + 'Start', $event)"
                         >
                         <nb-datepicker #startDatepicker></nb-datepicker>
                       </div>
@@ -183,13 +201,14 @@
                           [size]="config.size || 'tiny'"
                           [nbDatepicker]="endDatepicker"
                           [(ngModel)]="filterModel[config.key + 'End']"
+                          (dateChange)="handleFilterChange(config.key + 'End', $event)"
                         >
                         <nb-datepicker #endDatepicker></nb-datepicker>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Month Select (para meses) -->
+                  <!-- Month Select -->
                   <nb-select
                     *ngIf="config.type === 'month'"
                     class="w-100"
@@ -209,7 +228,7 @@
                     </nb-option>
                   </nb-select>
 
-                  <!-- Year Select (para anos) -->
+                  <!-- Year Select -->
                   <nb-select
                     *ngIf="config.type === 'year'"
                     class="w-100"
@@ -243,6 +262,7 @@
             outline
             shape="semi-round"
             (click)="resetFilters()"
+            type="button"
           >
             Restaurar Filtros
           </button>
@@ -253,6 +273,7 @@
             hero
             shape="semi-round"
             (click)="applyFilters()"
+            type="button"
           >
             Filtrar
           </button>

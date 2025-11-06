@@ -110,59 +110,6 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
     this.processTableData(dados);
   }
 
-  // private processTableData(dados: IReceitaTotalOrcamentoResponse): void {
-  //   this.tableContent = {
-  //     customColumn: {
-  //       propertyName: "label",
-  //       displayName: `Receita Realizada/Prevista – ${dados.ano}`,
-  //       alignment: {
-  //         header: FlipTableAlignment.LEFT,
-  //         data: FlipTableAlignment.LEFT,
-  //       },
-  //     },
-  //     defaultColumns: [
-  //       {
-  //         propertyName: "valor",
-  //         displayName: "Valor",
-  //         alignment: {
-  //           header: FlipTableAlignment.RIGHT,
-  //           data: FlipTableAlignment.RIGHT,
-  //         },
-  //       },
-  //     ],
-  //     data: [
-  //       {
-  //         data: [
-  //           { propertyName: "label", value: "Receita Realizada/Prevista (%)" },
-  //           { propertyName: "valor", value: "70,64%" },
-  //         ],
-  //       },
-  //       {
-  //         data: [
-  //           { propertyName: "label", value: "Arrecadação Líquida" },
-  //           { propertyName: "valor", value: `R$ ${dados.vlr_receita_liquida.toLocaleString('pt-BR') || 0 }`},
-  //         ],
-  //       },
-  //       {
-  //         data: [
-  //           { propertyName: "label", value: "Previsão Inicial Líquida" },
-  //           {
-  //             propertyName: "valor",
-  //             value: `R$ ${dados.vlr_receita_prevista.toLocaleString('pt-BR') || 0}`,
-  //           },
-  //           // { propertyName: "valor", value: `R$ ${this.numberSuffixPipe.transform(dados.vlr_receita_prevista || 0, 2)}` },
-  //         ],
-  //       },
-  //       {
-  //         data: [
-  //           { propertyName: "label", value: "Exercício" },
-  //           { propertyName: "valor", value: dados.ano || 2025 },
-  //         ],
-  //       },
-  //     ],
-  //   };
-  // }
-
   private processTableData(
     dados: IReceitaTotalOrcamentoResponse | IReceitaTotalOrcamentoResponse[]
   ): void {

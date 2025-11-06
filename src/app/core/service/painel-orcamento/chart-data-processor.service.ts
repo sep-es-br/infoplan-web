@@ -1,22 +1,16 @@
-import { Injectable } from '@angular/core';
-import { IChartOptions } from '../../../shared/models/painel-orcamento/IChartOptions';
-import { PieChartData } from '../../../features/painel-orcamento/org-chart-pie/org-chart-pie.component';
+import { Injectable } from "@angular/core";
+import { IChartOptions } from "../../../shared/models/painel-orcamento/IChartOptions";
+import { PieChartData } from "../../../features/painel-orcamento/org-chart-pie/org-chart-pie.component";
 
 const CHART_COLORS = [
-  '#F58B9B', // PRIMARY
-  '#4DB6D2', // SECONDARY
-  '#e4c26b', // TERTIARY
-  '#2E88B9', // QUATERNARY
-  '#77D4B0', // QUINTERNARY
-  '#A671C4', // SECTATERNARY
-  '#F6D25A', // SETIMATERNARY
+  "#F58B9B", "#4DB6D2", "#e4c26b", "#2E88B9",
+  "#77D4B0", "#A671C4", "#F6D25A",
 ];
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ChartDataProcessorService {
-
   readonly colors = CHART_COLORS;
 
   /**
@@ -27,22 +21,24 @@ export class ChartDataProcessorService {
     campoLabel: string,
     labelDataset?: string
   ): IChartOptions | null {
-    if (!dados?.length) {
-      console.warn('Nenhum dado disponível');
+    const dadosNormalizados = this.normalizarEstruturaDados(dados);
+
+    if (!dadosNormalizados.length) {
+      console.warn("Nenhum dado disponível após normalização");
       return null;
     }
 
-    const categorias = [...new Set(dados.map((item) => item[campoLabel]))];
-    const anos = [...new Set(dados.map((item) => item.ano))].sort((a, b) => a - b);
+    const categorias = this.extrairCategorias(dadosNormalizados, campoLabel);
+    const anos = this.extrairAnos(dadosNormalizados);
 
-    if (anos.length === 0) {
-      console.warn('Nenhum ano encontrado nos dados');
+    if (!anos.length) {
+      console.warn("Nenhum ano encontrado nos dados");
       return null;
     }
 
     return anos.length === 1
-      ? this.criarChartAnoUnico(dados, categorias, anos[0], campoLabel)
-      : this.criarChartMultiploAnos(dados, categorias, anos, campoLabel);
+      ? this.criarChartAnoUnico(dadosNormalizados, categorias, anos[0], campoLabel)
+      : this.criarChartMultiploAnos(dadosNormalizados, categorias, anos, campoLabel);
   }
 
   /**
@@ -53,54 +49,27 @@ export class ChartDataProcessorService {
     campoNome: string,
     camposValor: string[]
   ): PieChartData[] {
-    if (!dados?.length) {
+    const dadosNormalizados = this.normalizarEstruturaDados(dados);
+
+    if (!dadosNormalizados.length) {
       return [];
     }
 
-    const dadosAgrupados = new Map<string, number>();
-
-    dados.forEach((item) => {
-      const nome = item[campoNome];
-      if (!nome) return;
-
-      let valor = 0;
-      for (const campo of camposValor) {
-        if (item[campo] !== undefined && item[campo] !== null) {
-          valor = Number(item[campo]) || 0;
-          break;
-        }
-      }
-
-      if (dadosAgrupados.has(nome)) {
-        dadosAgrupados.set(nome, dadosAgrupados.get(nome)! + valor);
-      } else {
-        dadosAgrupados.set(nome, valor);
-      }
-    });
-
-    const pieData: PieChartData[] = Array.from(dadosAgrupados.entries())
-      .map(([name, value], index) => ({
-        name,
-        value,
-        itemStyle: {
-          color: this.colors[index % this.colors.length],
-        },
-      }))
-      .filter((item) => item.value > 0);
-
-    pieData.sort((a, b) => b.value - a.value);
-    return pieData;
+    const dadosAgrupados = this.agruparDadosPieChart(dadosNormalizados, campoNome, camposValor);
+    return this.gerarPieChartData(dadosAgrupados);
   }
 
   /**
    * Cria dados de tabela a partir de PieChartData
    */
-  criarTabelaPieChart(dados: PieChartData[]): Array<{categoria: string; valor: number; percentual: number}> {
+  criarTabelaPieChart(
+    dados: PieChartData[]
+  ): Array<{ categoria: string; valor: number; percentual: number }> {
     if (!dados?.length) return [];
 
     const total = dados.reduce((sum, item) => sum + item.value, 0);
 
-    return dados.map(item => ({
+    return dados.map((item) => ({
       categoria: item.name,
       valor: item.value,
       percentual: total > 0 ? (item.value / total) * 100 : 0,
@@ -114,37 +83,56 @@ export class ChartDataProcessorService {
     dados: any[],
     campoLabel: string,
     camposValor: string[]
-  ): Array<{categoria: string; [key: string]: any}> {
-    if (!dados?.length) return [];
+  ): Array<{ categoria: string; [key: string]: any }> {
+    const dadosNormalizados = this.normalizarEstruturaDados(dados);
 
-    const categorias = [...new Set(dados.map((item) => item[campoLabel]))];
-    const anos = [...new Set(dados.map((item) => item.ano))].sort((a, b) => a - b);
+    if (!dadosNormalizados.length) return [];
 
-    return categorias.map(categoria => {
+    const categorias = this.extrairCategorias(dadosNormalizados, campoLabel);
+    const anos = this.extrairAnos(dadosNormalizados);
+
+    return categorias.map((categoria) => {
       const row: any = { categoria };
 
-      anos.forEach(ano => {
-        const item = dados.find(
+      anos.forEach((ano) => {
+        const item = dadosNormalizados.find(
           (d) => d[campoLabel] === categoria && d.ano === ano
         );
-
-        if (item) {
-          for (const campo of camposValor) {
-            if (item[campo] !== undefined && item[campo] !== null) {
-              row[`ano_${ano}`] = item[campo];
-              break;
-            }
-          }
-        } else {
-          row[`ano_${ano}`] = 0;
-        }
+        row[`ano_${ano}`] = this.extrairValor(item, camposValor);
       });
 
       return row;
     });
   }
 
-  // ==================== MÉTODOS PRIVADOS ====================
+  // ==================== MÉTODOS PRIVADOS - NORMALIZAÇÃO ====================
+
+  private normalizarEstruturaDados(dados: any[]): any[] {
+    if (!dados?.length) return [];
+
+    // Se o primeiro elemento é um array, achata a estrutura
+    if (Array.isArray(dados[0])) {
+      return dados.flat();
+    }
+
+    return dados;
+  }
+
+  private extrairCategorias(dados: any[], campoLabel: string): any[] {
+    return [...new Set(dados
+      .filter(item => item && item[campoLabel] != null)
+      .map(item => item[campoLabel])
+    )];
+  }
+
+  private extrairAnos(dados: any[]): number[] {
+    return [...new Set(dados
+      .filter(item => item && item.ano != null)
+      .map(item => Number(item.ano))
+    )].sort((a, b) => a - b);
+  }
+
+  // ==================== MÉTODOS PRIVADOS - GRÁFICOS ====================
 
   private criarChartAnoUnico(
     dados: any[],
@@ -152,23 +140,15 @@ export class ChartDataProcessorService {
     ano: number,
     campoLabel: string
   ): IChartOptions | null {
-    const dadosPrevisao = this.extrairDados(
-      dados,
-      categorias,
-      ano,
-      campoLabel,
-      'vlr_receita_prevista'
-    );
-    const dadosArrecadacao = this.extrairDados(
-      dados,
-      categorias,
-      ano,
-      campoLabel,
-      'receitaLiquida',
-      'vlr_receita_liquida'
+    const dadosPrevisao = this.extrairDadosPorCategoria(
+      dados, categorias, ano, campoLabel, "vlr_receita_prevista"
     );
 
-    if (!this.temDadosValidos(dadosPrevisao, dadosArrecadacao)) {
+    const dadosArrecadacao = this.extrairDadosPorCategoria(
+      dados, categorias, ano, campoLabel, "receitaLiquida", "vlr_receita_liquida"
+    );
+
+    if (!this.temDadosValidos([dadosPrevisao, dadosArrecadacao])) {
       console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
       return null;
     }
@@ -199,14 +179,10 @@ export class ChartDataProcessorService {
     campoLabel: string
   ): IChartOptions | null {
     const datasets = anos.map((ano, index) => {
-      const dadosAno = this.extrairDados(
-        dados,
-        categorias,
-        ano,
-        campoLabel,
-        'receitaLiquida',
-        'vlr_receita_liquida'
+      const dadosAno = this.extrairDadosPorCategoria(
+        dados, categorias, ano, campoLabel, "receitaLiquida", "vlr_receita_liquida"
       );
+
       return {
         label: `${ano}`,
         data: dadosAno,
@@ -214,7 +190,7 @@ export class ChartDataProcessorService {
       };
     });
 
-    if (!datasets.some((dataset) => dataset.data.some((valor) => valor > 0))) {
+    if (!this.temDadosValidos(datasets.map(d => d.data))) {
       console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
       return null;
     }
@@ -227,7 +203,9 @@ export class ChartDataProcessorService {
     };
   }
 
-  private extrairDados(
+  // ==================== MÉTODOS PRIVADOS - UTILITÁRIOS ====================
+
+  private extrairDadosPorCategoria(
     dados: any[],
     categorias: any[],
     ano: number,
@@ -238,18 +216,59 @@ export class ChartDataProcessorService {
       const item = dados.find(
         (item) => item[campoLabel] === categoria && item.ano === ano
       );
-      if (!item) return 0;
-
-      for (const campo of campos) {
-        if (item[campo] !== undefined && item[campo] !== null) {
-          return item[campo];
-        }
-      }
-      return 0;
+      return this.extrairValor(item, campos);
     });
   }
 
-  private temDadosValidos(...arrays: number[][]): boolean {
-    return arrays.some((arr) => arr.some((valor) => valor > 0));
+  private extrairValor(item: any, campos: string[]): number {
+    if (!item) return 0;
+
+    for (const campo of campos) {
+      if (item[campo] !== undefined && item[campo] !== null) {
+        return Number(item[campo]) || 0;
+      }
+    }
+    return 0;
+  }
+
+  private agruparDadosPieChart(
+    dados: any[],
+    campoNome: string,
+    camposValor: string[]
+  ): Map<string, number> {
+    const dadosAgrupados = new Map<string, number>();
+
+    dados.forEach((item) => {
+      const nome = item[campoNome];
+      if (!nome) return;
+
+      const valor = this.extrairValor(item, camposValor);
+
+      if (dadosAgrupados.has(nome)) {
+        dadosAgrupados.set(nome, dadosAgrupados.get(nome)! + valor);
+      } else {
+        dadosAgrupados.set(nome, valor);
+      }
+    });
+
+    return dadosAgrupados;
+  }
+
+  private gerarPieChartData(dadosAgrupados: Map<string, number>): PieChartData[] {
+    const pieData: PieChartData[] = Array.from(dadosAgrupados.entries())
+      .map(([name, value], index) => ({
+        name,
+        value,
+        itemStyle: {
+          color: this.colors[index % this.colors.length],
+        },
+      }))
+      .filter((item) => item.value > 0);
+
+    return pieData.sort((a, b) => b.value - a.value);
+  }
+
+  private temDadosValidos(arrays: number[][]): boolean {
+    return arrays.some((arr) => arr?.some((valor) => valor > 0));
   }
 }

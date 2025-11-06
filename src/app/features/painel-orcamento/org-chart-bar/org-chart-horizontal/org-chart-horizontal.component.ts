@@ -16,10 +16,12 @@ import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChart
 @Component({
   selector: "ngx-org-chart-horizontal",
   templateUrl: "./org-chart-horizontal.component.html",
-  styleUrls: ["./org-chart-horizontal.component.scss"],
+  styles: ['.echarts { width: 100%; height: 100%; }'],
 })
 export class OrgChartHorizontalComponent implements OnInit, OnChanges {
-  @Input() chart!: IChartOptions; // 🔥 recebe dinamicamente o JSON do gráfico
+  @Input() chart!: IChartOptions;
+  @Input() height: string = '500px';
+  @Input() width: string = '500px';
 
   chartOptions: EChartsOption;
   echartsInstance: ECharts | null = null;

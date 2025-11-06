@@ -15,13 +15,14 @@ import { PieChartComponent } from "./org-chart-pie/org-chart-pie.component";
 import { ReceitaTotalComponent } from "./data/receita-total/receita-total.component";
 import { FlipTableComponent } from "../strategic-projects/flip-table-model/flip-table.component";
 
-import { ReceitaOrigemComponent } from './data/receita-origem/receita-origem.component';
-import { ReceitaCategoriaComponent } from './data/receita-categoria/receita-categoria.component';
-import { ReceitaImpostosComponent } from './data/receita-impostos/receita-impostos.component';
-import { ReceitaParticipacaoComponent } from './data/receita-participacao/receita-participacao.component';
-import { ReceitaTransferenciaComponent } from './data/receita-transferencia/receita-transferencia.component';
-import { ReceitaDespesaGndTotalComponent } from './data/receita-despesa-gnd-total/receita-despesa-gnd-total.component';
-import { ReceitaDespesaGndComponent } from './data/receita-despesa-gnd/receita-despesa-gnd.component';
+import { ReceitaOrigemComponent } from "./data/receita-origem/receita-origem.component";
+import { ReceitaCategoriaComponent } from "./data/receita-categoria/receita-categoria.component";
+import { ReceitaImpostosComponent } from "./data/receita-impostos/receita-impostos.component";
+import { ReceitaParticipacaoComponent } from "./data/receita-participacao/receita-participacao.component";
+import { ReceitaTransferenciaComponent } from "./data/receita-transferencia/receita-transferencia.component";
+import { ReceitaDespesaGndTotalComponent } from "./data/receita-despesa-gnd-total/receita-despesa-gnd-total.component";
+import { ReceitaDespesaGndComponent } from "./data/receita-despesa-gnd/receita-despesa-gnd.component";
+import { ShortNumberPipe } from "../../@theme/pipes";
 
 @NgModule({
   declarations: [
@@ -36,7 +37,7 @@ import { ReceitaDespesaGndComponent } from './data/receita-despesa-gnd/receita-d
     ReceitaParticipacaoComponent,
     ReceitaTransferenciaComponent,
     ReceitaDespesaGndTotalComponent,
-    ReceitaDespesaGndComponent
+    ReceitaDespesaGndComponent,
   ],
   imports: [
     CommonModule,
@@ -50,7 +51,10 @@ import { ReceitaDespesaGndComponent } from './data/receita-despesa-gnd/receita-d
     NbIconModule,
     FilterComponent,
     PieChartComponent,
-    FlipTableComponent
-],
+    FlipTableComponent,
+  ],
+  providers: [
+    ShortNumberPipe
+  ]
 })
 export class PainelOrcamentoModule {}

@@ -3,6 +3,8 @@
     echarts
     class="echart"
     [options]="chartOptions"
+    [style.height.px]="height"
+    [style.width.px]="width"
     (chartInit)="onChartInit($event)"
   ></div>
 </div>

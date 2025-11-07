@@ -15,10 +15,10 @@ import { ChartDataProcessorService } from '../../../../core/service/painel-orcam
   styleUrls: ['./receita-origem.component.scss'],
 })
 export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
-  @Input() filter!: IPainelOrcamentoRequest;
+  @Input() filter: IPainelOrcamentoRequest;
 
-  private readonly painelService = inject(PainelOrcamentoService);
-  private readonly chartProcessor = inject(ChartDataProcessorService);
+  private readonly _painelService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly destroy$ = new Subject<void>();
 
   readonly title: string = 'Receita por Origem';
@@ -26,6 +26,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
   chartData!: IChartOptions;
   tableContent: any[] = [];
   loadingStatus: 'loading' | 'loaded' | 'error' = 'loading';
+  private receitaOrigemCharData: IReceitaOrigemOrcamentoResponse[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {
@@ -41,29 +42,30 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
   private loadData(): void {
     this.loadingStatus = 'loading';
 
-    // this.painelService
-    //   .getReceitaOrigem(this.filter)
-    //   .pipe(
-    //     takeUntil(this.destroy$),
-    //     finalize(() => {
-    //       this.loadingStatus = this.chartData ? 'loaded' : 'error';
-    //     })
-    //   )
-    //   .subscribe({
-    //     next: (response) => {
-    //       this.processData([response]);
-    //     },
-    //     error: (err) => {
-    //       console.error('Erro ao carregar receita origem:', err);
-    //       this.loadingStatus = 'error';
-    //     },
-    //   });
+    this._painelService
+      .getReceitaOrigem(this.filter)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          this.loadingStatus = this.receitaOrigemCharData.length > 0 ? 'loaded' : 'error';
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.receitaOrigemCharData = response;
+          this.processData();
+        },
+        error: (err) => {
+          console.error('Erro ao carregar receita origem:', err);
+          this.loadingStatus = 'error';
+        },
+      });
   }
 
-  private processData(dados: IReceitaOrigemOrcamentoResponse[]): void {
+  private processData(): void {
     // Processa dados para o gráfico
-    const chartData = this.chartProcessor.processarDadosComparativo(
-      dados,
+    const chartData = this._chartProcessor.processarDadosComparativo(
+      this.receitaOrigemCharData,
       'origem',
       'Receita Líquida'
     );
@@ -72,8 +74,8 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
       this.chartData = chartData;
 
       // Processa dados para a tabela
-      this.tableContent = this.chartProcessor.criarTabelaComparativo(
-        dados,
+      this.tableContent = this._chartProcessor.criarTabelaComparativo(
+        this.receitaOrigemCharData,
         'origem',
         ['receitaLiquida', 'vlr_receita_liquida']
       );

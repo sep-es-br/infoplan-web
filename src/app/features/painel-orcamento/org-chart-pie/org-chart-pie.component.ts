@@ -22,11 +22,14 @@ export interface PieChartConfig {
   legendOrient?: 'vertical' | 'horizontal';
   showTooltip?: boolean;
   showLabels?: boolean;
-  radius?: string | number;
-  isDonut?: boolean;
-  donutRadius?: [string | number, string | number];
+  radius?: string | [string, string];
   animation?: boolean;
   emphasisScale?: boolean;
+  centerPosition?: [string, string]; // Controla posição [horizontal, vertical]
+  gridTop?: string | number;
+  gridBottom?: string | number;
+  gridLeft?: string | number; // Controla margem esquerda
+  gridRight?: string | number; // Controla margem direita
 }
 
 @Component({
@@ -43,49 +46,50 @@ export class PieChartComponent implements OnInit, OnChanges {
   @Input() width: string | number = '100%';
   @Input() config: PieChartConfig = {};
 
-  @HostListener('window:resize')
-  onResize() {
-    this.updateChart();
-  }
-
-  chartOptions: EChartsOption;
-  echartsInstance: ECharts = null;
+  chartOptions: EChartsOption = {};
+  echartsInstance: ECharts | null = null;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
 
-  private defaultConfig: PieChartConfig = {
-    showTitle: true,
+  private readonly defaultConfig: PieChartConfig = {
+    showTitle: false,
     titleText: '',
     titleSubtext: '',
     titlePosition: 'left',
     showLegend: true,
     legendPosition: 'top',
-    legendOrient: 'vertical',
+    legendOrient: 'horizontal',
     showTooltip: true,
     showLabels: true,
-    radius: '50%',
-    isDonut: false,
-    donutRadius: ['40%', '70%'],
+    radius: ['40%', '70%'],
     animation: true,
-    emphasisScale: true,
+    emphasisScale: false,
+    centerPosition: ['50%', '55%'],
+    gridTop: '15%',
+    gridBottom: '10%',
+    gridLeft: '10%',
+    gridRight: '10%',
   };
 
   constructor(private themeService: NbThemeService) {
-    this.themeService.onThemeChange()
-      .subscribe((newTheme: { name: AvailableThemes }) => {
-        this.currentTheme = newTheme.name;
-        this.updateChartTheme();
-      });
+    this.themeService.onThemeChange().subscribe((theme: { name: AvailableThemes }) => {
+      this.currentTheme = theme.name;
+      this.updateChartTheme();
+    });
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.resizeChart();
   }
 
   ngOnInit() {
-    this.currentTheme = (this.themeService.currentTheme as AvailableThemes);
-    console.log('Tema atual no ngOnInit:', this.colors);
-    this.initChart();
+    this.currentTheme = this.themeService.currentTheme as AvailableThemes;
+    this.buildChart();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['data'] || changes['colors'] || changes['config']) {
-      this.initChart();
+    if ((changes['data'] || changes['colors'] || changes['config']) && !changes['data']?.firstChange) {
+      this.buildChart();
     }
   }
 
@@ -93,110 +97,97 @@ export class PieChartComponent implements OnInit, OnChanges {
     this.echartsInstance = chartInstance;
   }
 
-  private initChart() {
-    const mergedConfig = { ...this.defaultConfig, ...this.config };
+  private buildChart() {
+    if (!this.data || this.data.length === 0) {
+      console.warn('Nenhum dado disponível para o gráfico');
+      return;
+    }
+
+    const config = { ...this.defaultConfig, ...this.config };
     const themeStyles = getAvailableThemesStyles(this.currentTheme);
 
     this.chartOptions = {
-      title: this.getTitleConfig(mergedConfig, themeStyles),
-      tooltip: this.getTooltipConfig(mergedConfig, themeStyles),
-      legend: this.getLegendConfig(mergedConfig, themeStyles),
-      series: [this.getSeriesConfig(mergedConfig)],
-      color: this.colors?.length ? this.colors : undefined,
-      animation: mergedConfig.animation,
-    };
-  }
+      color: this.colors.length > 0 ? this.colors : undefined,
 
-  private getTitleConfig(config: PieChartConfig, themeStyles: any): any {
-    if (!config.showTitle) return { show: false };
-
-    return {
-      text: config.titleText,
-      subtext: config.titleSubtext,
-      left: config.titlePosition,
-      textStyle: {
-        color: themeStyles.textPrimaryColor,
+      grid: {
+        top: config.gridTop,
+        bottom: config.gridBottom,
+        left: config.gridLeft,
+        right: config.gridRight,
+        containLabel: true,
       },
-      subtextStyle: {
-        color: themeStyles.textSecondaryColor,
-      },
-    };
-  }
 
-  private getTooltipConfig(config: PieChartConfig, themeStyles: any): any {
-    if (!config.showTooltip) return { show: false };
+      title: config.showTitle ? {
+        text: config.titleText,
+        subtext: config.titleSubtext,
+        left: config.titlePosition,
+        textStyle: { color: themeStyles.textPrimaryColor },
+        subtextStyle: { color: themeStyles.textSecondaryColor },
+      } : undefined,
 
-    return {
-      trigger: 'item',
-      formatter: '{a} <br/>{b}: {c} ({d}%)',
-      backgroundColor: themeStyles.themePrimaryColor,
-      borderColor: themeStyles.borderColor,
-      textStyle: {
-        color: themeStyles.textPrimaryColor,
-      },
-    };
-  }
+      tooltip: config.showTooltip ? {
+        trigger: 'item',
+        formatter: '{b}: {c} ({d}%)',
+        backgroundColor: themeStyles.themePrimaryColor,
+        confine: true,
+        textStyle: { color: themeStyles.textPrimaryColor },
+      } : undefined,
 
-  private getLegendConfig(config: PieChartConfig, themeStyles: any): any {
-    if (!config.showLegend) return { show: false };
+      legend: config.showLegend ? {
+        left: this.getLegendPosition(config.legendPosition).left,
+        top: this.getLegendPosition(config.legendPosition).top,
+        orient: config.legendOrient,
+        textStyle: { color: themeStyles.textPrimaryColor },
+      } : undefined,
 
-    const positionMap = {
-      left: { left: 'left', top: 'center', orient: 'vertical' },
-      right: { left: 'right', top: 'center', orient: 'vertical' },
-      top: { left: 'center', top: 'top', orient: 'horizontal' },
-      bottom: { left: 'center', top: 'bottom', orient: 'horizontal' },
-    };
+      series: [{
+        name: 'Dados',
+        type: 'pie',
+        radius: config.radius,
+        center: config.centerPosition,
+        data: this.data,
 
-    const position = positionMap[config.legendPosition] || positionMap.left;
-    return {
-      ...position,
-      // data: this.data.map(item => item.name) || [],
-      textStyle: {
-        color: themeStyles.textPrimaryColor,
-
-      },
-    };
-  }
-
-  private getSeriesConfig(config: PieChartConfig): any {
-    const radius = config.isDonut ? config.donutRadius : config.radius;
-
-    return {
-      name: 'Data',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      data: this.data || [],
-      center: ['50%', '40%'],
-      emphasis: {
-        scale: false,
-        scaleSize:0,
-        itemStyle: {
-          shadowBlur: 0,
-          shadowOffsetX: 0,
+        emphasis: {
+          scale: config.emphasisScale,
+          scaleSize: config.emphasisScale ? 10 : 0,
+          itemStyle: {
+            shadowBlur: config.emphasisScale ? 10 : 0,
+            shadowOffsetX: 0,
+          },
         },
-      },
-      label: {
-        show: true,
-        position: 'inside',
-        formatter: function(params) {
-          // Mostra porcentagem apenas se a fatia for maior que 5%
-          return params.percent > 5 ? params.percent + '%' : '';
-        },
-        fontSize: 14,
-      },
-      labelLine: {
-        show: false,
-      },
-      animation: false,
-      color: this.colors
-    };
-  }
 
-  private updateChart() {
+        label: {
+          show: config.showLabels,
+          position: 'inside',
+          formatter: (params: any) => params.percent > 5 ? `${params.percent.toFixed(1)}%` : '',
+          fontSize: 14,
+          color: '#fff',
+          fontWeight: 'bold',
+        },
+
+        labelLine: {
+          show: false,
+        },
+
+        animationType: 'scale',
+        animationEasing: 'elasticOut',
+        animationDelay: () => Math.random() * 200,
+      }],
+    };
+
     if (this.echartsInstance) {
-      this.initChart();
-      this.echartsInstance.setOption(this.chartOptions);
+      this.echartsInstance.setOption(this.chartOptions, true);
     }
+  }
+
+  private getLegendPosition(position: string = 'top') {
+    const positions = {
+      left: { left: 'left', top: 'center' },
+      right: { left: 'right', top: 'center' },
+      top: { left: 'center', top: 'top' },
+      bottom: { left: 'center', top: 'bottom' },
+    };
+    return positions[position] || positions.top;
   }
 
   private updateChartTheme() {
@@ -206,50 +197,41 @@ export class PieChartComponent implements OnInit, OnChanges {
 
     this.echartsInstance.setOption({
       title: {
-        textStyle: {
-          color: themeStyles.textPrimaryColor,
-        },
-        subtextStyle: {
-          color: themeStyles.textSecondaryColor,
-        },
+        textStyle: { color: themeStyles.textPrimaryColor },
+        subtextStyle: { color: themeStyles.textSecondaryColor },
       },
       tooltip: {
         backgroundColor: themeStyles.themePrimaryColor,
-        borderColor: "",
-        textStyle: {
-          color: themeStyles.textPrimaryColor,
-        },
+        textStyle: { color: themeStyles.textPrimaryColor },
       },
       legend: {
-        textStyle: {
-          color: themeStyles.textPrimaryColor,
-        },
+        textStyle: { color: themeStyles.textPrimaryColor },
       },
     });
   }
 
-  // Métodos públicos para API
+  private resizeChart() {
+    if (this.echartsInstance) {
+      this.echartsInstance.resize();
+    }
+  }
+
+  // API Pública
   public setData(newData: PieChartData[]) {
     this.data = newData;
-    this.initChart();
-    if (this.echartsInstance) {
-      this.echartsInstance.setOption(this.chartOptions);
-    }
+    this.buildChart();
   }
 
   public setConfig(newConfig: PieChartConfig) {
     this.config = { ...this.config, ...newConfig };
-    this.initChart();
-    if (this.echartsInstance) {
-      this.echartsInstance.setOption(this.chartOptions);
-    }
+    this.buildChart();
   }
 
   public refresh() {
-    this.updateChart();
+    this.buildChart();
   }
 
-  public getInstance(): ECharts {
+  public getInstance(): ECharts | null {
     return this.echartsInstance;
   }
 }

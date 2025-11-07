@@ -23,6 +23,7 @@ import { ReceitaTransferenciaComponent } from "./data/receita-transferencia/rece
 import { ReceitaDespesaGndTotalComponent } from "./data/receita-despesa-gnd-total/receita-despesa-gnd-total.component";
 import { ReceitaDespesaGndComponent } from "./data/receita-despesa-gnd/receita-despesa-gnd.component";
 import { ShortNumberPipe } from "../../@theme/pipes";
+import { ReceitaICMSComponent } from "./data/receita-icms/receita-icms.component";
 
 @NgModule({
   declarations: [
@@ -38,6 +39,9 @@ import { ShortNumberPipe } from "../../@theme/pipes";
     ReceitaTransferenciaComponent,
     ReceitaDespesaGndTotalComponent,
     ReceitaDespesaGndComponent,
+    ReceitaICMSComponent,
+    ReceitaParticipacaoComponent,
+    ReceitaTransferenciaComponent
   ],
   imports: [
     CommonModule,

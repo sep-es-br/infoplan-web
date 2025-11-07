@@ -1,1 +1,14 @@
-<p>receita-origem works!</p>
+<ngx-flip-table
+  [cardTitle]="title"
+  [loadingStatus]="loadingStatus"
+  (executeSearch)="handleTableSearch"
+  (executeDownload)="handleTableDownload"
+>
+<ngx-org-chart-horizontal
+  [chart]="chartData"
+  [height]="300"
+  [width]="400"
+  card-front
+>
+</ngx-org-chart-horizontal>
+</ngx-flip-table>

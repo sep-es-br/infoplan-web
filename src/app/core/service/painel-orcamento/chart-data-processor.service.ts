@@ -358,9 +358,27 @@ export class ChartDataProcessorService {
   ): Array<{ categoria: string; [key: string]: any }> {
     if (!dados?.length) return [];
 
+    console.log("dados", dados)
     const categorias = this.extrairCategorias(dados, campoLabel);
     const anos = this.extrairAnos(dados);
+    console.log("Extraindo dados referente a CATEGORIA", categorias)
+    console.log("Extraindo dados referente a ANOS", anos)
 
+    const teste = categorias.map((categoria) => {
+      const row: any = { categoria };
+
+      anos.forEach((ano) => {
+        const item = dados.find(
+          (d) => d[campoLabel] === categoria && d.ano === ano
+        );
+        row[`ano_${ano}`] = this.extrairValor(item, camposValor);
+      });
+
+      return row;
+    });
+    console.log(
+      "TESTANDO O RETULRADO DE RRETORNO", teste
+    )
     return categorias.map((categoria) => {
       const row: any = { categoria };
 

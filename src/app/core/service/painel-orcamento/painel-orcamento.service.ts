@@ -35,10 +35,10 @@ export class PainelOrcamentoService {
 
   public getReceitaOrigem(
     request: IPainelOrcamentoRequest
-  ): Observable<IReceitaOrigemOrcamentoResponse> {
+  ): Observable<IReceitaOrigemOrcamentoResponse[]> {
     const params: HttpParams = this.returnParams(request);
 
-    return this._http.get<IReceitaOrigemOrcamentoResponse>(
+    return this._http.get<IReceitaOrigemOrcamentoResponse[]>(
       `${this._URI}/receita-origem`,
       { params }
     );
@@ -57,9 +57,9 @@ export class PainelOrcamentoService {
 
   public getReceitaPorParticipacao(
     request: IPainelOrcamentoRequest
-  ): Observable<IReceitaParticipacaoOrcamentoResponse> {
+  ): Observable<IReceitaParticipacaoOrcamentoResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaParticipacaoOrcamentoResponse>(
+    return this._http.get<IReceitaParticipacaoOrcamentoResponse[]>(
       `${this._URI}/receita-participacao`,
       { params }
     );
@@ -87,9 +87,9 @@ export class PainelOrcamentoService {
 
   public getRceitaPorICMS(
     request: IPainelOrcamentoRequest
-  ): Observable<IReceitaICMSOrcamentoResponse> {
+  ): Observable<IReceitaICMSOrcamentoResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaICMSOrcamentoResponse>(
+    return this._http.get<IReceitaICMSOrcamentoResponse[]>(
       `${this._URI}/receita-icms`,
       { params }
     );
@@ -97,9 +97,9 @@ export class PainelOrcamentoService {
 
   public getRceitaPorImpostos(
     request: IPainelOrcamentoRequest
-  ): Observable<IReceitaImpostoOrcamentoResponse> {
+  ): Observable<IReceitaImpostoOrcamentoResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaImpostoOrcamentoResponse>(
+    return this._http.get<IReceitaImpostoOrcamentoResponse[]>(
       `${this._URI}/receita-impostos`,
       { params }
     );
@@ -107,9 +107,9 @@ export class PainelOrcamentoService {
 
   public getRceitaPorTransferenciaCorrente(
     request: IPainelOrcamentoRequest
-  ): Observable<IReceitaTransfereciaCorrenteOrcamentoResponse> {
+  ): Observable<IReceitaTransfereciaCorrenteOrcamentoResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaTransfereciaCorrenteOrcamentoResponse>(
+    return this._http.get<IReceitaTransfereciaCorrenteOrcamentoResponse[]>(
       `${this._URI}/receita-transferencia-corrente`,
       { params }
     );

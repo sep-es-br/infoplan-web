@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { IPainelOrcamentoRequest } from '../../../../core/interfaces/painel-orcamento/painel-orcamento';
 
 @Component({
   selector: 'ngx-receita-impostos',
@@ -6,5 +7,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./receita-impostos.component.scss']
 })
 export class ReceitaImpostosComponent {
+  @Input() filter: IPainelOrcamentoRequest;
 
 }

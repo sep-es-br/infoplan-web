@@ -46,10 +46,10 @@ export class PainelOrcamentoService {
 
   public getReceitaPorCategoria(
     request: IPainelOrcamentoRequest
-  ): Observable<IReceitaCategoriaOrcamentoResponse> {
+  ): Observable<IReceitaCategoriaOrcamentoResponse[]> {
     const params: HttpParams = this.returnParams(request);
 
-    return this._http.get<IReceitaCategoriaOrcamentoResponse>(
+    return this._http.get<IReceitaCategoriaOrcamentoResponse[]>(
       `${this._URI}/receita-categoria`,
       { params }
     );

@@ -20,7 +20,7 @@ export enum FlipTableAlignment {
   RIGHT = 'right',
 }
 
-interface FlipTableColumn {
+export interface FlipTableColumn {
   originalPropertyName?: string;
   propertyName: string;
   displayName: string;
@@ -43,7 +43,6 @@ export interface FlipTableCustomStyles {
     verticalAlignTable?: boolean;
   };
 }
-
 @Component({
   selector: 'ngx-flip-table',
   templateUrl: './flip-table.component.html',
@@ -79,6 +78,8 @@ export class FlipTableComponent implements OnChanges {
     }
   };
 
+  @Input() showTableIcon: boolean = true;
+
   @Input() loadingStatus: RequestStatus = RequestStatus.LOADING;
 
   @Output() executeSearch = new EventEmitter<string>();
@@ -87,7 +88,6 @@ export class FlipTableComponent implements OnChanges {
 
   @Output() executeCustomFiltering = new EventEmitter<string>();
 
-  // @ViewChild({})
 
   isFlipCardFlipped: boolean = false;
 

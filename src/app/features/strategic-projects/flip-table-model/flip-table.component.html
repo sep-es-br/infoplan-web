@@ -55,7 +55,7 @@
         <i class="flip-button fas fa-chart-pie m-0 ms-3 p-0" (click)="handleFlipButtonClick()"></i>
       </ng-container>
       <ng-template #tableIcon>
-        <i class="flip-button fas fa-table m-0 ms-3 p-0" (click)="handleFlipButtonClick()"></i>
+        <i *ngIf="showTableIcon" class="flip-button fas fa-table m-0 ms-3 p-0" (click)="handleFlipButtonClick()"></i>
       </ng-template>
     </div>
   </nb-card-header>

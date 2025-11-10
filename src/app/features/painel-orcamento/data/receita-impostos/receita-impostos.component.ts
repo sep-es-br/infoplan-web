@@ -15,6 +15,14 @@ import { ChartDataProcessorService } from "../../../../core/service/painel-orcam
 import { Subject } from "rxjs";
 import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
 import { finalize, takeUntil } from "rxjs/operators";
+import {
+  FlipTableAlignment,
+  FlipTableColumn,
+  FlipTableContent,
+  TreeNode,
+} from "../../../strategic-projects/flip-table-model/flip-table.component";
+import { ExportDataService } from "../../../../core/service/export-data";
+import { ShortNumberPipe } from "../../../../@theme/pipes/shortNumber.pipe";
 
 @Component({
   selector: "ngx-receita-impostos",
@@ -27,13 +35,15 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
   readonly title: string = "Imposto, Taxas e Contribuições de Melhoria";
 
   chartData!: IChartOptions;
-  tableContent: any[] = [];
+  tableContent!: FlipTableContent;
   loadingStatus: "loading" | "loaded" | "error" = "loading";
 
   private receitaImpostoCharData: IReceitaImpostoOrcamentoResponse[] = [];
 
   private readonly _painelService = inject(PainelOrcamentoService);
   private readonly _chartProcessor = inject(ChartDataProcessorService);
+  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _shortNumberPipe = inject(ShortNumberPipe);
   private readonly destroy$ = new Subject<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -75,22 +85,14 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
 
     if (chartData) {
       this.chartData = chartData;
-      this.processTable(this.chartData);
+      this.processTableData(this.receitaImpostoCharData);
     } else {
       this.chartData = { data: { labels: [], datasets: [] } };
-      this.tableContent = [];
+      this.tableContent = null;
     }
   }
 
-  private processTable(charData: IChartOptions): void {
-    this.tableContent = this._chartProcessor.criarTabelaComparativo(
-      this.receitaImpostoCharData,
-      "nome_item_patrimonial",
-      ["receitaLiquida", "vlr_receita_liquida"]
-    );
-  }
-
-  private processChatData() : IChartOptions {
+  private processChatData(): IChartOptions {
     return this._chartProcessor.processarDadosComparativo(
       this.receitaImpostoCharData,
       "nome_item_patrimonial",
@@ -98,12 +100,209 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
     );
   }
 
-  handleTableSearch(query: string): void {
-    // Implementar busca
+  private processTableData(dados: IReceitaImpostoOrcamentoResponse[]): void {
+    if (!dados?.length) {
+      this.tableContent = null;
+      return;
+    }
+    // console.log("DADOS REFERENTE A IMPOSTOS", dados);
+
+    const categorias = [
+      ...new Set(dados.map((item) => item.nome_item_patrimonial)),
+    ].filter(Boolean);
+
+    // console.log("DADOS REFERENTE A IMPOSTOS | CATEGORIAS", categorias);
+
+    const anos = [...new Set(dados.map((item) => item.ano))]
+      .filter((ano) => ano != null)
+      .sort();
+
+      // console.log("DADOS REFERENTE A IMPOSTOS | ANOS", anos);
+
+    if (categorias.length === 0 || anos.length === 0) {
+      this.tableContent = null;
+      return;
+    }
+
+    const treeNodes: TreeNode[] = categorias.map((categoria) => {
+      const nodeData = [
+        {
+          propertyName: "categoria",
+          value: categoria,
+        },
+      ];
+
+      anos.forEach((ano) => {
+        const item = dados.find(
+          (d) => d.nome_item_patrimonial === categoria && d.ano === ano
+        );
+        const valor = item?.receitaLiquida || 0;
+
+        nodeData.push({
+          propertyName: `Arrecadação LI - ${ano.toString()}`,
+          value: `R$ ${this._shortNumberPipe.transform(valor) || 0}`,
+        });
+      });
+
+      if (anos.length >= 2) {
+        const variacao = this.calcularVariacao(categoria, anos, dados);
+        nodeData.push({
+          propertyName: "variação (%)",
+          value: `${variacao > 0 ? "+" : ""} ${variacao}%`,
+        });
+      }
+
+      return {
+        data: nodeData,
+        children: [],
+        expanded: false,
+      };
+    });
+
+    // console.log("DADOS REFERENTE A IMPOSTOS | treeNodes", treeNodes);
+
+    const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
+      propertyName: `Arrecadação LI - ${ano.toString()}`,
+      displayName: `Arrecadação LI - ${ano.toString()}`,
+      alignment: {
+        header: FlipTableAlignment.CENTER,
+        data: FlipTableAlignment.RIGHT,
+      },
+    }));
+
+    if (anos.length >= 2) {
+      defaultColumns.push({
+        propertyName: "variação (%)",
+        displayName: "variação (%)",
+        alignment: {
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.RIGHT,
+        },
+      });
+    }
+
+    const customColumn: FlipTableColumn = {
+      propertyName: "categoria",
+      displayName: "Imposto, Taxas e Contribuições de Melhoria",
+      alignment: {
+        header: FlipTableAlignment.LEFT,
+        data: FlipTableAlignment.LEFT,
+      },
+    };
+
+
+    this.tableContent = {
+      customColumn,
+      defaultColumns,
+      data: treeNodes,
+    };
+
+    // console.log("RESULTADO FINAL", this.tableContent)
+
+  }
+
+  private calcularVariacao(
+    categoria: string,
+    anos: number[],
+    dados: IReceitaImpostoOrcamentoResponse[]
+  ): number {
+    if (anos.length < 2) return 0;
+
+    const primeiroAno = anos[0];
+    const ultimoAno = anos[anos.length - 1];
+
+    const valorInicial =
+      dados.find(
+        (d) => d.nome_item_patrimonial === categoria && d.ano === primeiroAno
+      )?.receitaLiquida ?? 0;
+
+    const valorFinal =
+      dados.find(
+        (d) => d.nome_item_patrimonial === categoria && d.ano === ultimoAno
+      )?.receitaLiquida ?? 0;
+
+    if (valorInicial === 0) return 0;
+
+    const variacao = ((valorFinal - valorInicial) / valorInicial) * 100;
+    return Number(variacao.toFixed(2));
   }
 
   handleTableDownload(): void {
-    console.log("Download imposto:", this.tableContent);
-    // Implementar download
+    if (!this.receitaImpostoCharData?.length) return;
+
+    const anos = [
+      ...new Set(this.receitaImpostoCharData.map((item) => item.ano)),
+    ]
+      .filter((ano) => ano != null)
+      .sort();
+
+    const categorias = [
+      ...new Set(
+        this.receitaImpostoCharData.map((item) => item.nome_item_patrimonial)
+      ),
+    ].filter(Boolean);
+
+    const columns = [
+      { key: "categoria", label: "Principais Origens de Receita" },
+      ...anos.map((ano) => ({
+        key: `ano_${ano}`,
+        label: `Arrecadação LI - ${ano}`,
+      })),
+    ];
+
+    if (anos.length >= 2) {
+      columns.push({ key: "variacao", label: "Variação (%)" });
+    }
+
+    const dataForDownload = categorias.map((categoria) => {
+      const row: any = { categoria };
+
+      anos.forEach((ano) => {
+        const item = this.receitaImpostoCharData.find(
+          (d) => d.nome_item_patrimonial === categoria && d.ano === ano
+        );
+        row[`ano_${ano}`] = `R$ ${
+          item?.receitaLiquida.toLocaleString("pt-BR") || 0
+        }`;
+      });
+
+      if (anos.length >= 2) {
+        const primeiroAno = anos[0];
+        const ultimoAno = anos[anos.length - 1];
+
+        const valorInicial =
+          this.receitaImpostoCharData.find(
+            (d) =>
+              d.nome_item_patrimonial === categoria && d.ano === primeiroAno
+          )?.receitaLiquida ?? 0;
+
+        const valorFinal =
+          this.receitaImpostoCharData.find(
+            (d) => d.nome_item_patrimonial === categoria && d.ano === ultimoAno
+          )?.receitaLiquida ?? 0;
+
+        const variacao =
+          valorInicial !== 0
+            ? ((valorFinal - valorInicial) / valorInicial) * 100
+            : 0;
+
+        row["variacao"] = Number(variacao.toFixed(2));
+      }
+
+      return row;
+    });
+
+    const anoAtual = new Date().getFullYear();
+    const fileName = `Receita_Realizada_Impostots_${anoAtual}.xlsx`;
+
+    this._exportDataService.exportXLSXWithCustomHeaders(
+      dataForDownload,
+      columns,
+      fileName
+    );
+  }
+
+  handleTableSearch(query: string): void {
+    // Implementar busca
   }
 }

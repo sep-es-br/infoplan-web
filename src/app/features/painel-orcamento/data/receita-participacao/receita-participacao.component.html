@@ -1,8 +1,9 @@
 <ngx-flip-table
   [cardTitle]="title"
   [loadingStatus]="loadingStatus"
-  (executeSearch)="(handleTableSearch)"
-  (executeDownload)="(handleTableDownload)"
+  [showTableIcon]="showTableIcon"
+  (executeSearch)="handleTableSearch"
+  (executeDownload)="handleTableDownload()"
 >
 <ngx-pie-chart
   [data]="chartData"

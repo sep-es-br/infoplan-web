@@ -1,8 +1,8 @@
 <ngx-flip-table
   [cardTitle]="title"
+  [tableContent]="tableContent"
   [loadingStatus]="loadingStatus"
-  (executeSearch)="handleTableSearch"
-  (executeDownload)="handleTableDownload"
+  (executeDownload)="handleTableDownload()"
 >
 <ngx-org-chart-horizontal
   [chart]="chartData"

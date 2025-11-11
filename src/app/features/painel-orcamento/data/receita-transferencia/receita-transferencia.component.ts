@@ -199,9 +199,6 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
         defaultColumns,
         data: treeNodes,
       };
-
-      // console.log("RESULTADO FINAL", this.tableContent)
-
     }
 
     private calcularVariacao(

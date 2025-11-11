@@ -56,6 +56,7 @@ export class PagesComponent implements OnInit {
             const svgContent = await response.text();
 
             customIcons[iconName] = svgContent;
+
           } catch (error) {
             console.error(`Erro ao carregar o ícone ${item.icon}:`, error);
           }
@@ -67,7 +68,7 @@ export class PagesComponent implements OnInit {
       })
     );
     const mergedIcons = { ...customIcons, ...icones };
-    this.iconsLibrary.registerSvgPack("custom-icons", mergedIcons);
+    this.iconsLibrary.registerSvgPack("custom-icons", mergedIcons, icones);
 
     this.menu = MENU_ITEMS;
     this.setIconStyles();

@@ -105,7 +105,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
 
       legend: {
         orient: "horizontal",
-        top: "bottom",
+        top: "top",
         data: chart.data.datasets.map(r => r.label),
         itemWidth: 10,
         itemHeight: 10,

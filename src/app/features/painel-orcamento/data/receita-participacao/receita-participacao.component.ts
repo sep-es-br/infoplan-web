@@ -35,11 +35,21 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   loadingStatus: "loading" | "loaded" | "error" = "loading";
 
   chartConfig = {
+    // showTitle: true,
+    // isDonut: true,
+    // legendPosition: "bottom",
+    // labelThreshold: 5,
+    // centerPosition: ["40%","60%"],
+    // showLabels: false,
+    // radius: ['0%', '70%'],
+    // legendOrient: "vertical"
     showTitle: true,
     isDonut: true,
-    legendPosition: "bottom",
+    legendPosition: "left",
     labelThreshold: 5,
-    showLabels: true,
+    showLabels: false,
+    radius: ['0%', '60%'],
+    centerPosition: ["70%","50%"],
   };
 
   private receitaICMSCharData: IReceitaParticipacaoOrcamentoResponse[] | null =

@@ -33,14 +33,24 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   tableContent: FlipTableContent | null = null
   loadingStatus: "loading" | "loaded" | "error" = "loading";
   chartConfig = {
-    showLegend: true,
-    legendPosition: 'bottom',
-    legendOrient: 'horizontal',
-    showLabels: true,
-    radius: ['40%', '70%'],
+    // showLegend: true,
+    // legendPosition: 'bottom',
+    // legendOrient: 'horizontal',
+    // showLabels: true,
+    // radius: ['40%', '70%'],
 
-    centerPosition: ['50%', '55%'],  // Move o gráfico pra baixo
+    // centerPosition: ['50%', '55%'],  // Move o gráfico pra baixo
+    showTitle: true,
+    isDonut: true,
+    legendPosition: "left",
+    labelThreshold: 5,
+    showLabels: false,
+    radius: ['30%', '70%'],
+    centerPosition: ["70%","50%"],
+    // avoidLabelOverlap:
   };
+
+
 
   private receitaICMSCharData: IReceitaICMSOrcamentoResponse[] | null = [];
 

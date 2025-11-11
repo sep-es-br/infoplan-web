@@ -12,7 +12,15 @@
   <nb-card>
     <nb-card-body>
       <div class="row g-3">
-        <div *ngFor="let card of cards" class="col-12 col-sm-6 col-lg-3">
+        <div class="col-2">
+          <img
+            src="assets/images/app/logo-exec-orc-claro.png"
+            alt=""
+            style="width: 100%;"
+          />
+        </div>
+
+        <div *ngFor="let card of cards" class="col-2">
           <ngx-cards-component
             [value]="card.value"
             [description]="card.description"
@@ -47,47 +55,29 @@
     </div>
 
     <div class="chart-receita-icms-participacao col-12 col-xl-4">
-      <ngx-receita-participacao [filter]="currentRequestParams"></ngx-receita-participacao>
-      <!-- <h4>Participação ICMS - Receita Total</h4>
-      <nb-card>
-        <nb-card-body>
-          <ngx-pie-chart
-            [data]="dadosChart.receitaParticipacao"
-            [height]="400"
-            [colors]="['#F58B9B', '#4DB6D2']"
-            [config]="chartConfig"
-          >
-          </ngx-pie-chart>
-        </nb-card-body>
-      </nb-card> -->
+      <ngx-receita-participacao
+        [filter]="currentRequestParams"
+      ></ngx-receita-participacao>
     </div>
 
     <div class="chart-receita-icms col-12 col-xl-4">
       <ngx-receita-icms [filter]="currentRequestParams"></ngx-receita-icms>
-      <!-- <h4>ICMS</h4>
-      <nb-card>
-        <nb-card-body>
-          <ngx-pie-chart
-            [data]="dadosChart.receitaICMS"
-            [height]="400"
-            [colors]="colors"
-            [config]="chartConfig"
-          >
-          </ngx-pie-chart>
-        </nb-card-body>
-      </nb-card> -->
     </div>
 
     <div class="chart-receita-impostos col-12 col-xl-4">
-      <ngx-receita-transferencia [filter]="currentRequestParams"></ngx-receita-transferencia>
-      <!-- <h4>Transfêrencias Correntes</h4>
-      <nb-card>
-        <nb-card-body>
-          <ngx-org-chart-horizontal
-            [chart]="dadosChart.receitaTransferenciaCorrente"
-          ></ngx-org-chart-horizontal>
-        </nb-card-body>
-      </nb-card> -->
+      <ngx-receita-transferencia
+        [filter]="currentRequestParams"
+      ></ngx-receita-transferencia>
+    </div>
+    <div class="chart-receita-impostos col-12 col-xl-4">
+      <ngx-receita-despesa-gnd
+        [filter]="currentRequestParams"
+      ></ngx-receita-despesa-gnd>
+    </div>
+    <div class="chart-receita-impostos col-12 col-xl-4">
+      <!-- <ngx-receita-transferencia
+        [filter]="currentRequestParams"
+      ></ngx-receita-transferencia> -->
     </div>
   </div>
 

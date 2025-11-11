@@ -24,9 +24,142 @@ const CHART_COLORS = [
 export class ChartDataProcessorService {
   readonly colors = CHART_COLORS;
 
-  /**
-   * Processa dados para gráficos de barras comparativos (ano único ou múltiplos anos)
-   */
+  // private createChartLiquidatedAndPaid(
+  //   data: any[],
+  //   categorys: any[],
+  //   years: number[],
+  //   fieldLabel: string
+  // ): IChartOptions | null {
+  //   const datasets = [
+  //     {
+  //       label: `Liquidado ${years[1]}`, // 2025
+  //       data: categorys.map((category) => {
+  //         const item = data.find(
+  //           (d) => d[fieldLabel] === category && d.ano === years[1]
+  //         );
+  //         return this.extrairValor(item, ["vlr_liquidado"]);
+  //       }),
+  //       backgroundColor: this.colors[0],
+  //     },
+  //     {
+  //       label: `Liquidado ${years[0]}`, // 2024
+  //       data: categorys.map((category) => {
+  //         const item = data.find(
+  //           (d) => d[fieldLabel] === category && d.ano === years[0]
+  //         );
+  //         return this.extrairValor(item, ["vlr_liquidado"]);
+  //       }),
+  //       backgroundColor: this.colors[1],
+  //     },
+  //     {
+  //       label: `Pago com RAP ${years[1]}`, // 2025
+  //       data: categorys.map((category) => {
+  //         const item = data.find(
+  //           (d) => d[fieldLabel] === category && d.ano === years[1]
+  //         );
+  //         return this.extrairValor(item, ["vlr_pago_com_rap"]);
+  //       }),
+  //       backgroundColor: this.colors[2],
+  //     },
+  //     {
+  //       label: `Pago com RAP ${years[0]}`, // 2024
+  //       data: categorys.map((category) => {
+  //         const item = data.find(
+  //           (d) => d[fieldLabel] === category && d.ano === years[0]
+  //         );
+  //         return this.extrairValor(item, ["vlr_pago_com_rap"]);
+  //       }),
+  //       backgroundColor: this.colors[3],
+  //     },
+  //   ];
+
+  //   if (!this.temDadosValidos(datasets.map((d) => d.data))) {
+  //     console.warn(`Nenhum dado financeiro encontrado para ${fieldLabel}`);
+  //     return null;
+  //   }
+
+  //   return {
+  //     data: {
+  //       labels: categorys,
+  //       datasets: datasets,
+  //     },
+  //   };
+  // }
+
+  criarChartLiquidadoEPago(
+    dados: any[],
+    campoLabel: string,
+    tituloChart?: string
+  ): IChartOptions | null {
+    // Extrair anos únicos dos dados automaticamente
+    const anos = [...new Set(dados.map((d) => d.ano))].sort();
+
+    // Extrair categorias únicas automaticamente
+    const categorias = [...new Set(dados.map((d) => d[campoLabel]))].filter(
+      Boolean
+    );
+
+    if (anos.length === 0 || categorias.length === 0) {
+      console.warn(`Dados insuficientes para gerar o gráfico`);
+      return null;
+    }
+
+    const datasets = [
+      {
+        label: `Liquidado ${anos[1] || anos[0]}`, // 2025 ou último ano
+        data: categorias.map((categoria) => {
+          const item = dados.find(
+            (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
+          );
+          return this.extrairValor(item, ["vlr_liquidado"]);
+        }),
+        backgroundColor: this.colors[0],
+      },
+      {
+        label: `Liquidado ${anos[0]}`, // 2024 ou primeiro ano
+        data: categorias.map((categoria) => {
+          const item = dados.find(
+            (d) => d[campoLabel] === categoria && d.ano === anos[0]
+          );
+          return this.extrairValor(item, ["vlr_liquidado"]);
+        }),
+        backgroundColor: this.colors[1],
+      },
+      {
+        label: `Pago com RAP ${anos[1] || anos[0]}`, // 2025 ou último ano
+        data: categorias.map((categoria) => {
+          const item = dados.find(
+            (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
+          );
+          return this.extrairValor(item, ["vlr_pago_com_rap"]);
+        }),
+        backgroundColor: this.colors[2],
+      },
+      {
+        label: `Pago com RAP ${anos[0]}`, // 2024 ou primeiro ano
+        data: categorias.map((categoria) => {
+          const item = dados.find(
+            (d) => d[campoLabel] === categoria && d.ano === anos[0]
+          );
+          return this.extrairValor(item, ["vlr_pago_com_rap"]);
+        }),
+        backgroundColor: this.colors[3],
+      },
+    ];
+
+    if (!this.temDadosValidos(datasets.map((d) => d.data))) {
+      console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
+      return null;
+    }
+
+    return {
+      data: {
+        labels: categorias,
+        datasets: datasets,
+      },
+    };
+  }
+
   processarDadosComparativo(
     dados: any[],
     campoLabel: string,
@@ -50,9 +183,6 @@ export class ChartDataProcessorService {
       : this.criarChartMultiploAnos(dados, categorias, anos, campoLabel);
   }
 
-  /**
-   * Processa dados para gráficos de pizza (PieChart)
-   */
   processarDadosPieChart(
     dados: any[],
     campoNome: string,
@@ -70,9 +200,6 @@ export class ChartDataProcessorService {
     return this.gerarPieChartData(dadosAgrupados);
   }
 
-  /**
-   * Cria dados de tabela a partir de PieChartData
-   */
   criarTabelaPieChart(
     dados: PieChartData[]
   ): Array<{ categoria: string; valor: number; percentual: number }> {
@@ -86,115 +213,6 @@ export class ChartDataProcessorService {
       percentual: total > 0 ? (item.value / total) * 100 : 0,
     }));
   }
-
-  // criarTabelaComparativo(
-  //   dados: any[],
-  //   campoLabel: string,
-  //   camposValor: string[]
-  // ): FlipTableContent | null {
-  //   // Validação inicial
-  //   if (!dados?.length) {
-  //     console.warn("⚠️ Nenhum dado para criar tabela comparativa");
-  //     return null;
-  //   }
-
-  //   const primeiroItem = dados[0];
-  //   if (!primeiroItem || !primeiroItem.hasOwnProperty(campoLabel)) {
-  //     console.error(`❌ Campo "${campoLabel}" não existe nos dados!`);
-  //     console.error("Campos disponíveis:", Object.keys(primeiroItem || {}));
-
-  //     const camposSimilares = Object.keys(primeiroItem || {}).filter((k) =>
-  //       k.toLowerCase().includes(campoLabel.toLowerCase())
-  //     );
-
-  //     if (camposSimilares.length > 0) {
-  //       console.warn(
-  //         `💡 Campos similares encontrados: ${camposSimilares.join(", ")}`
-  //       );
-  //     }
-
-  //     return null;
-  //   }
-
-  //   const categorias = this.extrairCategorias(dados, campoLabel);
-  //   const anos = this.extrairAnos(dados);
-
-  //   if (categorias.length === 0) {
-  //     console.error(`❌ Nenhuma categoria encontrada para "${campoLabel}"`);
-  //     console.error(
-  //       "Valores encontrados:",
-  //       dados.map((d) => d[campoLabel]).filter(Boolean)
-  //     );
-  //     return null;
-  //   }
-
-  //   if (anos.length === 0) {
-  //     console.error("❌ Nenhum ano encontrado nos dados");
-  //     return null;
-  //   }
-
-  //   console.log(
-  //     `✅ Criando tabela: ${categorias.length} categorias × ${anos.length} anos`
-  //   );
-
-  //   // Criar colunas dinâmicas (uma para cada ano)
-  //   const defaultColumns: FlipTableColumn[] = anos.map(ano => ({
-  //     originalPropertyName: `ano_${ano}`,
-  //     propertyName: ano.toString(),
-  //     displayName: ano.toString(),
-  //     alignment: {
-  //       header: FlipTableAlignment.CENTER,
-  //       data: FlipTableAlignment.RIGHT
-  //     },
-  //     enableEventClick: true
-  //   }));
-
-  //   // Coluna customizada (categoria)
-  //   const customColumn: FlipTableColumn = {
-  //     originalPropertyName: campoLabel,
-  //     propertyName: 'categoria',
-  //     displayName: this.formatarDisplayName(campoLabel),
-  //     alignment: {
-  //       header: FlipTableAlignment.LEFT,
-  //       data: FlipTableAlignment.LEFT
-  //     },
-  //     enableEventClick: false
-  //   };
-
-  //   // Criar dados no formato TreeNode
-  //   const treeData: Array<TreeNode> = categorias.map((categoria) => {
-  //     const nodeData = [
-  //       {
-  //         originalPropertyName: campoLabel,
-  //         propertyName: 'categoria',
-  //         value: categoria
-  //       },
-  //       // Adicionar valores para cada ano
-  //       ...anos.map(ano => {
-  //         const item = dados.find(
-  //           (d) => d[campoLabel] === categoria && d.ano === ano
-  //         );
-  //         return {
-  //           originalPropertyName: `ano_${ano}`,
-  //           propertyName: ano.toString(),
-  //           value: this.extrairValor(item, camposValor)
-  //         };
-  //       })
-  //     ];
-
-  //     return {
-  //       data: nodeData,
-  //       children: [],
-  //       expanded: false
-  //     };
-  //   });
-
-  //   return {
-  //     defaultColumns,
-  //     customColumn,
-  //     data: treeData
-  //   };
-  // }
 
   private criarChartAnoUnico(
     dados: any[],

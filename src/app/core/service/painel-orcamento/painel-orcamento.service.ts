@@ -67,9 +67,9 @@ export class PainelOrcamentoService {
 
   public getRceitaPorDespesaGND(
     request: IPainelOrcamentoRequest
-  ): Observable<IReceitaDespesaGNDOrcamentoResponse> {
+  ): Observable<IReceitaDespesaGNDOrcamentoResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaDespesaGNDOrcamentoResponse>(
+    return this._http.get<IReceitaDespesaGNDOrcamentoResponse[]>(
       `${this._URI}/receita-despesasGnd`,
       { params }
     );
@@ -77,9 +77,9 @@ export class PainelOrcamentoService {
 
   public getRceitaPorDespesaGNDTotal(
     request: IPainelOrcamentoRequest
-  ): Observable<IReceitaDespesaGNDTotalOrcamentoResponse> {
+  ): Observable<IReceitaDespesaGNDTotalOrcamentoResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaDespesaGNDTotalOrcamentoResponse>(
+    return this._http.get<IReceitaDespesaGNDTotalOrcamentoResponse[]>(
       `${this._URI}/receita-despesasGnd-total`,
       { params }
     );

@@ -91,13 +91,13 @@ export const menulinks = [
   {
     id: 7,
     status: true,
-    name: "Painel Orçamento",
+    name: "Execução Orçamentaria",
     icon: "painelOrcamento.svg",
     link: "/pages/painelOrcamento",
     url: "",
-    src: "Painel Orcamento",
+    src: "Execução Orçamentária",
     menuIcon: "",
-    color: "white",
-    subTitle: "Painel Orçamento Execução Orçamentária",
+    color: "#4DB6D2",
+    subTitle: "Execução Orçamentária",
   },
 ];

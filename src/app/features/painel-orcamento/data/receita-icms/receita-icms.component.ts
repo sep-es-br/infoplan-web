@@ -9,9 +9,8 @@ import {
 import { Subject } from "rxjs";
 import { takeUntil, finalize } from "rxjs/operators";
 import {
-  IPainelOrcamentoRequest,
-  IReceitaICMSOrcamentoResponse,
-  IReceitaParticipacaoOrcamentoResponse,
+  IExecucaoOrcamentariaRequest,
+  IReceitaICMSOrcamentariaResponse,
 } from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
 import { PieChartData } from "../../org-chart-pie/org-chart-pie.component";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
@@ -25,7 +24,7 @@ import { FlipTableContent } from "../../../strategic-projects/flip-table-model/f
   styleUrls: ["./receita-icms.component.scss"],
 })
 export class ReceitaICMSComponent implements OnChanges, OnDestroy {
-  @Input() filter: IPainelOrcamentoRequest;
+  @Input() filter: IExecucaoOrcamentariaRequest;
 
   readonly title: string = "Participação ICMS - Receita Total";
   readonly showTableIcon: Boolean = false;
@@ -45,14 +44,14 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     legendPosition: "left",
     labelThreshold: 5,
     showLabels: false,
-    radius: ['30%', '70%'],
+    radius: ['30%', '60%'],
     centerPosition: ["70%","50%"],
     // avoidLabelOverlap:
   };
 
 
 
-  private receitaICMSCharData: IReceitaICMSOrcamentoResponse[] | null = [];
+  private receitaICMSCharData: IReceitaICMSOrcamentariaResponse[] | null = [];
 
   private readonly _painelService = inject(PainelOrcamentoService);
   private readonly _chartProcessor = inject(ChartDataProcessorService);
@@ -87,7 +86,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
         })
       )
       .subscribe({
-        next: (response: IReceitaICMSOrcamentoResponse[]) => {
+        next: (response: IReceitaICMSOrcamentariaResponse[]) => {
           this.receitaICMSCharData = response
           this.processData();
         },
@@ -157,11 +156,11 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     );
 }
 
-private category(data: IReceitaICMSOrcamentoResponse[]): string[] {
+private category(data: IReceitaICMSOrcamentariaResponse[]): string[] {
     return [...new Set(data.map(item => item.nome_item_patrimonial))].filter(Boolean);
 }
 
-private filterYears(data: IReceitaICMSOrcamentoResponse[]): number[] {
+private filterYears(data: IReceitaICMSOrcamentariaResponse[]): number[] {
     return [...new Set(data.map(item => item.ano))]
       .filter(ano => ano != null)
       .sort();

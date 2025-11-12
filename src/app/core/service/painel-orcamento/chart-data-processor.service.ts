@@ -1,3 +1,4 @@
+import { IReceitaDespesaGNDTotalOrcamentariaResponse } from "./../../interfaces/painel-orcamento/painel-orcamento";
 import { Injectable } from "@angular/core";
 import { IChartOptions } from "../../../shared/models/painel-orcamento/IChartOptions";
 import { PieChartData } from "../../../features/painel-orcamento/org-chart-pie/org-chart-pie.component";
@@ -85,6 +86,105 @@ export class ChartDataProcessorService {
   //     },
   //   };
   // }
+
+criarChartDespesaGndTotal(
+  data: IReceitaDespesaGNDTotalOrcamentariaResponse[],
+  fieldLabel: string,
+  titleChart: string
+): IChartOptions | null {
+  // Filtrar dados apenas de 2025
+  const dadosFiltrados = data.filter((d) => d.ano === 2025);
+
+  const years = [...new Set(dadosFiltrados.map((res) => res.ano))].sort();
+  console.log("ANOS", years);
+
+  // CORREÇÃO: usar dadosFiltrados ao invés de data
+  const categorys = [...new Set(dadosFiltrados.map((d) => d[fieldLabel]))].filter(
+    Boolean
+  );
+
+  if (years.length === 0 || categorys.length === 0) {
+    console.warn(`Dados insuficientes para gerar o gráfico`);
+    return null;
+  }
+
+  // Passar dadosFiltrados ao invés de data
+  return this.construirDatasetsGndTotal(dadosFiltrados, years, categorys, fieldLabel);
+}
+
+private construirDatasetsGndTotal(
+  data: IReceitaDespesaGNDTotalOrcamentariaResponse[],
+  years: number[],
+  categorys: any[],
+  fieldLabel: string
+): IChartOptions | null {
+  const datasets = [
+    {
+      label: `Orçado`,
+      data: categorys.map((categoria) => {
+        const item = data.find(
+          (d) => d[fieldLabel] === categoria && d.ano === years[0]
+        );
+        return this.extrairValor(item, ["vlr_orcado"]);
+      }),
+      backgroundColor: this.colors[0],
+    },
+    {
+      label: `Autorizado`,
+      data: categorys.map((categoria) => {
+        const item = data.find(
+          (d) => d[fieldLabel] === categoria && d.ano === years[0]
+        );
+        return this.extrairValor(item, ["vlr_autorizado"]);
+      }),
+      backgroundColor: this.colors[1], // Corrigido para usar cores diferentes
+    },
+    {
+      label: `Empenhado`,
+      data: categorys.map((categoria) => {
+        const item = data.find(
+          (d) => d[fieldLabel] === categoria && d.ano === years[0]
+        );
+        return this.extrairValor(item, ["vlr_empenhado"]);
+      }),
+      backgroundColor: this.colors[2],
+    },
+    {
+      label: `Liquidado`,
+      data: categorys.map((categoria) => {
+        const item = data.find(
+          (d) => d[fieldLabel] === categoria && d.ano === years[0]
+        );
+        return this.extrairValor(item, ["vlr_liquidado"]);
+      }),
+      backgroundColor: this.colors[3],
+    },
+    {
+      label: `Pago com RAP`,
+      data: categorys.map((categoria) => {
+        const item = data.find(
+          (d) => d[fieldLabel] === categoria && d.ano === years[0]
+        );
+        return this.extrairValor(item, ["vlr_pago_com_rap"]);
+      }),
+      backgroundColor: this.colors[4],
+    },
+  ];
+
+  if (!this.temDadosValidos(datasets.map((d) => d.data))) {
+    console.warn(`Nenhum dado financeiro encontrado para ${fieldLabel}`);
+    return null;
+  }
+
+  console.log(categorys, datasets);
+
+  return {
+    data: {
+      labels: categorys,
+      datasets: datasets,
+    },
+  };
+}
 
   criarChartLiquidadoEPago(
     dados: any[],
@@ -349,12 +449,6 @@ export class ChartDataProcessorService {
       .filter((item) => item.value > 0);
 
     return pieData.sort((a, b) => b.value - a.value);
-  }
-
-  private formatarDisplayName(campoLabel: string): string {
-    // Converte camelCase para texto legível
-    const result = campoLabel.replace(/([A-Z])/g, " $1");
-    return result.charAt(0).toUpperCase() + result.slice(1);
   }
 
   private temDadosValidos(arrays: number[][]): boolean {

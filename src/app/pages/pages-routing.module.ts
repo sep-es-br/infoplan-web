@@ -28,9 +28,9 @@ const routes: Routes = [
         data: { dataSource: "OpenPMO" },
       },
       {
-        path: "painelOrcamento",
+        path: "execucao-orcamentaria",
         component: PainelOrcamentoComponent,
-        data: { dataSource: "Painel Orçamento | Execução Orçamentária" },
+        data: { dataSource: "Execução Orçamentária" },
       },
       {
         path: "",

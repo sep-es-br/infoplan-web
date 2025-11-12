@@ -11,8 +11,8 @@ import {
 import { Subject } from "rxjs";
 import { takeUntil, finalize } from "rxjs/operators";
 import {
-  IPainelOrcamentoRequest,
-  IReceitaTotalOrcamentoResponse,
+  IExecucaoOrcamentariaRequest,
+  IReceitaTotalOrcamentariaResponse,
 } from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
 import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
@@ -36,7 +36,7 @@ interface ITableRow {
   providers: [ShortNumberPipe],
 })
 export class ReceitaTotalComponent implements OnChanges, OnDestroy {
-  @Input() filter!: IPainelOrcamentoRequest;
+  @Input() filter!: IExecucaoOrcamentariaRequest;
 
   private readonly _painelService = inject(PainelOrcamentoService);
   private readonly _chartProcessor = inject(ChartDataProcessorService);
@@ -50,7 +50,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   tableContent!: FlipTableContent;
   loadingStatus: "loading" | "loaded" | "error" = "loading";
 
-  private responseData: IReceitaTotalOrcamentoResponse[] | null = null;
+  private responseData: IReceitaTotalOrcamentariaResponse[] | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
@@ -86,7 +86,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
       });
   }
 
-  private processData(dados: IReceitaTotalOrcamentoResponse): void {
+  private processData(dados: IReceitaTotalOrcamentariaResponse): void {
     // Processa dados para o gráfico
     this.chartData = {
       data: {
@@ -111,7 +111,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   }
 
   private processTableData(
-    dados: IReceitaTotalOrcamentoResponse | IReceitaTotalOrcamentoResponse[]
+    dados: IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]
   ): void {
     const dadosArray = Array.isArray(dados) ? dados : [dados];
     const ano = dadosArray[0]?.ano || new Date().getFullYear();
@@ -186,7 +186,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
     const search = query.toLowerCase().trim();
 
     const filtered = this.responseData.filter(
-      (item: IReceitaTotalOrcamentoResponse) => {
+      (item: IReceitaTotalOrcamentariaResponse) => {
 
         const ano = item.ano?.toString() || "";
         const receitaLiquida =

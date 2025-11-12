@@ -30,7 +30,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
 
   constructor(private _themeService: NbThemeService) {
-    // 🔁 Atualiza cores do gráfico ao trocar o tema
     this._themeService.onThemeChange().subscribe((newTheme) => {
       if (this.echartsInstance) {
         this.currentTheme = newTheme.name;
@@ -74,8 +73,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
     const theme = getAvailableThemesStyles(this.currentTheme);
     const data = chart.data.labels.map((label: string, i: number) => ({
       category: label,
-      previsaoInicial: chart.data.datasets[0]?.data[i] ?? 0,
-      arredacaoLiquida: chart.data.datasets[1]?.data[i] ?? 0,
+      valores: chart.data.datasets.map(dataset => dataset.data[i] ?? 0)
     }));
 
     const colors = [
@@ -134,20 +132,26 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
         },
       },
 
-      series: [
-        {
-          name: chart.data.datasets.map(r => r.label)[0],
-          type: "bar",
-          data: data.map((d) => d.previsaoInicial),
-          itemStyle: { color: colors[0] },
-        },
-        {
-          name: chart.data.datasets.map(r => r.label)[1],
-          type: "bar",
-          data: data.map((d) => d.arredacaoLiquida),
-          itemStyle: { color: colors[1] },
-        },
-      ],
+      series: chart.data.datasets.map((dataset, index) => ({
+        name: dataset.label,
+        type: "bar",
+        data: data.map(res => res.valores[index]),
+        itemStyle: { color: colors[index]}
+      }))
+      // series: [
+      //   {
+      //     name: chart.data.datasets.map(r => r.label)[0],
+      //     type: "bar",
+      //     data: data.map((d) => d.previsaoInicial),
+      //     itemStyle: { color: colors[0] },
+      //   },
+      //   {
+      //     name: chart.data.datasets.map(r => r.label)[1],
+      //     type: "bar",
+      //     data: data.map((d) => d.arredacaoLiquida),
+      //     itemStyle: { color: colors[1] },
+      //   },
+      // ],
     };
   }
 

@@ -3,16 +3,16 @@ import { environment } from "../../../../environments/environment";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import {
-  IPainelOrcamentoRequest,
-  IReceitaTotalOrcamentoResponse,
-  IReceitaOrigemOrcamentoResponse,
-  IReceitaCategoriaOrcamentoResponse,
-  IReceitaParticipacaoOrcamentoResponse,
-  IReceitaDespesaGNDOrcamentoResponse,
-  IReceitaDespesaGNDTotalOrcamentoResponse,
-  IReceitaICMSOrcamentoResponse,
-  IReceitaImpostoOrcamentoResponse,
-  IReceitaTransfereciaCorrenteOrcamentoResponse,
+  IExecucaoOrcamentariaRequest,
+  IReceitaTotalOrcamentariaResponse,
+  IReceitaOrigemOrcamentariaResponse,
+  IReceitaCategoriaOrcamentariaResponse,
+  IReceitaParticipacaoOrcamentariaResponse,
+  IReceitaDespesaGNDOrcamentariaResponse,
+  IReceitaDespesaGNDTotalOrcamentariaResponse,
+  IReceitaICMSOrcamentariaResponse,
+  IReceitaImpostoOrcamentariaResponse,
+  IReceitaTransfereciaCorrenteOrcamentariaResponse,
 } from "../../interfaces/painel-orcamento/painel-orcamento";
 
 @Injectable({
@@ -24,107 +24,107 @@ export class PainelOrcamentoService {
   constructor(private _http: HttpClient) {}
 
   public getReceitaTotal(
-    request: IPainelOrcamentoRequest
-  ): Observable<IReceitaTotalOrcamentoResponse> {
+    request: IExecucaoOrcamentariaRequest
+  ): Observable<IReceitaTotalOrcamentariaResponse> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaTotalOrcamentoResponse>(
+    return this._http.get<IReceitaTotalOrcamentariaResponse>(
       `${this._URI}/receita-total`,
       { params }
     );
   }
 
   public getReceitaOrigem(
-    request: IPainelOrcamentoRequest
-  ): Observable<IReceitaOrigemOrcamentoResponse[]> {
+    request: IExecucaoOrcamentariaRequest
+  ): Observable<IReceitaOrigemOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
 
-    return this._http.get<IReceitaOrigemOrcamentoResponse[]>(
+    return this._http.get<IReceitaOrigemOrcamentariaResponse[]>(
       `${this._URI}/receita-origem`,
       { params }
     );
   }
 
   public getReceitaPorCategoria(
-    request: IPainelOrcamentoRequest
-  ): Observable<IReceitaCategoriaOrcamentoResponse[]> {
+    request: IExecucaoOrcamentariaRequest
+  ): Observable<IReceitaCategoriaOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
 
-    return this._http.get<IReceitaCategoriaOrcamentoResponse[]>(
+    return this._http.get<IReceitaCategoriaOrcamentariaResponse[]>(
       `${this._URI}/receita-categoria`,
       { params }
     );
   }
 
   public getReceitaPorParticipacao(
-    request: IPainelOrcamentoRequest
-  ): Observable<IReceitaParticipacaoOrcamentoResponse[]> {
+    request: IExecucaoOrcamentariaRequest
+  ): Observable<IReceitaParticipacaoOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaParticipacaoOrcamentoResponse[]>(
+    return this._http.get<IReceitaParticipacaoOrcamentariaResponse[]>(
       `${this._URI}/receita-participacao`,
       { params }
     );
   }
 
   public getRceitaPorDespesaGND(
-    request: IPainelOrcamentoRequest
-  ): Observable<IReceitaDespesaGNDOrcamentoResponse[]> {
+    request: IExecucaoOrcamentariaRequest
+  ): Observable<IReceitaDespesaGNDOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaDespesaGNDOrcamentoResponse[]>(
-      `${this._URI}/receita-despesasGnd`,
+    return this._http.get<IReceitaDespesaGNDOrcamentariaResponse[]>(
+      `${this._URI}/receita-despesas-gnd`,
       { params }
     );
   }
 
   public getRceitaPorDespesaGNDTotal(
-    request: IPainelOrcamentoRequest
-  ): Observable<IReceitaDespesaGNDTotalOrcamentoResponse[]> {
+    request: IExecucaoOrcamentariaRequest
+  ): Observable<IReceitaDespesaGNDTotalOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaDespesaGNDTotalOrcamentoResponse[]>(
-      `${this._URI}/receita-despesasGnd-total`,
+    return this._http.get<IReceitaDespesaGNDTotalOrcamentariaResponse[]>(
+      `${this._URI}/receita-despesas-gnd-total`,
       { params }
     );
   }
 
   public getRceitaPorICMS(
-    request: IPainelOrcamentoRequest
-  ): Observable<IReceitaICMSOrcamentoResponse[]> {
+    request: IExecucaoOrcamentariaRequest
+  ): Observable<IReceitaICMSOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaICMSOrcamentoResponse[]>(
+    return this._http.get<IReceitaICMSOrcamentariaResponse[]>(
       `${this._URI}/receita-icms`,
       { params }
     );
   }
 
   public getRceitaPorImpostos(
-    request: IPainelOrcamentoRequest
-  ): Observable<IReceitaImpostoOrcamentoResponse[]> {
+    request: IExecucaoOrcamentariaRequest
+  ): Observable<IReceitaImpostoOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaImpostoOrcamentoResponse[]>(
+    return this._http.get<IReceitaImpostoOrcamentariaResponse[]>(
       `${this._URI}/receita-impostos`,
       { params }
     );
   }
 
   public getRceitaPorTransferenciaCorrente(
-    request: IPainelOrcamentoRequest
-  ): Observable<IReceitaTransfereciaCorrenteOrcamentoResponse[]> {
+    request: IExecucaoOrcamentariaRequest
+  ): Observable<IReceitaTransfereciaCorrenteOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaTransfereciaCorrenteOrcamentoResponse[]>(
+    return this._http.get<IReceitaTransfereciaCorrenteOrcamentariaResponse[]>(
       `${this._URI}/receita-transferencia-corrente`,
       { params }
     );
   }
 
-  private returnParams(painelOrcamento: IPainelOrcamentoRequest): HttpParams {
+  private returnParams(execucaoOrcamentaria: IExecucaoOrcamentariaRequest): HttpParams {
     let params = new HttpParams()
-      .set("ano", String(painelOrcamento.ano))
+      .set("ano", String(execucaoOrcamentaria.ano))
       .set(
         "mes",
-        Array.isArray(painelOrcamento.mes)
-          ? painelOrcamento.mes.join(",")
-          : String(painelOrcamento.mes)
+        Array.isArray(execucaoOrcamentaria.mes)
+          ? execucaoOrcamentaria.mes.join(",")
+          : String(execucaoOrcamentaria.mes)
       )
-      .set("tipoFonte", String(painelOrcamento.tipoFonte));
+      .set("tipoFonte", String(execucaoOrcamentaria.tipoFonte));
     return params;
   }
 

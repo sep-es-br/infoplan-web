@@ -9,8 +9,8 @@ import {
 import { Subject } from "rxjs";
 import { takeUntil, finalize } from "rxjs/operators";
 import {
-  IPainelOrcamentoRequest,
-  IReceitaOrigemOrcamentoResponse,
+  IExecucaoOrcamentariaRequest,
+  IReceitaOrigemOrcamentariaResponse,
 } from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
 import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
@@ -30,7 +30,7 @@ import { ShortNumberPipe } from "../../../../@theme/pipes/shortNumber.pipe";
   styleUrls: ["./receita-origem.component.scss"],
 })
 export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
-  @Input() filter: IPainelOrcamentoRequest;
+  @Input() filter: IExecucaoOrcamentariaRequest;
 
   private readonly _painelService = inject(PainelOrcamentoService);
   private readonly _chartProcessor = inject(ChartDataProcessorService);
@@ -44,7 +44,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
   chartData!: IChartOptions;
   tableContent: FlipTableContent | null = null;
   loadingStatus: "loading" | "loaded" | "error" = "loading";
-  private receitaOrigemCharData: IReceitaOrigemOrcamentoResponse[] = [];
+  private receitaOrigemCharData: IReceitaOrigemOrcamentariaResponse[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
@@ -97,7 +97,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
     }
   }
 
-  private processTableData(dados: IReceitaOrigemOrcamentoResponse[]): void {
+  private processTableData(dados: IReceitaOrigemOrcamentariaResponse[]): void {
     if (!dados?.length) {
       this.tableContent = null;
       return;
@@ -193,7 +193,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
   private calcularVariacao(
     categoria: string,
     anos: number[],
-    dados: IReceitaOrigemOrcamentoResponse[]
+    dados: IReceitaOrigemOrcamentariaResponse[]
   ): number {
     if (anos.length < 2) return 0;
 

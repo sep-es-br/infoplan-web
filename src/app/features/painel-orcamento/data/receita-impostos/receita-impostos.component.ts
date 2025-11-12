@@ -7,8 +7,8 @@ import {
   SimpleChanges,
 } from "@angular/core";
 import {
-  IPainelOrcamentoRequest,
-  IReceitaImpostoOrcamentoResponse,
+  IExecucaoOrcamentariaRequest,
+  IReceitaImpostoOrcamentariaResponse,
 } from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
@@ -30,7 +30,7 @@ import { ShortNumberPipe } from "../../../../@theme/pipes/shortNumber.pipe";
   styleUrls: ["./receita-impostos.component.scss"],
 })
 export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
-  @Input() filter: IPainelOrcamentoRequest;
+  @Input() filter: IExecucaoOrcamentariaRequest;
 
   readonly title: string = "Imposto, Taxas e Contribuições de Melhoria";
 
@@ -38,7 +38,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
   tableContent!: FlipTableContent;
   loadingStatus: "loading" | "loaded" | "error" = "loading";
 
-  private receitaImpostoCharData: IReceitaImpostoOrcamentoResponse[] = [];
+  private receitaImpostoCharData: IReceitaImpostoOrcamentariaResponse[] = [];
 
   private readonly _painelService = inject(PainelOrcamentoService);
   private readonly _chartProcessor = inject(ChartDataProcessorService);
@@ -100,7 +100,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
     );
   }
 
-  private processTableData(dados: IReceitaImpostoOrcamentoResponse[]): void {
+  private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
     if (!dados?.length) {
       this.tableContent = null;
       return;
@@ -204,7 +204,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
   private calcularVariacao(
     categoria: string,
     anos: number[],
-    dados: IReceitaImpostoOrcamentoResponse[]
+    dados: IReceitaImpostoOrcamentariaResponse[]
   ): number {
     if (anos.length < 2) return 0;
 

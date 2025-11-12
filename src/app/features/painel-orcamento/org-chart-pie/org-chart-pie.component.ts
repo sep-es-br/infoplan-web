@@ -151,9 +151,9 @@ export class PieChartComponent implements OnInit, OnChanges {
 
         textStyle: {
           color: themeStyles.textPrimaryColor,
-          fontSize: 8
+          fontSize: 12
         },
-        type: 'scroll', // Adiciona scroll se houver muitos itens
+        type: 'scroll',
         pageTextStyle: { color: themeStyles.textPrimaryColor },
         itemWidth: 10,
         itemHeight: 10,
@@ -168,7 +168,7 @@ export class PieChartComponent implements OnInit, OnChanges {
         center: config.centerPosition,
         data: filteredData,
         minAngle: config.minAngle, // Ângulo mínimo para slices
-        avoidLabelOverlap: config.avoidLabelOverlap, // Evita sobreposição
+        avoidLabelOverlap: false, // Evita sobreposição
 
         emphasis: {
           scale: config.emphasisScale,

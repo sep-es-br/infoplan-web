@@ -1,5 +1,6 @@
 import {
   Component,
+  HostListener,
   Input,
   OnChanges,
   OnInit,
@@ -16,7 +17,7 @@ import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChart
 @Component({
   selector: "ngx-org-chart-horizontal",
   templateUrl: "./org-chart-horizontal.component.html",
-  styles: ['.echarts { width: 100%; height: 100%; margim-top: 20px; }'],
+  styles: ['.echarts { width: 100%; height: 100%; margin-top: 20px; }'],
 })
 export class OrgChartHorizontalComponent implements OnInit, OnChanges {
   @Input() chart!: IChartOptions;
@@ -26,6 +27,11 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
   chartOptions: EChartsOption;
   echartsInstance: ECharts | null = null;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.resizeChart();
+  }
 
   constructor(private _themeService: NbThemeService) {
     this._themeService.onThemeChange().subscribe((newTheme) => {
@@ -54,7 +60,7 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["chart"] && this.chart) {
-      this.initChartOptions(this.chart); // 🌀 atualiza automaticamente quando o Input mudar
+      this.initChartOptions(this.chart);
     }
   }
 
@@ -77,11 +83,9 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
       valores: chart.data.datasets.map(dataset => dataset.data[i] ?? 0)
     }));
 
-
     const colors = chart.data.datasets.map(dataset =>
       dataset.backgroundColor || "#4DB6D2"
     );
-
 
     this.chartOptions = {
       tooltip: {
@@ -170,6 +174,12 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
         },
       ],
     };
+  }
+
+  resizeChart() {
+    if (this.echartsInstance) {
+      this.echartsInstance.resize();
+    }
   }
 
   private formatValue(value: number): string {

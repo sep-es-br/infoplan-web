@@ -9,7 +9,8 @@
     (filterReset)="onFilterReset()"
     (mapToggle)="onMapToggle($event)"
   ></ngx-app-filter> -->
-  <nb-card>
+  <div class="col-12 col-md-6 col-xl-12">
+      <nb-card class="cards-exec">
     <nb-card-body>
       <div class="row g-3">
         <div class="col-2">
@@ -33,51 +34,52 @@
       </div>
     </nb-card-body>
   </nb-card>
-  <div class="chart-container row g-3">
+  </div>
+  <div class="chart-container row g-2">
     <div class="chart-receita-prevista col-12 col-md-6 px-1 col-xl-4">
       <ngx-receita-total [filter]="currentRequestParams"></ngx-receita-total>
     </div>
 
-    <div class="chart-receita-categoria col-12 col-xl-4">
+    <div class="chart-receita col-12 col-md-6 px-1 col-xl-4">
       <ngx-receita-categoria
         [filter]="currentRequestParams"
       ></ngx-receita-categoria>
     </div>
 
-    <div class="chart-principais-origens col-12 col-xl-4">
+    <div class="chart-receita col-12 col-md-6 px-1 col-xl-4">
       <ngx-receita-origem [filter]="currentRequestParams"></ngx-receita-origem>
     </div>
 
-    <div class="chart-receita-impostos col-12 col-xl-4">
+    <div class="chart-receita col-12 col-md-6 px-1 col-xl-4">
       <ngx-receita-impostos
         [filter]="currentRequestParams"
       ></ngx-receita-impostos>
     </div>
 
-    <div class="chart-receita-icms-participacao col-12 col-xl-4">
+    <div class="chart-receita col-12 col-md-6 px-1 col-xl-4">
       <ngx-receita-participacao
         [filter]="currentRequestParams"
       ></ngx-receita-participacao>
     </div>
 
-    <div class="chart-receita-icms col-12 col-xl-4">
+    <div class="chart-receita col-12 col-md-6 px-1 col-xl-4">
       <ngx-receita-icms [filter]="currentRequestParams"></ngx-receita-icms>
     </div>
 
-    <div class="chart-receita-impostos col-12 col-xl-4">
+    <div class="chart-receita col-12 col-md-6 px-1 col-xl-4">
       <ngx-receita-transferencia
         [filter]="currentRequestParams"
       ></ngx-receita-transferencia>
     </div>
-    <div class="chart-receita-impostos col-12 col-xl-4">
+
+    <div class="chart-receita col-12 col-md-6 px-1 col-xl-4">
+      <ngx-receita-despesa-gnd-total [filter]="currentRequestParams"></ngx-receita-despesa-gnd-total>
+    </div>
+
+    <div class="chart-receita col-12 col-md-6 px-1 col-xl-4">
       <ngx-receita-despesa-gnd
         [filter]="currentRequestParams"
       ></ngx-receita-despesa-gnd>
-    </div>
-    <div class="chart-receita-impostos col-12 col-xl-4">
-      <!-- <ngx-receita-transferencia
-        [filter]="currentRequestParams"
-      ></ngx-receita-transferencia> -->
     </div>
   </div>
 

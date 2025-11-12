@@ -6,11 +6,7 @@ import {
   OnDestroy,
   SimpleChanges,
 } from "@angular/core";
-import {
-  IPainelOrcamentoRequest,
-  IReceitaDespesaGNDOrcamentoResponse,
-  IReceitaDespesaGNDTotalOrcamentoResponse,
-} from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
+import { IExecucaoOrcamentariaRequest, IReceitaCategoriaOrcamentariaResponse, IReceitaDespesaGNDOrcamentariaResponse } from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
@@ -26,12 +22,12 @@ import { finalize, takeUntil } from "rxjs/operators";
   styleUrls: ["./receita-despesa-gnd.component.scss"],
 })
 export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
-  @Input() filter: IPainelOrcamentoRequest;
+  @Input() filter: IExecucaoOrcamentariaRequest;
 
   readonly title: string = "Despesa Prevista x Executada";
 
   private receitaDespesaOrcamento:
-    | IReceitaDespesaGNDTotalOrcamentoResponse[]
+    | IReceitaDespesaGNDOrcamentariaResponse[]
     | null = [];
 
   private readonly _painelService = inject(PainelOrcamentoService);
@@ -72,7 +68,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
         })
       )
       .subscribe({
-        next: (res: IReceitaDespesaGNDOrcamentoResponse[]) => {
+        next: (res: IReceitaDespesaGNDOrcamentariaResponse[]) => {
           this.receitaDespesaOrcamento = res;
           this.processData();
         },

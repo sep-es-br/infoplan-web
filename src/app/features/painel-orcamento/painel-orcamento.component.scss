@@ -2,10 +2,20 @@
 // LAYOUT PRINCIPAL
 // ============================================
 .container {
+  padding: 0;
+
   display: grid;
   grid-template-columns: 100%;
-  gap: 24px;
-  padding: 1rem;
+  gap: 8px;
+  // padding: 1rem;
+}
+
+.cards-exec {
+  margin-bottom: 0px;
+  border-radius: 8px;
+  padding: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
 }
 
 // ============================================
@@ -213,12 +223,11 @@
 // // }
 
 // // // Desktop grande (acima de 1440px)
-// @media (min-width: 1440px) {
-//   .container {
-//     max-width: 1800px;
-//     margin: 0 auto;
-//   }
-
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1800px;
+  }
+}
 //   .cards-container {
 //     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 //   }

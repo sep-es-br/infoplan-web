@@ -1,46 +1,46 @@
-export interface IPainelOrcamentoRequest {
+export interface IExecucaoOrcamentariaRequest {
   ano: number;
   mes: number[];
   tipoFonte: number[];
 }
 
-export interface IReceitaTotalOrcamentoResponse {
+export interface IReceitaTotalOrcamentariaResponse {
   ano: number;
   vlr_receita_prevista: number;
   vlr_receita_liquida: number;
 }
 
-export interface IPainelOrcamentoReceitaOrigem {
+export interface IExecucaoOrcamentariaReceitaOrigem {
   ano: number;
   mes: number[];
   tipoFonte: number[];
 }
 
-export interface IReceitaOrigemOrcamentoResponse {
+export interface IReceitaOrigemOrcamentariaResponse {
   ano: number;
   origem: string;
   receitaLiquida: number;
 }
 
-export interface IReceitaCategoriaOrcamentoResponse {
+export interface IReceitaCategoriaOrcamentariaResponse {
   ano: number;
   categoria: string;
   receitaLiquida: number;
 }
 
-export interface IReceitaParticipacaoOrcamentoResponse {
+export interface IReceitaParticipacaoOrcamentariaResponse {
   ano: number;
   nome_item_patrimonial: string;
   receitaLiquida: number;
 }
 
-export interface IReceitaImpostoOrcamentoResponse {
+export interface IReceitaImpostoOrcamentariaResponse {
   ano: number;
   nome_item_patrimonial: string;
   receitaLiquida: number;
 }
 
-export interface IReceitaDespesaGNDOrcamentoResponse {
+export interface IReceitaDespesaGNDOrcamentariaResponse {
   ano: number;
   mes: number;
   nome_gnd: string;
@@ -51,7 +51,7 @@ export interface IReceitaDespesaGNDOrcamentoResponse {
   vlr_pago_com_rap: number;
 }
 
-export interface IReceitaDespesaGNDTotalOrcamentoResponse {
+export interface IReceitaDespesaGNDTotalOrcamentariaResponse {
   ano: number;
   vlr_orcado: string;
   vlr_autorizado: number;
@@ -60,19 +60,19 @@ export interface IReceitaDespesaGNDTotalOrcamentoResponse {
   vlr_pago_com_rap: number;
 }
 
-export interface IReceitaICMSOrcamentoResponse {
+export interface IReceitaICMSOrcamentariaResponse {
   ano: number;
   nome_item_patrimonial: string;
   receitaLiquida: number;
 }
 
-export interface IReceitaImpostoOrcamentoResponse {
+export interface IReceitaImpostoOrcamentariaResponse {
   ano: number;
   nome_item_patrimonial: string;
   receitaLiquida: number;
 }
 
-export interface IReceitaTransfereciaCorrenteOrcamentoResponse {
+export interface IReceitaTransfereciaCorrenteOrcamentariaResponse {
   ano: number;
   nome_item_patrimonial: string;
   receitaLiquida: number;

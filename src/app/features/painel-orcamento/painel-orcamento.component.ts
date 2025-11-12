@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { IPainelOrcamentoRequest } from '../../core/interfaces/painel-orcamento/painel-orcamento';
+import { IExecucaoOrcamentariaRequest } from '../../core/interfaces/painel-orcamento/painel-orcamento';
 import { ANO_DATA, CARDS_DATA, MESES_DATA, TIPO_CAIXA_DATA } from './data/datasets';
 
 interface IFilterTag {
@@ -21,7 +21,7 @@ interface IFilterConfig {
   multiple?: boolean;
 }
 
-const DEFAULT_REQUEST_PARAMS: IPainelOrcamentoRequest = {
+const DEFAULT_REQUEST_PARAMS: IExecucaoOrcamentariaRequest = {
   ano: 2025,
   mes: [-1],
   tipoFonte: [-1],
@@ -42,7 +42,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   activeFilters: IFilterTag[] = [];
   showFilters = false;
 
-  currentRequestParams: IPainelOrcamentoRequest = DEFAULT_REQUEST_PARAMS;
+  currentRequestParams: IExecucaoOrcamentariaRequest = DEFAULT_REQUEST_PARAMS;
 
   filterConfigs: IFilterConfig[] = [
     {
@@ -166,7 +166,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
   private convertFiltersToParams(
     filters: Record<string, any>
-  ): IPainelOrcamentoRequest {
+  ): IExecucaoOrcamentariaRequest {
     const ano = filters.anoInicial || DEFAULT_REQUEST_PARAMS.ano;
     const meses = this.getMesesRange(filters.mesInicial, filters.mesFinal);
     const tipoFonte =

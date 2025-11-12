@@ -9,8 +9,8 @@ import {
   SimpleChanges,
 } from "@angular/core";
 import {
-  IPainelOrcamentoRequest,
-  IReceitaTransfereciaCorrenteOrcamentoResponse,
+  IExecucaoOrcamentariaRequest,
+  IReceitaTransfereciaCorrenteOrcamentariaResponse,
 } from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
@@ -25,11 +25,11 @@ import { ShortNumberPipe } from '../../../../@theme/pipes';
   styleUrls: ["./receita-transferencia.component.scss"],
 })
 export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
-  @Input() filter: IPainelOrcamentoRequest;
+  @Input() filter: IExecucaoOrcamentariaRequest;
 
   readonly title: string = "Transfêrencias Correntes";
 
-  private receitaTransferenciaCorrente: IReceitaTransfereciaCorrenteOrcamentoResponse[];
+  private receitaTransferenciaCorrente: IReceitaTransfereciaCorrenteOrcamentariaResponse[];
 
   private readonly _painelService = inject(PainelOrcamentoService);
   private readonly _chartProcessor = inject(ChartDataProcessorService);
@@ -71,7 +71,7 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
         })
       )
       .subscribe({
-        next: (res: IReceitaTransfereciaCorrenteOrcamentoResponse[]) => {
+        next: (res: IReceitaTransfereciaCorrenteOrcamentariaResponse[]) => {
           this.receitaTransferenciaCorrente = res;
           this.processData();
         },
@@ -88,6 +88,7 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
     if (chartData) {
       this.chartData = chartData;
+      console.log("dasdasdweqweqw", this.chartData)
       this.processTableData(this.receitaTransferenciaCorrente);
     } else {
       this.chartData = { data: { labels: [], datasets: [] } };
@@ -103,7 +104,7 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
     );
   }
 
-  private processTableData(dados: IReceitaTransfereciaCorrenteOrcamentoResponse[]): void {
+  private processTableData(dados: IReceitaTransfereciaCorrenteOrcamentariaResponse[]): void {
       if (!dados?.length) {
         this.tableContent = null;
         return;
@@ -204,7 +205,7 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
     private calcularVariacao(
       categoria: string,
       anos: number[],
-      dados: IReceitaTransfereciaCorrenteOrcamentoResponse[]
+      dados: IReceitaTransfereciaCorrenteOrcamentariaResponse[]
     ): number {
       if (anos.length < 2) return 0;
 

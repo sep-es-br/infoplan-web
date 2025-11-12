@@ -93,7 +93,7 @@ export const menulinks = [
     status: true,
     name: "Execução Orçamentaria",
     icon: "painelOrcamento.svg",
-    link: "/pages/painelOrcamento",
+    link: "/pages/execucao-orcamentaria",
     url: "",
     src: "Execução Orçamentária",
     menuIcon: "",

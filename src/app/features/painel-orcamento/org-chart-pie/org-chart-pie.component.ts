@@ -45,8 +45,8 @@ export interface PieChartConfig {
 export class PieChartComponent implements OnInit, OnChanges {
   @Input() data: PieChartData[] = [];
   @Input() colors: string[] = [];
-  @Input() height: string | number = '400px';
-  @Input() width: string | number = '100%';
+  @Input() height:number;
+  @Input() width:number;
   @Input() config: PieChartConfig = {};
 
   chartOptions: EChartsOption = {};
@@ -148,10 +148,10 @@ export class PieChartComponent implements OnInit, OnChanges {
         left: this.getLegendPosition(config.legendPosition).left,
         top: this.getLegendPosition(config.legendPosition).top,
         orient: config.legendOrient,
-
+        right: "3%",
         textStyle: {
           color: themeStyles.textPrimaryColor,
-          fontSize: 12
+          fontSize: 10
         },
         type: 'scroll',
         pageTextStyle: { color: themeStyles.textPrimaryColor },
@@ -190,7 +190,7 @@ export class PieChartComponent implements OnInit, OnChanges {
           fontSize: 1,
           color: themeStyles.textPrimaryColor,
           fontWeight: 'normal',
-          backgroundColor: 'auto', // Fundo automático para melhor contraste
+          backgroundColor: 'auto',
           padding: [0],
           borderRadius: 1,
         },

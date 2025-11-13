@@ -2,7 +2,6 @@
     echarts
     class="echart"
     [options]="chartOptions"
-    [style.height.px]="height"
-    [style.width.px]="width"
+    [ngStyle]="{ 'height': height + 'px' }"
     (chartInit)="onChartInit($event)"
   ></div>

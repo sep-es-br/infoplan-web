@@ -17,12 +17,11 @@ import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChart
 @Component({
   selector: "ngx-org-chart-horizontal",
   templateUrl: "./org-chart-horizontal.component.html",
-  styles: ['.echarts { width: 100%; height: 100%; margin-top: 20px; }'],
+  styles: ['.echarts { width: 100%; height: 100%; }'],
 })
 export class OrgChartHorizontalComponent implements OnInit, OnChanges {
   @Input() chart!: IChartOptions;
-  @Input() height: string = '500px';
-  @Input() width: string = '500px';
+  @Input() height: number;
 
   chartOptions: EChartsOption;
   echartsInstance: ECharts | null = null;
@@ -106,7 +105,8 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
 
       legend: {
         orient: "horizontal",
-        top: 0,
+        top: "top",
+        left: "center",
         data: datasetLabels,
         itemWidth: 10,
         itemHeight: 10,
@@ -119,7 +119,7 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
 
       grid: {
         top: "20%",
-        left: "3%",
+        left: "10%",
         right: "4%",
         bottom: "3%",
         containLabel: true,

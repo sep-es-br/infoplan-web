@@ -20,8 +20,7 @@ import { IChartOptions } from "./../../../../shared/models/painel-orcamento/ICha
 })
 export class OrgChartVerticalComponent implements OnInit, OnChanges {
   @Input() chart!: IChartOptions;
-  @Input() height: string = '500px';
-  @Input() width: string = '500px';
+  @Input() height: number;
 
   echartsInstance: ECharts | null = null;
 
@@ -83,14 +82,20 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
 
     this.chartOptions = {
       grid: {
-        containLabel: true
+        top: "25%",
+        left: "15%",
+        bottom: "3%",
+        containLabel: true,
       },
       tooltip: {
         trigger: "axis",
         axisPointer: { type: "shadow" },
         backgroundColor: theme.themePrimaryColor,
         borderColor: theme.themePrimaryColor,
-        textStyle: { color: theme.textPrimaryColor },
+        textStyle: {
+          color: theme.textPrimaryColor,
+          fontSize: 12,
+        },
         confine: true,
         formatter: (params: any) => {
           let tooltip = `${params[0].name}<br>`;
@@ -100,16 +105,19 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
           return tooltip;
         },
       },
-
       legend: {
         orient: "horizontal",
         top: "top",
+        left: "center",
         data: chart.data.datasets.map(r => r.label),
         itemWidth: 10,
         itemHeight: 10,
-        textStyle: { color: theme.textPrimaryColor },
+        itemGap: 10,
+        textStyle: {
+          color: theme.textPrimaryColor,
+          fontSize: 10
+        },
       },
-
       xAxis: {
         type: "category",
         data: data.map((d) => d.category),

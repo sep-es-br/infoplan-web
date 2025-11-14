@@ -41,11 +41,11 @@
       font-size: 0.9rem;
       font-weight: var(--layout-text-font-weight);
     }
-    
+
     .search-form-field {
       width: 0;
       opacity: 0;
-      
+
       &.opening {
         animation: openSearch 500ms ease-out forwards;
       }
@@ -70,15 +70,20 @@
       // ficarem movendo pro lado toda vez que clica pra trocar a visualização
     }
   }
-  
-  
+
+
   .flip-card {
     .card-front, .card-back {
       border: none;
     }
 
-    .card-back {
+    ::ng-deep &.align-table-vertically {
+      .flipcard-body {
+        align-items: center !important;
+      }
+    }
 
+    .card-back {
       .flip-table {
         font-family: var(--text-paragraph-font-family);
         z-index: 2;

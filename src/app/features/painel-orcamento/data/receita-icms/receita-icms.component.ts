@@ -1,0 +1,197 @@
+import {
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  OnDestroy,
+  inject,
+} from "@angular/core";
+import { Subject } from "rxjs";
+import { takeUntil, finalize } from "rxjs/operators";
+import {
+  IExecucaoOrcamentariaRequest,
+  IReceitaICMSOrcamentariaResponse,
+} from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
+import { PieChartData } from "../../org-chart-pie/org-chart-pie.component";
+import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
+import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { ExportDataService } from "../../../../core/service/export-data";
+import { FlipTableContent } from "../../../strategic-projects/flip-table-model/flip-table.component";
+
+@Component({
+  selector: "ngx-receita-icms",
+  templateUrl: "./receita-icms.component.html",
+  styleUrls: ["./receita-icms.component.scss"],
+})
+export class ReceitaICMSComponent implements OnChanges, OnDestroy {
+  @Input() filter: IExecucaoOrcamentariaRequest;
+
+  readonly title: string = "Participação ICMS - Receita Total";
+  readonly showTableIcon: Boolean = false;
+  chartData!: PieChartData[];
+  tableContent: FlipTableContent | null = null
+  loadingStatus: "loading" | "loaded" | "error" = "loading";
+  chartConfig = {
+    // showLegend: true,
+    // legendPosition: 'bottom',
+    // legendOrient: 'horizontal',
+    // showLabels: true,
+    // radius: ['40%', '70%'],
+
+    // centerPosition: ['50%', '55%'],  // Move o gráfico pra baixo
+    showTitle: true,
+    isDonut: true,
+    legendPosition: "left",
+    labelThreshold: 5,
+    showLabels: false,
+    radius: ['30%', '60%'],
+    centerPosition: ["70%","50%"],
+    // avoidLabelOverlap:
+  };
+
+
+
+  private receitaICMSCharData: IReceitaICMSOrcamentariaResponse[] | null = [];
+
+  private readonly _painelService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
+  private readonly _exportDataService = inject(ExportDataService);
+
+  private readonly destroy$ = new Subject<void>();
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["filter"] && this.filter) {
+      this.loadData();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadData(): void {
+    this.loadingStatus = "loading";
+    this.getReceitaICMS();
+  }
+
+  private getReceitaICMS(): void {
+    this._painelService
+      .getRceitaPorICMS(this.filter)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          this.loadingStatus =
+            this.receitaICMSCharData.length > 0 ? "loaded" : "error";
+        })
+      )
+      .subscribe({
+        next: (response: IReceitaICMSOrcamentariaResponse[]) => {
+          this.receitaICMSCharData = response
+          this.processData();
+        },
+        error: (err) => {
+          console.error("Erro ao carregar receita ICMS:", err);
+          this.loadingStatus = "error";
+        },
+      });
+  }
+
+  private processData(): void {
+    // Processa dados para o gráfico de pizza
+    const chartData = this.processCharData();
+
+    if (chartData) {
+      this.chartData = chartData;
+    } else {
+      this.chartData = [
+        {
+          value: 0,
+          name: "",
+        },
+      ];
+      this.tableContent = null;
+    }
+  }
+
+  private processCharData(): PieChartData[] {
+    return this._chartProcessor.processarDadosPieChart(
+      this.receitaICMSCharData,
+      "nome_item_patrimonial",
+      ["receitaLiquida", "vlr_receita_liquida"]
+    );
+  }
+
+  handleTableSearch(query: string): void {
+    // if (!query.trim()) {
+    //   // Restaura dados originais
+    //   // this.processData([]); // Recarregar ou usar cache
+    //   return;
+    // }
+    // // Filtra tabela
+    // this.tableContent = this.tableContent.filter((row) =>
+    //   row.categoria.toLowerCase().includes(query.toLowerCase())
+    // );
+  }
+
+
+  handleTableDownload(): void {
+    const data = this.receitaICMSCharData;
+
+    if(!data.length) return;
+
+    const categories = this.category(data);
+    const years = this.filterYears(data);
+    const columns = this.columns(years);
+
+    const dataForDownload = this.dataForDownload(categories, years, columns);
+
+    const anoAtual = new Date().getFullYear();
+    const fileName = `Receita_Realizada_ICMS_${anoAtual}.xlsx`;
+
+    this._exportDataService.exportXLSXWithCustomHeaders(
+      dataForDownload,
+      columns,
+      fileName
+    );
+}
+
+private category(data: IReceitaICMSOrcamentariaResponse[]): string[] {
+    return [...new Set(data.map(item => item.nome_item_patrimonial))].filter(Boolean);
+}
+
+private filterYears(data: IReceitaICMSOrcamentariaResponse[]): number[] {
+    return [...new Set(data.map(item => item.ano))]
+      .filter(ano => ano != null)
+      .sort();
+}
+
+private columns(years: number[]): {key: string, label: string}[] {
+   return [
+      { key: "categoria", label: "Participação ICMS - Receita Total" },
+      ...years.map(ano => ({
+        key: `ano_${ano}`,
+        label: `Arrecadação LI - ${ano}`,
+      })),
+    ];
+}
+
+private dataForDownload(categories: string[], years: number[], columns: {key: string, label: string}[]): any[] {
+    return categories.map(categoria => {
+        const row: any = { categoria };
+
+        years.forEach(year => {
+            const item = this.receitaICMSCharData.find(
+                d => d.nome_item_patrimonial === categoria && d.ano === year
+            );
+            row[`ano_${year}`] = item?.receitaLiquida
+                ? `R$ ${item.receitaLiquida.toLocaleString("pt-BR")}`
+                : "R$ 0";
+        });
+
+        return row;
+    });
+}
+
+
+}

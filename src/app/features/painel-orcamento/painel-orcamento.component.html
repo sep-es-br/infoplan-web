@@ -1,0 +1,165 @@
+<div class="container">
+  <!-- <ngx-app-filter
+    [filterConfigs]="filterConfigs"
+    [activeFilters]="activeFilters"
+    [showMapButton]="false"
+    [isMapOpen]="isMapOpen"
+    (filterChange)="onFilterChange($event)"
+    (filterRemove)="onFilterRemove($event)"
+    (filterReset)="onFilterReset()"
+    (mapToggle)="onMapToggle($event)"
+  ></ngx-app-filter> -->
+  <!-- <div class="col-12 col-md-6 col-xl-12">
+    <nb-card class="cards-exec row">
+      <nb-card-body>
+        <div class="row g-3">
+          <div class="col-12">
+                      <div class="col-2">
+            <img
+              src="assets/images/app/logo-exec-orc-claro.png"
+              alt=""
+              style="width: 100%"
+            />
+          </div>
+
+          <div *ngFor="let card of cards" class="col-2">
+            <ngx-cards-component
+              [value]="card.value"
+              [description]="card.description"
+              [cor]="card.cor"
+              [icone]="card.icone"
+              class="w-100"
+            >
+            </ngx-cards-component>
+          </div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div> -->
+
+  <!-- <nb-card class="cards-exec">
+        <nb-card-body>
+          <div
+            class="row flex-wrap g-2 g-md-3 align-items-center justify-content-between"
+          >
+            <div
+              *ngFor="let card of cards"
+              class="col-6 col-sm-4 col-md-6 col-lg-6 col-xl-6 col-xxl-2 col-xxxl-2"
+            >
+              <ngx-cards-component
+                [value]="card.value"
+                [description]="card.description"
+                [cor]="card.cor"
+                [icone]="card.icone"
+                class="w-100 h-100"
+              >
+              </ngx-cards-component>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card> -->
+  <div class="row g-2 col-sm-12 mb-0">
+    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+      <!-- <div class="execucao-orcamentaria-logo d-flex align-items-center justify-content-center shadow-sm bg-white rounded">
+        <img
+          src="assets/images/app/logo-exec-orc-claro.png"
+          alt="Logo"
+          class="img-fluid w-100"
+        />
+      </div> -->
+      <nb-card class="h-100 p-0 mb-0">
+        <nb-card-body class="col-sm-12 p-2">
+          <div
+            class="execucao-orcamentaria-logo d-flex align-items-center justify-content-center rounded p-0 m-0"
+          >
+            <img
+              src="assets/images/app/logo-exec-orc-claro.png"
+              alt="Logo"
+              class="img-fluid w-100"
+            />
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+
+    <ng-container *ngFor="let item of cards">
+      <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+        <!-- <nb-card class="h-100 p-1">
+          <nb-card-body class="p-1">
+
+          </nb-card-body>
+        </nb-card> -->
+        <ngx-cards-component
+          [value]="item.value"
+          [description]="item.description"
+          [cor]="item.cor"
+          [icone]="item.icone"
+          class="w-100 h-100"
+        >
+        </ngx-cards-component>
+      </div>
+    </ng-container>
+  </div>
+  <div class="row g-2 g-md-3 p-0">
+    <!-- Receita Total - Destaque maior em telas grandes -->
+    <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-4">
+      <ngx-receita-total [filter]="currentRequestParams"></ngx-receita-total>
+    </div>
+
+    <!-- Receita Categoria -->
+    <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-4">
+      <ngx-receita-categoria
+        [filter]="currentRequestParams"
+      ></ngx-receita-categoria>
+    </div>
+
+    <!-- Receita Origem -->
+    <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-4">
+      <ngx-receita-origem [filter]="currentRequestParams"></ngx-receita-origem>
+    </div>
+
+    <!-- Receita Impostos -->
+    <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-4">
+      <ngx-receita-impostos
+        [filter]="currentRequestParams"
+      ></ngx-receita-impostos>
+    </div>
+
+    <!-- Receita Participação -->
+    <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 col-xxxl-4">
+      <ngx-receita-participacao
+        [filter]="currentRequestParams"
+      ></ngx-receita-participacao>
+    </div>
+
+    <!-- Receita ICMS -->
+    <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 col-xxxl-4">
+      <ngx-receita-icms [filter]="currentRequestParams"></ngx-receita-icms>
+    </div>
+
+    <!-- Receita Transferência -->
+    <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-6">
+      <ngx-receita-transferencia
+        [filter]="currentRequestParams"
+      ></ngx-receita-transferencia>
+    </div>
+
+    <!-- Receita Despesa GND Total -->
+    <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-6">
+      <ngx-receita-despesa-gnd-total
+        [filter]="currentRequestParams"
+      ></ngx-receita-despesa-gnd-total>
+    </div>
+
+    <!-- Receita Despesa GND -->
+    <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+      <ngx-receita-despesa-gnd
+        [filter]="currentRequestParams"
+      ></ngx-receita-despesa-gnd>
+    </div>
+  </div>
+  <div class="d-flex flex-wrap col-12 col-xxl-6 p-0">
+    <div class="col-12 col-md-6 px-x1 mb-1 align-self-start"></div>
+  </div>
+</div>

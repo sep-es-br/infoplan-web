@@ -6,17 +6,20 @@
 
   display: grid;
   grid-template-columns: 100%;
-  gap: 8px;
+  gap: 2px;
   // padding: 1rem;
 }
-
-.cards-exec {
-  margin-bottom: 0px;
-  border-radius: 8px;
-  padding: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  text-align: center;
+.execucao-orcamentaria-logo {
+  min-height: 100px;
+  padding: 1rem;
 }
+// .cards-exec {
+//   margin-bottom: 0px;
+//   border-radius: 8px;
+//   padding: 5px;
+//   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+//   text-align: center;
+// }
 
 .execucao-orcamentaria-content {
   display: flex;

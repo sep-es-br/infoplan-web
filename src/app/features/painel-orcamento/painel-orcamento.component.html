@@ -37,40 +37,69 @@
       </nb-card-body>
     </nb-card>
   </div> -->
-  <div class="col-12 col-xxxl-12">
-    <nb-card class="cards-exec">
-      <nb-card-body>
-        <div
-          class="row flex-wrap g-2 g-md-3 align-items-center justify-content-between"
-        >
-          <!-- Logo -->
-          <div class="col-6 col-sm-4 col-md-4 col-lg-2 mb-2 px-1">
-            <div class="execucao-orcamentaria-content">
-              <img
-                src="assets/images/app/logo-exec-orc-claro.png"
-                alt="Logo"
-                class="execucao-orcamentaria-logo img-fluid w-100"
-              />
+
+  <!-- <nb-card class="cards-exec">
+        <nb-card-body>
+          <div
+            class="row flex-wrap g-2 g-md-3 align-items-center justify-content-between"
+          >
+            <div
+              *ngFor="let card of cards"
+              class="col-6 col-sm-4 col-md-6 col-lg-6 col-xl-6 col-xxl-2 col-xxxl-2"
+            >
+              <ngx-cards-component
+                [value]="card.value"
+                [description]="card.description"
+                [cor]="card.cor"
+                [icone]="card.icone"
+                class="w-100 h-100"
+              >
+              </ngx-cards-component>
             </div>
           </div>
-
-          <!-- Cards -->
+        </nb-card-body>
+      </nb-card> -->
+  <div class="row g-2 col-sm-12 mb-0">
+    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+      <!-- <div class="execucao-orcamentaria-logo d-flex align-items-center justify-content-center shadow-sm bg-white rounded">
+        <img
+          src="assets/images/app/logo-exec-orc-claro.png"
+          alt="Logo"
+          class="img-fluid w-100"
+        />
+      </div> -->
+      <nb-card class="h-100 p-0 mb-0">
+        <nb-card-body class="col-sm-12 p-2">
           <div
-            *ngFor="let card of cards"
-            class="col-6 col-sm-4 col-md-6 col-lg-6 col-xl-6 col-xxl-2 col-xxxl-2"
+            class="execucao-orcamentaria-logo d-flex align-items-center justify-content-center rounded p-0 m-0"
           >
-            <ngx-cards-component
-              [value]="card.value"
-              [description]="card.description"
-              [cor]="card.cor"
-              [icone]="card.icone"
-              class="w-100 h-100"
-            >
-            </ngx-cards-component>
+            <img
+              src="assets/images/app/logo-exec-orc-claro.png"
+              alt="Logo"
+              class="img-fluid w-100"
+            />
           </div>
-        </div>
-      </nb-card-body>
-    </nb-card>
+        </nb-card-body>
+      </nb-card>
+    </div>
+
+    <ng-container *ngFor="let item of cards">
+      <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
+        <!-- <nb-card class="h-100 p-1">
+          <nb-card-body class="p-1">
+
+          </nb-card-body>
+        </nb-card> -->
+        <ngx-cards-component
+          [value]="item.value"
+          [description]="item.description"
+          [cor]="item.cor"
+          [icone]="item.icone"
+          class="w-100 h-100"
+        >
+        </ngx-cards-component>
+      </div>
+    </ng-container>
   </div>
   <div class="row g-2 g-md-3 p-0">
     <!-- Receita Total - Destaque maior em telas grandes -->
@@ -79,7 +108,7 @@
     </div>
 
     <!-- Receita Categoria -->
-    <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6  col-xxxl-4">
+    <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-4">
       <ngx-receita-categoria
         [filter]="currentRequestParams"
       ></ngx-receita-categoria>

@@ -1,12 +1,19 @@
-<nb-card class="card-dinamico h-100" [class]="'card-' + cor">
-  <nb-card-body class="card-dinamico-body d-flex flex-column align-items-center justify-content-center h-100 p-2 p-md-3">
-    <div class="card-content w-100 text-center">
-      <div class="card-value mb-1 mb-md-2">
-        {{ value }}
+<div class="card-dinamico-wrapper d-flex justify-content-start align-items-end gap-3 h-100">
+  <nb-card class="card-dinamico mb-0 position-relative" [ngClass]="'card-' + cor">
+    <nb-card-body class="card-dinamico-body d-flex align-items-center">
+      <!-- Conteúdo principal -->
+      <div class="card-content d-flex align-items-start gap-0 m-2">
+        <span class="currency-symbol">R$</span>
+        <span class="card-value">{{ value }}</span>
       </div>
-      <div class="card-description">
-        {{ description }}
+    </nb-card-body>
+  </nb-card>
+      <!-- Ícone no canto superior direito -->
+      <div class="icon-container position-absolute top-0 end-0 p-2">
+        <i [className]="icone"></i>
       </div>
-    </div>
-  </nb-card-body>
-</nb-card>
+
+  <div class="card-description text-muted">
+    {{ description }}
+  </div>
+</div>

@@ -2,6 +2,7 @@
   [cardTitle]="title"
   [tableContent]="tableContent"
   [loadingStatus]="loadingStatus"
+  (executeDownload)="handleTableDownload()"
 >
   <ngx-org-chart-vertical
     [chart]="chartData"

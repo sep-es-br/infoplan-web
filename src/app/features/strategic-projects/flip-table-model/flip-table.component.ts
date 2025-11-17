@@ -112,8 +112,6 @@ export class FlipTableComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tableContent'] && this.tableContent) {
       if (changes['tableContent'].previousValue) {
-        // A listagem foi modificada pois os filtros aplicados mudaram
-
         this.allColumns = [];
         this.defaultColumnsList = [];
         this.columnLabels = {};
@@ -175,7 +173,6 @@ export class FlipTableComponent implements OnChanges {
     this.executeCustomFiltering.emit(value);
   }
 
-  /* Getters */
 
   getCellValue(dataObject: Array<{ propertyName: string; value: any; }>, column: string): string {
     const object = dataObject.find((el) => el.propertyName === column);

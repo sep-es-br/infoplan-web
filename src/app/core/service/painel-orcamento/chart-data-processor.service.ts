@@ -176,7 +176,6 @@ private construirDatasetsGndTotal(
     return null;
   }
 
-  console.log(categorys, datasets);
 
   return {
     data: {

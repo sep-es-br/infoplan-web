@@ -185,8 +185,8 @@ private dataForDownload(categories: string[], years: number[], columns: {key: st
                 d => d.nome_item_patrimonial === categoria && d.ano === year
             );
             row[`ano_${year}`] = item?.receitaLiquida
-                ? `R$ ${item.receitaLiquida.toLocaleString("pt-BR")}`
-                : "R$ 0";
+                ? `${item.receitaLiquida.toLocaleString("pt-BR")}`
+                : "0";
         });
 
         return row;

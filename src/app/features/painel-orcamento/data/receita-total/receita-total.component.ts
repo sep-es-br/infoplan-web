@@ -168,7 +168,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
           propertyName: "valor",
           displayName: "Valor",
           alignment: {
-            header: FlipTableAlignment.RIGHT,
+            header: FlipTableAlignment.LEFT,
             data: FlipTableAlignment.RIGHT,
           },
         },
@@ -202,8 +202,6 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
               ).toFixed(2)
             : "0";
 
-            console.log("Resultado da pesquisa", percentual)
-        // Busca em todos os campos relevantes
         return (
           ano.toLowerCase().includes(search) ||
           receitaLiquida.toLowerCase().includes(search) ||

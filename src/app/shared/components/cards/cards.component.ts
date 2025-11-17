@@ -15,6 +15,10 @@ export class CardsComponent {
   @Input() description: string = "";
   @Input() cor: string = "primary";
   @Input() icone: string = "";
+  @Input() prefixo: string = 'R$';
+  @Input() prefixoAlinhado: 'esquerda' | 'centro' | 'direita' = 'esquerda';
+  @Input() valorAlinhado: 'esquerda' | 'centro' | 'direita' = 'centro';
+  @Input() descricaoAlinhada: 'esquerda' | 'centro' | 'direita' = 'centro';
 
   constructor() {}
 

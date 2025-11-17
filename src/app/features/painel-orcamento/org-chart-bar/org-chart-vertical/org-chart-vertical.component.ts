@@ -16,7 +16,7 @@ import { IChartOptions } from "./../../../../shared/models/painel-orcamento/ICha
 @Component({
   selector: "ngx-org-chart-vertical",
   templateUrl: "./org-chart-vertical.component.html",
-  styles: ['.echarts { width: 100%; height: 100%; }'],
+  styles: [".echarts { width: 100%; height: 100%; }"],
 })
 export class OrgChartVerticalComponent implements OnInit, OnChanges {
   @Input() chart!: IChartOptions;
@@ -63,7 +63,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
     this.echartsInstance = chartInstance;
   }
 
-  initChartOptions(chart: IChartOptions) {
+initChartOptions(chart: IChartOptions) {
     if (!chart?.data || chart.data.datasets.length < 2) {
       this.chartOptions = null!;
       return;
@@ -80,11 +80,18 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
       chart.data.datasets[1].backgroundColor || "#F58B9B",
     ];
 
+    // Detecta se está em mobile
+    const isMobile = window.innerWidth <= 768;
+
+    // Rotaciona SEMPRE em mobile, ou no desktop APENAS se tiver muitos labels
+    const needsRotation = isMobile || (!isMobile && data.length > 10);
+
     this.chartOptions = {
       grid: {
-        top: "25%",
-        left: "15%",
-        bottom: "3%",
+        top: "20%",
+        left: "12%",
+        bottom: needsRotation ? "15%" : "8%",
+        right: "5%",
         containLabel: true,
       },
       tooltip: {
@@ -123,43 +130,32 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: 10,
+          fontSize: isMobile ? 8 : 9,
+          interval: 0,
+          rotate: isMobile ? 35 : (data.length > 10 ? 35 : 0), // Mobile sempre 35°, Desktop só se > 6 itens
+          margin: 8,
+          overflow: 'truncate',
+          width: needsRotation ? (isMobile ? 60 : 70) : undefined,
         },
       },
-
       yAxis: {
         type: "value",
         inverse: false,
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: 10,
+          fontSize: isMobile ? 9 : 10,
           overflow: "truncate",
-          width: 100,
+          width: isMobile ? 80 : 100,
           formatter: (v: number) => this.formatValue(v),
-
         },
       },
-
       series: chart.data.datasets.map((dataset, index) => ({
         name: dataset.label,
         type: "bar",
         data: data.map(res => res.valores[index]),
-        itemStyle: { color: colors[index]}
+        itemStyle: { color: colors[index]},
+        barMaxWidth: isMobile ? 30 : 40,
       }))
-      // series: [
-      //   {
-      //     name: chart.data.datasets.map(r => r.label)[0],
-      //     type: "bar",
-      //     data: data.map((d) => d.previsaoInicial),
-      //     itemStyle: { color: colors[0] },
-      //   },
-      //   {
-      //     name: chart.data.datasets.map(r => r.label)[1],
-      //     type: "bar",
-      //     data: data.map((d) => d.arredacaoLiquida),
-      //     itemStyle: { color: colors[1] },
-      //   },
-      // ],
     };
   }
 

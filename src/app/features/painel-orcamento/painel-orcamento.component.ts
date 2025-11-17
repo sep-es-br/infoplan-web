@@ -85,6 +85,9 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
+  trackByFn(index: number, item: any): any {
+  return item.id || index;
+}
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
   ngOnInit(): void {
   }

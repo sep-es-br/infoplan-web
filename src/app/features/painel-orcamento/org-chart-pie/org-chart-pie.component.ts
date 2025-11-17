@@ -1,9 +1,19 @@
-import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { NbThemeService } from '@nebular/theme';
-import { ECharts, EChartsOption } from 'echarts';
-import { NgxEchartsModule } from 'ngx-echarts';
-import { AvailableThemes, getAvailableThemesStyles } from '../../../@theme/theme.module';
+import { CommonModule } from "@angular/common";
+import {
+  Component,
+  HostListener,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from "@angular/core";
+import { NbThemeService } from "@nebular/theme";
+import { ECharts, EChartsOption } from "echarts";
+import { NgxEchartsModule } from "ngx-echarts";
+import {
+  AvailableThemes,
+  getAvailableThemesStyles,
+} from "../../../@theme/theme.module";
 
 export interface PieChartData {
   value: number;
@@ -16,10 +26,10 @@ export interface PieChartConfig {
   showTitle?: boolean;
   titleText?: string;
   titleSubtext?: string;
-  titlePosition?: 'left' | 'center' | 'right';
+  titlePosition?: "left" | "center" | "right";
   showLegend?: boolean;
-  legendPosition?: 'left' | 'right' | 'top' | 'bottom';
-  legendOrient?: 'vertical' | 'horizontal';
+  legendPosition?: "left" | "right" | "top" | "bottom";
+  legendOrient?: "vertical" | "horizontal";
   showTooltip?: boolean;
   showLabels?: boolean;
   radius?: string | [string, string];
@@ -36,17 +46,17 @@ export interface PieChartConfig {
 }
 
 @Component({
-  selector: 'ngx-pie-chart',
-  templateUrl: './org-chart-pie.component.html',
-  styleUrls: ['./org-chart-pie.component.scss'],
+  selector: "ngx-pie-chart",
+  templateUrl: "./org-chart-pie.component.html",
+  styleUrls: ["./org-chart-pie.component.scss"],
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
 export class PieChartComponent implements OnInit, OnChanges {
   @Input() data: PieChartData[] = [];
   @Input() colors: string[] = [];
-  @Input() height:number;
-  @Input() width:number;
+  @Input() height: number;
+  @Input() width: number;
   @Input() config: PieChartConfig = {};
 
   chartOptions: EChartsOption = {};
@@ -55,34 +65,36 @@ export class PieChartComponent implements OnInit, OnChanges {
 
   private readonly defaultConfig: PieChartConfig = {
     showTitle: false,
-    titleText: '',
-    titleSubtext: '',
-    titlePosition: 'left',
+    titleText: "",
+    titleSubtext: "",
+    titlePosition: "left",
     showLegend: true,
-    legendPosition: 'top',
-    legendOrient: 'vertical',
+    legendPosition: "top",
+    legendOrient: "vertical",
     showTooltip: true,
     showLabels: true,
-    radius: ['35%', '65%'], // Ajustado para melhor visualização
+    radius: ["35%", "65%"], // Ajustado para melhor visualização
     animation: true,
     emphasisScale: false,
-    centerPosition: ['50%', '50%'], // Centralizado
-    gridTop: '15%',
-    gridBottom: '15%',
-    gridLeft: '10%',
-    gridRight: '10%',
+    centerPosition: ["50%", "50%"], // Centralizado
+    gridTop: "15%",
+    gridBottom: "15%",
+    gridLeft: "10%",
+    gridRight: "10%",
     minAngle: 5, // Evita slices muito pequenos
     avoidLabelOverlap: true, // Previne sobreposição
   };
 
   constructor(private themeService: NbThemeService) {
-    this.themeService.onThemeChange().subscribe((theme: { name: AvailableThemes }) => {
-      this.currentTheme = theme.name;
-      this.updateChartTheme();
-    });
+    this.themeService
+      .onThemeChange()
+      .subscribe((theme: { name: AvailableThemes }) => {
+        this.currentTheme = theme.name;
+        this.updateChartTheme();
+      });
   }
 
-  @HostListener('window:resize')
+  @HostListener("window:resize")
   onResize() {
     this.resizeChart();
   }
@@ -93,7 +105,10 @@ export class PieChartComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if ((changes['data'] || changes['colors'] || changes['config']) && !changes['data']?.firstChange) {
+    if (
+      (changes["data"] || changes["colors"] || changes["config"]) &&
+      !changes["data"]?.firstChange
+    ) {
       this.buildChart();
     }
   }
@@ -104,7 +119,7 @@ export class PieChartComponent implements OnInit, OnChanges {
 
   private buildChart() {
     if (!this.data || this.data.length === 0) {
-      console.warn('Nenhum dado disponível para o gráfico');
+      console.warn("Nenhum dado disponível para o gráfico");
       return;
     }
 
@@ -112,7 +127,10 @@ export class PieChartComponent implements OnInit, OnChanges {
     const themeStyles = getAvailableThemesStyles(this.currentTheme);
 
     // Filtra dados muito pequenos se necessário
-    const filteredData = this.filterSmallSlices(this.data, config.minAngle || 5);
+    const filteredData = this.filterSmallSlices(
+      this.data,
+      config.minAngle || 5
+    );
 
     this.chartOptions = {
       color: this.colors.length > 0 ? this.colors : undefined,
@@ -125,93 +143,105 @@ export class PieChartComponent implements OnInit, OnChanges {
         containLabel: true,
       },
 
-      title: config.showTitle ? {
-        text: config.titleText,
-        subtext: config.titleSubtext,
-        left: config.titlePosition,
-        textStyle: { color: themeStyles.textPrimaryColor },
-        subtextStyle: { color: themeStyles.textSecondaryColor },
-      } : undefined,
+      title: config.showTitle
+        ? {
+            text: config.titleText,
+            subtext: config.titleSubtext,
+            left: config.titlePosition,
+            textStyle: { color: themeStyles.textPrimaryColor },
+            subtextStyle: { color: themeStyles.textSecondaryColor },
+          }
+        : undefined,
 
-      tooltip: config.showTooltip ? {
-        trigger: 'item',
-        formatter: (params: any) => {
-          const data = params;
-          return `${data.name}: ${data.value} (${data.percent}%)`;
-        },
-        backgroundColor: themeStyles.themePrimaryColor,
-        confine: true,
-        textStyle: { color: themeStyles.textPrimaryColor },
-      } : undefined,
+      tooltip: config.showTooltip
+        ? {
+            trigger: "item",
+            formatter: (params: any) => {
+              const data = params;
+              const value =
+                typeof data.value === "number"
+                  ? data.value
+                  : parseFloat(data.value);
 
-      legend: config.showLegend ? {
-        left: this.getLegendPosition(config.legendPosition).left,
-        top: this.getLegendPosition(config.legendPosition).top,
-        orient: config.legendOrient,
-        right: "3%",
-        textStyle: {
-          color: themeStyles.textPrimaryColor,
-          fontSize: 10
-        },
-        type: 'scroll',
-        pageTextStyle: { color: themeStyles.textPrimaryColor },
-        itemWidth: 10,
-        itemHeight: 10,
-        itemGap: 10,
-        selectedMode: true,
-      } : undefined,
+              // Formatar como Reais
+              const formattedValue = new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(value);
 
-      series: [{
-        name: 'Dados',
-        type: 'pie',
-        radius: config.radius,
-        center: config.centerPosition,
-        data: filteredData,
-        minAngle: config.minAngle, // Ângulo mínimo para slices
-        avoidLabelOverlap: false, // Evita sobreposição
+              return `${data.name}: ${formattedValue} (${data.percent}%)`;
+            },
+            backgroundColor: themeStyles.themePrimaryColor,
+            confine: true,
+            textStyle: { color: themeStyles.textPrimaryColor },
+          }
+        : undefined,
+      legend: config.showLegend
+        ? {
+            left: this.getLegendPosition(config.legendPosition).left,
+            top: this.getLegendPosition(config.legendPosition).top,
+            orient: config.legendOrient,
+            right: "3%",
+            textStyle: {
+              color: themeStyles.textPrimaryColor,
+              fontSize: 10,
+            },
+            type: "scroll",
+            pageTextStyle: { color: themeStyles.textPrimaryColor },
+            itemWidth: 10,
+            itemHeight: 10,
+            itemGap: 10,
+            selectedMode: true,
+          }
+        : undefined,
 
-        emphasis: {
-          scale: config.emphasisScale,
-          scaleSize: config.emphasisScale ? 10 : 0,
-          itemStyle: {
-            shadowBlur: config.emphasisScale ? 10 : 0,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)',
+      series: [
+        {
+          name: "Dados",
+          type: "pie",
+          radius: config.radius,
+          center: config.centerPosition,
+          data: filteredData,
+          minAngle: config.minAngle, // Ângulo mínimo para slices
+          avoidLabelOverlap: false, // Evita sobreposição
+          emphasis: {
+            scale: config.emphasisScale,
+            scaleSize: config.emphasisScale ? 10 : 0,
+            itemStyle: {
+              shadowBlur: config.emphasisScale ? 10 : 0,
+              shadowOffsetX: 0,
+              shadowColor: "rgba(0, 0, 0, 0.5)",
+            },
           },
-        },
 
-        label: {
-          show: config.showLabels,
-          position: 'outside',
-          formatter: (params: any) => {
-            // Mostra label apenas se o percentual for maior que 2%
-            return params.percent > 2 ? `${params.name}\n${params.percent.toFixed(1)}%` : '';
+          label: {
+            show: true,
+            position: "inside",
+            formatter: function (params) {
+              return params.percent >= 4 ? Math.round(params.percent) + '%' : '';
+            },
+            fontSize: 9,
+            color: themeStyles.textPrimaryColor,
           },
-          fontSize: 1,
-          color: themeStyles.textPrimaryColor,
-          fontWeight: 'normal',
-          backgroundColor: 'auto',
-          padding: [0],
-          borderRadius: 1,
-        },
 
-        labelLine: {
-          show: true,
-          length: 10,
-          length2: 5,
-          smooth: true,
-        },
+          labelLine: {
+            show: true,
+            length: 10,
+            length2: 5,
+            smooth: true,
+          },
 
-        // Layout para evitar sobreposição
-        labelLayout: {
-          hideOverlap: true,
-          moveOverlap: 'shiftY',
-        },
+          // Layout para evitar sobreposição
+          labelLayout: {
+            hideOverlap: true,
+            moveOverlap: "shiftY",
+          },
 
-        animationType: 'scale',
-        animationEasing: 'elasticOut',
-        animationDelay: () => Math.random() * 200,
-      }],
+          animationType: "scale",
+          animationEasing: "elasticOut",
+          animationDelay: () => Math.random() * 200,
+        },
+      ],
     };
 
     if (this.echartsInstance) {
@@ -222,22 +252,25 @@ export class PieChartComponent implements OnInit, OnChanges {
   /**
    * Filtra slices muito pequenos para melhor visualização
    */
-  private filterSmallSlices(data: PieChartData[], minAngle: number): PieChartData[] {
+  private filterSmallSlices(
+    data: PieChartData[],
+    minAngle: number
+  ): PieChartData[] {
     const total = data.reduce((sum, item) => sum + item.value, 0);
     const minValue = (minAngle / 360) * total;
 
-    return data.map(item => ({
+    return data.map((item) => ({
       ...item,
       // Mantém todos os dados, mas ajusta a visualização via minAngle
     }));
   }
 
-  private getLegendPosition(position: string = 'top') {
+  private getLegendPosition(position: string = "top") {
     const positions = {
-      left: { left: 'left', top: 'center' },
-      right: { left: 'right', top: 'center' },
-      top: { left: 'center', top: 'top' },
-      bottom: { left: 'center', top: 'bottom' },
+      left: { left: "left", top: "center" },
+      right: { left: "right", top: "center" },
+      top: { left: "center", top: "top" },
+      bottom: { left: "center", top: "bottom" },
     };
     return positions[position] || positions.top;
   }

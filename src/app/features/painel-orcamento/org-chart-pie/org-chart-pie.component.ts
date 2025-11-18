@@ -220,8 +220,8 @@ export class PieChartComponent implements OnInit, OnChanges {
             formatter: function (params) {
               return params.percent >= 4 ? Math.round(params.percent) + '%' : '';
             },
-            fontSize: 9,
-            color: themeStyles.textPrimaryColor,
+            fontSize: 10,
+            color: "#FFFFFF",
           },
 
           labelLine: {

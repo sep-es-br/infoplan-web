@@ -63,7 +63,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
     this.echartsInstance = chartInstance;
   }
 
-initChartOptions(chart: IChartOptions) {
+  initChartOptions(chart: IChartOptions) {
     if (!chart?.data || chart.data.datasets.length < 2) {
       this.chartOptions = null!;
       return;
@@ -80,17 +80,16 @@ initChartOptions(chart: IChartOptions) {
       chart.data.datasets[1].backgroundColor || "#F58B9B",
     ];
 
-    // Detecta se está em mobile
+    // Lógica SIMPLIFICADA para rotação
     const isMobile = window.innerWidth <= 768;
-
-    // Rotaciona SEMPRE em mobile, ou no desktop APENAS se tiver muitos labels
-    const needsRotation = isMobile || (!isMobile && data.length > 10);
+    const shouldRotate = isMobile || data.length > 6; // Reduzi o limite para 6
+    const rotateAngle = shouldRotate ? 45 : 0; // Aumentei para 45° para melhor visualização
 
     this.chartOptions = {
       grid: {
         top: "20%",
         left: "12%",
-        bottom: needsRotation ? "15%" : "8%",
+        bottom: shouldRotate ? "2%" : "8%", // Aumentei a margem inferior quando rotacionado
         right: "5%",
         containLabel: true,
       },
@@ -131,12 +130,15 @@ initChartOptions(chart: IChartOptions) {
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 9,
-          interval: 0,
-          rotate: isMobile ? 35 : (data.length > 10 ? 35 : 0), // Mobile sempre 35°, Desktop só se > 6 itens
-          margin: 8,
+          interval: 0, // MOSTRA TODOS OS LABELS
+          rotate: rotateAngle, // Ângulo simplificado
+          margin: 12, // Aumentei a margem
           overflow: 'truncate',
-          width: needsRotation ? (isMobile ? 60 : 70) : undefined,
+          width: shouldRotate ? 80 : undefined, // Largura maior para textos rotacionados
         },
+        axisTick: {
+          alignWithLabel: shouldRotate // Alinha ticks com labels rotacionados
+        }
       },
       yAxis: {
         type: "value",
@@ -154,11 +156,11 @@ initChartOptions(chart: IChartOptions) {
         type: "bar",
         data: data.map(res => res.valores[index]),
         itemStyle: { color: colors[index]},
-        barMaxWidth: isMobile ? 30 : 40,
+        barMaxWidth: isMobile ? 20 : 40,
+        barCategoryGap: shouldRotate ? '20%' : '30%' // Ajusta espaçamento quando rotacionado
       }))
     };
   }
-
   private formatValue(value: number): string {
     if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(0) + "B";
     if (value >= 1_000_000) return (value / 1_000_000).toFixed(0) + "M";

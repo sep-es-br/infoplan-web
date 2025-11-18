@@ -48,13 +48,13 @@ export const CARDS_DATA: {
     value: "12 BI",
     description: "Receita Realizada",
     cor: "success",
-    icone: "fa fa-circle-check",
+    icone: "fa fa-check-circle",
   },
   {
     value: "2 BI",
-    description: "Receita Realizada/Prevista",
+    description: "Receita Reali./Prev.",
     cor: "warning",
-    icone: "alert-triangle",
+    icone: "assets/images/app/icone-receita-realizada-prevista.png",
   },
   {
     value: "85% ",
@@ -66,7 +66,7 @@ export const CARDS_DATA: {
     value: "15%",
     description: "Despesa Liqui.a/Autor.",
     cor: "danger",
-    icone: "fa fa-hand-holding-dollar",
+    icone: "fas fa-hand-holding-usd",
   },
 ];
 

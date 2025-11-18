@@ -25,165 +25,107 @@ const CHART_COLORS = [
 export class ChartDataProcessorService {
   readonly colors = CHART_COLORS;
 
-  // private createChartLiquidatedAndPaid(
-  //   data: any[],
-  //   categorys: any[],
-  //   years: number[],
-  //   fieldLabel: string
-  // ): IChartOptions | null {
-  //   const datasets = [
-  //     {
-  //       label: `Liquidado ${years[1]}`, // 2025
-  //       data: categorys.map((category) => {
-  //         const item = data.find(
-  //           (d) => d[fieldLabel] === category && d.ano === years[1]
-  //         );
-  //         return this.extrairValor(item, ["vlr_liquidado"]);
-  //       }),
-  //       backgroundColor: this.colors[0],
-  //     },
-  //     {
-  //       label: `Liquidado ${years[0]}`, // 2024
-  //       data: categorys.map((category) => {
-  //         const item = data.find(
-  //           (d) => d[fieldLabel] === category && d.ano === years[0]
-  //         );
-  //         return this.extrairValor(item, ["vlr_liquidado"]);
-  //       }),
-  //       backgroundColor: this.colors[1],
-  //     },
-  //     {
-  //       label: `Pago com RAP ${years[1]}`, // 2025
-  //       data: categorys.map((category) => {
-  //         const item = data.find(
-  //           (d) => d[fieldLabel] === category && d.ano === years[1]
-  //         );
-  //         return this.extrairValor(item, ["vlr_pago_com_rap"]);
-  //       }),
-  //       backgroundColor: this.colors[2],
-  //     },
-  //     {
-  //       label: `Pago com RAP ${years[0]}`, // 2024
-  //       data: categorys.map((category) => {
-  //         const item = data.find(
-  //           (d) => d[fieldLabel] === category && d.ano === years[0]
-  //         );
-  //         return this.extrairValor(item, ["vlr_pago_com_rap"]);
-  //       }),
-  //       backgroundColor: this.colors[3],
-  //     },
-  //   ];
+  criarChartDespesaGndTotal(
+    data: IReceitaDespesaGNDTotalOrcamentariaResponse[],
+    fieldLabel: string,
+    titleChart: string
+  ): IChartOptions | null {
+    // Filtrar dados apenas de 2025
+    const dadosFiltrados = data.filter((d) => d.ano === 2025);
 
-  //   if (!this.temDadosValidos(datasets.map((d) => d.data))) {
-  //     console.warn(`Nenhum dado financeiro encontrado para ${fieldLabel}`);
-  //     return null;
-  //   }
+    const years = [...new Set(dadosFiltrados.map((res) => res.ano))].sort();
+    console.log("ANOS", years);
 
-  //   return {
-  //     data: {
-  //       labels: categorys,
-  //       datasets: datasets,
-  //     },
-  //   };
-  // }
+    // CORREÇÃO: usar dadosFiltrados ao invés de data
+    const categorys = [
+      ...new Set(dadosFiltrados.map((d) => d[fieldLabel])),
+    ].filter(Boolean);
 
-criarChartDespesaGndTotal(
-  data: IReceitaDespesaGNDTotalOrcamentariaResponse[],
-  fieldLabel: string,
-  titleChart: string
-): IChartOptions | null {
-  // Filtrar dados apenas de 2025
-  const dadosFiltrados = data.filter((d) => d.ano === 2025);
+    if (years.length === 0 || categorys.length === 0) {
+      console.warn(`Dados insuficientes para gerar o gráfico`);
+      return null;
+    }
 
-  const years = [...new Set(dadosFiltrados.map((res) => res.ano))].sort();
-  console.log("ANOS", years);
-
-  // CORREÇÃO: usar dadosFiltrados ao invés de data
-  const categorys = [...new Set(dadosFiltrados.map((d) => d[fieldLabel]))].filter(
-    Boolean
-  );
-
-  if (years.length === 0 || categorys.length === 0) {
-    console.warn(`Dados insuficientes para gerar o gráfico`);
-    return null;
+    // Passar dadosFiltrados ao invés de data
+    return this.construirDatasetsGndTotal(
+      dadosFiltrados,
+      years,
+      categorys,
+      fieldLabel
+    );
   }
 
-  // Passar dadosFiltrados ao invés de data
-  return this.construirDatasetsGndTotal(dadosFiltrados, years, categorys, fieldLabel);
-}
+  private construirDatasetsGndTotal(
+    data: IReceitaDespesaGNDTotalOrcamentariaResponse[],
+    years: number[],
+    categorys: any[],
+    fieldLabel: string
+  ): IChartOptions | null {
+    const datasets = [
+      {
+        label: `Orçado`,
+        data: categorys.map((categoria) => {
+          const item = data.find(
+            (d) => d[fieldLabel] === categoria && d.ano === years[0]
+          );
+          return this.extrairValor(item, ["vlr_orcado"]);
+        }),
+        backgroundColor: this.colors[0],
+      },
+      {
+        label: `Autorizado`,
+        data: categorys.map((categoria) => {
+          const item = data.find(
+            (d) => d[fieldLabel] === categoria && d.ano === years[0]
+          );
+          return this.extrairValor(item, ["vlr_autorizado"]);
+        }),
+        backgroundColor: this.colors[1], // Corrigido para usar cores diferentes
+      },
+      {
+        label: `Empenhado`,
+        data: categorys.map((categoria) => {
+          const item = data.find(
+            (d) => d[fieldLabel] === categoria && d.ano === years[0]
+          );
+          return this.extrairValor(item, ["vlr_empenhado"]);
+        }),
+        backgroundColor: this.colors[2],
+      },
+      {
+        label: `Liquidado`,
+        data: categorys.map((categoria) => {
+          const item = data.find(
+            (d) => d[fieldLabel] === categoria && d.ano === years[0]
+          );
+          return this.extrairValor(item, ["vlr_liquidado"]);
+        }),
+        backgroundColor: this.colors[3],
+      },
+      {
+        label: `Pago com RAP`,
+        data: categorys.map((categoria) => {
+          const item = data.find(
+            (d) => d[fieldLabel] === categoria && d.ano === years[0]
+          );
+          return this.extrairValor(item, ["vlr_pago_com_rap"]);
+        }),
+        backgroundColor: this.colors[4],
+      },
+    ];
 
-private construirDatasetsGndTotal(
-  data: IReceitaDespesaGNDTotalOrcamentariaResponse[],
-  years: number[],
-  categorys: any[],
-  fieldLabel: string
-): IChartOptions | null {
-  const datasets = [
-    {
-      label: `Orçado`,
-      data: categorys.map((categoria) => {
-        const item = data.find(
-          (d) => d[fieldLabel] === categoria && d.ano === years[0]
-        );
-        return this.extrairValor(item, ["vlr_orcado"]);
-      }),
-      backgroundColor: this.colors[0],
-    },
-    {
-      label: `Autorizado`,
-      data: categorys.map((categoria) => {
-        const item = data.find(
-          (d) => d[fieldLabel] === categoria && d.ano === years[0]
-        );
-        return this.extrairValor(item, ["vlr_autorizado"]);
-      }),
-      backgroundColor: this.colors[1], // Corrigido para usar cores diferentes
-    },
-    {
-      label: `Empenhado`,
-      data: categorys.map((categoria) => {
-        const item = data.find(
-          (d) => d[fieldLabel] === categoria && d.ano === years[0]
-        );
-        return this.extrairValor(item, ["vlr_empenhado"]);
-      }),
-      backgroundColor: this.colors[2],
-    },
-    {
-      label: `Liquidado`,
-      data: categorys.map((categoria) => {
-        const item = data.find(
-          (d) => d[fieldLabel] === categoria && d.ano === years[0]
-        );
-        return this.extrairValor(item, ["vlr_liquidado"]);
-      }),
-      backgroundColor: this.colors[3],
-    },
-    {
-      label: `Pago com RAP`,
-      data: categorys.map((categoria) => {
-        const item = data.find(
-          (d) => d[fieldLabel] === categoria && d.ano === years[0]
-        );
-        return this.extrairValor(item, ["vlr_pago_com_rap"]);
-      }),
-      backgroundColor: this.colors[4],
-    },
-  ];
+    if (!this.temDadosValidos(datasets.map((d) => d.data))) {
+      console.warn(`Nenhum dado financeiro encontrado para ${fieldLabel}`);
+      return null;
+    }
 
-  if (!this.temDadosValidos(datasets.map((d) => d.data))) {
-    console.warn(`Nenhum dado financeiro encontrado para ${fieldLabel}`);
-    return null;
+    return {
+      data: {
+        labels: categorys,
+        datasets: datasets,
+      },
+    };
   }
-
-
-  return {
-    data: {
-      labels: categorys,
-      datasets: datasets,
-    },
-  };
-}
 
   criarChartLiquidadoEPago(
     dados: any[],
@@ -272,9 +214,24 @@ private construirDatasetsGndTotal(
     const categorias = this.extrairCategorias(dados, campoLabel);
     const anos = this.extrairAnos(dados);
 
-    if (!anos.length) {
-      console.warn("Nenhum ano encontrado nos dados");
-      return null;
+    if (anos.length === 1) {
+      const ano = anos[0];
+
+      const dataForecast = this.extrairDadosPorCategoria(
+        dados,
+        categorias,
+        ano,
+        campoLabel,
+        "vlr_receita_prevista"
+      );
+
+      const dataCollected = this.extrairDadosPorCategoria(
+        dados,
+        categorias,
+        ano,
+        campoLabel,
+        "receitaLiquida"
+      );
     }
 
     return anos.length === 1
@@ -336,6 +293,9 @@ private construirDatasetsGndTotal(
       "vlr_receita_liquida"
     );
 
+    console.log("ARRECADAO", dadosArrecadacao);
+    console.log("dadosPrevisao", dadosPrevisao, ano);
+
     if (!this.temDadosValidos([dadosPrevisao, dadosArrecadacao])) {
       console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
       return null;
@@ -346,12 +306,12 @@ private construirDatasetsGndTotal(
         labels: categorias,
         datasets: [
           {
-            label: `Previsão ${ano}`,
+            label: `Previsão`,
             data: dadosPrevisao,
             backgroundColor: this.colors[0],
           },
           {
-            label: `Arrecadação ${ano}`,
+            label: `Arrecadação`,
             data: dadosArrecadacao,
             backgroundColor: this.colors[1],
           },
@@ -376,6 +336,7 @@ private construirDatasetsGndTotal(
         "vlr_receita_liquida"
       );
 
+      console.log(" Dados referente anos multiplos", ano);
       return {
         label: `${ano}`,
         data: dadosAno,
@@ -591,3 +552,97 @@ private construirDatasetsGndTotal(
     return item.value || null;
   }
 }
+
+
+
+// REVER FUNÇÃO
+
+// processarDadosComparativo(
+//     dados: any[],
+//     campoLabel: string,
+//     labelDataset?: string
+//   ): IChartOptions | null {
+//     if (!dados?.length) {
+//       console.warn("Nenhum dado disponível para processamento");
+//       return null;
+//     }
+
+//     const categorias = this.extrairCategorias(dados, campoLabel);
+//     const anos = this.extrairAnos(dados);
+
+//     if (anos.length === 1) {
+//       // console.log(anos)
+//       const ano = anos[0];
+
+//       const dataForecast = this.extrairDadosPorCategoria(
+//         dados,
+//         categorias,
+//         ano,
+//         campoLabel,
+//         "vlr_receita_prevista"
+//       );
+
+//       const dataCollected = this.extrairDadosPorCategoria(
+//         dados,
+//         categorias,
+//         ano,
+//         campoLabel,
+//         "receitaLiquida",
+//         "vlr_receita_prevista"
+//       );
+
+//       console.log("Dados passados", dataCollected)
+
+//       if (!this.temDadosValidos([dataForecast, dataCollected])) {
+//         console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
+//         return null;
+//       }
+
+//       return {
+//         data: {
+//           labels: categorias,
+//           datasets: [
+//             {
+//               label: `Previsão (${ano})`,
+//               data: dataCollected,
+//               backgroundColor: this.colors[0],
+//             },
+//             {
+//               label: `Arrecadação (${ano})`,
+//               data: dataCollected,
+//               backgroundColor: this.colors[1],
+//             },
+//           ],
+//         },
+//       };
+//     }
+
+//     const datasets = anos.map((ano, index) => {
+//       const dataYear = this.extrairDadosPorCategoria(
+//         dados,
+//         categorias,
+//         ano,
+//         campoLabel || labelDataset,
+//         "receitaLiquida",
+//         "vlr_receita_liquida"
+//       );
+
+//       return {
+//         label: `${ano}`,
+//         data: dataYear,
+//         backgroundColor: this.colors[index % this.colors.length],
+//       };
+//     });
+
+//     if (!this.temDadosValidos(datasets.map((d) => d.data))) {
+//       console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
+//       return null;
+//     }
+
+//     return {
+//       data: {
+//         labels: categorias,
+//         datasets: datasets
+//       }
+//     }
+//   }

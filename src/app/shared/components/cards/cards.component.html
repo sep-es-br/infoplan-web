@@ -1,19 +1,43 @@
-<div class="card-dinamico-wrapper d-flex justify-content-start align-items-end gap-3 h-100">
-  <nb-card class="card-dinamico mb-0 position-relative" [ngClass]="'card-' + cor">
+<div
+  class="card-dinamico-wrapper d-flex justify-content-start align-items-end gap-3 h-100"
+  [ngClass]="'theme-' + currentTheme"
+>
+  <nb-card
+    class="card-dinamico mb-0 position-relative"
+    [ngClass]="'card-' + cor"
+  >
     <nb-card-body class="card-dinamico-body d-flex align-items-center">
-      <!-- Conteúdo principal -->
       <div class="card-content d-flex align-items-start gap-0 m-2">
-        <span class="currency-symbol">R$</span>
+        <span class="currency-symbol">{{ prefixo }}</span>
         <span class="card-value">{{ value }}</span>
       </div>
     </nb-card-body>
   </nb-card>
-      <!-- Ícone no canto superior direito -->
-      <div class="icon-container position-absolute top-0 end-0 p-2">
-        <i [className]="icone"></i>
-      </div>
 
-  <div class="card-description text-muted">
+  <!-- <div class="icon-container position-absolute top-0 end-0 p-2">
+    <i [className]="icone" [ngClass]="'icon-' + cor"></i>
+      <img [src]="icone" [alt]="description" class="icon-image" [ngClass]="'icon-' + cor">
+  </div> -->
+
+  <div class="icon-container position-absolute top-0 end-0 p-2">
+    <!-- Se for imagem -->
+    <img
+      *ngIf="isImage(icone)"
+      [src]="icone"
+      [alt]="description"
+      class="icon-image"
+      [ngClass]="'icon-' + cor"
+    />
+
+    <!-- Se for ícone de fonte -->
+    <i
+      *ngIf="!isImage(icone)"
+      [className]="icone"
+      [ngClass]="'icon-' + cor"
+    ></i>
+  </div>
+
+  <div class="card-description" [ngClass]="'description-' + cor">
     {{ description }}
   </div>
 </div>

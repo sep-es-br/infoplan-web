@@ -93,6 +93,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
     try {
       // Processar gráfico
+      console.log("dados referente a receita-categoria", this.receitaData)
       this.charData = this._chartProcessor.processarDadosComparativo(
         this.receitaData,
         "categoria",

@@ -21,6 +21,7 @@ import {
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ShortNumberPipe } from "../../../../@theme/pipes";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: "ngx-receita-categoria",
@@ -36,8 +37,8 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
   private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _shortNumberPipe = inject(ShortNumberPipe);
+  private readonly _sanitizer = inject(DomSanitizer);
   private readonly destroy$ = new Subject<void>();
-
   charData: IChartOptions;
   tableContent: FlipTableContent;
 
@@ -92,6 +93,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
     try {
       // Processar gráfico
+      console.log("dados referente a receita-categoria", this.receitaData)
       this.charData = this._chartProcessor.processarDadosComparativo(
         this.receitaData,
         "categoria",
@@ -123,7 +125,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `ano_${ano}`,
-          value: `R$ ${this._shortNumberPipe.transform(dado?.receitaLiquida) || 0}`,
+          value: `R$ ${dado?.receitaLiquida || 0}`,
         });
       });
 
@@ -132,7 +134,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
         const variacao = this.calcularVariacao(categoria, anos);
         nodeData.push({
           propertyName: "variação",
-          value: `${variacao > 0 ? '+' : ''}${variacao}%`,
+          value: `${variacao}%`,
         });
       }
 
@@ -144,17 +146,17 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       propertyName: `ano_${ano}`,
       displayName: `Arrecadação LI - ${ano}`,
       alignment: {
-        header: FlipTableAlignment.RIGHT,
+        header: FlipTableAlignment.LEFT,
         data: FlipTableAlignment.RIGHT,
       },
     }));
 
     if (anos.length >= 2) {
       defaultColumns.push({
-        propertyName: "variacao",
-        displayName: `Variação (%) ${anos[anos.length - 1]}`,
+        propertyName: "variação",
+        displayName: `Variação (%) - ${anos[anos.length - 1]}`,
         alignment: {
-          header: FlipTableAlignment.RIGHT,
+          header: FlipTableAlignment.LEFT,
           data: FlipTableAlignment.RIGHT,
         },
       });
@@ -176,9 +178,9 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
   private calcularVariacao(categoria: string, anos: number[]): number {
     if (anos.length < 2) return 0;
-
     const primeiroAno = anos[0];
     const ultimoAno = anos[anos.length - 1];
+
 
     const valorInicial = this.receitaData.find(
       d => d.categoria === categoria && d.ano === primeiroAno
@@ -191,6 +193,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     if (valorInicial === 0) return 0;
 
     const variacao = ((valorFinal - valorInicial) / valorInicial) * 100;
+
     return Number(variacao.toFixed(2));
   }
 
@@ -224,13 +227,13 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
     // Criar dados para download usando os valores brutos
     const dataForDownload = categorias.map((categoria) => {
-      const row: any = { categoria };
+      const row: any = { categoria};
 
       anos.forEach((ano) => {
         const item = this.receitaData.find(
           (d) => d.categoria === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `R$ ${item?.receitaLiquida.toLocaleString("pt-BR") || 0}`;
+        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR") || 0}`;
       });
 
       if (anos.length >= 2) {

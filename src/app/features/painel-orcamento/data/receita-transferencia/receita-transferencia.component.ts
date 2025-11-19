@@ -88,7 +88,6 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
     if (chartData) {
       this.chartData = chartData;
-      console.log("dasdasdweqweqw", this.chartData)
       this.processTableData(this.receitaTransferenciaCorrente);
     } else {
       this.chartData = { data: { labels: [], datasets: [] } };
@@ -109,19 +108,14 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
         this.tableContent = null;
         return;
       }
-      // console.log("DADOS REFERENTE A IMPOSTOS", dados);
 
       const categorias = [
         ...new Set(dados.map((item) => item.nome_item_patrimonial)),
       ].filter(Boolean);
 
-      // console.log("DADOS REFERENTE A IMPOSTOS | CATEGORIAS", categorias);
-
       const anos = [...new Set(dados.map((item) => item.ano))]
         .filter((ano) => ano != null)
         .sort();
-
-        // console.log("DADOS REFERENTE A IMPOSTOS | ANOS", anos);
 
       if (categorias.length === 0 || anos.length === 0) {
         this.tableContent = null;
@@ -144,7 +138,7 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
           nodeData.push({
             propertyName: `Arrecadação LI - ${ano.toString()}`,
-            value: `R$ ${this._shortNumberPipe.transform(valor) || 0}`,
+            value: `R$ ${valor || 0}`,
           });
         });
 
@@ -152,7 +146,7 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
           const variacao = this.calcularVariacao(categoria, anos, dados);
           nodeData.push({
             propertyName: "variação (%)",
-            value: `${variacao > 0 ? "+" : ""} ${variacao}%`,
+            value: `${variacao}%`,
           });
         }
 
@@ -163,13 +157,11 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
         };
       });
 
-      // console.log("DADOS REFERENTE A IMPOSTOS | treeNodes", treeNodes);
-
       const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
         propertyName: `Arrecadação LI - ${ano.toString()}`,
         displayName: `Arrecadação LI - ${ano.toString()}`,
         alignment: {
-          header: FlipTableAlignment.CENTER,
+          header: FlipTableAlignment.LEFT,
           data: FlipTableAlignment.RIGHT,
         },
       }));
@@ -177,9 +169,9 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
       if (anos.length >= 2) {
         defaultColumns.push({
           propertyName: "variação (%)",
-          displayName: "variação (%)",
+          displayName: "Variação (%)",
           alignment: {
-            header: FlipTableAlignment.CENTER,
+            header: FlipTableAlignment.LEFT,
             data: FlipTableAlignment.RIGHT,
           },
         });
@@ -190,7 +182,7 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
         displayName: "Transfrências Correntes",
         alignment: {
           header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.LEFT,
+          data: FlipTableAlignment.RIGHT,
         },
       };
 
@@ -266,7 +258,7 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
         const item = this.receitaTransferenciaCorrente.find(
           (d) => d.nome_item_patrimonial === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `R$ ${
+        row[`ano_${ano}`] = `${
           item?.receitaLiquida.toLocaleString("pt-BR") || 0
         }`;
       });

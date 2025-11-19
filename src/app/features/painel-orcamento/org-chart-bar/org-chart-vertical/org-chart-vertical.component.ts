@@ -16,7 +16,7 @@ import { IChartOptions } from "./../../../../shared/models/painel-orcamento/ICha
 @Component({
   selector: "ngx-org-chart-vertical",
   templateUrl: "./org-chart-vertical.component.html",
-  styles: ['.echarts { width: 100%; height: 100%; }'],
+  styles: [".echarts { width: 100%; height: 100%; }"],
 })
 export class OrgChartVerticalComponent implements OnInit, OnChanges {
   @Input() chart!: IChartOptions;
@@ -80,11 +80,17 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
       chart.data.datasets[1].backgroundColor || "#F58B9B",
     ];
 
+    // Lógica SIMPLIFICADA para rotação
+    const isMobile = window.innerWidth <= 768;
+    const shouldRotate = isMobile || data.length > 6; // Reduzi o limite para 6
+    const rotateAngle = shouldRotate ? 45 : 0; // Aumentei para 45° para melhor visualização
+
     this.chartOptions = {
       grid: {
-        top: "25%",
-        left: "15%",
-        bottom: "3%",
+        top: "20%",
+        left: "12%",
+        bottom: shouldRotate ? "2%" : "8%", // Aumentei a margem inferior quando rotacionado
+        right: "5%",
         containLabel: true,
       },
       tooltip: {
@@ -123,46 +129,38 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: 10,
+          fontSize: isMobile ? 8 : 9,
+          interval: 0, // MOSTRA TODOS OS LABELS
+          rotate: rotateAngle, // Ângulo simplificado
+          margin: 12, // Aumentei a margem
+          overflow: 'truncate',
+          width: shouldRotate ? 80 : undefined, // Largura maior para textos rotacionados
         },
+        axisTick: {
+          alignWithLabel: shouldRotate // Alinha ticks com labels rotacionados
+        }
       },
-
       yAxis: {
         type: "value",
         inverse: false,
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: 10,
+          fontSize: isMobile ? 9 : 10,
           overflow: "truncate",
-          width: 100,
+          width: isMobile ? 80 : 100,
           formatter: (v: number) => this.formatValue(v),
-
         },
       },
-
       series: chart.data.datasets.map((dataset, index) => ({
         name: dataset.label,
         type: "bar",
         data: data.map(res => res.valores[index]),
-        itemStyle: { color: colors[index]}
+        itemStyle: { color: colors[index]},
+        barMaxWidth: isMobile ? 20 : 40,
+        barCategoryGap: shouldRotate ? '20%' : '30%' // Ajusta espaçamento quando rotacionado
       }))
-      // series: [
-      //   {
-      //     name: chart.data.datasets.map(r => r.label)[0],
-      //     type: "bar",
-      //     data: data.map((d) => d.previsaoInicial),
-      //     itemStyle: { color: colors[0] },
-      //   },
-      //   {
-      //     name: chart.data.datasets.map(r => r.label)[1],
-      //     type: "bar",
-      //     data: data.map((d) => d.arredacaoLiquida),
-      //     itemStyle: { color: colors[1] },
-      //   },
-      // ],
     };
   }
-
   private formatValue(value: number): string {
     if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(0) + "B";
     if (value >= 1_000_000) return (value / 1_000_000).toFixed(0) + "M";

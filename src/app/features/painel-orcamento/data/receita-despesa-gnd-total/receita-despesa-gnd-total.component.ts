@@ -1,10 +1,20 @@
-import { Component, inject, Input, OnChanges, OnDestroy, SimpleChanges } from "@angular/core";
+import {
+  Component,
+  inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  SimpleChanges,
+} from "@angular/core";
 import {
   IExecucaoOrcamentariaRequest,
   IReceitaDespesaGNDTotalOrcamentariaResponse,
 } from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
 import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
-import { FlipTableContent } from "../../../strategic-projects/flip-table-model/flip-table.component";
+import {
+  FlipTableAlignment,
+  FlipTableContent,
+} from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
@@ -48,31 +58,173 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
     this.destroy$.complete();
   }
 
-  private loadData() : void {
+  private loadData(): void {
     this.loadingStatus = "loading";
     this.getReceitaDespesaGNDTotal();
   }
 
-
-  private getReceitaDespesaGNDTotal() : void {
-    this._execucaoOrcamentariaService.getRceitaPorDespesaGNDTotal(this.filter).pipe(
-      takeUntil(this.destroy$),
-      finalize(() => { this.loadingStatus = this.receitaDespesaGNDTotal.length > 0 ? "loading" : "error"})
-    ).subscribe({
-      next: ((res: IReceitaDespesaGNDTotalOrcamentariaResponse[]) => {
-        this.receitaDespesaGNDTotal = res;
-        this.chartData = this.processData();
-        console.log("resultados", this.chartData)
-        console.log("resultados process", this.processData())
-      })
-    })
+  private getReceitaDespesaGNDTotal(): void {
+    this._execucaoOrcamentariaService
+      .getRceitaPorDespesaGNDTotal(this.filter)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          this.loadingStatus =
+            this.receitaDespesaGNDTotal.length > 0 ? "loading" : "error";
+        })
+      )
+      .subscribe({
+        next: (res: IReceitaDespesaGNDTotalOrcamentariaResponse[]) => {
+          this.receitaDespesaGNDTotal = res;
+          this.processData();
+        },
+      });
   }
 
-  private processData() : IChartOptions {
+  private processData(): void {
+    const chartData: IChartOptions = this.processChartData();
+
+    if (chartData) {
+      this.chartData = chartData;
+      this.processTableData(this.receitaDespesaGNDTotal);
+    } else {
+      this.chartData = { data: { labels: [], datasets: [] } };
+      this.tableContent = null;
+    }
+  }
+
+  private processChartData(): IChartOptions {
     return this._chartProcessor.criarChartDespesaGndTotal(
       this.receitaDespesaGNDTotal,
       "ano",
       "Despesas GND Total"
-    )
+    );
+  }
+
+  private processTableData(
+    dados:
+      | IReceitaDespesaGNDTotalOrcamentariaResponse
+      | IReceitaDespesaGNDTotalOrcamentariaResponse[]
+  ): void {
+    const dadosArray = Array.isArray(dados) ? dados : [dados];
+    const ano = dadosArray[1]?.ano || new Date().getFullYear();
+    const treeNodes = dadosArray
+      .map((item) => {
+        const orcado = item.vlr_orcado || 0;
+        const autorizado = item.vlr_autorizado || 0;
+        const empenhado = item.vlr_empenhado || 0;
+        const liquidado = item.vlr_liquidado || 0;
+        const pagoComRap = item.vlr_pago_com_rap || 0;
+
+        return [
+          {
+            data: [
+              {
+                propertyName: "label",
+                value: "Orçado",
+              },
+              {
+                propertyName: "valor",
+                value: `R$ ${orcado.toLocaleString("pt-BR")}`,
+              },
+            ],
+          },
+          {
+            data: [
+              { propertyName: "label", value: "Autorizado" },
+              {
+                propertyName: "valor",
+                value: `R$ ${autorizado.toLocaleString("pt-BR")}`,
+              },
+            ],
+          },
+          {
+            data: [
+              { propertyName: "label", value: "Empenhado" },
+              {
+                propertyName: "valor",
+                value: `R$ ${empenhado.toLocaleString("pt-BR")}`,
+              },
+            ],
+          },
+          {
+            data: [
+              { propertyName: "label", value: "Liquidado" },
+              {
+                propertyName: "valor",
+                value: `R$ ${liquidado.toLocaleString("pt-BR")}`,
+              },
+            ],
+          },
+          {
+            data: [
+              { propertyName: "label", value: "Pago com RAP" },
+              {
+                propertyName: "valor",
+                value: `R$ ${pagoComRap.toLocaleString("pt-BR")}`,
+              },
+            ],
+          },
+        ];
+      })
+      .flat();
+
+    this.tableContent = {
+      customColumn: {
+        propertyName: "label",
+        displayName: `Despesa Prevista x Executada - ${ano}`,
+        alignment: {
+          header: FlipTableAlignment.LEFT,
+          data: FlipTableAlignment.RIGHT,
+        },
+      },
+      defaultColumns: [
+        {
+          propertyName: "valor",
+          displayName: "Valor",
+          alignment: {
+            header: FlipTableAlignment.LEFT,
+            data: FlipTableAlignment.RIGHT,
+          },
+        },
+      ],
+      data: treeNodes,
+    };
+  }
+
+handleTableDownload(): void {
+    if (!this.tableContent?.data?.length) return;
+
+    const columns: Array<{ key: string; label: string }> = [
+      { key: "label", label: this.tableContent.customColumn.displayName },
+      ...this.tableContent.defaultColumns.map((col) => ({
+        key: col.propertyName,
+        label: col.displayName,
+      })),
+    ];
+
+    const dataForDownload = this.tableContent.data.map((node) => {
+      const row: any = {};
+
+      node.data.forEach((item) => {
+        // Para a coluna de valor, remove "R$ " e converte para número
+        if (item.propertyName === "valor") {
+          const valorLimpo = item.value.replace('R$ ', '').replace(/\./g, '').replace(',', '.');
+          row[item.propertyName] = parseFloat(valorLimpo).toLocaleString("pt-BR") || 0;
+        } else {
+          row[item.propertyName] = item.value;
+        }
+      });
+
+      return row;
+    });
+
+    const anoAtual = new Date().getFullYear();
+
+    this._exportDataService.exportXLSXWithCustomHeaders(
+      dataForDownload,
+      columns,
+      `Receita_Realizada_X_Executada_${anoAtual}.xlsx`
+    );
   }
 }

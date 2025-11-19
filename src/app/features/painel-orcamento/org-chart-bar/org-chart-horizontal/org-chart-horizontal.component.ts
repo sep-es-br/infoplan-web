@@ -81,7 +81,8 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
       category: label,
       valores: chart.data.datasets.map(dataset => dataset.data[i] ?? 0)
     }));
-
+    console.log("Retorno do date ORG-CHAT", data);
+    console.log("Retorno do date labels ORG-CHAT", datasetLabels);
     const colors = chart.data.datasets.map(dataset =>
       dataset.backgroundColor || "#4DB6D2"
     );

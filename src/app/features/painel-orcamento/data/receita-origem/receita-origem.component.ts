@@ -133,7 +133,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Arrecadação LI - ${ano.toString()}`,
-          value: `R$ ${this._shortNumberPipe.transform(valor) || 0}`,
+          value: `R$ ${valor || 0}`,
         });
       });
 
@@ -142,7 +142,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
         const variacao = this.calcularVariacao(categoria, anos, dados); // ← Passe os dados
         nodeData.push({
           propertyName: "variação (%)",
-          value: `${variacao > 0 ? "+" : ""} ${variacao}%`,
+          value: `${variacao}%`,
         });
       }
 
@@ -158,7 +158,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
       propertyName: `Arrecadação LI - ${ano.toString()}`,
       displayName: `Arrecadação LI - ${ano.toString()}`,
       alignment: {
-        header: FlipTableAlignment.CENTER,
+        header: FlipTableAlignment.LEFT,
         data: FlipTableAlignment.RIGHT,
       },
     }));
@@ -167,9 +167,9 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
     if (anos.length >= 2) {
       defaultColumns.push({
         propertyName: "variação (%)",
-        displayName: "variação (%)",
+        displayName: "Variação (%)",
         alignment: {
-          header: FlipTableAlignment.CENTER,
+          header: FlipTableAlignment.LEFT,
           data: FlipTableAlignment.RIGHT,
         },
       });
@@ -247,7 +247,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
         const item = this.receitaOrigemCharData.find(
           (d) => d.origem === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `R$ ${item?.receitaLiquida.toLocaleString("pt-BR") || 0}`;
+        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR") || 0}`;
       });
 
       if (anos.length >= 2) {

@@ -39,34 +39,34 @@ export const CARDS_DATA: {
   icone: string;
 }[] = [
   {
-    value: "R$ 15.000,00",
+    value: "15 BI",
     description: "Receita Prevista",
     cor: "primary",
-    icone: "trending-up",
+    icone: "fa fa-crosshairs",
   },
   {
-    value: "R$ 12.500,00",
+    value: "12 BI",
     description: "Receita Realizada",
     cor: "success",
-    icone: "checkmark-circle",
+    icone: "fa fa-check-circle",
   },
   {
-    value: "R$ 2.500,00",
-    description: "Receita Realizada/Prevista",
+    value: "2 BI",
+    description: "Receita Reali./Prev.",
     cor: "warning",
-    icone: "alert-triangle",
+    icone: "assets/images/app/icone-receita-realizada-prevista.png",
   },
   {
-    value: "85%",
-    description: "Despesa Empenhada/Autorizada",
+    value: "85% ",
+    description: "Despesa Empen./Autor.",
     cor: "info",
-    icone: "percent",
+    icone: "fa fa-handshake",
   },
   {
-    value: "15",
-    description: "Despesa Liquida/Autorizada",
+    value: "15%",
+    description: "Despesa Liqui.a/Autor.",
     cor: "danger",
-    icone: "clock",
+    icone: "fas fa-hand-holding-usd",
   },
 ];
 

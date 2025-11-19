@@ -59,48 +59,52 @@
           </div>
         </nb-card-body>
       </nb-card> -->
-  <div class="row g-2 col-sm-12 mb-0">
-    <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
-      <!-- <div class="execucao-orcamentaria-logo d-flex align-items-center justify-content-center shadow-sm bg-white rounded">
-        <img
-          src="assets/images/app/logo-exec-orc-claro.png"
-          alt="Logo"
-          class="img-fluid w-100"
-        />
-      </div> -->
-      <nb-card class="h-100 p-0 mb-0">
-        <nb-card-body class="col-sm-12 p-2">
-          <div
-            class="execucao-orcamentaria-logo d-flex align-items-center justify-content-center rounded p-0 m-0"
-          >
-            <img
-              src="assets/images/app/logo-exec-orc-claro.png"
-              alt="Logo"
-              class="img-fluid w-100"
-            />
-          </div>
+<div class="row g-2 mb-0">
+  <!-- Card Logo -->
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xxl-2 mb-2">
+    <nb-card class="card-logo h-100 mb-0">
+      <nb-card-body class="logo-card p-2">
+        <div class="logo-wrapper d-flex align-items-start justify-content-start">
+          <img
+            src="assets/images/app/logo-exec-orc-claro.png"
+            alt="Logo Execução Orçamentária"
+            class="img-fluid"
+          />
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+
+  <!-- Cards Dinâmicos -->
+  <ng-container *ngFor="let item of cards; trackBy: trackByFn">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xxl-2 mb-2">
+      <nb-card class="card-info h-100 mb-0">
+        <nb-card-body class="p-2">
+          <ngx-cards-component
+            [value]="item.value"
+            [description]="item.description"
+            [cor]="item.cor"
+            [icone]="item.icone"
+          />
         </nb-card-body>
       </nb-card>
     </div>
+  </ng-container>
+</div>
 
-    <ng-container *ngFor="let item of cards">
+  <!-- <ng-container>
       <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
-        <!-- <nb-card class="h-100 p-1">
+        <nb-card class="h-100 p-1">
           <nb-card-body class="p-1">
+            <ngx-cards-component class="w-100 h-100" [value]="1500" [prefixo]="'US$'">
+              <div card-extra class="mt-2 text-muted">+15% este mês</div>
+              <div card-footer class="p-2 text-">Ver detalhes</div>
+            </ngx-cards-component>
 
           </nb-card-body>
-        </nb-card> -->
-        <ngx-cards-component
-          [value]="item.value"
-          [description]="item.description"
-          [cor]="item.cor"
-          [icone]="item.icone"
-          class="w-100 h-100"
-        >
-        </ngx-cards-component>
+        </nb-card>
       </div>
-    </ng-container>
-  </div>
+    </ng-container> -->
   <div class="row g-2 g-md-3 p-0">
     <!-- Receita Total - Destaque maior em telas grandes -->
     <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-4">

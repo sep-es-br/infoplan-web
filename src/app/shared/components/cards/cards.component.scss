@@ -6,79 +6,163 @@ nb-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none;
   margin: 0;
-  width: 100%;
+  min-width: calc(40%);
   height: 100%;
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
-}
 
-.card-dinamico-body {
-  min-height: 100px;
-  padding: 0.75rem; // Padding fixo e compacto
-}
+  & .card-dinamico-body {
+    height: 100%;
+    padding: 0.5rem;
 
-.card-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  text-align: center;
-}
+    & .card-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: center;
 
-.card-icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
+      & .card-value {
+        font-weight: bold;
+        font-size: 15px; // Tamanho fixo em todas as resoluções
+        line-height: 1.2;
+        margin: 0;
+      }
+    }
+  }
 
-.card-value {
-  font-weight: bold;
-  font-size: 1.2rem;
-  line-height: 1.2;
-  margin: 0;
-
-  // Apenas em telas muito pequenas reduz um pouco
-  @media (max-width: 375px) {
-    font-size: 18px;
+  & .card-description {
+    font-size: 0.8rem; // Tamanho fixo em todas as resoluções
+    line-height: 1.3;
+    margin: 0;
   }
 }
 
-.card-description {
-  font-size: 0.8rem;
-  line-height: 1.3;
-  color: #8f9bb3;
-  margin: 0;
-
-  // Apenas em telas muito pequenas reduz um pouco
-  @media (max-width: 375px) {
-    font-size: 0.75rem;
+.theme-default {
+  .currency-symbol,
+  .card-value {
+    color: #ffffff;
   }
 }
 
-// Cores dinâmicas
+/* Tema DARK */
+.theme-dark {
+  .currency-symbol,
+  .card-value {
+    color: #ffffff;
+  }
+}
+
+/* Tema COSMIC */
+.theme-cosmic {
+  .currency-symbol,
+  .card-value {
+    color: #ffffff;
+  }
+}
+
+.icon-image {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+}
+
 .card-primary {
   background-color: var(--receita-prevista);
+}
+
+.icon-primary {
+  color: var(--receita-prevista);
+}
+
+.description-primary {
+  color: var(--receita-prevista);
 }
 
 .card-success {
   background-color: var(--receita-realizada);
 }
 
+.icon-success {
+  color: var(--receita-realizada);
+}
+
+.description-success {
+  color: var(--receita-realizada);
+}
+
 .card-warning {
   background-color: var(--receita-realizada-prevista);
+}
+
+.icon-warning {
+  color: var(--receita-realizada-prevista);
+}
+
+.description-warning {
+  color: var(--receita-realizada-prevista);
 }
 
 .card-info {
   background-color: var(--despesa-empenhada-autorizada);
 }
 
+.icon-info {
+  color: var(--despesa-empenhada-autorizada);
+}
+
+.description-info {
+  color: var(--despesa-empenhada-autorizada);
+}
+
 .card-danger {
   background-color: var(--despesa-liquida-autorizada);
 }
 
-.card-value,
-.card-description {
-  color: whitesmoke;
+.icon-danger {
+  color: var(--despesa-liquida-autorizada);
+}
+
+.description-danger {
+  color: var(--despesa-liquida-autorizada);
+}
+
+@media screen and (min-width: 1400px) and (max-width: 1732px) {
+  .card-dinamico {
+    min-width: calc(40% + 7px);
+    height: 100%;
+  }
+
+  .card-dinamico-body {
+    height: 100%;
+    padding: 0.4rem;
+    width: 100%;
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    text-align: center;
+  }
+
+  .card-value {
+    font-weight: bold;
+    font-size: 5px; // Reduzido de 15px
+    margin: 0;
+  }
+
+  .card-description {
+    font-size: 11px; // Reduzido de 0.8rem
+    margin: 0;
+  }
+
+  .card-icon {
+    font-size: 1.5rem; // Reduzido de 2rem
+    margin-bottom: 0.3rem;
+  }
 }

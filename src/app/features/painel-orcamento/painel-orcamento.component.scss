@@ -13,6 +13,12 @@
   min-height: 100px;
   padding: 1rem;
 }
+
+.logo-card {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
 // .cards-exec {
 //   margin-bottom: 0px;
 //   border-radius: 8px;
@@ -21,6 +27,15 @@
 //   text-align: center;
 // }
 
+.logo-wrapper {
+  max-height: 100%;
+  padding: 0.5rem;
+}
+
+.img-fluid {
+  width: 95%;
+  max-height: 56px;
+}
 .execucao-orcamentaria-content {
   display: flex;
   align-items: center;

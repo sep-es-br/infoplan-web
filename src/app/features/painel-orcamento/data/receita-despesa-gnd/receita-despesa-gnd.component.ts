@@ -8,7 +8,6 @@ import {
 } from "@angular/core";
 import {
   IExecucaoOrcamentariaRequest,
-  IReceitaCategoriaOrcamentariaResponse,
   IReceitaDespesaGNDOrcamentariaResponse,
 } from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
@@ -24,6 +23,7 @@ import {
   TreeNode,
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { finalize, takeUntil } from "rxjs/operators";
+import { ComunicationCardsService } from "../../../../core/service/comunication-cards/comunication-cards.service";
 
 @Component({
   selector: "ngx-receita-despesa-gnd",
@@ -39,18 +39,17 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
     | IReceitaDespesaGNDOrcamentariaResponse[]
     | null = [];
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-  private readonly _shortNumberPipe = inject(ShortNumberPipe);
-
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _shortNumberPipe: ShortNumberPipe = inject(ShortNumberPipe);
+  private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
   private readonly destroy$ = new Subject<void>();
 
   chartData: IChartOptions;
-
   tableContent: FlipTableContent | null = null;
-
   loadingStatus: "loading" | "loaded" | "error" = "loading";
+  dataReceitaDespesaGNDOrcamentariaCards: IReceitaDespesaGNDOrcamentariaResponse[] | null = [];
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -79,6 +78,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
       .subscribe({
         next: (res: IReceitaDespesaGNDOrcamentariaResponse[]) => {
           this.receitaDespesaOrcamento = res;
+          // this._comunicationCardsService.sendReceitaDespesaGNDOrcamentaria(res);
           this.processData();
         },
         error: (err) => {
@@ -102,6 +102,11 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
   }
 
   private processChartData(): IChartOptions {
+    console.log(this._chartProcessor.criarChartLiquidadoEPago(
+      this.receitaDespesaOrcamento,
+      "nome_gnd",
+      "Despesas por GND"
+    ));
     return this._chartProcessor.criarChartLiquidadoEPago(
       this.receitaDespesaOrcamento,
       "nome_gnd",
@@ -155,12 +160,12 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Despesa Liquidada - ${ano.toString()}`,
-          value: `R$ ${valorLiquidado|| 0}`,
+          value: `R$ ${valorLiquidado || 0}`,
         });
 
         nodeData.push({
           propertyName: `Pago com RAP - ${ano.toString()}`,
-          value: `R$ ${valorPagoComRAP|| 0}`,
+          value: `R$ ${valorPagoComRAP || 0}`,
         });
       });
 

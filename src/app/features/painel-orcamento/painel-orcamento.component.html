@@ -72,7 +72,7 @@
     </div>
 
     <!-- Cards Dinâmicos -->
-    <ng-container *ngFor="let item of cards; trackBy: trackByFn">
+    <ng-container *ngFor="let item of sendCards; trackBy: trackByFn">
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xxl-2 mb-2">
         <nb-card class="card-info h-100 mb-0">
           <nb-card-body class="p-2">
@@ -121,7 +121,8 @@
 
     <!-- Receita Despesa GND Total -->
     <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-6">
-      <ngx-receita-despesa-gnd-total [filter]="currentRequestParams"></ngx-receita-despesa-gnd-total>
+      <ngx-receita-despesa-gnd-total (receitaDespesaGNDTotalOrcamento)="dataCards"
+        [filter]="currentRequestParams"></ngx-receita-despesa-gnd-total>
     </div>
 
     <!-- Receita Despesa GND -->

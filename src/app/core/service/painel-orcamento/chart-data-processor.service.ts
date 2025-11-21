@@ -34,7 +34,6 @@ export class ChartDataProcessorService {
     const dadosFiltrados = data.filter((d) => d.ano === 2025);
 
     const years = [...new Set(dadosFiltrados.map((res) => res.ano))].sort();
-    console.log("ANOS", years);
 
     // CORREÇÃO: usar dadosFiltrados ao invés de data
     const categorys = [
@@ -336,7 +335,6 @@ export class ChartDataProcessorService {
         "vlr_receita_liquida"
       );
 
-      console.log(" Dados referente anos multiplos", ano);
       return {
         label: `${ano}`,
         data: dadosAno,

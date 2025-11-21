@@ -7,8 +7,11 @@ import {
   OnDestroy,
   inject,
   Inject,
+  Output,
+  EventEmitter,
+  OnInit,
 } from "@angular/core";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { takeUntil, finalize } from "rxjs/operators";
 import {
   IExecucaoOrcamentariaRequest,
@@ -22,6 +25,7 @@ import {
   FlipTableContent,
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ShortNumberPipe } from "../../../../shared/components/pipe/shortNumber-pipe";
+import { ComunicationCardsService } from "../../../../core/service/comunication-cards/comunication-cards.service";
 
 interface ITableRow {
   label: string;
@@ -36,12 +40,15 @@ interface ITableRow {
   providers: [ShortNumberPipe],
 })
 export class ReceitaTotalComponent implements OnChanges, OnDestroy {
+
   @Input() filter!: IExecucaoOrcamentariaRequest;
+  @Output()
+  dataReceitaTotalCards: EventEmitter<IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]> = new EventEmitter<IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]>();
 
   private readonly _painelService = inject(PainelOrcamentoService);
   private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
-  private readonly numberSuffixPipe = inject(ShortNumberPipe);
+  private readonly _comunicationCardsService = inject(ComunicationCardsService);
   private readonly destroy$ = new Subject<void>();
 
   readonly title: string = "Receita Prevista x Realizada";
@@ -77,6 +84,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
         next: (response) => {
           this.responseData = [response];
           this.processData(response);
+          this._comunicationCardsService.sendReceitaTotal(response)
         },
         error: (err) => {
           console.error("Erro ao carregar receita total:", err);
@@ -87,7 +95,6 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   }
 
   private processData(dados: IReceitaTotalOrcamentariaResponse): void {
-    // Processa dados para o gráfico
     this.chartData = {
       data: {
         labels: dados.ano ? [dados.ano.toString()] : [],
@@ -106,7 +113,6 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
       },
     };
 
-    // Processa dados para a tabela
     this.processTableData(dados);
   }
 

@@ -1,7 +1,21 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { IExecucaoOrcamentariaRequest } from '../../core/interfaces/painel-orcamento/painel-orcamento';
-import { ANO_DATA, CARDS_DATA, MESES_DATA, TIPO_CAIXA_DATA } from './data/datasets';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  OnChanges,
+  SimpleChanges,
+} from "@angular/core";
+import { Subject } from "rxjs";
+import {
+  IExecucaoOrcamentariaRequest,
+  IReceitaTotalOrcamentariaResponse,
+} from "../../core/interfaces/painel-orcamento/painel-orcamento";
+import {
+  ANO_DATA,
+  CARDS_DATA,
+  MESES_DATA,
+  TIPO_CAIXA_DATA,
+} from "./data/datasets";
 
 interface IFilterTag {
   key: string;
@@ -21,6 +35,10 @@ interface IFilterConfig {
   multiple?: boolean;
 }
 
+interface IDataCard {
+  receitaTotal: IReceitaTotalOrcamentariaResponse;
+}
+
 const DEFAULT_REQUEST_PARAMS: IExecucaoOrcamentariaRequest = {
   ano: 2025,
   mes: [-1],
@@ -28,15 +46,17 @@ const DEFAULT_REQUEST_PARAMS: IExecucaoOrcamentariaRequest = {
 };
 
 @Component({
-  selector: 'ngx-painel-orcamento',
-  templateUrl: './painel-orcamento.component.html',
-  styleUrls: ['./painel-orcamento.component.scss'],
+  selector: "ngx-painel-orcamento",
+  templateUrl: "./painel-orcamento.component.html",
+  styleUrls: ["./painel-orcamento.component.scss"],
 })
 export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   readonly meses = MESES_DATA;
   readonly ano = ANO_DATA;
   readonly tipoCaixa = TIPO_CAIXA_DATA;
   readonly cards = CARDS_DATA;
+
+  dataCards: IDataCard;
 
   currentFilters: Record<string, any> = {};
   activeFilters: IFilterTag[] = [];
@@ -46,39 +66,39 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
   filterConfigs: IFilterConfig[] = [
     {
-      key: 'mesInicial',
-      label: 'Mês Inicial',
-      type: 'select',
-      placeholder: 'Mês',
+      key: "mesInicial",
+      label: "Mês Inicial",
+      type: "select",
+      placeholder: "Mês",
       options: this.meses,
     },
     {
-      key: 'anoInicial',
-      label: 'Ano Inicial',
-      type: 'select',
-      placeholder: 'Ano',
+      key: "anoInicial",
+      label: "Ano Inicial",
+      type: "select",
+      placeholder: "Ano",
       options: this.ano,
     },
     {
-      key: 'mesFinal',
-      label: 'Mês Final',
-      type: 'select',
-      placeholder: 'Mês',
+      key: "mesFinal",
+      label: "Mês Final",
+      type: "select",
+      placeholder: "Mês",
       options: this.meses,
     },
     {
-      key: 'anoFinal',
-      label: 'Ano Final',
-      type: 'select',
-      placeholder: 'Ano',
+      key: "anoFinal",
+      label: "Ano Final",
+      type: "select",
+      placeholder: "Ano",
       options: this.ano,
     },
     {
-      key: 'tipoCaixa',
-      label: 'Tipo de Caixa',
-      type: 'select',
+      key: "tipoCaixa",
+      label: "Tipo de Caixa",
+      type: "select",
       multiple: true,
-      placeholder: 'Selecionar',
+      placeholder: "Selecionar",
       options: this.tipoCaixa,
     },
   ];
@@ -86,10 +106,11 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   trackByFn(index: number, item: any): any {
-  return item.id || index;
-}
+    return item.id || index;
+  }
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
   ngOnInit(): void {
+    console.log("CARDS", this.dataCards);
   }
 
   ngOnDestroy(): void {
@@ -106,7 +127,9 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   onFilterRemove(filterKey: string): void {
     delete this.currentFilters[filterKey];
     this.activeFilters = this.activeFilters.filter((f) => f.key !== filterKey);
-    this.currentRequestParams = this.convertFiltersToParams(this.currentFilters);
+    this.currentRequestParams = this.convertFiltersToParams(
+      this.currentFilters
+    );
   }
 
   onFilterReset(): void {
@@ -163,7 +186,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     const option = config.options?.find(
       (opt: any) => opt.value === value || opt.id === value || opt.num === value
     );
-    const label = option?.label || value?.toString() || '';
+    const label = option?.label || value?.toString() || "";
     return { name: label, fullName: label };
   }
 
@@ -190,4 +213,9 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     }
     return meses;
   }
+
+  dataReceitaCards() {
+    this.cards;
+  }
+
 }

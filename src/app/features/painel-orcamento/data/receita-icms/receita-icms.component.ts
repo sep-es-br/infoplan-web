@@ -5,6 +5,8 @@ import {
   SimpleChanges,
   OnDestroy,
   inject,
+  Output,
+  EventEmitter,
 } from "@angular/core";
 import { Subject } from "rxjs";
 import { takeUntil, finalize } from "rxjs/operators";
@@ -28,17 +30,11 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
 
   readonly title: string = "Participação ICMS - Receita Total";
   readonly showTableIcon: Boolean = false;
+
   chartData!: PieChartData[];
   tableContent: FlipTableContent | null = null
   loadingStatus: "loading" | "loaded" | "error" = "loading";
   chartConfig = {
-    // showLegend: true,
-    // legendPosition: 'bottom',
-    // legendOrient: 'horizontal',
-    // showLabels: true,
-    // radius: ['40%', '70%'],
-
-    // centerPosition: ['50%', '55%'],  // Move o gráfico pra baixo
     showTitle: true,
     isDonut: true,
     legendPosition: "left",
@@ -46,10 +42,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     showLabels: false,
     radius: ['30%', '60%'],
     centerPosition: ["70%","50%"],
-    // avoidLabelOverlap:
   };
-
-
 
   private receitaICMSCharData: IReceitaICMSOrcamentariaResponse[] | null = [];
 

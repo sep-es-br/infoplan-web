@@ -59,63 +59,39 @@
           </div>
         </nb-card-body>
       </nb-card> -->
-<div class="row g-2 mb-0">
-  <!-- Card Logo -->
-  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xxl-2 mb-2">
-    <nb-card class="card-logo h-100 mb-0">
-      <nb-card-body class="logo-card p-2">
-        <div class="logo-wrapper d-flex align-items-start justify-content-start">
-          <img
-            src="assets/images/app/logo-exec-orc-claro.png"
-            alt="Logo Execução Orçamentária"
-            class="img-fluid"
-          />
-        </div>
-      </nb-card-body>
-    </nb-card>
-  </div>
-
-  <!-- Cards Dinâmicos -->
-  <ng-container *ngFor="let item of cards; trackBy: trackByFn">
+  <div class="row g-2 mb-0">
+    <!-- Card Logo -->
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xxl-2 mb-2">
-      <nb-card class="card-info h-100 mb-0">
-        <nb-card-body class="p-2">
-          <ngx-cards-component
-            [value]="item.value"
-            [description]="item.description"
-            [cor]="item.cor"
-            [icone]="item.icone"
-          />
+      <nb-card class="card-logo h-100 mb-0">
+        <nb-card-body class="logo-card p-2">
+          <div class="logo-wrapper d-flex align-items-start justify-content-start">
+            <img src="assets/images/app/logo-exec-orc-claro.png" alt="Logo Execução Orçamentária" class="img-fluid" />
+          </div>
         </nb-card-body>
       </nb-card>
     </div>
-  </ng-container>
-</div>
 
-  <!-- <ng-container>
-      <div class="col-12 col-sm-6 col-md-4 col-xxl-2 mb-2 px-1">
-        <nb-card class="h-100 p-1">
-          <nb-card-body class="p-1">
-            <ngx-cards-component class="w-100 h-100" [value]="1500" [prefixo]="'US$'">
-              <div card-extra class="mt-2 text-muted">+15% este mês</div>
-              <div card-footer class="p-2 text-">Ver detalhes</div>
-            </ngx-cards-component>
-
+    <!-- Cards Dinâmicos -->
+    <ng-container *ngFor="let item of cards; trackBy: trackByFn">
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xxl-2 mb-2">
+        <nb-card class="card-info h-100 mb-0">
+          <nb-card-body class="p-2">
+            <ngx-cards-component [value]="item.value" [description]="item.description" [cor]="item.cor"
+              [icone]="item.icone" [prefixo]="item.prefixo" [data]="dataReceitaCards($event)" />
           </nb-card-body>
         </nb-card>
       </div>
-    </ng-container> -->
+    </ng-container>
+  </div>
   <div class="row g-2 g-md-3 p-0">
     <!-- Receita Total - Destaque maior em telas grandes -->
     <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-4">
-      <ngx-receita-total [filter]="currentRequestParams"></ngx-receita-total>
+      <ngx-receita-total (dataReceitaTotalCards)="dataCards" [filter]="currentRequestParams"></ngx-receita-total>
     </div>
 
     <!-- Receita Categoria -->
     <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-4">
-      <ngx-receita-categoria
-        [filter]="currentRequestParams"
-      ></ngx-receita-categoria>
+      <ngx-receita-categoria [filter]="currentRequestParams"></ngx-receita-categoria>
     </div>
 
     <!-- Receita Origem -->
@@ -125,16 +101,12 @@
 
     <!-- Receita Impostos -->
     <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-4">
-      <ngx-receita-impostos
-        [filter]="currentRequestParams"
-      ></ngx-receita-impostos>
+      <ngx-receita-impostos [filter]="currentRequestParams"></ngx-receita-impostos>
     </div>
 
     <!-- Receita Participação -->
     <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 col-xxxl-4">
-      <ngx-receita-participacao
-        [filter]="currentRequestParams"
-      ></ngx-receita-participacao>
+      <ngx-receita-participacao [filter]="currentRequestParams"></ngx-receita-participacao>
     </div>
 
     <!-- Receita ICMS -->
@@ -144,23 +116,17 @@
 
     <!-- Receita Transferência -->
     <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-6">
-      <ngx-receita-transferencia
-        [filter]="currentRequestParams"
-      ></ngx-receita-transferencia>
+      <ngx-receita-transferencia [filter]="currentRequestParams"></ngx-receita-transferencia>
     </div>
 
     <!-- Receita Despesa GND Total -->
     <div class="col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 col-xxxl-6">
-      <ngx-receita-despesa-gnd-total
-        [filter]="currentRequestParams"
-      ></ngx-receita-despesa-gnd-total>
+      <ngx-receita-despesa-gnd-total [filter]="currentRequestParams"></ngx-receita-despesa-gnd-total>
     </div>
 
     <!-- Receita Despesa GND -->
     <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-      <ngx-receita-despesa-gnd
-        [filter]="currentRequestParams"
-      ></ngx-receita-despesa-gnd>
+      <ngx-receita-despesa-gnd [filter]="currentRequestParams"></ngx-receita-despesa-gnd>
     </div>
   </div>
   <div class="d-flex flex-wrap col-12 col-xxl-6 p-0">

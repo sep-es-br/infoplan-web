@@ -133,7 +133,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
               },
               {
                 propertyName: "valor",
-                value: `R$ ${orcado.toLocaleString("pt-BR")}`,
+                value: `${orcado.toLocaleString("pt-BR")}`,
               },
             ],
           },
@@ -142,7 +142,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
               { propertyName: "label", value: "Autorizado" },
               {
                 propertyName: "valor",
-                value: `R$ ${autorizado.toLocaleString("pt-BR")}`,
+                value: `${autorizado.toLocaleString("pt-BR")}`,
               },
             ],
           },
@@ -151,7 +151,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
               { propertyName: "label", value: "Empenhado" },
               {
                 propertyName: "valor",
-                value: `R$ ${empenhado.toLocaleString("pt-BR")}`,
+                value: `${empenhado.toLocaleString("pt-BR")}`,
               },
             ],
           },
@@ -160,7 +160,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
               { propertyName: "label", value: "Liquidado" },
               {
                 propertyName: "valor",
-                value: `R$ ${liquidado.toLocaleString("pt-BR")}`,
+                value: `${liquidado.toLocaleString("pt-BR")}`,
               },
             ],
           },
@@ -169,7 +169,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
               { propertyName: "label", value: "Pago com RAP" },
               {
                 propertyName: "valor",
-                value: `R$ ${pagoComRap.toLocaleString("pt-BR")}`,
+                value: `${pagoComRap.toLocaleString("pt-BR")}`,
               },
             ],
           },
@@ -183,7 +183,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
         displayName: `Despesa Prevista x Executada - ${ano}`,
         alignment: {
           header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.RIGHT,
+          data: FlipTableAlignment.LEFT,
         },
       },
       defaultColumns: [
@@ -191,7 +191,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
           propertyName: "valor",
           displayName: "Valor",
           alignment: {
-            header: FlipTableAlignment.LEFT,
+            header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,
           },
         },

@@ -52,6 +52,8 @@ export interface IReceitaDespesaGNDOrcamentariaResponse {
   vlr_pago_com_rap: number;
 }
 
+// eqewqe
+
 export interface IReceitaDespesaGNDTotalOrcamentariaResponse {
   ano: number;
   vlr_orcado: string;

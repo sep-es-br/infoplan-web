@@ -124,7 +124,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `ano_${ano}`,
-          value: `R$ ${dado?.receitaLiquida || 0}`,
+          value: `${dado?.receitaLiquida.toLocaleString("pt-BR") || 0}`,
         });
       });
 
@@ -133,7 +133,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
         const variacao = this.calcularVariacao(categoria, anos);
         nodeData.push({
           propertyName: "variação",
-          value: `${variacao}%`,
+          value: `${variacao} %`,
         });
       }
 
@@ -145,7 +145,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       propertyName: `ano_${ano}`,
       displayName: `Arrecadação LI - ${ano}`,
       alignment: {
-        header: FlipTableAlignment.LEFT,
+        header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
       },
     }));
@@ -153,10 +153,10 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     if (anos.length >= 2) {
       defaultColumns.push({
         propertyName: "variação",
-        displayName: `Variação (%) - ${anos[anos.length - 1]}`,
+        displayName: `Variação - ${anos[anos.length - 1]}`,
         alignment: {
-          header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.RIGHT,
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
         },
       });
     }
@@ -226,7 +226,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
     // Criar dados para download usando os valores brutos
     const dataForDownload = categorias.map((categoria) => {
-      const row: any = { categoria};
+      const row: any = { categoria };
 
       anos.forEach((ano) => {
         const item = this.receitaData.find(

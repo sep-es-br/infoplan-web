@@ -133,21 +133,21 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
             data: [
               {
                 propertyName: "label",
-                value: "Receita Realizada/Prevista (%)",
+                value: "Receita Realizada/Prevista",
               },
-              { propertyName: "valor", value: `${percentual}%` },
+              { propertyName: "valor", value: `${percentual} %` },
             ],
           },
           {
             data: [
               { propertyName: "label", value: "Arrecadação Líquida" },
-              { propertyName: "valor", value: `R$ ${arrecadacao.toLocaleString("pt-BR")}` },
+              { propertyName: "valor", value: `${arrecadacao.toLocaleString("pt-BR")}` },
             ],
           },
           {
             data: [
               { propertyName: "label", value: "Previsão Inicial Líquida" },
-              { propertyName: "valor", value: `R$ ${previsao.toLocaleString("pt-BR")}` },
+              { propertyName: "valor", value: `${previsao.toLocaleString("pt-BR")}` },
             ],
           },
           {
@@ -174,7 +174,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
           propertyName: "valor",
           displayName: "Valor",
           alignment: {
-            header: FlipTableAlignment.LEFT,
+            header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,
           },
         },

@@ -135,15 +135,15 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Arrecadação LI - ${ano.toString()}`,
-          value: `R$ ${valor|| 0}`,
+          value: ` ${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
       });
 
       if (anos.length >= 2) {
         const variacao = this.calcularVariacao(categoria, anos, dados);
         nodeData.push({
-          propertyName: "variação (%)",
-          value: `${variacao}%`,
+          propertyName: "variação",
+          value: `${variacao} %`,
         });
       }
 
@@ -158,18 +158,18 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
       propertyName: `Arrecadação LI - ${ano.toString()}`,
       displayName: `Arrecadação LI - ${ano.toString()}`,
       alignment: {
-        header: FlipTableAlignment.LEFT,
+        header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
       },
     }));
 
     if (anos.length >= 2) {
       defaultColumns.push({
-        propertyName: "variação (%)",
-        displayName: "Variação (%)",
+        propertyName: "variação",
+        displayName: "Variação",
         alignment: {
-          header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.RIGHT,
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
         },
       });
     }
@@ -254,9 +254,8 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
         const item = this.receitaImpostoCharData.find(
           (d) => d.nome_item_patrimonial === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `${
-          item?.receitaLiquida.toLocaleString("pt-BR") || 0
-        }`;
+        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR") || 0
+          }`;
       });
 
       if (anos.length >= 2) {

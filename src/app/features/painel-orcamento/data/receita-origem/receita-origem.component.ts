@@ -133,7 +133,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Arrecadação LI - ${ano.toString()}`,
-          value: `R$ ${valor || 0}`,
+          value: `${valor.toLocaleString("pt-BR") || 0}`,
         });
       });
 
@@ -142,7 +142,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
         const variacao = this.calcularVariacao(categoria, anos, dados); // ← Passe os dados
         nodeData.push({
           propertyName: "variação (%)",
-          value: `${variacao}%`,
+          value: `${variacao} %`,
         });
       }
 
@@ -158,7 +158,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
       propertyName: `Arrecadação LI - ${ano.toString()}`,
       displayName: `Arrecadação LI - ${ano.toString()}`,
       alignment: {
-        header: FlipTableAlignment.LEFT,
+        header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
       },
     }));
@@ -167,10 +167,10 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
     if (anos.length >= 2) {
       defaultColumns.push({
         propertyName: "variação (%)",
-        displayName: "Variação (%)",
+        displayName: "Variação",
         alignment: {
-          header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.RIGHT,
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
         },
       });
     }

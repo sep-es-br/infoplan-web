@@ -102,11 +102,6 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
   }
 
   private processChartData(): IChartOptions {
-    console.log(this._chartProcessor.criarChartLiquidadoEPago(
-      this.receitaDespesaOrcamento,
-      "nome_gnd",
-      "Despesas por GND"
-    ));
     return this._chartProcessor.criarChartLiquidadoEPago(
       this.receitaDespesaOrcamento,
       "nome_gnd",
@@ -160,12 +155,12 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Despesa Liquidada - ${ano.toString()}`,
-          value: `R$ ${valorLiquidado || 0}`,
+          value: `${valorLiquidado.toLocaleString("pt-BR") || 0}`,
         });
 
         nodeData.push({
           propertyName: `Pago com RAP - ${ano.toString()}`,
-          value: `R$ ${valorPagoComRAP || 0}`,
+          value: `${valorPagoComRAP.toLocaleString("pt-BR") || 0}`,
         });
       });
 
@@ -178,7 +173,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
         );
         nodeData.push({
           propertyName: "Variação Liquidado (%)",
-          value: `${variacaoLiquidado}%`,
+          value: `${variacaoLiquidado} %`,
         });
 
         const variacaoPagoRAP = this.calcularVariacao(
@@ -189,7 +184,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
         );
         nodeData.push({
           propertyName: "Variação Pago RAP (%)",
-          value: `${variacaoPagoRAP}%`,
+          value: `${variacaoPagoRAP} %`,
         });
       }
 
@@ -207,7 +202,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
         propertyName: `Despesa Liquidada - ${ano.toString()}`,
         displayName: `Despesa Liquidada - ${ano.toString()}`,
         alignment: {
-          header: FlipTableAlignment.LEFT,
+          header: FlipTableAlignment.RIGHT,
           data: FlipTableAlignment.RIGHT,
         },
       });
@@ -216,7 +211,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
         propertyName: `Pago com RAP - ${ano.toString()}`,
         displayName: `Pago com RAP - ${ano.toString()}`,
         alignment: {
-          header: FlipTableAlignment.LEFT,
+          header: FlipTableAlignment.RIGHT,
           data: FlipTableAlignment.RIGHT,
         },
       });
@@ -225,19 +220,19 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
     if (anos.length >= 2) {
       defaultColumns.push({
         propertyName: "Variação Liquidado (%)",
-        displayName: "Variação Liquidado (%)",
+        displayName: "Variação Liquidado",
         alignment: {
-          header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.RIGHT,
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
         },
       });
 
       defaultColumns.push({
         propertyName: "Variação Pago RAP (%)",
-        displayName: "Variação Pago RAP (%)",
+        displayName: "Variação Pago RAP",
         alignment: {
-          header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.RIGHT,
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
         },
       });
     }

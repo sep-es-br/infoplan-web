@@ -292,8 +292,6 @@ export class ChartDataProcessorService {
       "vlr_receita_liquida"
     );
 
-    console.log("ARRECADAO", dadosArrecadacao);
-    console.log("dadosPrevisao", dadosPrevisao, ano);
 
     if (!this.temDadosValidos([dadosPrevisao, dadosArrecadacao])) {
       console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
@@ -433,7 +431,6 @@ export class ChartDataProcessorService {
       console.warn(
         `⚠️ Campo "${campoLabel}" não existe nos dados, usando fallback`
       );
-      console.log("Campos disponíveis:", Object.keys(primeiroItem || {}));
 
       // Tentar encontrar campo similar
       const camposDisponiveis = Object.keys(primeiroItem || {});
@@ -445,7 +442,6 @@ export class ChartDataProcessorService {
       );
 
       campoLabelFinal = campoNome || "name";
-      console.log(`🔄 Usando campo: "${campoLabelFinal}"`);
     }
 
     const categorias = this.extrairCategorias(dados, campoLabelFinal);
@@ -455,10 +451,6 @@ export class ChartDataProcessorService {
       console.error("❌ Nenhuma categoria ou ano encontrado");
       return null;
     }
-
-    console.log(
-      `✅ Criando FlipTable: ${categorias.length} categorias × ${anos.length} anos`
-    );
 
     // Criar colunas dinâmicas (uma para cada ano)
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({

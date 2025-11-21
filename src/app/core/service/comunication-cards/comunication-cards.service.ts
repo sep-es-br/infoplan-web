@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { IReceitaCategoriaOrcamentariaResponse, IReceitaTotalOrcamentariaResponse } from '../../interfaces/painel-orcamento/painel-orcamento';
+import { BehaviorSubject } from 'rxjs';
+import { IReceitaDespesaGNDOrcamentariaResponse, IReceitaDespesaGNDTotalOrcamentariaResponse, IReceitaTotalOrcamentariaResponse } from '../../interfaces/painel-orcamento/painel-orcamento';
 
 interface IDataCard {
   receitaTotal?: IReceitaTotalOrcamentariaResponse | null;
-  receitaCategoria?: IReceitaCategoriaOrcamentariaResponse | null;
+  receitaDespesaGNDOrcamentaria?: IReceitaDespesaGNDTotalOrcamentariaResponse[] | null;
 }
 
 @Injectable({
@@ -14,7 +14,7 @@ export class ComunicationCardsService {
   private dataSubject = new BehaviorSubject<IDataCard>(
     {
       receitaTotal: null,
-      receitaCategoria: null,
+      receitaDespesaGNDOrcamentaria: null,
     });
   data$ = this.dataSubject.asObservable();
 
@@ -28,8 +28,8 @@ export class ComunicationCardsService {
     this.dataSubject.next({ receitaTotal });
   }
 
-  sendReceitaCategoria(receitaCategoria: IReceitaCategoriaOrcamentariaResponse) {
-    this.dataSubject.next({receitaCategoria });
+  sendReceitaDespesaGNDOrcamentaria(receitaDespesaGNDOrcamentaria: IReceitaDespesaGNDTotalOrcamentariaResponse[]) {
+    this.dataSubject.next({ receitaDespesaGNDOrcamentaria });
   }
 
 

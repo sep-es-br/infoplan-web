@@ -8,6 +8,7 @@ export interface IReceitaTotalOrcamentariaResponse {
   ano: number;
   vlr_receita_prevista: number;
   vlr_receita_liquida: number;
+  porcentagem: number;
 }
 
 export interface IExecucaoOrcamentariaReceitaOrigem {
@@ -58,6 +59,8 @@ export interface IReceitaDespesaGNDTotalOrcamentariaResponse {
   vlr_empenhado: number;
   vlr_liquidado: number;
   vlr_pago_com_rap: number;
+  porcentagem_empenhada: number
+  porcentagem_liquidada: number
 }
 
 export interface IReceitaICMSOrcamentariaResponse {

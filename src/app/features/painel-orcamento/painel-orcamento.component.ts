@@ -2,12 +2,12 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  OnChanges,
-  SimpleChanges,
+  inject,
 } from "@angular/core";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import {
   IExecucaoOrcamentariaRequest,
+  IReceitaDespesaGNDTotalOrcamentariaResponse,
   IReceitaTotalOrcamentariaResponse,
 } from "../../core/interfaces/painel-orcamento/painel-orcamento";
 import {
@@ -16,6 +16,8 @@ import {
   MESES_DATA,
   TIPO_CAIXA_DATA,
 } from "./data/datasets";
+import { ComunicationCardsService } from "../../core/service/comunication-cards/comunication-cards.service";
+import { ShortNumberPipe } from "../../@theme/pipes";
 
 interface IFilterTag {
   key: string;
@@ -36,7 +38,17 @@ interface IFilterConfig {
 }
 
 interface IDataCard {
-  receitaTotal: IReceitaTotalOrcamentariaResponse;
+  receitaTotal?: IReceitaTotalOrcamentariaResponse;
+  receitaDespesaGNDOrcamentaria?: IReceitaDespesaGNDTotalOrcamentariaResponse[];
+}
+
+interface ICards {
+  value: string | number;
+  description: string;
+  cor: string;
+  icone: string;
+  prefixo?: string;
+  subfixo?: string;
 }
 
 const DEFAULT_REQUEST_PARAMS: IExecucaoOrcamentariaRequest = {
@@ -49,6 +61,7 @@ const DEFAULT_REQUEST_PARAMS: IExecucaoOrcamentariaRequest = {
   selector: "ngx-painel-orcamento",
   templateUrl: "./painel-orcamento.component.html",
   styleUrls: ["./painel-orcamento.component.scss"],
+  providers: [ShortNumberPipe],
 })
 export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   readonly meses = MESES_DATA;
@@ -56,14 +69,17 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   readonly tipoCaixa = TIPO_CAIXA_DATA;
   readonly cards = CARDS_DATA;
 
-  dataCards: IDataCard;
+  private readonly destroy$ = new Subject<void>();
+  private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
+  private readonly _sufixShortNumberPipe: ShortNumberPipe = inject(ShortNumberPipe);
+  private subscription!: Subscription;
 
+  dataCards: IDataCard;
   currentFilters: Record<string, any> = {};
   activeFilters: IFilterTag[] = [];
   showFilters = false;
-
+  sendCards: ICards[] = [];
   currentRequestParams: IExecucaoOrcamentariaRequest = DEFAULT_REQUEST_PARAMS;
-
   filterConfigs: IFilterConfig[] = [
     {
       key: "mesInicial",
@@ -102,15 +118,29 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
       options: this.tipoCaixa,
     },
   ];
-
-  private readonly destroy$ = new Subject<void>();
+  receitaTotal: IReceitaTotalOrcamentariaResponse | null = null;
+  receitaDespesaGNDTotalOrcamento?: IReceitaDespesaGNDTotalOrcamentariaResponse[] | null = [];
 
   trackByFn(index: number, item: any): any {
     return item.id || index;
   }
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
   ngOnInit(): void {
-    console.log("CARDS", this.dataCards);
+    this.subscription = this._comunicationCardsService.data$.subscribe(
+      (data) => {
+        if (data.receitaTotal != null) {
+          this.receitaTotal = data.receitaTotal;
+          this.dataReceitaCards();
+
+          console.log("Dados recebidos no pai:", this.receitaTotal);
+        } else if (data.receitaDespesaGNDOrcamentaria != null) {
+          this.receitaDespesaGNDTotalOrcamento = data.receitaDespesaGNDOrcamentaria;
+          this.dataReceitaCards();
+
+          console.log("Dados recebidos no pai:", this.receitaDespesaGNDTotalOrcamento);
+        }
+      }
+    );
   }
 
   ngOnDestroy(): void {
@@ -215,7 +245,93 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   }
 
   dataReceitaCards() {
-    this.cards;
+    // this.cards;
+
+    this.sendCards = [
+      {
+        value: `${this._sufixShortNumberPipe.transform(this.receitaTotal?.vlr_receita_prevista, 2) || 0}`,
+        description: "Receita Prevista",
+        cor: "primary",
+        icone: "fa fa-crosshairs",
+        prefixo: "R$",
+      },
+      {
+        value: `${this._sufixShortNumberPipe.transform(this.receitaTotal?.vlr_receita_liquida, 2) || 0}`,
+        description: "Receita Realizada",
+        cor: "success",
+        icone: "fa fa-check-circle",
+        prefixo: "R$"
+      },
+      {
+        value: `${this.receitaTotal?.porcentagem || 0} %`,
+        description: "Receita Realizada/ Prevista",
+        cor: "warning",
+        icone: "assets/images/app/icone-receita-realizada-prevista.png",
+        subfixo: ""
+      },
+      {
+        value: `${this.receitaDespesaGNDTotalOrcamento[1]?.porcentagem_empenhada || 0} %`,
+        description: "Despesa Empenhada/ Autorizada",
+        cor: "info",
+        icone: "fa fa-handshake",
+        subfixo: ""
+      },
+      {
+        value: `${this.receitaDespesaGNDTotalOrcamento[1]?.porcentagem_liquidada || 0} %`,
+        description: "Despesa Liquidada/ Autorizada",
+        cor: "danger",
+        icone: "fas fa-hand-holding-usd",
+        subfixo: ""
+      }
+    ]
   }
 
 }
+
+// interface ICards {
+//   value: number;
+//   description: string;
+//   cor: string;
+//   icone: string;
+//   prefixo: string;
+//   subfixo: string;
+// }
+
+//     console.log("Cards", this.dataCards);
+//     this.sendCards = [
+//       {
+//         value: this.cards[0].value,
+//         description: "Receita Prevista",
+//         cor: "primary",
+//         icone: "fa fa-crosshairs",
+//         prefixo: "R$",
+//       },
+//       {
+//         value: "12 BI",
+//         description: "Receita Realizada",
+//         cor: "success",
+//         icone: "fa fa-check-circle",
+//         prefixo: "R$"
+//       },
+//       {
+//         value: "2 %",
+//         description: "Receita Realizada/ Prevista",
+//         cor: "warning",
+//         icone: "assets/images/app/icone-receita-realizada-prevista.png",
+//         sufixo: ""
+//       },
+//       {
+//         value: "85 %",
+//         description: "Despesa Empenhada/ Autorizada",
+//         cor: "info",
+//         icone: "fa fa-handshake",
+//         sufixo: ""
+//       },
+//       {
+//         value: this.cards[0].value,
+//         description: "Despesa Liquidada/ Autorizada",
+//         cor: "danger",
+//         icone: "fas fa-hand-holding-usd",
+//         sufixo: "",
+//       }
+//     ]

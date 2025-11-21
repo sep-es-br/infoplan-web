@@ -21,6 +21,7 @@ import { ExportDataService } from "../../../../core/service/export-data";
 import { ShortNumberPipe } from "../../../../@theme/pipes/shortNumber.pipe";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
+import { ComunicationCardsService } from "../../../../core/service/comunication-cards/comunication-cards.service";
 
 @Component({
   selector: "ngx-receita-despesa-gnd-total",
@@ -42,9 +43,15 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
   private readonly _execucaoOrcamentariaService = inject(
     PainelOrcamentoService
   );
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-  private readonly _shortNumberPipe = inject(ShortNumberPipe);
+
+  private receitaDespesaGNDTotalOrcamento:
+    | IReceitaDespesaGNDTotalOrcamentariaResponse[]
+    | null = [];
+
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _shortNumberPipe: ShortNumberPipe = inject(ShortNumberPipe);
+  private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
   private readonly destroy$ = new Subject<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -76,6 +83,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
       .subscribe({
         next: (res: IReceitaDespesaGNDTotalOrcamentariaResponse[]) => {
           this.receitaDespesaGNDTotal = res;
+          this._comunicationCardsService.sendReceitaDespesaGNDOrcamentaria(res);
           this.processData();
         },
       });
@@ -192,7 +200,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
     };
   }
 
-handleTableDownload(): void {
+  handleTableDownload(): void {
     if (!this.tableContent?.data?.length) return;
 
     const columns: Array<{ key: string; label: string }> = [

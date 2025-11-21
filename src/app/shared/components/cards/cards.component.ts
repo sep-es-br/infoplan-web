@@ -77,12 +77,12 @@ export class CardsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscription = this._comunicationCardsService.data$.subscribe(
-      (data) => {
-        this.receitaTotal = data.receitaTotal;
-        console.log("Dados recebidos:", this.receitaTotal);
-      }
-    );
+    // this.subscription = this._comunicationCardsService.data$.subscribe(
+    //   (data) => {
+    //     this.receitaTotal = data.receitaTotal;
+    //     console.log("Dados recebidos:", this.receitaTotal);
+    //   }
+    // );
     this.currentTheme = this._themeservice.currentTheme as AvailableThemes;
   }
 

@@ -203,9 +203,9 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
         const percentual =
           item.vlr_receita_prevista > 0
             ? (
-                (item.vlr_receita_liquida / item.vlr_receita_prevista) *
-                100
-              ).toFixed(2)
+              (item.vlr_receita_liquida / item.vlr_receita_prevista) *
+              100
+            ).toFixed(2)
             : "0";
 
         return (

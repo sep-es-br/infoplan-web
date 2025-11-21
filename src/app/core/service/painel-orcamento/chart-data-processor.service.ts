@@ -10,8 +10,8 @@ import {
 } from "../../../features/strategic-projects/flip-table-model/flip-table.component";
 
 const CHART_COLORS = [
-  "#F58B9B",
   "#4DB6D2",
+  "#F58B9B",
   "#e4c26b",
   "#2E88B9",
   "#77D4B0",

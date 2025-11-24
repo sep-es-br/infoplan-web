@@ -44,10 +44,6 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
     PainelOrcamentoService
   );
 
-  private receitaDespesaGNDTotalOrcamento:
-    | IReceitaDespesaGNDTotalOrcamentariaResponse[]
-    | null = [];
-
   private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
   private readonly _exportDataService: ExportDataService = inject(ExportDataService);
   private readonly _shortNumberPipe: ShortNumberPipe = inject(ShortNumberPipe);
@@ -90,8 +86,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
   }
 
   private processData(): void {
-    const chartData: IChartOptions = this.processChartData();
-
+    const chartData: IChartOptions | null = this.processChartData();
     if (chartData) {
       this.chartData = chartData;
       this.processTableData(this.receitaDespesaGNDTotal);
@@ -101,11 +96,11 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
     }
   }
 
-  private processChartData(): IChartOptions {
+  private processChartData(): IChartOptions | null {
     return this._chartProcessor.criarChartDespesaGndTotal(
       this.receitaDespesaGNDTotal,
       "ano",
-      "Despesas GND Total"
+      "Despesas GND Total",
     );
   }
 

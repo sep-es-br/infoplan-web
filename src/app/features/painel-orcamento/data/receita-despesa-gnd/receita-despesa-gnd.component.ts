@@ -155,12 +155,12 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Despesa Liquidada - ${ano.toString()}`,
-          value: `${valorLiquidado.toLocaleString("pt-BR") || 0}`,
+          value: `${valorLiquidado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
 
         nodeData.push({
           propertyName: `Pago com RAP - ${ano.toString()}`,
-          value: `${valorPagoComRAP.toLocaleString("pt-BR") || 0}`,
+          value: `${valorPagoComRAP.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
       });
 

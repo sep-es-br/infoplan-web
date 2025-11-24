@@ -141,13 +141,13 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
           {
             data: [
               { propertyName: "label", value: "Arrecadação Líquida" },
-              { propertyName: "valor", value: `${arrecadacao.toLocaleString("pt-BR")}` },
+              { propertyName: "valor", value: `${arrecadacao.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}` },
             ],
           },
           {
             data: [
               { propertyName: "label", value: "Previsão Inicial Líquida" },
-              { propertyName: "valor", value: `${previsao.toLocaleString("pt-BR")}` },
+              { propertyName: "valor", value: `${previsao.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}` },
             ],
           },
           {
@@ -196,9 +196,9 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
 
         const ano = item.ano?.toString() || "";
         const receitaLiquida =
-          item.vlr_receita_liquida?.toLocaleString("pt-BR") || "";
+          item.vlr_receita_liquida?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || "0";
         const receitaPrevista =
-          item.vlr_receita_prevista?.toLocaleString("pt-BR") || "";
+          item.vlr_receita_prevista?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || "0";
 
         const percentual =
           item.vlr_receita_prevista > 0

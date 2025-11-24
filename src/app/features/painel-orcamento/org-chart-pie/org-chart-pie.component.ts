@@ -145,54 +145,54 @@ export class PieChartComponent implements OnInit, OnChanges {
 
       title: config.showTitle
         ? {
-            text: config.titleText,
-            subtext: config.titleSubtext,
-            left: config.titlePosition,
-            textStyle: { color: themeStyles.textPrimaryColor },
-            subtextStyle: { color: themeStyles.textSecondaryColor },
-          }
+          text: config.titleText,
+          subtext: config.titleSubtext,
+          left: config.titlePosition,
+          textStyle: { color: themeStyles.textPrimaryColor },
+          subtextStyle: { color: themeStyles.textSecondaryColor },
+        }
         : undefined,
 
       tooltip: config.showTooltip
         ? {
-            trigger: "item",
-            formatter: (params: any) => {
-              const data = params;
-              const value =
-                typeof data.value === "number"
-                  ? data.value
-                  : parseFloat(data.value);
+          trigger: "item",
+          formatter: (params: any) => {
+            const data = params;
+            const value =
+              typeof data.value === "number"
+                ? data.value
+                : parseFloat(data.value);
 
-              // Formatar como Reais
-              const formattedValue = new Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              }).format(value);
+            // Formatar como Reais
+            const formattedValue = new Intl.NumberFormat("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            }).format(value);
 
-              return `${data.name}: ${formattedValue} (${data.percent}%)`;
-            },
-            backgroundColor: themeStyles.themePrimaryColor,
-            confine: true,
-            textStyle: { color: themeStyles.textPrimaryColor },
-          }
+            return `${data.name}: ${formattedValue} (${data.percent}%)`;
+          },
+          backgroundColor: themeStyles.themePrimaryColor,
+          confine: true,
+          textStyle: { color: themeStyles.textPrimaryColor },
+        }
         : undefined,
       legend: config.showLegend
         ? {
-            left: this.getLegendPosition(config.legendPosition).left,
-            top: this.getLegendPosition(config.legendPosition).top,
-            orient: config.legendOrient,
-            right: "3%",
-            textStyle: {
-              color: themeStyles.textPrimaryColor,
-              fontSize: 10,
-            },
-            type: "scroll",
-            pageTextStyle: { color: themeStyles.textPrimaryColor },
-            itemWidth: 10,
-            itemHeight: 10,
-            itemGap: 10,
-            selectedMode: true,
-          }
+          left: this.getLegendPosition(config.legendPosition).left,
+          top: this.getLegendPosition(config.legendPosition).top,
+          orient: config.legendOrient,
+          right: "3%",
+          textStyle: {
+            color: themeStyles.textPrimaryColor,
+            fontSize: 10,
+          },
+          type: "scroll",
+          pageTextStyle: { color: themeStyles.textPrimaryColor },
+          itemWidth: 10,
+          itemHeight: 10,
+          itemGap: 10,
+          selectedMode: true,
+        }
         : undefined,
 
       series: [

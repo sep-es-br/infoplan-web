@@ -133,7 +133,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
               },
               {
                 propertyName: "valor",
-                value: `${orcado.toLocaleString("pt-BR")}`,
+                value: `${orcado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
               },
             ],
           },
@@ -142,7 +142,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
               { propertyName: "label", value: "Autorizado" },
               {
                 propertyName: "valor",
-                value: `${autorizado.toLocaleString("pt-BR")}`,
+                value: `${autorizado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
               },
             ],
           },
@@ -169,7 +169,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
               { propertyName: "label", value: "Pago com RAP" },
               {
                 propertyName: "valor",
-                value: `${pagoComRap.toLocaleString("pt-BR")}`,
+                value: `${pagoComRap.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
               },
             ],
           },

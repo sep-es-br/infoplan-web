@@ -124,7 +124,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `ano_${ano}`,
-          value: `${dado?.receitaLiquida.toLocaleString("pt-BR") || 0}`,
+          value: `${dado?.receitaLiquida.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
       });
 

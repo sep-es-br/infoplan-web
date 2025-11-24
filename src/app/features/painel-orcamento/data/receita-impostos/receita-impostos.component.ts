@@ -254,7 +254,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
         const item = this.receitaImpostoCharData.find(
           (d) => d.nome_item_patrimonial === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR") || 0
+        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0
           }`;
       });
 

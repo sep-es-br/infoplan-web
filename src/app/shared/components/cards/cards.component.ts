@@ -51,6 +51,7 @@ export class CardsComponent implements OnInit {
   @Input() prefixoAlinhado: "esquerda" | "centro" | "direita" = "esquerda";
   @Input() valorAlinhado: "esquerda" | "centro" | "direita" = "centro";
   @Input() descricaoAlinhada: "esquerda" | "centro" | "direita" = "centro";
+  @Input() tooltip: string = "";
 
   receitaTotal: IReceitaTotalOrcamentariaResponse | null = null;
 

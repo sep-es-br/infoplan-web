@@ -232,7 +232,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
         const item = this.receitaData.find(
           (d) => d.categoria === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR") || 0}`;
+        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`;
       });
 
       if (anos.length >= 2) {

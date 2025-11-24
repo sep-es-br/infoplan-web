@@ -1,12 +1,7 @@
-<div
-  class="card-dinamico-wrapper d-flex justify-content-start align-items-end gap-3 h-100"
-  [ngClass]="'theme-' + currentTheme"
->
-  <nb-card
-    class="card-dinamico mb-0 position-relative"
-    [ngClass]="'card-' + cor"
-  >
-    <nb-card-body class="card-dinamico-body d-flex align-items-center">
+<div class="card-dinamico-wrapper d-flex justify-content-start align-items-end gap-3 h-100"
+  [ngClass]="'theme-' + currentTheme">
+  <nb-card class="card-dinamico mb-0 position-relative" [ngClass]="'card-' + cor">
+    <nb-card-body class="card-dinamico-body d-flex align-items-center" [title]="tooltip">
       <div class="card-content d-flex align-items-start gap-0 m-2">
         <span class="currency-symbol">{{ prefixo }}</span>
         <span class="card-value">{{ value }}</span>
@@ -16,19 +11,9 @@
 
   <div class="icon-container position-absolute top-0 end-0 p-2">
     <!-- Se for imagem -->
-    <img
-      *ngIf="isImage(icone)"
-      [src]="icone"
-      [alt]="description"
-      class="icon-image"
-      [ngClass]="'icon-' + cor"
-    />
+    <img *ngIf="isImage(icone)" [src]="icone" [alt]="description" class="icon-image" [ngClass]="'icon-' + cor" />
 
-    <i
-      *ngIf="!isImage(icone)"
-      [className]="icone"
-      [ngClass]="'icon-' + cor"
-    ></i>
+    <i *ngIf="!isImage(icone)" [className]="icone" [ngClass]="'icon-' + cor"></i>
   </div>
 
   <div class="card-description" [ngClass]="'description-' + cor">

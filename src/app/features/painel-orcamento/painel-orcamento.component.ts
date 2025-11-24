@@ -3,6 +3,12 @@ import {
   OnInit,
   OnDestroy,
   inject,
+  ViewChild,
+  ViewChildren,
+  ElementRef,
+  QueryList,
+  Output,
+  EventEmitter
 } from "@angular/core";
 import { Subject, Subscription } from "rxjs";
 import {
@@ -14,28 +20,11 @@ import {
   ANO_DATA,
   CARDS_DATA,
   MESES_DATA,
-  TIPO_CAIXA_DATA,
 } from "./data/datasets";
 import { ComunicationCardsService } from "../../core/service/comunication-cards/comunication-cards.service";
 import { ShortNumberPipe } from "../../@theme/pipes";
-
-interface IFilterTag {
-  key: string;
-  label: string;
-  displayValue: { name: string; fullName?: string }[];
-  value: any;
-  type: string;
-  removable?: boolean;
-}
-
-interface IFilterConfig {
-  key: string;
-  label: string;
-  type: string;
-  placeholder: string;
-  options: any[];
-  multiple?: boolean;
-}
+import { environment } from "../../../environments/environment";
+import { NbSelectComponent } from "@nebular/theme";
 
 interface IDataCard {
   receitaTotal?: IReceitaTotalOrcamentariaResponse;
@@ -51,8 +40,20 @@ interface ICards {
   subfixo?: string;
 }
 
-const DEFAULT_REQUEST_PARAMS: IExecucaoOrcamentariaRequest = {
-  ano: 2025,
+interface IExecucaoOrcamentariaFilters {
+  ano: number;
+  mes: number[];
+  tipoFonte: number[];
+}
+
+enum AvailableFilters {
+  ANO = 'ano',
+  MES = 'mes',
+  TIPO_FONTE = 'tipoFonte',
+}
+
+const DEFAULT_EXECUCAO_ORCAMENTARIA_REQUEST_PARAMS: IExecucaoOrcamentariaRequest = {
+  ano: 2023,
   mes: [-1],
   tipoFonte: [-1],
 };
@@ -64,10 +65,18 @@ const DEFAULT_REQUEST_PARAMS: IExecucaoOrcamentariaRequest = {
   providers: [ShortNumberPipe],
 })
 export class PainelOrcamentoComponent implements OnInit, OnDestroy {
+  @ViewChild('modalCloseButton') modalCloseButtonRef: ElementRef;
+  @ViewChildren('customSelect') customSelectRefs: QueryList<NbSelectComponent>;
+  @Output() filterChanged = new EventEmitter<IExecucaoOrcamentariaRequest>();
+
   readonly meses = MESES_DATA;
   readonly ano = ANO_DATA;
-  readonly tipoCaixa = TIPO_CAIXA_DATA;
   readonly cards = CARDS_DATA;
+  readonly tipoFonteList = [
+    { id: 1, name: 'Caixas Tesouros' },
+    { id: 2, name: 'Demais Fontes' },
+    { id: -1, name: 'Todos os Tipos' }
+  ];
 
   private readonly destroy$ = new Subject<void>();
   private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
@@ -75,177 +84,269 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   private subscription!: Subscription;
 
   dataCards: IDataCard;
-  currentFilters: Record<string, any> = {};
-  activeFilters: IFilterTag[] = [];
-  showFilters = false;
   sendCards: ICards[] = [];
-  currentRequestParams: IExecucaoOrcamentariaRequest = DEFAULT_REQUEST_PARAMS;
-  filterConfigs: IFilterConfig[] = [
-    {
-      key: "mesInicial",
-      label: "Mês Inicial",
-      type: "select",
-      placeholder: "Mês",
-      options: this.meses,
-    },
-    {
-      key: "anoInicial",
-      label: "Ano Inicial",
-      type: "select",
-      placeholder: "Ano",
-      options: this.ano,
-    },
-    {
-      key: "mesFinal",
-      label: "Mês Final",
-      type: "select",
-      placeholder: "Mês",
-      options: this.meses,
-    },
-    {
-      key: "anoFinal",
-      label: "Ano Final",
-      type: "select",
-      placeholder: "Ano",
-      options: this.ano,
-    },
-    {
-      key: "tipoCaixa",
-      label: "Tipo de Caixa",
-      type: "select",
-      multiple: true,
-      placeholder: "Selecionar",
-      options: this.tipoCaixa,
-    },
-  ];
+
+  // CORREÇÃO: Atualizar currentRequestParams quando filtrar
+  currentRequestParams: IExecucaoOrcamentariaRequest = DEFAULT_EXECUCAO_ORCAMENTARIA_REQUEST_PARAMS;
+
   receitaTotal: IReceitaTotalOrcamentariaResponse | null = null;
   receitaDespesaGNDTotalOrcamento?: IReceitaDespesaGNDTotalOrcamentariaResponse[] | null = [];
 
-  trackByFn(index: number, item: any): any {
-    return item.id || index;
-  }
-  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
+  isFilterModalOpen: boolean = false;
+
+  filter: IExecucaoOrcamentariaFilters = {
+    ano: environment.execucaoOrcamentariaFilter.ano,
+    mes: environment.execucaoOrcamentariaFilter.mes,
+    tipoFonte: environment.execucaoOrcamentariaFilter.tipoFonte,
+  };
+
+  finalFilter: IExecucaoOrcamentariaFilters = {
+    ano: environment.execucaoOrcamentariaFilter.ano,
+    mes: environment.execucaoOrcamentariaFilter.mes,
+    tipoFonte: environment.execucaoOrcamentariaFilter.tipoFonte,
+  };
+
+  monthsList = [
+    { num: 1, name: 'Janeiro' },
+    { num: 2, name: 'Fevereiro' },
+    { num: 3, name: 'Março' },
+    { num: 4, name: 'Abril' },
+    { num: 5, name: 'Maio' },
+    { num: 6, name: 'Junho' },
+    { num: 7, name: 'Julho' },
+    { num: 8, name: 'Agosto' },
+    { num: 9, name: 'Setembro' },
+    { num: 10, name: 'Outubro' },
+    { num: 11, name: 'Novembro' },
+    { num: 12, name: 'Dezembro' }
+  ];
+
+  yearsList = [
+    { num: 2020 },
+    { num: 2021 },
+    { num: 2022 },
+    { num: 2023 },
+    { num: 2024 },
+    { num: 2025 },
+    { num: 2026 },
+    { num: 2027 },
+    { num: 2028 },
+    { num: 2029 },
+    { num: 2030 },
+    { num: 2031 },
+  ];
+
+  activeFilters: { key: string; label: string; displayValue: Array<{ name: string; fullName?: string; }>; }[] = [];
+
   ngOnInit(): void {
     this.subscription = this._comunicationCardsService.data$.subscribe(
       (data) => {
         if (data.receitaTotal != null) {
           this.receitaTotal = data.receitaTotal;
           this.dataReceitaCards();
-
-          console.log("Dados recebidos no pai:", this.receitaTotal);
         } else if (data.receitaDespesaGNDOrcamentaria != null) {
           this.receitaDespesaGNDTotalOrcamento = data.receitaDespesaGNDOrcamentaria;
           this.dataReceitaCards();
-
-          console.log("Dados recebidos no pai:", this.receitaDespesaGNDTotalOrcamento);
         }
       }
     );
+    this.updateActiveFilters();
+    // CARREGAR DADOS INICIAIS
+    this.loadInitialData();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
-  onFilterChange(filters: Record<string, any>): void {
-    this.currentFilters = { ...filters };
-    this.activeFilters = this.buildActiveFilters(filters);
-    this.currentRequestParams = this.convertFiltersToParams(filters);
+  // CORREÇÃO: Método para carregar dados iniciais
+  loadInitialData(): void {
+    this.currentRequestParams = {
+      ano: this.filter.ano,
+      mes: this.filter.mes,
+      tipoFonte: this.filter.tipoFonte,
+    };
+    // Emitir evento para componentes filhos
+    this.filterChanged.emit(this.currentRequestParams);
   }
 
-  onFilterRemove(filterKey: string): void {
-    delete this.currentFilters[filterKey];
-    this.activeFilters = this.activeFilters.filter((f) => f.key !== filterKey);
-    this.currentRequestParams = this.convertFiltersToParams(
-      this.currentFilters
-    );
+  filtrar(event?: Event): void {
+    if (event) event.preventDefault();
+    this.closeFilterModal();
+    this.finalFilter = { ...this.filter };
+
+    // CORREÇÃO: Atualizar currentRequestParams com os filtros selecionados
+    this.currentRequestParams = {
+      ano: this.finalFilter.ano,
+      mes: this.finalFilter.mes,
+      tipoFonte: this.finalFilter.tipoFonte,
+    };
+
+    this.updateActiveFilters();
+
+    // CORREÇÃO: Emitir evento de filtro alterado
+    this.filterChanged.emit(this.currentRequestParams);
+
+    // CORREÇÃO: Recarregar dados com novos filtros
+    this.loadDataWithFilters();
   }
 
-  onFilterReset(): void {
-    this.currentFilters = {};
+  // CORREÇÃO: Método para carregar dados com filtros
+  loadDataWithFilters(): void {
+    // Aqui você deve chamar os serviços para recarregar os dados
+    // com os novos filtros. Exemplo:
+    // this._comunicationCardsService.loadDataWithFilters(this.currentRequestParams);
+
+    // Por enquanto, vamos apenas recarregar os cards
+    this.dataReceitaCards();
+  }
+
+  updateActiveFilters() {
     this.activeFilters = [];
-    this.currentRequestParams = DEFAULT_REQUEST_PARAMS;
-  }
 
-  private buildActiveFilters(filters: Record<string, any>): IFilterTag[] {
-    const activeFilters: IFilterTag[] = [];
-
-    Object.keys(filters).forEach((key) => {
-      const config = this.filterConfigs.find((c) => c.key === key);
-      if (!config || !filters[key]) return;
-
-      if (
-        config.multiple &&
-        Array.isArray(filters[key]) &&
-        filters[key].length === 0
-      ) {
-        return;
-      }
-
-      const value = filters[key];
-      const displayValue = this.getDisplayValue(config, value);
-
-      activeFilters.push({
-        key: config.key,
-        label: config.label,
-        value: value,
-        displayValue: displayValue,
-        type: config.type,
-        removable: true,
+    // Filtro Ano
+    if (this.finalFilter.ano) {
+      this.activeFilters.push({
+        key: 'ano',
+        label: 'Ano',
+        displayValue: [{ name: this.finalFilter.ano.toString() }]
       });
-    });
-
-    return activeFilters;
-  }
-
-  private getDisplayValue(
-    config: IFilterConfig,
-    value: any
-  ): { name: string; fullName?: string }[] {
-    if (Array.isArray(value)) {
-      return value.map((v) => this.findOptionLabel(config, v));
     }
-    return [this.findOptionLabel(config, value)];
-  }
 
-  private findOptionLabel(
-    config: IFilterConfig,
-    value: any
-  ): { name: string; fullName?: string } {
-    const option = config.options?.find(
-      (opt: any) => opt.value === value || opt.id === value || opt.num === value
-    );
-    const label = option?.label || value?.toString() || "";
-    return { name: label, fullName: label };
-  }
-
-  private convertFiltersToParams(
-    filters: Record<string, any>
-  ): IExecucaoOrcamentariaRequest {
-    const ano = filters.anoInicial || DEFAULT_REQUEST_PARAMS.ano;
-    const meses = this.getMesesRange(filters.mesInicial, filters.mesFinal);
-    const tipoFonte =
-      filters.tipoCaixa?.length > 0
-        ? filters.tipoCaixa
-        : DEFAULT_REQUEST_PARAMS.tipoFonte;
-
-    return { ano, mes: meses, tipoFonte };
-  }
-
-  private getMesesRange(mesInicial?: number, mesFinal?: number): number[] {
-    if (!mesInicial) return [-1];
-    if (!mesFinal || mesFinal === mesInicial) return [mesInicial];
-
-    const meses: number[] = [];
-    for (let i = mesInicial; i <= mesFinal; i++) {
-      meses.push(i);
+    // Filtro Mês
+    if (this.finalFilter.mes && this.finalFilter.mes.length > 0) {
+      if (this.finalFilter.mes.includes(-1)) {
+        this.activeFilters.push({
+          key: 'mes',
+          label: 'Mês',
+          displayValue: [{ name: 'Todos os Meses' }]
+        });
+      } else {
+        const mesesSelecionados = this.finalFilter.mes.map(mesNum => {
+          const mes = this.monthsList.find(m => m.num === mesNum);
+          return { name: mes ? mes.name : `Mês ${mesNum}` };
+        });
+        this.activeFilters.push({
+          key: 'mes',
+          label: 'Mês',
+          displayValue: mesesSelecionados
+        });
+      }
     }
-    return meses;
+
+    // Filtro Tipo Fonte
+    if (this.finalFilter.tipoFonte && this.finalFilter.tipoFonte.length > 0) {
+      if (this.finalFilter.tipoFonte.includes(-1)) {
+        this.activeFilters.push({
+          key: 'tipoFonte',
+          label: 'Tipo de Fonte',
+          displayValue: [{ name: 'Todos os Tipos' }]
+        });
+      } else {
+        const tiposSelecionados = this.finalFilter.tipoFonte.map(tipoNum => {
+          const tipo = this.tipoFonteList.find(t => t.id === tipoNum);
+          return { name: tipo ? tipo.name : `Tipo ${tipoNum}` };
+        });
+        this.activeFilters.push({
+          key: 'tipoFonte',
+          label: 'Tipo de Fonte',
+          displayValue: tiposSelecionados
+        });
+      }
+    }
+  }
+
+  getFilterLabel(key: string): string {
+    const labels = {
+      ano: 'Ano',
+      mes: 'Mês',
+      tipoFonte: 'Tipo de Fonte',
+    };
+    return labels[key as keyof typeof labels] || key;
+  }
+
+  removeFilter(key: string): void {
+    if (key === 'ano') {
+      this.filter.ano = environment.execucaoOrcamentariaFilter.ano;
+    } else if (key === 'mes') {
+      this.filter.mes = environment.execucaoOrcamentariaFilter.mes;
+    } else if (key === 'tipoFonte') {
+      this.filter.tipoFonte = environment.execucaoOrcamentariaFilter.tipoFonte;
+    }
+
+    this.filtrar();
+  }
+
+  resetFilters(): void {
+    this.closeFilterModal();
+
+    this.finalFilter = {
+      ano: environment.execucaoOrcamentariaFilter.ano,
+      mes: environment.execucaoOrcamentariaFilter.mes,
+      tipoFonte: environment.execucaoOrcamentariaFilter.tipoFonte,
+    };
+    this.filter = { ...this.finalFilter };
+
+    // CORREÇÃO: Atualizar currentRequestParams ao resetar
+    this.currentRequestParams = {
+      ano: this.finalFilter.ano,
+      mes: this.finalFilter.mes,
+      tipoFonte: this.finalFilter.tipoFonte,
+    };
+
+    this.updateActiveFilters();
+
+    // CORREÇÃO: Recarregar dados com filtros resetados
+    this.loadDataWithFilters();
+  }
+
+  handleFilterChange(origin: AvailableFilters | string, newValue: any) {
+    // CORREÇÃO: Lógica melhorada para "Todos"
+    if (Array.isArray(newValue)) {
+      if (newValue.includes(-1)) {
+        // Se selecionou "Todos", manter apenas -1
+        if (origin === 'mes') {
+          this.filter.mes = [-1];
+        } else if (origin === 'tipoFonte') {
+          this.filter.tipoFonte = [-1];
+        }
+      } else if (newValue.length > 0) {
+        // Se selecionou itens específicos, remover -1 se existir
+        if (origin === 'mes' && this.filter.mes.includes(-1)) {
+          this.filter.mes = this.filter.mes.filter(m => m !== -1);
+        } else if (origin === 'tipoFonte' && this.filter.tipoFonte.includes(-1)) {
+          this.filter.tipoFonte = this.filter.tipoFonte.filter(t => t !== -1);
+        }
+      }
+    }
+  }
+
+  closeFilterModal() {
+    (document.activeElement as HTMLElement)?.blur();
+    /*
+     * Isso serve pra evitar um erro de "Blocked aria-hidden on an element because its descendent retained focus..."
+     * que ocorre quando se fecha um elemento/componente (tipo um offcanvas ou nesse caso um modal) com aria-hidden="true" (utilizado por leitores de telas)
+     * enquanto um elemento dentro desse componente ainda está com foco.
+     * Por isso se faz necessário remover o foco desse elemento antes de fechar o componente.
+     */
+
+    if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
+  }
+
+  // CORREÇÃO: Método para receber dados dos cards (se necessário)
+  onDataReceived(event: any): void {
+    console.log('Dados recebidos:', event);
   }
 
   dataReceitaCards() {
-    // this.cards;
+    // CORREÇÃO: Verificação segura para o array
+    const receitaDespesa = this.receitaDespesaGNDTotalOrcamento || [];
+    const primeiroItem = receitaDespesa[0];
+    const segundoItem = receitaDespesa[1];
 
     this.sendCards = [
       {
@@ -270,68 +371,26 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
         subfixo: ""
       },
       {
-        value: `${this.receitaDespesaGNDTotalOrcamento[1]?.porcentagem_empenhada || 0} %`,
+        value: `${segundoItem?.porcentagem_empenhada || 0} %`,
         description: "Despesa Empenhada/ Autorizada",
         cor: "info",
         icone: "fa fa-handshake",
         subfixo: ""
       },
       {
-        value: `${this.receitaDespesaGNDTotalOrcamento[1]?.porcentagem_liquidada || 0} %`,
+        value: `${segundoItem?.porcentagem_liquidada || 0} %`,
         description: "Despesa Liquidada/ Autorizada",
         cor: "danger",
         icone: "fas fa-hand-holding-usd",
         subfixo: ""
       }
-    ]
+    ];
+  }
+
+  trackByFn(index: number, item: any): any {
+    return item.id || index;
   }
 
 }
 
-// interface ICards {
-//   value: number;
-//   description: string;
-//   cor: string;
-//   icone: string;
-//   prefixo: string;
-//   subfixo: string;
-// }
 
-//     console.log("Cards", this.dataCards);
-//     this.sendCards = [
-//       {
-//         value: this.cards[0].value,
-//         description: "Receita Prevista",
-//         cor: "primary",
-//         icone: "fa fa-crosshairs",
-//         prefixo: "R$",
-//       },
-//       {
-//         value: "12 BI",
-//         description: "Receita Realizada",
-//         cor: "success",
-//         icone: "fa fa-check-circle",
-//         prefixo: "R$"
-//       },
-//       {
-//         value: "2 %",
-//         description: "Receita Realizada/ Prevista",
-//         cor: "warning",
-//         icone: "assets/images/app/icone-receita-realizada-prevista.png",
-//         sufixo: ""
-//       },
-//       {
-//         value: "85 %",
-//         description: "Despesa Empenhada/ Autorizada",
-//         cor: "info",
-//         icone: "fa fa-handshake",
-//         sufixo: ""
-//       },
-//       {
-//         value: this.cards[0].value,
-//         description: "Despesa Liquidada/ Autorizada",
-//         cor: "danger",
-//         icone: "fas fa-hand-holding-usd",
-//         sufixo: "",
-//       }
-//     ]

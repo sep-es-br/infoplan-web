@@ -19,9 +19,9 @@ import {
   providedIn: "root",
 })
 export class PainelOrcamentoService {
-  private _URI = `${environment.apiUrl}/painelOrcamento`;
+  private _URI = `${environment.apiUrl}/execucaoOrcamentaria`;
 
-  constructor(private _http: HttpClient) {}
+  constructor(private _http: HttpClient) { }
 
   public getReceitaTotal(
     request: IExecucaoOrcamentariaRequest

@@ -38,6 +38,7 @@ interface ICards {
   icone: string;
   prefixo?: string;
   subfixo?: string;
+  tooltip?: string;
 }
 
 interface IExecucaoOrcamentariaFilters {
@@ -355,34 +356,39 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
         cor: "primary",
         icone: "fa fa-crosshairs",
         prefixo: "R$",
+        tooltip: `R$ ${this.receitaTotal?.vlr_receita_prevista.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
       },
       {
         value: `${this._sufixShortNumberPipe.transform(this.receitaTotal?.vlr_receita_liquida, 2) || 0}`,
         description: "Receita Realizada",
         cor: "success",
         icone: "fa fa-check-circle",
-        prefixo: "R$"
+        prefixo: "R$",
+        tooltip: `R$ ${this.receitaTotal?.vlr_receita_liquida.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
       },
       {
         value: `${this.receitaTotal?.porcentagem || 0} %`,
         description: "Receita Realizada/ Prevista",
         cor: "warning",
         icone: "assets/images/app/icone-receita-realizada-prevista.png",
-        subfixo: ""
+        subfixo: "",
+        tooltip: ""
       },
       {
         value: `${segundoItem?.porcentagem_empenhada || 0} %`,
         description: "Despesa Empenhada/ Autorizada",
         cor: "info",
         icone: "fa fa-handshake",
-        subfixo: ""
+        subfixo: "",
+        tooltip: ""
       },
       {
         value: `${segundoItem?.porcentagem_liquidada || 0} %`,
         description: "Despesa Liquidada/ Autorizada",
         cor: "danger",
         icone: "fas fa-hand-holding-usd",
-        subfixo: ""
+        subfixo: "",
+        tooltip: ""
       }
     ];
   }

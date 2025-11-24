@@ -332,14 +332,8 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
           0
         );
 
-        row[`liquidado_${ano}`] = valorLiquidado.toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-        row[`pago_rap_${ano}`] = valorPagoRAP.toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
+        row[`liquidado_${ano}`] = valorLiquidado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "");
+        row[`pago_rap_${ano}`] = valorPagoRAP.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "");
       });
 
       // Calcula variações

@@ -213,7 +213,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
         // Para a coluna de valor, remove "R$ " e converte para número
         if (item.propertyName === "valor") {
           const valorLimpo = item.value.replace('R$ ', '').replace(/\./g, '').replace(',', '.');
-          row[item.propertyName] = parseFloat(valorLimpo).toLocaleString("pt-BR") || 0;
+          row[item.propertyName] = parseFloat(valorLimpo).toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0;
         } else {
           row[item.propertyName] = item.value;
         }

@@ -172,7 +172,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
       defaultColumns: [
         {
           propertyName: "valor",
-          displayName: "Valor",
+          displayName: "Valores",
           alignment: {
             header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,

@@ -1,14 +1,6 @@
-<ngx-flip-table
-  [cardTitle]="title"
-  [loadingStatus]="loadingStatus"
-  [showTableIcon]="showTableIcon"
-  (executeSearch)="handleTableSearch"
-  (executeDownload)="handleTableDownload()"
->
-<ngx-pie-chart
-  [data]="chartData"
-  [colors]="['#F58B9B', '#4DB6D2']"
-  [height]="'300'"
-  [config]="chartConfig" card-front>
-</ngx-pie-chart>
+<ngx-flip-table [cardTitle]="title" [loadingStatus]="loadingStatus" [tableContent]="tableContent"
+  [showTableIcon]="showTableIcon" (executeSearch)="handleTableSearch" (executeDownload)="handleTableDownload()">
+  <ngx-pie-chart [data]="chartData" [colors]="['#F58B9B', '#4DB6D2']" [height]="'300'" [config]="chartConfig"
+    card-front>
+  </ngx-pie-chart>
 </ngx-flip-table>

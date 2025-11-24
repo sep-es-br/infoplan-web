@@ -9,10 +9,10 @@ nb-card {
   min-width: calc(40%);
   height: 100%;
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+  // &:hover {
+  //   transform: translateY(-2px);
+  //   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  // }
 
   & .card-dinamico-body {
     height: 100%;
@@ -46,7 +46,9 @@ nb-card {
 .currency-symbol {
   font-weight: bold;
 }
+
 .theme-default {
+
   .currency-symbol,
   .card-value {
     color: #ffffff;
@@ -55,6 +57,7 @@ nb-card {
 
 /* Tema DARK */
 .theme-dark {
+
   .currency-symbol,
   .card-value {
     color: #ffffff;
@@ -63,6 +66,7 @@ nb-card {
 
 /* Tema COSMIC */
 .theme-cosmic {
+
   .currency-symbol,
   .card-value {
     color: #ffffff;
@@ -77,6 +81,7 @@ nb-card {
 .icon-container {
   width: 40px;
 }
+
 .card-primary {
   background-color: var(--receita-prevista);
 }

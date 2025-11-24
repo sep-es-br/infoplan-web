@@ -17,7 +17,7 @@ import { PainelOrcamentoService } from "../../../../core/service/painel-orcament
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
 import { Subject } from "rxjs";
-import { FlipTableContent } from "../../../strategic-projects/flip-table-model/flip-table.component";
+import { FlipTableAlignment, FlipTableColumn, FlipTableContent, TreeNode } from "../../../strategic-projects/flip-table-model/flip-table.component";
 
 @Component({
   selector: "ngx-receita-participacao",
@@ -28,7 +28,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   @Input() filter: IExecucaoOrcamentariaRequest;
 
   readonly title: string = "Participação ICMS - Receita Total";
-  readonly showTableIcon: Boolean = false;
+  readonly showTableIcon: Boolean = true;
 
   chartData!: PieChartData[];
   tableContent: FlipTableContent | null = null;
@@ -49,7 +49,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
     labelThreshold: 5,
     showLabels: false,
     radius: ['30%', '60%'],
-    centerPosition: ["70%","50%"],
+    centerPosition: ["70%", "50%"],
   };
 
   private receitaICMSCharData: IReceitaParticipacaoOrcamentariaResponse[] | null =
@@ -105,6 +105,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
 
     if (chartData) {
       this.chartData = chartData;
+      this.processTableData(this.receitaICMSCharData);
     } else {
       this.chartData = [
         {
@@ -117,6 +118,80 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
     // Processa dados para a tabela
     // this.tableContent = this._chartProcessor.criarTabelaPieChart(this.chartData);
   }
+
+  private processTableData(dados: IReceitaParticipacaoOrcamentariaResponse[]) {
+    if (!dados?.length) {
+      this.tableContent = null;
+      return;
+    }
+
+    const categorias = [
+      ...new Set(dados.map((item) => item.nome_item_patrimonial)),
+    ].filter(Boolean);
+
+    const anos = [...new Set(dados.map((item) => item.ano))]
+      .filter((ano) => ano != null)
+      .sort();
+
+    if (categorias.length === 0 || anos.length === 0) {
+      this.tableContent = null;
+      return;
+    }
+
+    const treeNodes: TreeNode[] = categorias.map((categoria) => {
+      const nodeData = [
+        {
+          propertyName: "categoria",
+          value: categoria,
+        },
+      ];
+
+      anos.forEach((ano) => {
+        const item = dados.find(
+          (d) => d.nome_item_patrimonial === categoria && d.ano === ano
+        );
+        const valor = item?.receitaLiquida || 0;
+
+        nodeData.push({
+          propertyName: "valor",
+          value: ` ${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+        });
+      });
+
+      return {
+        data: nodeData,
+        children: [],
+        expanded: false,
+      };
+    });
+
+    const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
+      propertyName: "valor",
+      displayName: "Valores",
+      alignment: {
+        header: FlipTableAlignment.RIGHT,
+        data: FlipTableAlignment.RIGHT,
+      },
+    }));
+
+    const customColumn: FlipTableColumn = {
+      propertyName: "categoria",
+      displayName: "Participação ICMS - Receita Total",
+      alignment: {
+        header: FlipTableAlignment.LEFT,
+        data: FlipTableAlignment.LEFT,
+      },
+    };
+
+
+    this.tableContent = {
+      customColumn,
+      defaultColumns,
+      data: treeNodes,
+    };
+
+  }
+
 
   private processCharData(): PieChartData[] {
     return this._chartProcessor.processarDadosPieChart(
@@ -190,5 +265,5 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
     });
   }
 
-  handleTableSearch(query: string): void {}
+  handleTableSearch(query: string): void { }
 }

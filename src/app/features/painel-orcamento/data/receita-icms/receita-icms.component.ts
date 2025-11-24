@@ -18,7 +18,7 @@ import { PieChartData } from "../../org-chart-pie/org-chart-pie.component";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
-import { FlipTableContent } from "../../../strategic-projects/flip-table-model/flip-table.component";
+import { FlipTableAlignment, FlipTableColumn, FlipTableContent, TreeNode } from "../../../strategic-projects/flip-table-model/flip-table.component";
 
 @Component({
   selector: "ngx-receita-icms",
@@ -28,8 +28,8 @@ import { FlipTableContent } from "../../../strategic-projects/flip-table-model/f
 export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   @Input() filter: IExecucaoOrcamentariaRequest;
 
-  readonly title: string = "Participação ICMS - Receita Total";
-  readonly showTableIcon: Boolean = false;
+  readonly title: string = "ICMS";
+  readonly showTableIcon: Boolean = true;
 
   chartData!: PieChartData[];
   tableContent: FlipTableContent | null = null
@@ -41,7 +41,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     labelThreshold: 5,
     showLabels: false,
     radius: ['30%', '60%'],
-    centerPosition: ["70%","50%"],
+    centerPosition: ["70%", "50%"],
   };
 
   private receitaICMSCharData: IReceitaICMSOrcamentariaResponse[] | null = [];
@@ -96,6 +96,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
 
     if (chartData) {
       this.chartData = chartData;
+      this.processTableData(this.receitaICMSCharData);
     } else {
       this.chartData = [
         {
@@ -105,6 +106,79 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
       ];
       this.tableContent = null;
     }
+  }
+
+  private processTableData(dados: IReceitaICMSOrcamentariaResponse[]) {
+    if (!dados?.length) {
+      this.tableContent = null;
+      return;
+    }
+
+    const categorias = [
+      ...new Set(dados.map((item) => item.nome_item_patrimonial)),
+    ].filter(Boolean);
+
+    const anos = [...new Set(dados.map((item) => item.ano))]
+      .filter((ano) => ano != null)
+      .sort();
+
+    if (categorias.length === 0 || anos.length === 0) {
+      this.tableContent = null;
+      return;
+    }
+
+    const treeNodes: TreeNode[] = categorias.map((categoria) => {
+      const nodeData = [
+        {
+          propertyName: "categoria",
+          value: categoria,
+        },
+      ];
+
+      anos.forEach((ano) => {
+        const item = dados.find(
+          (d) => d.nome_item_patrimonial === categoria && d.ano === ano
+        );
+        const valor = item?.receitaLiquida || 0;
+
+        nodeData.push({
+          propertyName: "valor",
+          value: ` ${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+        });
+      });
+
+      return {
+        data: nodeData,
+        children: [],
+        expanded: false,
+      };
+    });
+
+    const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
+      propertyName: "valor",
+      displayName: "Valores",
+      alignment: {
+        header: FlipTableAlignment.RIGHT,
+        data: FlipTableAlignment.RIGHT,
+      },
+    }));
+
+    const customColumn: FlipTableColumn = {
+      propertyName: "categoria",
+      displayName: "ICMS",
+      alignment: {
+        header: FlipTableAlignment.LEFT,
+        data: FlipTableAlignment.LEFT,
+      },
+    };
+
+
+    this.tableContent = {
+      customColumn,
+      defaultColumns,
+      data: treeNodes,
+    };
+
   }
 
   private processCharData(): PieChartData[] {
@@ -131,7 +205,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   handleTableDownload(): void {
     const data = this.receitaICMSCharData;
 
-    if(!data.length) return;
+    if (!data.length) return;
 
     const categories = this.category(data);
     const years = this.filterYears(data);
@@ -147,44 +221,44 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
       columns,
       fileName
     );
-}
+  }
 
-private category(data: IReceitaICMSOrcamentariaResponse[]): string[] {
+  private category(data: IReceitaICMSOrcamentariaResponse[]): string[] {
     return [...new Set(data.map(item => item.nome_item_patrimonial))].filter(Boolean);
-}
+  }
 
-private filterYears(data: IReceitaICMSOrcamentariaResponse[]): number[] {
+  private filterYears(data: IReceitaICMSOrcamentariaResponse[]): number[] {
     return [...new Set(data.map(item => item.ano))]
       .filter(ano => ano != null)
       .sort();
-}
+  }
 
-private columns(years: number[]): {key: string, label: string}[] {
-   return [
+  private columns(years: number[]): { key: string, label: string }[] {
+    return [
       { key: "categoria", label: "Participação ICMS - Receita Total" },
       ...years.map(ano => ({
         key: `ano_${ano}`,
         label: `Arrecadação LI - ${ano}`,
       })),
     ];
-}
+  }
 
-private dataForDownload(categories: string[], years: number[], columns: {key: string, label: string}[]): any[] {
+  private dataForDownload(categories: string[], years: number[], columns: { key: string, label: string }[]): any[] {
     return categories.map(categoria => {
-        const row: any = { categoria };
+      const row: any = { categoria };
 
-        years.forEach(year => {
-            const item = this.receitaICMSCharData.find(
-                d => d.nome_item_patrimonial === categoria && d.ano === year
-            );
-            row[`ano_${year}`] = item?.receitaLiquida
-                ? `${item.receitaLiquida.toLocaleString("pt-BR")}`
-                : "0";
-        });
+      years.forEach(year => {
+        const item = this.receitaICMSCharData.find(
+          d => d.nome_item_patrimonial === categoria && d.ano === year
+        );
+        row[`ano_${year}`] = item?.receitaLiquida
+          ? `${item.receitaLiquida.toLocaleString("pt-BR")}`
+          : "0";
+      });
 
-        return row;
+      return row;
     });
-}
+  }
 
 
 }

@@ -10,15 +10,37 @@ import {
 } from "../../../features/strategic-projects/flip-table-model/flip-table.component";
 
 const CHART_COLORS = [
-  "#4DB6D2",
-  "#F58B9B",
-  "#e4c26b",
-  "#2E88B9",
-  "#77D4B0",
-  "#A671C4",
-  "#F6D25A",
-  "#C5C5C5"
+  "#4DB6D2", // azul claro
+  "#F58B9B", // rosa
+  "#AF9552", // dourado
+  "#2E88B9", // azul médio
+  "#549b7f", // verde-azulado
+  "#A671C4", // roxo
+  "#C5C5C5", // cinza claro
+
+  // Cores conectadas - variações das originais:
+  "#2d6981ff", // entre o azul claro e azul médio
+  "#dd7788ff", // rosa um tom mais suave
+  "#c7a921ff", // dourado mais claro
+  "#458FA3", // azul esverdeado (ponte entre azul e verde)
+  "#6D8B9A", // azul acinzentado (conecta azul com cinza)
+  "#B67DAD", // roxo rosado (ponte entre roxo e rosa)
+  "#94A89D"  // verde acinzentado (conecta verde com cinza)
 ];
+// const CHART_COLORS = [
+//   "#4DB6D2",    // Salmão suave - harmoniza com o rosa e amarelo
+//   "#F58B9B",    // Roxo médio - ponte entre o roxo e azul
+//   "#e4c26b",    // Verde-água forte - complementa os azuis e verdes
+//   "#2E88B9",    // Dourado - reforça a família dos amarelos
+//   "#77D4B0",    // Coral claro - variação do tom rosa
+//   "#A671C4",    // Azul céu - tom pastel para os azuis
+//   "#F6D25A",    // Verde menta pastel - contraste suave
+//   "#C5C5C5",    // Ameixa claro - tom roxo suavizado
+//   "#FFB6C1",    // Rosa claro - para variações mais suaves
+//   "#F0E68C",    // Khaki - tom terroso-amarelado
+//   "#E6E6FA",    // Lavanda - neutro colorido
+//   "#FFDEAD"     // Branco amêndoa - tom creme quente
+// ];
 
 @Injectable({
   providedIn: "root",
@@ -102,7 +124,7 @@ export class ChartDataProcessorService {
   ): IChartOptions | null {
     try {
       // Definir cores para os datasets
-      const colors = ['#76c6d8', '#F58B9B', '#77D4B0', '#A671C4', '#F6D25A'];
+      const colors = ['#76c6d8', '#F58B9B', '#77D4B0', '#A671C4', '#AF9552'];
       const datasetLabels = ['Orçado', 'Autorizado', 'Empenhado', 'Liquidado', 'Pago com RAP'];
       const valueFields = ['vlr_orcado', 'vlr_autorizado', 'vlr_empenhado', 'vlr_liquidado', 'vlr_pago_com_rap'];
 

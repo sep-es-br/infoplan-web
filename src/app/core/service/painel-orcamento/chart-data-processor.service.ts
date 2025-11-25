@@ -12,20 +12,20 @@ import {
 const CHART_COLORS = [
   "#4DB6D2", // azul claro
   "#F58B9B", // rosa
-  "#AF9552", // dourado
-  "#2E88B9", // azul médio
-  "#549b7f", // verde-azulado
-  "#A671C4", // roxo
-  "#C5C5C5", // cinza claro
+  "#ffd56bff", // dourado
+  "#1791DE", // azul médio
+  "#39d898ff", // verde-azulado
+  "#d895ffff", // roxo
+  "#b9b8b8c2", // cinza claro
 
   // Cores conectadas - variações das originais:
-  "#2d6981ff", // entre o azul claro e azul médio
-  "#dd7788ff", // rosa um tom mais suave
-  "#c7a921ff", // dourado mais claro
-  "#458FA3", // azul esverdeado (ponte entre azul e verde)
-  "#6D8B9A", // azul acinzentado (conecta azul com cinza)
+  "#082784", // entre o azul claro e azul médio
+  "#ff8fa2ff", // rosa um tom mais suave
+  "#85cea6ff", // dourado mais claro
+  "#8EFFFD", // azul esverdeado (ponte entre azul e verde)
+  "#849299ff", // azul acinzentado (conecta azul com cinza)
   "#B67DAD", // roxo rosado (ponte entre roxo e rosa)
-  "#94A89D"  // verde acinzentado (conecta verde com cinza)
+  "#a4d1b8ff"  // verde acinzentado (conecta verde com cinza)
 ];
 // const CHART_COLORS = [
 //   "#4DB6D2",    // Salmão suave - harmoniza com o rosa e amarelo
@@ -123,8 +123,8 @@ export class ChartDataProcessorService {
     ano: number
   ): IChartOptions | null {
     try {
-      // Definir cores para os datasets
-      const colors = ['#76c6d8', '#F58B9B', '#77D4B0', '#A671C4', '#AF9552'];
+      // Definir cores para os datasets #71C273
+      const colors = ['#76c6d8', '#F58B9B', '#8FCCA2', '#A671C4', '#FFA948'];
       const datasetLabels = ['Orçado', 'Autorizado', 'Empenhado', 'Liquidado', 'Pago com RAP'];
       const valueFields = ['vlr_orcado', 'vlr_autorizado', 'vlr_empenhado', 'vlr_liquidado', 'vlr_pago_com_rap'];
 
@@ -171,6 +171,82 @@ export class ChartDataProcessorService {
     }
   }
 
+  // criarChartLiquidadoEPago(
+  //   dados: any[],
+  //   campoLabel: string,
+  //   tituloChart?: string
+  // ): IChartOptions | null {
+
+  //   // Extrair anos únicos dos dados automaticamente
+  //   const anos = [...new Set(dados.map((d) => d.ano))].sort();
+
+  //   // Extrair categorias únicas automaticamente
+  //   const categorias = [...new Set(dados.map((d) => d[campoLabel]))].filter(
+  //     Boolean
+  //   );
+
+  //   if (anos.length === 0 || categorias.length === 0) {
+  //     console.warn(`Dados insuficientes para gerar o gráfico`);
+  //     return null;
+  //   }
+
+
+  //   const datasets = [
+  //     {
+  //       label: `Liquidado ${anos[1] || anos[0]}`, // 2025 ou último ano
+  //       data: categorias.map((categoria) => {
+  //         const item = dados.find(
+  //           (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
+  //         );
+  //         return this.extrairValor(item, ["vlr_liquidado"]);
+  //       }),
+  //       backgroundColor: this.colors[0],
+  //     },
+  //     {
+  //       label: `Liquidado ${anos[0]}`, // 2024 ou primeiro ano
+  //       data: categorias.map((categoria) => {
+  //         const item = dados.find(
+  //           (d) => d[campoLabel] === categoria && d.ano === anos[0]
+  //         );
+  //         return this.extrairValor(item, ["vlr_liquidado"]);
+  //       }),
+  //       backgroundColor: this.colors[1],
+  //     },
+  //     {
+  //       label: `Pago com RAP ${anos[1] || anos[0]}`, // 2025 ou último ano
+  //       data: categorias.map((categoria) => {
+  //         const item = dados.find(
+  //           (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
+  //         );
+  //         return this.extrairValor(item, ["vlr_pago_com_rap"]);
+  //       }),
+  //       backgroundColor: CHART_COLORS[2],
+  //     },
+  //     {
+  //       label: `Pago com RAP ${anos[0]}`, // 2024 ou primeiro ano
+  //       data: categorias.map((categoria) => {
+  //         const item = dados.find(
+  //           (d) => d[campoLabel] === categoria && d.ano === anos[0]
+  //         );
+  //         return this.extrairValor(item, ["vlr_pago_com_rap"]);
+  //       }),
+  //       backgroundColor: CHART_COLORS[0],
+  //     },
+  //   ];
+
+  //   if (!this.temDadosValidos(datasets.map((d) => d.data))) {
+  //     console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
+  //     return null;
+  //   }
+
+  //   return {
+  //     data: {
+  //       labels: categorias,
+  //       datasets: datasets,
+  //     },
+  //   };
+  // }
+
   criarChartLiquidadoEPago(
     dados: any[],
     campoLabel: string,
@@ -190,49 +266,63 @@ export class ChartDataProcessorService {
       return null;
     }
 
+    // DEFINIR CORES CONSISTENTEMENTE d390f9 A671C4 ffc78c
+    const cores = [
+      "#e6bcff", // azul claro - Liquidado 2025
+      "#A671C4", // rosa - Liquidado 2024
+      "#ffc78c", // dourado - Pago com RAP 2025
+      "#FFA948", // azul médio - Pago com RAP 2024
+    ];
 
     const datasets = [
       {
-        label: `Liquidado ${anos[1] || anos[0]}`, // 2025 ou último ano
+        label: `Liquidado ${anos[0] || anos[0]}`,
         data: categorias.map((categoria) => {
           const item = dados.find(
             (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
           );
           return this.extrairValor(item, ["vlr_liquidado"]);
         }),
-        backgroundColor: this.colors[0],
+        backgroundColor: cores[0],
       },
       {
-        label: `Liquidado ${anos[0]}`, // 2024 ou primeiro ano
+        label: `Liquidado ${anos[1]}`,
         data: categorias.map((categoria) => {
           const item = dados.find(
             (d) => d[campoLabel] === categoria && d.ano === anos[0]
           );
           return this.extrairValor(item, ["vlr_liquidado"]);
         }),
-        backgroundColor: this.colors[1],
+        backgroundColor: cores[1],
       },
       {
-        label: `Pago com RAP ${anos[1] || anos[0]}`, // 2025 ou último ano
+        label: `Pago com RAP ${anos[0] || anos[0]}`,
         data: categorias.map((categoria) => {
           const item = dados.find(
             (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
           );
           return this.extrairValor(item, ["vlr_pago_com_rap"]);
         }),
-        backgroundColor: this.colors[2],
+        backgroundColor: cores[2],
       },
       {
-        label: `Pago com RAP ${anos[0]}`, // 2024 ou primeiro ano
+        label: `Pago com RAP ${anos[1]}`,
         data: categorias.map((categoria) => {
           const item = dados.find(
             (d) => d[campoLabel] === categoria && d.ano === anos[0]
           );
           return this.extrairValor(item, ["vlr_pago_com_rap"]);
         }),
-        backgroundColor: this.colors[7],
+        backgroundColor: cores[3],
       },
     ];
+
+    // DEBUG: Verificar se as cores estão sendo atribuídas
+    console.log('Datasets com cores:', datasets.map(d => ({
+      label: d.label,
+      backgroundColor: d.backgroundColor,
+      data: d.data
+    })));
 
     if (!this.temDadosValidos(datasets.map((d) => d.data))) {
       console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
@@ -542,7 +632,7 @@ export class ChartDataProcessorService {
         nodeData.push({
           originalPropertyName: `ano_${ano}`,
           propertyName: ano.toString(),
-          value: this.extrairValor(item, camposValor),
+          value: this.extrairValor(item, camposValor).toString(),
         });
       });
 
@@ -576,16 +666,28 @@ export class ChartDataProcessorService {
       .sort();
   }
 
-  private extrairValor(item: any, camposValor: string[]): any {
-    if (!item) return null;
+  private extrairValor(item: any, campos: string[]): number {
+    if (!item) return 0;
 
-    for (const campo of camposValor) {
-      if (item.hasOwnProperty(campo)) {
-        return item[campo];
+    for (const campo of campos) {
+      const valor = item[campo];
+      if (valor !== undefined && valor !== null && valor !== '') {
+        return Number(valor) || 0;
       }
     }
 
-    // Fallback para campo 'value'
-    return item.value || null;
+    return 0;
   }
+  // private extrairValor(item: any, camposValor: string[]): any {
+  //   if (!item) return null;
+
+  //   for (const campo of camposValor) {
+  //     if (item.hasOwnProperty(campo)) {
+  //       return item[campo];
+  //     }
+  //   }
+
+  //   // Fallback para campo 'value'
+  //   return item.value || null;
+  // }
 }

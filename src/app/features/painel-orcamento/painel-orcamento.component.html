@@ -25,9 +25,9 @@
                 </ng-container>
               </div>
             </div>
-            <!-- <button class="remove-button" (click)="removeFilter(tag.key)">
+            <button *ngIf="tag.key !== 'ano'" class="remove-button" (click)="removeFilter(tag.key)">
               x
-            </button> -->
+            </button>
           </div>
         </div>
       </div>
@@ -75,9 +75,6 @@
                       <nb-option *ngFor="let mes of monthsList" [value]="mes.num">
                         {{ mes.name }}
                       </nb-option>
-                      <nb-option [value]="-1">
-                        Todos os Meses
-                      </nb-option>
                     </nb-select>
                   </div>
 
@@ -89,7 +86,6 @@
                       #customSelect>
                       <nb-option [value]="1">Caixas Tesouros</nb-option>
                       <nb-option [value]="2">Demais Fontes</nb-option>
-                      <nb-option [value]="-1">Todos os Tipos</nb-option>
                     </nb-select>
                   </div>
 

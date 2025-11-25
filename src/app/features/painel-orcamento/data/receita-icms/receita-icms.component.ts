@@ -128,7 +128,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     }
 
     const treeNodes: TreeNode[] = categorias.map((categoria) => {
-      const nodeData = [
+      const nodeData: any[] = [
         {
           propertyName: "categoria",
           value: categoria,
@@ -141,8 +141,9 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
         );
         const valor = item?.receitaLiquida || 0;
 
+        // Nome único para cada coluna de ano
         nodeData.push({
-          propertyName: "valor",
+          propertyName: `ano_${ano}`, // Nome único para cada ano
           value: ` ${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
       });
@@ -154,9 +155,10 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
       };
     });
 
+    // Colunas com propertyNames únicos
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
-      propertyName: "valor",
-      displayName: "Valores",
+      propertyName: `ano_${ano}`, // Mesmo nome usado nos nodeData
+      displayName: ano.toString(), // Mostra o ano como nome da coluna
       alignment: {
         header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
@@ -172,13 +174,11 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
       },
     };
 
-
     this.tableContent = {
       customColumn,
       defaultColumns,
       data: treeNodes,
     };
-
   }
 
   private processCharData(): PieChartData[] {

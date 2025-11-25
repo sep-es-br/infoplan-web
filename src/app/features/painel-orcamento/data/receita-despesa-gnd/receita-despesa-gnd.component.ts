@@ -172,7 +172,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
           "liquidado"
         );
         nodeData.push({
-          propertyName: "Variação Liquidado (%)",
+          propertyName: "Variação Liquidado",
           value: `${variacaoLiquidado} %`,
         });
 
@@ -183,7 +183,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
           "pago_rap"
         );
         nodeData.push({
-          propertyName: "Variação Pago RAP (%)",
+          propertyName: "Variação Pago RAP",
           value: `${variacaoPagoRAP} %`,
         });
       }
@@ -219,7 +219,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
 
     if (anos.length >= 2) {
       defaultColumns.push({
-        propertyName: "Variação Liquidado (%)",
+        propertyName: "Variação Liquidado",
         displayName: "Variação Liquidado",
         alignment: {
           header: FlipTableAlignment.CENTER,
@@ -228,7 +228,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
       });
 
       defaultColumns.push({
-        propertyName: "Variação Pago RAP (%)",
+        propertyName: "Variação Pago RAP",
         displayName: "Variação Pago RAP",
         alignment: {
           header: FlipTableAlignment.CENTER,
@@ -309,8 +309,8 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
     // Adiciona colunas de variação se tiver mais de 1 ano
     if (anos.length >= 2) {
       columns.push(
-        { key: "variacao_liquidado", label: "Variação Liquidado (%)" },
-        { key: "variacao_pago_rap", label: "Variação Pago RAP (%)" }
+        { key: "variacao_liquidado", label: "Variação Liquidado" },
+        { key: "variacao_pago_rap", label: "Variação Pago RAP" }
       );
     }
 
@@ -378,8 +378,8 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
             ? ((valorFinalRAP - valorInicialRAP) / valorInicialRAP) * 100
             : 0;
 
-        row["variacao_liquidado"] = Number(variacaoLiq.toFixed(2));
-        row["variacao_pago_rap"] = Number(variacaoRAP.toFixed(2));
+        row["variacao_liquidado"] = `${variacaoLiq.toFixed(2)} %`;
+        row["variacao_pago_rap"] = `${variacaoRAP.toFixed(2)} %`;
       }
 
       return row;

@@ -21,7 +21,7 @@ import { IChartOptions } from "./../../../../shared/models/painel-orcamento/ICha
 export class OrgChartVerticalComponent implements OnInit, OnChanges {
   @Input() chart!: IChartOptions;
   @Input() height: number;
-
+  @Input() barGap: string = "30";
   echartsInstance: ECharts | null = null;
 
   chartOptions: EChartsOption;
@@ -64,32 +64,35 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
   }
 
   initChartOptions(chart: IChartOptions) {
-    if (!chart?.data || chart.data.datasets.length < 2) {
+    if (!chart?.data || chart.data.datasets.length === 0) {
       this.chartOptions = null!;
       return;
     }
 
     const theme = getAvailableThemesStyles(this.currentTheme);
+
+    // EXTRAIR CORES DINAMICAMENTE DOS DATASETS
+    const colors = chart.data.datasets.map(dataset =>
+      dataset.backgroundColor || this.getFallbackColor(chart.data.datasets.indexOf(dataset))
+    );
+
+    console.log('Cores extraídas:', colors);
+
     const data = chart.data.labels.map((label: string, i: number) => ({
       category: label,
       valores: chart.data.datasets.map(dataset => dataset.data[i] ?? 0)
     }));
 
-    const colors = [
-      chart.data.datasets[0].backgroundColor || "#4DB6D2",
-      chart.data.datasets[1].backgroundColor || "#F58B9B",
-    ];
-
     // Lógica SIMPLIFICADA para rotação
     const isMobile = window.innerWidth <= 768;
-    const shouldRotate = isMobile || data.length > 6; // Reduzi o limite para 6
-    const rotateAngle = shouldRotate ? 45 : 0; // Aumentei para 45° para melhor visualização
+    const shouldRotate = isMobile || data.length > 6;
+    const rotateAngle = shouldRotate ? 45 : 0;
 
     this.chartOptions = {
       grid: {
         top: "20%",
         left: "12%",
-        bottom: shouldRotate ? "2%" : "8%", // Aumentei a margem inferior quando rotacionado
+        bottom: shouldRotate ? "2%" : "8%",
         right: "5%",
         containLabel: true,
       },
@@ -130,14 +133,14 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 9,
-          interval: 0, // MOSTRA TODOS OS LABELS
-          rotate: rotateAngle, // Ângulo simplificado
-          margin: 12, // Aumentei a margem
+          interval: 0,
+          rotate: rotateAngle,
+          margin: 12,
           overflow: 'truncate',
-          width: shouldRotate ? 80 : undefined, // Largura maior para textos rotacionados
+          width: shouldRotate ? 80 : undefined,
         },
         axisTick: {
-          alignWithLabel: shouldRotate // Alinha ticks com labels rotacionados
+          alignWithLabel: shouldRotate
         }
       },
       yAxis: {
@@ -151,16 +154,39 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
           formatter: (v: number) => this.formatValue(v),
         },
       },
+      // APLICAR CORES DINAMICAMENTE NAS SÉRIES
       series: chart.data.datasets.map((dataset, index) => ({
         name: dataset.label,
         type: "bar",
         data: data.map(res => res.valores[index]),
-        itemStyle: { color: colors[index]},
+        itemStyle: {
+          color: colors[index], // COR DINÂMICA AQUI
+          borderColor: colors[index],
+          borderWidth: 1
+        },
         barMaxWidth: isMobile ? 20 : 40,
-        barCategoryGap: shouldRotate ? '20%' : '30%' // Ajusta espaçamento quando rotacionado
+        barCategoryGap: shouldRotate ? '20%' : '30%',
+        barGap: `${this.barGap}%`,
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        }
       }))
     };
   }
+
+  // MÉTODO PARA CORES DE FALLBACK
+  private getFallbackColor(index: number): string {
+    const fallbackColors = [
+      "#4DB6D2", "#F58B9B", "#AF9552", "#2E88B9",
+      "#549b7f", "#A671C4", "#C5C5C5",
+      "#2d6981", "#dd7788", "#c7a921"
+    ];
+    return fallbackColors[index % fallbackColors.length];
+  }
+
   private formatValue(value: number): string {
     if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(0) + "B";
     if (value >= 1_000_000) return (value / 1_000_000).toFixed(0) + "M";

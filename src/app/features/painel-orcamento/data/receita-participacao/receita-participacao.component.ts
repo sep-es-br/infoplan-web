@@ -115,10 +115,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       ];
       this.tableContent = null;
     }
-    // Processa dados para a tabela
-    // this.tableContent = this._chartProcessor.criarTabelaPieChart(this.chartData);
   }
-
   private processTableData(dados: IReceitaParticipacaoOrcamentariaResponse[]) {
     if (!dados?.length) {
       this.tableContent = null;
@@ -139,7 +136,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
     }
 
     const treeNodes: TreeNode[] = categorias.map((categoria) => {
-      const nodeData = [
+      const nodeData: any[] = [
         {
           propertyName: "categoria",
           value: categoria,
@@ -152,8 +149,9 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
         );
         const valor = item?.receitaLiquida || 0;
 
+        // Nome único para cada coluna de ano
         nodeData.push({
-          propertyName: "valor",
+          propertyName: `ano_${ano}`, // Nome único para cada ano
           value: ` ${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
       });
@@ -165,9 +163,10 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       };
     });
 
+    // Colunas com propertyNames únicos
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
-      propertyName: "valor",
-      displayName: "Valores",
+      propertyName: `ano_${ano}`, // Mesmo nome usado nos nodeData
+      displayName: ano.toString(), // Mostra o ano como nome da coluna
       alignment: {
         header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
@@ -176,22 +175,19 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
 
     const customColumn: FlipTableColumn = {
       propertyName: "categoria",
-      displayName: "Participação ICMS - Receita Total",
+      displayName: "ICMS",
       alignment: {
         header: FlipTableAlignment.LEFT,
         data: FlipTableAlignment.LEFT,
       },
     };
 
-
     this.tableContent = {
       customColumn,
       defaultColumns,
       data: treeNodes,
     };
-
   }
-
 
   private processCharData(): PieChartData[] {
     return this._chartProcessor.processarDadosPieChart(

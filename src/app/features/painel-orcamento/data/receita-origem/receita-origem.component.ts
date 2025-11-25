@@ -237,7 +237,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
     ];
 
     if (anos.length >= 2) {
-      columns.push({ key: "variacao", label: "Variação (%)" });
+      columns.push({ key: "variacao", label: "Variação" });
     }
 
     const dataForDownload = categorias.map((categoria) => {
@@ -269,7 +269,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
             ? ((valorFinal - valorInicial) / valorInicial) * 100
             : 0;
 
-        row["variacao"] = Number(variacao.toFixed(2));
+        row["variacao"] = `${variacao.toFixed(2)} %`;
       }
 
       return row;

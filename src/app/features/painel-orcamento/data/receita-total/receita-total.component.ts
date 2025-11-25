@@ -234,11 +234,10 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
       const row: any = {};
 
       node.data.forEach((item) => {
-        if (item.propertyName == "valor") {
+        if (item.propertyName != "Exercício") {
           row[item.propertyName] = item.value.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim();
-        } else {
-          row[item.propertyName] = item.value;
         }
+        row[item.propertyName] = item.value;
       });
 
       return row;

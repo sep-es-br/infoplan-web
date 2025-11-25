@@ -22,6 +22,7 @@ import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChart
 export class OrgChartHorizontalComponent implements OnInit, OnChanges {
   @Input() chart!: IChartOptions;
   @Input() height: number;
+  @Input() charactersPerLine: number;;
 
   chartOptions: EChartsOption;
   echartsInstance: ECharts | null = null;
@@ -137,12 +138,16 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
       yAxis: {
         type: "category",
         inverse: false,
+
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: 10,
           overflow: "truncate",
           width: 100,
+          formatter: (value: string) => {
+            return this.quebrarTexto(value, this.charactersPerLine);
+          },
         },
       },
 
@@ -156,7 +161,7 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
       dataZoom: [
         {
           type: "slider",
-          yAxisIndex: [0],
+          yAxisIndex: 0,
           start: 0,
           end: (9 / data.length) * 100,
           zoomLock: true,
@@ -164,10 +169,15 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
           handleSize: "50%",
           width: 0,
           left: "97%",
+          showDetail: false,
+          showDataShadow: false,
+          textStyle: {
+            fontSize: 0
+          }
         },
         {
           type: "inside",
-          yAxisIndex: [0],
+          yAxisIndex: 0,
           start: 0,
           end: (9 / data.length) * 100,
           zoomLock: true,
@@ -180,6 +190,11 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
     if (this.echartsInstance) {
       this.echartsInstance.resize();
     }
+  }
+
+  private quebrarTexto(texto: string, maxCaracteres: number): string {
+    if (!texto) return '';
+    return texto.match(new RegExp(`.{1,${maxCaracteres}}`, 'g'))?.join('\n') || texto;
   }
 
   private formatValue(value: number): string {

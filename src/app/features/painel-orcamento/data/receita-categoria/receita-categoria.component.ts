@@ -221,7 +221,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     ];
 
     if (anos.length >= 2) {
-      columns.push({ key: "variacao", label: "Variação (%)" });
+      columns.push({ key: "variacao", label: "Variação" });
     }
 
     // Criar dados para download usando os valores brutos
@@ -254,7 +254,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
             ? ((valorFinal - valorInicial) / valorInicial) * 100
             : 0;
 
-        row["variacao"] = Number(variacao.toFixed(2));
+        row["variacao"] = `${variacao.toFixed(2)} %`;
       }
 
       return row;

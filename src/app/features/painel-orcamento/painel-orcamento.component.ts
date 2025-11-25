@@ -43,8 +43,8 @@ interface ICards {
 
 interface IExecucaoOrcamentariaFilters {
   ano: number;
-  mes: number[];
-  tipoFonte: number[];
+  mes?: number[];
+  tipoFonte?: number[];
 }
 
 enum AvailableFilters {
@@ -76,7 +76,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   readonly tipoFonteList = [
     { id: 1, name: 'Caixas Tesouros' },
     { id: 2, name: 'Demais Fontes' },
-    { id: -1, name: 'Todos os Tipos' }
   ];
 
   private readonly destroy$ = new Subject<void>();
@@ -219,12 +218,12 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     }
 
     // Filtro Mês
-    if (this.finalFilter.mes && this.finalFilter.mes.length > 0) {
+    if (this.finalFilter.mes && this.finalFilter.mes.length > 1) {
       if (this.finalFilter.mes.includes(-1)) {
         this.activeFilters.push({
           key: 'mes',
           label: 'Mês',
-          displayValue: [{ name: 'Todos os Meses' }]
+          displayValue: [{ name: 'Janeiro' }]
         });
       } else {
         const mesesSelecionados = this.finalFilter.mes.map(mesNum => {
@@ -240,12 +239,12 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     }
 
     // Filtro Tipo Fonte
-    if (this.finalFilter.tipoFonte && this.finalFilter.tipoFonte.length > 0) {
+    if (this.finalFilter.tipoFonte && this.finalFilter.tipoFonte.length > 1) {
       if (this.finalFilter.tipoFonte.includes(-1)) {
         this.activeFilters.push({
           key: 'tipoFonte',
           label: 'Tipo de Fonte',
-          displayValue: [{ name: 'Todos os Tipos' }]
+          displayValue: [{ name: 'Caixas Tesouros' }]
         });
       } else {
         const tiposSelecionados = this.finalFilter.tipoFonte.map(tipoNum => {
@@ -264,8 +263,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   getFilterLabel(key: string): string {
     const labels = {
       ano: 'Ano',
-      mes: 'Mês',
-      tipoFonte: 'Tipo de Fonte',
     };
     return labels[key as keyof typeof labels] || key;
   }

@@ -218,13 +218,13 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     }
 
     // Filtro Mês
-    if (this.finalFilter.mes && this.finalFilter.mes.length > 1) {
+    if (this.finalFilter.mes && this.finalFilter.mes.length >= 1) {
       if (this.finalFilter.mes.includes(-1)) {
-        this.activeFilters.push({
-          key: 'mes',
-          label: 'Mês',
-          displayValue: [{ name: 'Janeiro' }]
-        });
+        // this.activeFilters.push({
+        //   key: 'mes',
+        //   label: 'Mês',
+        //   displayValue: [{ name: '' }]
+        // });
       } else {
         const mesesSelecionados = this.finalFilter.mes.map(mesNum => {
           const mes = this.monthsList.find(m => m.num === mesNum);
@@ -239,13 +239,13 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     }
 
     // Filtro Tipo Fonte
-    if (this.finalFilter.tipoFonte && this.finalFilter.tipoFonte.length > 1) {
+    if (this.finalFilter.tipoFonte && this.finalFilter.tipoFonte.length >= 1) {
       if (this.finalFilter.tipoFonte.includes(-1)) {
-        this.activeFilters.push({
-          key: 'tipoFonte',
-          label: 'Tipo de Fonte',
-          displayValue: [{ name: 'Caixas Tesouros' }]
-        });
+        // this.activeFilters.push({
+        //   key: 'tipoFonte',
+        //   label: 'Tipo de Fonte',
+        //   displayValue: [{ name: 'Caixas Tesouros' }]
+        // });
       } else {
         const tiposSelecionados = this.finalFilter.tipoFonte.map(tipoNum => {
           const tipo = this.tipoFonteList.find(t => t.id === tipoNum);

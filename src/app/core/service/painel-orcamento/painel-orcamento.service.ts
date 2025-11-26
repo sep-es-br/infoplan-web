@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { environment } from "../../../../environments/environment";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { HttpClient, HttpErrorResponse, HttpParams, HttpStatusCode } from "@angular/common/http";
+import { Observable, throwError } from "rxjs";
 import {
   IExecucaoOrcamentariaRequest,
   IReceitaTotalOrcamentariaResponse,
@@ -14,6 +14,8 @@ import {
   IReceitaImpostoOrcamentariaResponse,
   IReceitaTransfereciaCorrenteOrcamentariaResponse,
 } from "../../interfaces/painel-orcamento/painel-orcamento";
+import { Router } from "@angular/router";
+import { catchError } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -21,8 +23,12 @@ import {
 export class PainelOrcamentoService {
   private _URI = `${environment.apiUrl}/execucaoOrcamentaria`;
 
-  constructor(private _http: HttpClient) { }
+  private router: Router;
 
+
+  constructor(private _http: HttpClient, private _router: Router) {
+    this.router = _router;
+  }
   public getReceitaTotal(
     request: IExecucaoOrcamentariaRequest
   ): Observable<IReceitaTotalOrcamentariaResponse> {
@@ -30,7 +36,8 @@ export class PainelOrcamentoService {
     return this._http.get<IReceitaTotalOrcamentariaResponse>(
       `${this._URI}/receita-total`,
       { params }
-    );
+    )
+      .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
   public getReceitaOrigem(
@@ -41,7 +48,8 @@ export class PainelOrcamentoService {
     return this._http.get<IReceitaOrigemOrcamentariaResponse[]>(
       `${this._URI}/receita-origem`,
       { params }
-    );
+    )
+      .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
   public getReceitaPorCategoria(
@@ -52,7 +60,8 @@ export class PainelOrcamentoService {
     return this._http.get<IReceitaCategoriaOrcamentariaResponse[]>(
       `${this._URI}/receita-categoria`,
       { params }
-    );
+    )
+      .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
   public getReceitaPorParticipacao(
@@ -62,7 +71,8 @@ export class PainelOrcamentoService {
     return this._http.get<IReceitaParticipacaoOrcamentariaResponse[]>(
       `${this._URI}/receita-participacao`,
       { params }
-    );
+    )
+      .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
   public getRceitaPorDespesaGND(
@@ -72,7 +82,8 @@ export class PainelOrcamentoService {
     return this._http.get<IReceitaDespesaGNDOrcamentariaResponse[]>(
       `${this._URI}/receita-despesas-gnd`,
       { params }
-    );
+    )
+      .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
   public getRceitaPorDespesaGNDTotal(
@@ -82,7 +93,8 @@ export class PainelOrcamentoService {
     return this._http.get<IReceitaDespesaGNDTotalOrcamentariaResponse[]>(
       `${this._URI}/receita-despesas-gnd-total`,
       { params }
-    );
+    )
+      .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
   public getRceitaPorICMS(
@@ -92,7 +104,8 @@ export class PainelOrcamentoService {
     return this._http.get<IReceitaICMSOrcamentariaResponse[]>(
       `${this._URI}/receita-icms`,
       { params }
-    );
+    )
+      .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
   public getRceitaPorImpostos(
@@ -102,7 +115,8 @@ export class PainelOrcamentoService {
     return this._http.get<IReceitaImpostoOrcamentariaResponse[]>(
       `${this._URI}/receita-impostos`,
       { params }
-    );
+    )
+      .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
   public getRceitaPorTransferenciaCorrente(
@@ -112,7 +126,8 @@ export class PainelOrcamentoService {
     return this._http.get<IReceitaTransfereciaCorrenteOrcamentariaResponse[]>(
       `${this._URI}/receita-transferencia-corrente`,
       { params }
-    );
+    )
+      .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
   private returnParams(execucaoOrcamentaria: IExecucaoOrcamentariaRequest): HttpParams {
@@ -126,6 +141,39 @@ export class PainelOrcamentoService {
       )
       .set("tipoFonte", String(execucaoOrcamentaria.tipoFonte));
     return params;
+  }
+
+  // private handleError(
+  //   err: HttpErrorResponse,
+  //   router: Router,
+  //   callback?: (error: any) => void
+  // ): Observable<never> {
+  //   console.log(err);
+
+  //   if (err.status === HttpStatusCode.Unauthorized) {
+  //     router.navigate(['pages/home']);
+  //   } else if (err.status === HttpStatusCode.Forbidden) {
+  //     router.navigate(['login']);
+  //   }
+
+  //   if (callback) {
+  //     callback(err);
+  //   }
+
+  //   // Retorna um Observable que emite erro
+  //   return throwError(() => err);
+  // }
+
+  private handleError(err: any, router: Router): Observable<never> {
+    console.log(err, "dasdsadas");
+    if ((err as HttpErrorResponse).status == HttpStatusCode.Unauthorized) {
+      router.navigate(['pages/home']);
+    } else if ((err as HttpErrorResponse).status == HttpStatusCode.Forbidden) {
+      console.log("Forbidden");
+      router.navigate(['login']);
+    }
+
+    return throwError(() => err);
   }
 
 }

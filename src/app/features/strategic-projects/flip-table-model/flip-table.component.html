@@ -10,18 +10,20 @@
 
     <div class="d-flex align-items-center justify-content-end">
       <ng-container *ngIf="isFlipCardFlipped">
-        <ng-container *ngIf="isSearchFieldVisible">
-          <nb-form-field class="search-form-field opening">
-            <input nbInput class="search-input" type="text" shape="round" fieldSize="tiny" placeholder="Buscar"
-              (keyup)="debounceOnInput($event)" />
-            <nb-icon nbSuffix class="close-icon" [icon]="'close-outline'" (click)="handleCloseSearchFieldClick()">
-            </nb-icon>
-          </nb-form-field>
-        </ng-container>
+        <ng-container *ngIf="!showSearchField">
+          <ng-container *ngIf="isSearchFieldVisible">
+            <nb-form-field class="search-form-field opening">
+              <input nbInput class="search-input" type="text" shape="round" fieldSize="tiny" placeholder="Buscar"
+                (keyup)="debounceOnInput($event)" />
+              <nb-icon nbSuffix class="close-icon" [icon]="'close-outline'" (click)="handleCloseSearchFieldClick()">
+              </nb-icon>
+            </nb-form-field>
+          </ng-container>
 
-        <ng-container *ngIf="!isSearchFieldVisible">
-          <nb-icon class="search-button m-0 ms-3 p-0" [icon]="'search-outline'" (click)="isSearchFieldVisible = true">
-          </nb-icon>
+          <ng-container *ngIf="!isSearchFieldVisible">
+            <nb-icon class="search-button m-0 ms-3 p-0" [icon]="'search-outline'" (click)="isSearchFieldVisible = true">
+            </nb-icon>
+          </ng-container>
         </ng-container>
       </ng-container>
 
@@ -34,6 +36,16 @@
       </ng-container>
       <ng-template #tableIcon>
         <i *ngIf="showTableIcon" class="flip-button fas fa-table m-0 ms-3 p-0" (click)="handleFlipButtonClick()"></i>
+      </ng-template>
+
+      <ng-container *ngIf="!isMaximized; else maximizeIcon">
+        <i class="maximize-button m-0 ms-3 p-0 fas fa-expand" (click)="handleMaximizeButtonClick()" title="Maximizar">
+        </i>
+      </ng-container>
+
+      <ng-template #maximizeIcon>
+        <i class="maximize-button m-0 ms-3 p-0 fas fa-compress" (click)="handleMaximizeButtonClick()" title="Minimizar">
+        </i>
       </ng-template>
     </div>
   </nb-card-header>

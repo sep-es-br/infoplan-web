@@ -25,6 +25,7 @@ import { ComunicationCardsService } from "../../core/service/comunication-cards/
 import { ShortNumberPipe } from "../../@theme/pipes";
 import { environment } from "../../../environments/environment";
 import { NbSelectComponent } from "@nebular/theme";
+import { ChartMaximizeService, ChartMaximizeState } from "../../core/service/chart-maximize/chart-maximize.service";
 
 interface IDataCard {
   receitaTotal?: IReceitaTotalOrcamentariaResponse;
@@ -81,6 +82,9 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
   private readonly _sufixShortNumberPipe: ShortNumberPipe = inject(ShortNumberPipe);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+
+
   private subscription!: Subscription;
 
   dataCards: IDataCard;
@@ -88,11 +92,19 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
   // CORREÇÃO: Atualizar currentRequestParams quando filtrar
   currentRequestParams: IExecucaoOrcamentariaRequest = DEFAULT_EXECUCAO_ORCAMENTARIA_REQUEST_PARAMS;
-
+  maximizeChart: boolean = false;
   receitaTotal: IReceitaTotalOrcamentariaResponse | null = null;
   receitaDespesaGNDTotalOrcamento?: IReceitaDespesaGNDTotalOrcamentariaResponse[] | null = [];
-
   isFilterModalOpen: boolean = false;
+
+  maximizedChartId: string | null = null;
+
+  maximizeState: ChartMaximizeState = {
+    maximizedChartId: null,
+    isAnyChartMaximized: false
+  };
+
+  private subscriptionMaximizeState!: Subscription;
 
   filter: IExecucaoOrcamentariaFilters = {
     ano: environment.execucaoOrcamentariaFilter.ano,
@@ -139,6 +151,13 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   activeFilters: { key: string; label: string; displayValue: Array<{ name: string; fullName?: string; }>; }[] = [];
 
   ngOnInit(): void {
+    this.subscriptionMaximizeState = this._chartMaximizeService.maximizeState$.subscribe(
+      (state: ChartMaximizeState) => {
+        console.log('📥 Dashboard - Estado atualizado:', state);
+        this.maximizeState = state;
+      }
+    );
+
     this.subscription = this._comunicationCardsService.data$.subscribe(
       (data) => {
         if (data.receitaTotal != null) {
@@ -160,6 +179,9 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+    if (this.subscriptionMaximizeState) {
+      this.subscriptionMaximizeState.unsubscribe();
     }
   }
 
@@ -338,6 +360,44 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   // CORREÇÃO: Método para receber dados dos cards (se necessário)
   onDataReceived(event: any): void {
     console.log('Dados recebidos:', event);
+  }
+
+  // handleMaximizeButtonClick(chartId: string, event: boolean): void {
+  //   console.log("📊 Maximizando gráfico:", chartId, event);
+
+  //   if (event) {
+  //     // Se está maximizando, define qual gráfico está maximizado
+  //     this.maximizedChartId = chartId;
+  //     this.maximizeChart = true;
+  //   } else {
+  //     // Se está minimizando, limpa o gráfico maximizado
+  //     this.maximizedChartId = null;
+  //     this.maximizeChart = false;
+  //   }
+
+  //   console.log("🎯 Estado atual:", {
+  //     maximizedChartId: this.maximizedChartId,
+  //     maximizeChart: this.maximizeChart
+  //   });
+  // }
+
+  // ⬅️ MÉTODO PARA VERIFICAR SE UM GRÁFICO ESPECÍFICO ESTÁ MAXIMIZADO
+  // isChartMaximized(chartId: string): boolean {
+  //   return this.maximizedChartId === chartId && this.maximizeChart;
+  // }
+
+
+  handleMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.toggleChartMaximize(chartId, event);
+  }
+
+  // ⬅️ MÉTODOS DE CONVENIÊNCIA
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  isAnyChartMaximized(): boolean {
+    return this._chartMaximizeService.isAnyChartMaximized();
   }
 
   dataReceitaCards() {

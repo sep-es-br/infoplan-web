@@ -238,7 +238,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
       { key: "categoria", label: "Participação ICMS - Receita Total" },
       ...years.map(ano => ({
         key: `ano_${ano}`,
-        label: `Arrecadação LI - ${ano}`,
+        label: `Arrecadação Líquida - ${ano}`,
       })),
     ];
   }

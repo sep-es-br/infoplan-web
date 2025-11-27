@@ -49,15 +49,19 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _comunicationCardsService = inject(ComunicationCardsService);
+
   private readonly destroy$ = new Subject<void>();
+  private responseData: IReceitaTotalOrcamentariaResponse[] | null = null;
 
   readonly title: string = "Receita Prevista x Realizada";
 
+  @Output() sendMaximizeButtonClick = new EventEmitter<boolean>();
+
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
+  selectedMaximize: boolean = false;
   loadingStatus: "loading" | "loaded" | "error" = "loading";
 
-  private responseData: IReceitaTotalOrcamentariaResponse[] | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
@@ -218,6 +222,24 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
     );
 
     this.processTableData(filtered);
+  }
+
+  handleMaximizeButtonClick(event: boolean): void {
+    console.log("🔄 Receita Total - Maximizar:", event);
+    this.selectedMaximize = event;
+    this.sendMaximizeButtonClick.emit(event);
+  }
+
+  calcMaximizedHeight(): number {
+    const windowHeight = window.innerHeight;
+    const calculatedHeight = windowHeight - 250; // Ajuste este valor conforme necessário
+
+    console.log("📏 Altura calculada:", {
+      windowHeight: windowHeight,
+      calculatedHeight: calculatedHeight
+    });
+
+    return Math.max(calculatedHeight, 250); // Altura mínima de 400px
   }
 
   handleTableDownload(): void {

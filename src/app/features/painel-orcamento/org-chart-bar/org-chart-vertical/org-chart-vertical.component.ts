@@ -16,16 +16,15 @@ import { IChartOptions } from "./../../../../shared/models/painel-orcamento/ICha
 @Component({
   selector: "ngx-org-chart-vertical",
   templateUrl: "./org-chart-vertical.component.html",
-  styles: [".echarts { width: 100%; height: 100%; }"],
+  styles: [".echarts { width: 100%; height: 100%;}"],
 })
 export class OrgChartVerticalComponent implements OnInit, OnChanges {
   @Input() chart!: IChartOptions;
   @Input() height: number;
   @Input() barGap: string = "30";
+  @Input() isMaximized!: boolean;
   echartsInstance: ECharts | null = null;
-
   chartOptions: EChartsOption;
-
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
 
   constructor(private _themeService: NbThemeService) {
@@ -57,10 +56,34 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
     if (changes["chart"] && this.chart) {
       this.initChartOptions(this.chart);
     }
+
+    if (changes["height"] || changes["isMaximized"]) {
+      console.log("🔄 Altura alterada para:", this.height);
+      console.log("🔄 isMaximized:", this.isMaximized);
+      this.resizeChart();
+    }
   }
+
+  private resizeChart(): void {
+    if (this.echartsInstance) {
+      setTimeout(() => {
+        this.echartsInstance?.resize({
+          width: 'auto',
+          height: this.height // ⬅️ USA A ALTURA NUMÉRICA
+        });
+        console.log("📐 Gráfico redimensionado para altura:", this.height);
+      }, 100);
+    } else {
+      console.log("⚠️ echartsInstance não disponível para redimensionar");
+    }
+  }
+
 
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
+    setTimeout(() => {
+      this.resizeChart();
+    }, 100);
   }
 
   initChartOptions(chart: IChartOptions) {
@@ -76,7 +99,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
       dataset.backgroundColor || this.getFallbackColor(chart.data.datasets.indexOf(dataset))
     );
 
-    console.log('Cores extraídas:', colors);
 
     const data = chart.data.labels.map((label: string, i: number) => ({
       category: label,
@@ -175,6 +197,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
         }
       }))
     };
+
   }
 
   // MÉTODO PARA CORES DE FALLBACK

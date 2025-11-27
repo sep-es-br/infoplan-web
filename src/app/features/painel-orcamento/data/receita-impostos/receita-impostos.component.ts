@@ -134,7 +134,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
         const valor = item?.receitaLiquida || 0;
 
         nodeData.push({
-          propertyName: `Arrecadação LI - ${ano.toString()}`,
+          propertyName: `Arrecadação Líquida - ${ano.toString()}`,
           value: ` ${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
       });
@@ -156,7 +156,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
 
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
       propertyName: `Arrecadação LI - ${ano.toString()}`,
-      displayName: `Arrecadação LI - ${ano.toString()}`,
+      displayName: `Arrecadação Líquida - ${ano.toString()}`,
       alignment: {
         header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,

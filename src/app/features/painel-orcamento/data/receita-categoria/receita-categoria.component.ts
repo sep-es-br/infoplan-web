@@ -1,9 +1,11 @@
 import {
   Component,
+  EventEmitter,
   inject,
   Input,
   OnChanges,
   OnDestroy,
+  Output,
   SimpleChanges,
 } from "@angular/core";
 import {
@@ -39,8 +41,13 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
   private readonly _shortNumberPipe = inject(ShortNumberPipe);
   private readonly _sanitizer = inject(DomSanitizer);
   private readonly destroy$ = new Subject<void>();
+
+
+  @Output() sendMaximizeButtonClick = new EventEmitter<boolean>();
+
   charData: IChartOptions;
   tableContent: FlipTableContent;
+  selectedMaximize: boolean = false;
 
   // MUDANÇA: Agora é sempre um array consistente
   private receitaData: IReceitaCategoriaOrcamentariaResponse[] = [];
@@ -143,7 +150,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     // Configurar colunas
     const defaultColumns = anos.map(ano => ({
       propertyName: `ano_${ano}`,
-      displayName: `Arrecadação LI - ${ano}`,
+      displayName: `Arrecadação Líquida - ${ano}`,
       alignment: {
         header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
@@ -269,8 +276,23 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     );
   }
 
-  handleTableSearch(query: string): void {
-    // TODO: Implementar busca
-    console.log("Busca não implementada:", query);
+
+
+  handleMaximizeButtonClick(event: boolean): void {
+    console.log("🔄 Receita Total - Maximizar:", event);
+    this.selectedMaximize = event;
+    this.sendMaximizeButtonClick.emit(event);
+  }
+
+  calcMaximizedHeight(): number {
+    const windowHeight = window.innerHeight;
+    const calculatedHeight = windowHeight - 250; // Ajuste este valor conforme necessário
+
+    console.log("📏 Altura calculada:", {
+      windowHeight: windowHeight,
+      calculatedHeight: calculatedHeight
+    });
+
+    return Math.max(calculatedHeight, 250); // Altura mínima de 400px
   }
 }

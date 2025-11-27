@@ -1,4 +1,23 @@
-<ngx-flip-table [cardTitle]="title" [tableContent]="tableContent" [loadingStatus]="loadingStatus"
-  (executeSearch)="handleTableSearch($event)" (executeDownload)="handleTableDownload()">
+<!-- <ngx-flip-table [cardTitle]="title" [showSearchField]="true" [tableContent]="tableContent" [showMaximizeButton]="false"
+  [loadingStatus]="loadingStatus" (executeSearch)="handleTableSearch($event)" (executeDownload)="handleTableDownload()"
+  (showMaximizeButtonClick)="handleMaximizeButtonClick($event)">
   <ngx-org-chart-vertical [chart]="this.chartData" [height]="300" [barGap]="'150'" card-front></ngx-org-chart-vertical>
+</ngx-flip-table> -->
+
+<ngx-flip-table [cardTitle]="title" [showSearchField]="true" [tableContent]="tableContent" [showMaximizeButton]="true"
+  [loadingStatus]="loadingStatus" (executeDownload)="handleTableDownload()"
+  (showMaximizeButtonClick)="handleMaximizeButtonClick($event)">
+
+  <ngx-org-chart-vertical [chart]="chartData" [height]="selectedMaximize ? calcMaximizedHeight() : 300"
+    [isMaximized]="selectedMaximize" [barGap]="'150'" card-front>
+  </ngx-org-chart-vertical>
 </ngx-flip-table>
+
+<!-- <ngx-flip-table [cardTitle]="title" [showSearchField]="true" [tableContent]="tableContent" [showMaximizeButton]="true"
+  [loadingStatus]="loadingStatus" (executeSearch)="handleTableSearch($event)" (executeDownload)="handleTableDownload()"
+  (showMaximizeButtonClick)="handleMaximizeButtonClick($event)">
+
+  <ngx-org-chart-vertical [chart]="this.chartData" [height]="selectedMaximize ? 400 : 300"
+    [isMaximized]="selectedMaximize" [barGap]="'150'" card-front>
+  </ngx-org-chart-vertical>
+</ngx-flip-table> -->

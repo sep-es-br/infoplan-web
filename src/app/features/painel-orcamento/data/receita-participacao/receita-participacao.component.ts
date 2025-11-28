@@ -18,6 +18,7 @@ import { ChartDataProcessorService } from "../../../../core/service/painel-orcam
 import { ExportDataService } from "../../../../core/service/export-data";
 import { Subject } from "rxjs";
 import { FlipTableAlignment, FlipTableColumn, FlipTableContent, TreeNode } from "../../../strategic-projects/flip-table-model/flip-table.component";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 @Component({
   selector: "ngx-receita-participacao",
@@ -35,14 +36,6 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   loadingStatus: "loading" | "loaded" | "error" = "loading";
 
   chartConfig = {
-    // showTitle: true,
-    // isDonut: true,
-    // legendPosition: "bottom",
-    // labelThreshold: 5,
-    // centerPosition: ["40%","60%"],
-    // showLabels: false,
-    // radius: ['0%', '70%'],
-    // legendOrient: "vertical"
     showTitle: true,
     isDonut: true,
     legendPosition: "left",
@@ -55,9 +48,10 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   private receitaICMSCharData: IReceitaParticipacaoOrcamentariaResponse[] | null =
     [];
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
 
   private readonly destroy$ = new Subject<void>();
 
@@ -70,6 +64,18 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   private loadData(): void {
@@ -100,7 +106,6 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   }
 
   private processData(): void {
-    // Processa dados para o gráfico de pizza
     const chartData = this.processCharData();
 
     if (chartData) {
@@ -149,9 +154,8 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
         );
         const valor = item?.receitaLiquida || 0;
 
-        // Nome único para cada coluna de ano
         nodeData.push({
-          propertyName: `ano_${ano}`, // Nome único para cada ano
+          propertyName: `ano_${ano}`,
           value: ` ${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
       });
@@ -163,10 +167,9 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       };
     });
 
-    // Colunas com propertyNames únicos
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
-      propertyName: `ano_${ano}`, // Mesmo nome usado nos nodeData
-      displayName: ano.toString(), // Mostra o ano como nome da coluna
+      propertyName: `ano_${ano}`,
+      displayName: ano.toString(),
       alignment: {
         header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
@@ -260,6 +263,4 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       return row;
     });
   }
-
-  handleTableSearch(query: string): void { }
 }

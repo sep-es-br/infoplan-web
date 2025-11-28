@@ -1,7 +1,2 @@
-  <div
-    echarts
-    class="echart"
-    [options]="chartOptions"
-    [ngStyle]="{ 'height': height + 'px' }"
-    (chartInit)="onChartInit($event)"
-  ></div>
+<div echarts class="echart" [options]="chartOptions" [ngStyle]="{ 'height': height + 'px' }" [autoResize]="true"
+  (chartInit)="onChartInit($event)"></div>

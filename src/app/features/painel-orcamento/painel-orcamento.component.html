@@ -179,7 +179,8 @@
           [class.col-xxl-6]="!isChartMaximized('receita-total')"
           [class.col-xxxl-4]="!isChartMaximized('receita-total')">
 
-          <ngx-receita-total (sendMaximizeButtonClick)="handleMaximizeButtonClick('receita-total', $event)"
+          <ngx-receita-total class="w-100"
+            (sendMaximizeButtonClick)="handleMaximizeButtonClick('receita-total', $event)"
             (dataReceitaTotalCards)="dataCards" [filter]="currentRequestParams">
           </ngx-receita-total>
         </div>
@@ -193,7 +194,7 @@
           [class.col-xxl-6]="!isChartMaximized('receita-categoria')"
           [class.col-xxxl-4]="!isChartMaximized('receita-categoria')">
 
-          <ngx-receita-categoria [filter]="currentRequestParams"
+          <ngx-receita-categoria class="w-100" [filter]="currentRequestParams"
             (sendMaximizeButtonClick)="handleMaximizeButtonClick('receita-categoria', $event)">
           </ngx-receita-categoria>
         </div>
@@ -203,86 +204,86 @@
           [class.col-lg-6]="!isChartMaximized('receita-origem')" [class.col-xl-6]="!isChartMaximized('receita-origem')"
           [class.col-xxl-6]="!isChartMaximized('receita-origem')"
           [class.col-xxxl-4]="!isChartMaximized('receita-origem')">
-          <ngx-receita-origem [filter]="currentRequestParams"
+          <ngx-receita-origem class="w-100" [filter]="currentRequestParams"
             (sendMaximizeButtonClick)="handleMaximizeButtonClick('receita-origem', $event)">
           </ngx-receita-origem>
         </div>
 
         <!-- Receita Impostos -->
-        <div class="chart-container" [class.maximized]="isChartMaximized('receita-categoria')"
+        <div class="chart-container" [class.maximized]="isChartMaximized('receita-impostos')"
           [class.col-12]="!isChartMaximized('receita-impostos')"
           [class.col-md-12]="!isChartMaximized('receita-impostos')"
           [class.col-lg-6]="!isChartMaximized('receita-impostos')"
           [class.col-xl-6]="!isChartMaximized('receita-impostos')"
           [class.col-xxl-6]="!isChartMaximized('receita-impostos')"
           [class.col-xxxl-4]="!isChartMaximized('receita-impostos')">
-          <ngx-receita-impostos [filter]="currentRequestParams"
+          <ngx-receita-impostos class="w-100" [filter]="currentRequestParams"
             (sendMaximizeButtonClick)="handleMaximizeButtonClick('receita-impostos', $event)">
           </ngx-receita-impostos>
         </div>
 
         <!-- Receita Participação -->
-        <div class="chart-container" [class.maximized]="isChartMaximized('receita-categoria')"
+        <div class="chart-container" [class.maximized]="isChartMaximized('receita-participacao')"
           [class.col-12]="!isChartMaximized('receita-participacao')"
           [class.col-md-12]="!isChartMaximized('receita-participacao')"
           [class.col-lg-6]="!isChartMaximized('receita-participacao')"
           [class.col-xl-6]="!isChartMaximized('receita-participacao')"
           [class.col-xxl-6]="!isChartMaximized('receita-participacao')"
           [class.col-xxxl-4]="!isChartMaximized('receita-participacao')">
-          <ngx-receita-participacao [filter]="currentRequestParams"
+          <ngx-receita-participacao class="w-100" [filter]="currentRequestParams"
             (sendMaximizeButtonClick)="handleMaximizeButtonClick('receita-participacao', $event)">
           </ngx-receita-participacao>
         </div>
 
         <!-- Receita ICMS -->
-        <div class="chart-container" [class.maximized]="isChartMaximized('receita-categoria')"
+        <div class="chart-container" [class.maximized]="isChartMaximized('receita-icms')"
           [class.col-12]="!isChartMaximized('receita-icms')" [class.col-md-12]="!isChartMaximized('receita-icms')"
           [class.col-lg-6]="!isChartMaximized('receita-icms')" [class.col-xl-6]="!isChartMaximized('receita-icms')"
           [class.col-xxl-6]="!isChartMaximized('receita-icms')" [class.col-xxxl-4]="!isChartMaximized('receita-icms')">
-          <ngx-receita-icms [filter]="currentRequestParams"
+          <ngx-receita-icms class="w-100" [filter]="currentRequestParams"
             (sendMaximizeButtonClick)="handleMaximizeButtonClick('receita-icms', $event)">
           </ngx-receita-icms>
         </div>
 
         <!-- Receita Transferência -->
-        <div class="chart-container" [class.maximized]="isChartMaximized('receita-categoria')"
+        <div class="chart-container" [class.maximized]="isChartMaximized('receita-transferencia')"
           [class.col-12]="!isChartMaximized('receita-transferencia')"
           [class.col-md-12]="!isChartMaximized('receita-transferencia')"
           [class.col-lg-6]="!isChartMaximized('receita-transferencia')"
           [class.col-xl-6]="!isChartMaximized('receita-transferencia')"
           [class.col-xxl-6]="!isChartMaximized('receita-transferencia')"
-          [class.col-xxxl-4]="!isChartMaximized('receita-transferencia')">
-          <ngx-receita-transferencia [filter]="currentRequestParams"
+          [class.col-xxxl-6]="!isChartMaximized('receita-transferencia')">
+          <ngx-receita-transferencia class="w-100" [filter]="currentRequestParams"
             (sendMaximizeButtonClick)="handleMaximizeButtonClick('receita-transferencia', $event)">
           </ngx-receita-transferencia>
         </div>
 
         <!-- Receita Despesa GND Total -->
-        <div class="chart-container" [class.maximized]="isChartMaximized('receita-categoria')"
+        <div class="chart-container" [class.maximized]="isChartMaximized('receita-despesa-gnd-total')"
           [class.col-12]="!isChartMaximized('receita-despesa-gnd-total')"
           [class.col-md-12]="!isChartMaximized('receita-despesa-gnd-total')"
           [class.col-lg-6]="!isChartMaximized('receita-despesa-gnd-total')"
           [class.col-xl-6]="!isChartMaximized('receita-despesa-gnd-total')"
           [class.col-xxl-6]="!isChartMaximized('receita-despesa-gnd-total')"
-          [class.col-xxxl-4]="!isChartMaximized('receita-despesa-gnd-total')">
-          <ngx-receita-despesa-gnd-total (receitaDespesaGNDTotalOrcamento)="dataCards" [filter]="currentRequestParams"
+          [class.col-xxxl-6]="!isChartMaximized('receita-despesa-gnd-total')">
+          <ngx-receita-despesa-gnd-total class="w-100" (receitaDespesaGNDTotalOrcamento)="dataCards"
+            [filter]="currentRequestParams"
             (sendMaximizeButtonClick)="handleMaximizeButtonClick('receita-despesa-gnd-total', $event)">
           </ngx-receita-despesa-gnd-total>
         </div>
 
         <!-- Receita Despesa GND -->
-        <div class="chart-container" [class.maximized]="isChartMaximized('receita-categoria')"
+        <div class="chart-container" [class.maximized]="isChartMaximized('receita-despesa-gnd')"
           [class.col-12]="!isChartMaximized('receita-despesa-gnd')"
           [class.col-md-12]="!isChartMaximized('receita-despesa-gnd')"
-          [class.col-lg-6]="!isChartMaximized('receita-despesa-gnd')"
-          [class.col-xl-6]="!isChartMaximized('receita-despesa-gnd')"
-          [class.col-xxl-6]="!isChartMaximized('receita-despesa-gnd')"
-          [class.col-xxxl-4]="!isChartMaximized('receita-despesa-gnd')">
-          <ngx-receita-despesa-gnd [filter]="currentRequestParams"
+          [class.col-lg-12]="!isChartMaximized('receita-despesa-gnd')"
+          [class.col-xl-12]="!isChartMaximized('receita-despesa-gnd')"
+          [class.col-xxl-12]="!isChartMaximized('receita-despesa-gnd')"
+          [class.col-xxxl-12]="!isChartMaximized('receita-despesa-gnd')">
+          <ngx-receita-despesa-gnd class="w-100" [filter]="currentRequestParams"
             (sendMaximizeButtonClick)="handleMaximizeButtonClick('receita-despesa-gnd', $event)">
           </ngx-receita-despesa-gnd>
         </div>
-        </ng-container>
       </div>
     </div>
     <div class="d-flex flex-wrap col-12 col-xxl-6 p-0">

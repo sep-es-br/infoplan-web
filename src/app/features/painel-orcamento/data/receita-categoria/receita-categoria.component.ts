@@ -24,6 +24,7 @@ import {
 import { finalize, takeUntil } from "rxjs/operators";
 import { ShortNumberPipe } from "../../../../@theme/pipes";
 import { DomSanitizer } from "@angular/platform-browser";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 @Component({
   selector: "ngx-receita-categoria",
@@ -35,15 +36,13 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
   readonly title: string = "Receita por Categoria";
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-  private readonly _shortNumberPipe = inject(ShortNumberPipe);
-  private readonly _sanitizer = inject(DomSanitizer);
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
 
-  @Output() sendMaximizeButtonClick = new EventEmitter<boolean>();
 
   charData: IChartOptions;
   tableContent: FlipTableContent;
@@ -63,6 +62,20 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
+  }
+
 
   private loadData(): void {
     this.loadingStatus = "loading";
@@ -276,23 +289,4 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     );
   }
 
-
-
-  handleMaximizeButtonClick(event: boolean): void {
-    console.log("🔄 Receita Total - Maximizar:", event);
-    this.selectedMaximize = event;
-    this.sendMaximizeButtonClick.emit(event);
-  }
-
-  calcMaximizedHeight(): number {
-    const windowHeight = window.innerHeight;
-    const calculatedHeight = windowHeight - 250; // Ajuste este valor conforme necessário
-
-    console.log("📏 Altura calculada:", {
-      windowHeight: windowHeight,
-      calculatedHeight: calculatedHeight
-    });
-
-    return Math.max(calculatedHeight, 250); // Altura mínima de 400px
-  }
 }

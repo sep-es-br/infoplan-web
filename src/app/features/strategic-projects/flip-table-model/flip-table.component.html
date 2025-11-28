@@ -60,8 +60,8 @@
     <nb-card-back>
       <nb-card class="card-back box-limited m-0 px-3" [style]="{ 'height': backCardHeight + 'px' }">
         <ng-container *ngIf="tableContent">
-          <table class="flip-table" [nbTreeGrid]="tableContent.data" [nbSort]="tableContent.data"
-            (sort)="handleSortClick($event)">
+          <table class="flip-table" [ngClass]="isMaximized ? 'maximized' : 'minimized'" [nbTreeGrid]="tableContent.data"
+            [nbSort]="tableContent.data" (sort)="handleSortClick($event)">
             <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumnsNames"></tr>
             <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumnsNames"></tr>
 

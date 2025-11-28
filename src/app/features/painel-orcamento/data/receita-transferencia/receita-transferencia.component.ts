@@ -18,6 +18,7 @@ import { ExportDataService } from "../../../../core/service/export-data";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ShortNumberPipe } from '../../../../@theme/pipes';
+import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
 @Component({
   selector: "ngx-receita-transferencia",
@@ -31,11 +32,10 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
   private receitaTransferenciaCorrente: IReceitaTransfereciaCorrenteOrcamentariaResponse[];
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-  private readonly _shortNumberPipe = inject(ShortNumberPipe);
-
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
   chartData: IChartOptions;
@@ -53,6 +53,18 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   private loadData() {

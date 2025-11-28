@@ -22,11 +22,12 @@ import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChart
 export class OrgChartHorizontalComponent implements OnInit, OnChanges {
   @Input() chart!: IChartOptions;
   @Input() height: number;
-  @Input() charactersPerLine: number;;
+  @Input() charactersPerLine: number;
 
   chartOptions: EChartsOption;
   echartsInstance: ECharts | null = null;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
+  private resizeTimer: any;
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -61,6 +62,9 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["chart"] && this.chart) {
       this.initChartOptions(this.chart);
+    }
+    if (changes["height"]) {
+      this.resizeChart();
     }
   }
 
@@ -188,7 +192,10 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
 
   resizeChart() {
     if (this.echartsInstance) {
-      this.echartsInstance.resize();
+      if (this.resizeTimer) clearTimeout(this.resizeTimer);
+      this.resizeTimer = setTimeout(() => {
+        this.echartsInstance.resize();
+      }, 100);
     }
   }
 

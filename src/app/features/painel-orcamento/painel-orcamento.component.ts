@@ -101,7 +101,8 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
   maximizeState: ChartMaximizeState = {
     maximizedChartId: null,
-    isAnyChartMaximized: false
+    isAnyChartMaximized: false,
+    maximizedHeight: this._chartMaximizeService.getCurrentHeight()
   };
 
   private subscriptionMaximizeState!: Subscription;
@@ -133,20 +134,10 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     { num: 12, name: 'Dezembro' }
   ];
 
-  yearsList = [
-    { num: 2020 },
-    { num: 2021 },
-    { num: 2022 },
-    { num: 2023 },
-    { num: 2024 },
-    { num: 2025 },
-    { num: 2026 },
-    { num: 2027 },
-    { num: 2028 },
-    { num: 2029 },
-    { num: 2030 },
-    { num: 2031 },
-  ];
+  yearsList = Array.from(
+    { length: new Date().getFullYear() - 2014 + 1 },
+    (_, i) => ({ num: 2014 + i })
+  );
 
   activeFilters: { key: string; label: string; displayValue: Array<{ name: string; fullName?: string; }>; }[] = [];
 
@@ -170,7 +161,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
       }
     );
     this.updateActiveFilters();
-    // CARREGAR DADOS INICIAIS
     this.loadInitialData();
   }
 
@@ -213,11 +203,10 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     // CORREÇÃO: Emitir evento de filtro alterado
     this.filterChanged.emit(this.currentRequestParams);
 
-    // CORREÇÃO: Recarregar dados com novos filtros
+    // Recarregar dados com novos filtros
     this.loadDataWithFilters();
   }
 
-  // CORREÇÃO: Método para carregar dados com filtros
   loadDataWithFilters(): void {
     // Aqui você deve chamar os serviços para recarregar os dados
     // com os novos filtros. Exemplo:
@@ -362,36 +351,11 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     console.log('Dados recebidos:', event);
   }
 
-  // handleMaximizeButtonClick(chartId: string, event: boolean): void {
-  //   console.log("📊 Maximizando gráfico:", chartId, event);
-
-  //   if (event) {
-  //     // Se está maximizando, define qual gráfico está maximizado
-  //     this.maximizedChartId = chartId;
-  //     this.maximizeChart = true;
-  //   } else {
-  //     // Se está minimizando, limpa o gráfico maximizado
-  //     this.maximizedChartId = null;
-  //     this.maximizeChart = false;
-  //   }
-
-  //   console.log("🎯 Estado atual:", {
-  //     maximizedChartId: this.maximizedChartId,
-  //     maximizeChart: this.maximizeChart
-  //   });
-  // }
-
-  // ⬅️ MÉTODO PARA VERIFICAR SE UM GRÁFICO ESPECÍFICO ESTÁ MAXIMIZADO
-  // isChartMaximized(chartId: string): boolean {
-  //   return this.maximizedChartId === chartId && this.maximizeChart;
-  // }
-
 
   handleMaximizeButtonClick(chartId: string, event: boolean): void {
-    this._chartMaximizeService.toggleChartMaximize(chartId, event);
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
   }
 
-  // ⬅️ MÉTODOS DE CONVENIÊNCIA
   isChartMaximized(chartId: string): boolean {
     return this._chartMaximizeService.isChartMaximized(chartId);
   }
@@ -401,7 +365,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   }
 
   dataReceitaCards() {
-    // CORREÇÃO: Verificação segura para o array
     const receitaDespesa = this.receitaDespesaGNDTotalOrcamento || [];
     const primeiroItem = receitaDespesa[0];
     const segundoItem = receitaDespesa[1];

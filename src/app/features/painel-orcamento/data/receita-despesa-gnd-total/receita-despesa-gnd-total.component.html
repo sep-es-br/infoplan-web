@@ -1,4 +1,7 @@
 <ngx-flip-table [showSearchField]="true" [cardTitle]="title" [tableContent]="tableContent"
-  [loadingStatus]="loadingStatus" (executeDownload)="handleTableDownload()">
-  <ngx-org-chart-vertical [chart]="chartData" [height]="300" card-front></ngx-org-chart-vertical>
+  [loadingStatus]="loadingStatus" (executeDownload)="handleTableDownload()"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('receita-despesa-gnd-total',$event)">
+  <ngx-org-chart-vertical [chart]="chartData"
+    [height]="isChartMaximized('receita-despesa-gnd-total') ? calcMaximizedHeight() : 300"
+    card-front></ngx-org-chart-vertical>
 </ngx-flip-table>

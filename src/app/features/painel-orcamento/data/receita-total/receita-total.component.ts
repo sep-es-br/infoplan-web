@@ -26,6 +26,7 @@ import {
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ShortNumberPipe } from "../../../../shared/components/pipe/shortNumber-pipe";
 import { ComunicationCardsService } from "../../../../core/service/comunication-cards/comunication-cards.service";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 interface ITableRow {
   label: string;
@@ -45,17 +46,18 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   @Output()
   dataReceitaTotalCards: EventEmitter<IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]> = new EventEmitter<IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]>();
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-  private readonly _comunicationCardsService = inject(ComunicationCardsService);
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
 
-  private readonly destroy$ = new Subject<void>();
+
+  private readonly destroy$: Subject<void> = new Subject<void>();
   private responseData: IReceitaTotalOrcamentariaResponse[] | null = null;
 
   readonly title: string = "Receita Prevista x Realizada";
 
-  @Output() sendMaximizeButtonClick = new EventEmitter<boolean>();
 
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
@@ -224,22 +226,16 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
     this.processTableData(filtered);
   }
 
-  handleMaximizeButtonClick(event: boolean): void {
-    console.log("🔄 Receita Total - Maximizar:", event);
-    this.selectedMaximize = event;
-    this.sendMaximizeButtonClick.emit(event);
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
   }
 
   calcMaximizedHeight(): number {
-    const windowHeight = window.innerHeight;
-    const calculatedHeight = windowHeight - 250; // Ajuste este valor conforme necessário
-
-    console.log("📏 Altura calculada:", {
-      windowHeight: windowHeight,
-      calculatedHeight: calculatedHeight
-    });
-
-    return Math.max(calculatedHeight, 250); // Altura mínima de 400px
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   handleTableDownload(): void {

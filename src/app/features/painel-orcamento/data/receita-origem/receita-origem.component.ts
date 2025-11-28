@@ -1,3 +1,4 @@
+
 import {
   Component,
   Input,
@@ -5,6 +6,8 @@ import {
   SimpleChanges,
   OnDestroy,
   inject,
+  Output,
+  EventEmitter,
 } from "@angular/core";
 import { Subject } from "rxjs";
 import { takeUntil, finalize } from "rxjs/operators";
@@ -23,6 +26,7 @@ import {
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ExportDataService } from "../../../../core/service/export-data";
 import { ShortNumberPipe } from "../../../../@theme/pipes/shortNumber.pipe";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 @Component({
   selector: "ngx-receita-origem",
@@ -36,6 +40,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
   private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _shortNumberPipe = inject(ShortNumberPipe);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
 
   private readonly destroy$ = new Subject<void>();
 
@@ -55,6 +60,18 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   private loadData(): void {

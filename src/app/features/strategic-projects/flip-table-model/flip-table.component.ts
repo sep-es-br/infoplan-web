@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf } from "@angular/common";
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges, ViewChild } from "@angular/core";
 import { NbCardModule, NbColumnsService, NbFormFieldModule, NbIconModule, NbInputModule, NbSortDirection, NbSortRequest, NbSpinnerModule, NbTooltipModule, NbTreeGridModule } from "@nebular/theme";
 import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
 import { RequestStatus } from "../strategicProjects.component";
@@ -70,7 +70,7 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() tableContent: FlipTableContent;
 
-  @Input() backCardHeight: number = 150;
+  @Input() backCardHeight: number = 300;
 
   @Input() customTableStyles: FlipTableCustomStyles = {
     cardBack: {
@@ -95,8 +95,37 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() showMaximizeButton: boolean = false;
 
-  @Output()
-  showMaximizeButtonClick: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Input() height: number = 400;
+
+
+  @HostBinding('class.maximized') get maximizedClass() {
+    return this.isMaximized;
+  }
+
+  @HostBinding('class.minimized') get minimizedClass() {
+    return !this.isMaximized;
+  }
+
+  @HostBinding('style.height.px') get componentHeight(): number {
+    if (this.isMaximized) {
+      return window.innerHeight - 50;
+    } else {
+      return this.height || 100;
+    }
+  }
+
+  get tableHeight(): number {
+    // Altura da tabela é um pouco menor que o container para dar margem
+    if (this.isMaximized) {
+      return window.innerHeight - 80; // menos espaço para headers/borders
+    } else {
+      return (this.height || 400) - 30;
+    }
+  }
+
+  @Output() showMaximizeButtonClick: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+
   isMaximized = false;
   isFlipCardFlipped: boolean = false;
 

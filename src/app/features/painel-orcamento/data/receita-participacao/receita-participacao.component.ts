@@ -17,7 +17,8 @@ import { PainelOrcamentoService } from "../../../../core/service/painel-orcament
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
 import { Subject } from "rxjs";
-import { FlipTableContent } from "../../../strategic-projects/flip-table-model/flip-table.component";
+import { FlipTableAlignment, FlipTableColumn, FlipTableContent, TreeNode } from "../../../strategic-projects/flip-table-model/flip-table.component";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 @Component({
   selector: "ngx-receita-participacao",
@@ -28,36 +29,29 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   @Input() filter: IExecucaoOrcamentariaRequest;
 
   readonly title: string = "Participação ICMS - Receita Total";
-  readonly showTableIcon: Boolean = false;
+  readonly showTableIcon: Boolean = true;
 
   chartData!: PieChartData[];
   tableContent: FlipTableContent | null = null;
   loadingStatus: "loading" | "loaded" | "error" = "loading";
 
   chartConfig = {
-    // showTitle: true,
-    // isDonut: true,
-    // legendPosition: "bottom",
-    // labelThreshold: 5,
-    // centerPosition: ["40%","60%"],
-    // showLabels: false,
-    // radius: ['0%', '70%'],
-    // legendOrient: "vertical"
     showTitle: true,
     isDonut: true,
     legendPosition: "left",
     labelThreshold: 5,
     showLabels: false,
     radius: ['30%', '60%'],
-    centerPosition: ["70%","50%"],
+    centerPosition: ["70%", "50%"],
   };
 
   private receitaICMSCharData: IReceitaParticipacaoOrcamentariaResponse[] | null =
     [];
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
 
   private readonly destroy$ = new Subject<void>();
 
@@ -70,6 +64,18 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   private loadData(): void {
@@ -100,11 +106,11 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   }
 
   private processData(): void {
-    // Processa dados para o gráfico de pizza
     const chartData = this.processCharData();
 
     if (chartData) {
       this.chartData = chartData;
+      this.processTableData(this.receitaICMSCharData);
     } else {
       this.chartData = [
         {
@@ -114,8 +120,76 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       ];
       this.tableContent = null;
     }
-    // Processa dados para a tabela
-    // this.tableContent = this._chartProcessor.criarTabelaPieChart(this.chartData);
+  }
+  private processTableData(dados: IReceitaParticipacaoOrcamentariaResponse[]) {
+    if (!dados?.length) {
+      this.tableContent = null;
+      return;
+    }
+
+    const categorias = [
+      ...new Set(dados.map((item) => item.nome_item_patrimonial)),
+    ].filter(Boolean);
+
+    const anos = [...new Set(dados.map((item) => item.ano))]
+      .filter((ano) => ano != null)
+      .sort();
+
+    if (categorias.length === 0 || anos.length === 0) {
+      this.tableContent = null;
+      return;
+    }
+
+    const treeNodes: TreeNode[] = categorias.map((categoria) => {
+      const nodeData: any[] = [
+        {
+          propertyName: "categoria",
+          value: categoria,
+        },
+      ];
+
+      anos.forEach((ano) => {
+        const item = dados.find(
+          (d) => d.nome_item_patrimonial === categoria && d.ano === ano
+        );
+        const valor = item?.receitaLiquida || 0;
+
+        nodeData.push({
+          propertyName: `ano_${ano}`,
+          value: ` ${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+        });
+      });
+
+      return {
+        data: nodeData,
+        children: [],
+        expanded: false,
+      };
+    });
+
+    const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
+      propertyName: `ano_${ano}`,
+      displayName: ano.toString(),
+      alignment: {
+        header: FlipTableAlignment.RIGHT,
+        data: FlipTableAlignment.RIGHT,
+      },
+    }));
+
+    const customColumn: FlipTableColumn = {
+      propertyName: "categoria",
+      displayName: "ICMS",
+      alignment: {
+        header: FlipTableAlignment.LEFT,
+        data: FlipTableAlignment.LEFT,
+      },
+    };
+
+    this.tableContent = {
+      customColumn,
+      defaultColumns,
+      data: treeNodes,
+    };
   }
 
   private processCharData(): PieChartData[] {
@@ -189,6 +263,4 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       return row;
     });
   }
-
-  handleTableSearch(query: string): void {}
 }

@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { NbCardModule, NbSelectModule, NbIconModule } from "@nebular/theme"; // <-- ESSENCIAL
+import { NbCardModule, NbSelectModule, NbIconModule, NbButtonModule, NbDatepickerModule, NbInputModule, NbTooltipModule, NbLayoutModule } from "@nebular/theme"; // <-- ESSENCIAL
 
 import { NgxChartsModule } from "@swimlane/ngx-charts";
 import { NgxEchartsModule } from "ngx-echarts";
@@ -24,6 +24,8 @@ import { ReceitaDespesaGndTotalComponent } from "./data/receita-despesa-gnd-tota
 import { ReceitaDespesaGndComponent } from "./data/receita-despesa-gnd/receita-despesa-gnd.component";
 import { ShortNumberPipe } from "../../@theme/pipes";
 import { ReceitaICMSComponent } from "./data/receita-icms/receita-icms.component";
+import { ThemeModule } from "../../@theme/theme.module";
+import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
 
 @NgModule({
   declarations: [
@@ -47,18 +49,25 @@ import { ReceitaICMSComponent } from "./data/receita-icms/receita-icms.component
     CommonModule,
     FormsModule,
     NbCardModule,
+    NbButtonModule,
+    ThemeModule,
+    NbSelectModule,
+    NbDatepickerModule,
     CardsModule,
     NgxChartsModule,
     NgxEchartsModule,
-    NbSelectModule,
-    VerticalBarChartModelComponent,
+    NbInputModule,
+    NbTooltipModule,
+    TextTruncatePipe,
     NbIconModule,
+    VerticalBarChartModelComponent,
     FilterComponent,
     PieChartComponent,
     FlipTableComponent,
+    NbLayoutModule
   ],
   providers: [
     ShortNumberPipe
   ]
 })
-export class PainelOrcamentoModule {}
+export class PainelOrcamentoModule { }

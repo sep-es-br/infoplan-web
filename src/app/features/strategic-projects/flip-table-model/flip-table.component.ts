@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf } from "@angular/common";
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges, ViewChild } from "@angular/core";
 import { NbCardModule, NbColumnsService, NbFormFieldModule, NbIconModule, NbInputModule, NbSortDirection, NbSortRequest, NbSpinnerModule, NbTooltipModule, NbTreeGridModule } from "@nebular/theme";
 import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
 import { RequestStatus } from "../strategicProjects.component";
@@ -70,7 +70,7 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() tableContent: FlipTableContent;
 
-  @Input() backCardHeight: number = 150;
+  @Input() backCardHeight: number = 300;
 
   @Input() customTableStyles: FlipTableCustomStyles = {
     cardBack: {
@@ -88,7 +88,45 @@ export class FlipTableComponent implements OnChanges {
 
   @Output() executeCustomFiltering = new EventEmitter<string>();
 
+  @Output()
+  searchFieldVisibilityChange = new EventEmitter<boolean>();
 
+  @Input() showSearchField: boolean;
+
+  @Input() showMaximizeButton: boolean = false;
+
+  @Input() height: number = 400;
+
+
+  @HostBinding('class.maximized') get maximizedClass() {
+    return this.isMaximized;
+  }
+
+  @HostBinding('class.minimized') get minimizedClass() {
+    return !this.isMaximized;
+  }
+
+  @HostBinding('style.height.px') get componentHeight(): number {
+    if (this.isMaximized) {
+      return window.innerHeight - 50;
+    } else {
+      return this.height || 100;
+    }
+  }
+
+  get tableHeight(): number {
+    // Altura da tabela é um pouco menor que o container para dar margem
+    if (this.isMaximized) {
+      return window.innerHeight - 80; // menos espaço para headers/borders
+    } else {
+      return (this.height || 400) - 30;
+    }
+  }
+
+  @Output() showMaximizeButtonClick: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+
+  isMaximized = false;
   isFlipCardFlipped: boolean = false;
 
   isSearchFieldVisible: boolean = false;
@@ -104,6 +142,9 @@ export class FlipTableComponent implements OnChanges {
   sortDirection: NbSortDirection = NbSortDirection.NONE;
 
   debounceTimer: any;
+
+  constructor(private cdr: ChangeDetectorRef) {
+  }
 
   get allColumnsNames(): Array<string> {
     return this.allColumns.map((el) => el.propertyName);
@@ -150,6 +191,7 @@ export class FlipTableComponent implements OnChanges {
 
   handleCloseSearchFieldClick() {
     this.isSearchFieldVisible = false;
+    this.cdr.detectChanges();
     this.executeSearch.emit('');
   }
 
@@ -161,6 +203,7 @@ export class FlipTableComponent implements OnChanges {
     this.isFlipCardFlipped = !this.isFlipCardFlipped
     if (!this.isFlipCardFlipped) {
       this.isSearchFieldVisible = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -202,5 +245,11 @@ export class FlipTableComponent implements OnChanges {
       const searchTerm = (event.target as any).value;
       this.executeSearch.emit(searchTerm);
     }, 300);
+  }
+
+  handleMaximizeButtonClick() {
+    this.isMaximized = !this.isMaximized; // Alterna o estado
+    this.showMaximizeButtonClick.emit(this.isMaximized); // Emite o estado atual
+    this.cdr.detectChanges();
   }
 }

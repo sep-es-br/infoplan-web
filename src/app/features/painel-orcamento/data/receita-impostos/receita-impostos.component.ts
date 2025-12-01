@@ -23,6 +23,7 @@ import {
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ExportDataService } from "../../../../core/service/export-data";
 import { ShortNumberPipe } from "../../../../@theme/pipes/shortNumber.pipe";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 @Component({
   selector: "ngx-receita-impostos",
@@ -40,10 +41,10 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
 
   private receitaImpostoCharData: IReceitaImpostoOrcamentariaResponse[] = [];
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-  private readonly _shortNumberPipe = inject(ShortNumberPipe);
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -55,6 +56,19 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   private loadData() {
@@ -135,15 +149,15 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Arrecadação LI - ${ano.toString()}`,
-          value: `R$ ${valor|| 0}`,
+          value: ` ${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
       });
 
       if (anos.length >= 2) {
         const variacao = this.calcularVariacao(categoria, anos, dados);
         nodeData.push({
-          propertyName: "variação (%)",
-          value: `${variacao}%`,
+          propertyName: "variação",
+          value: `${variacao} %`,
         });
       }
 
@@ -156,20 +170,20 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
 
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
       propertyName: `Arrecadação LI - ${ano.toString()}`,
-      displayName: `Arrecadação LI - ${ano.toString()}`,
+      displayName: `Arrecadação Líquida - ${ano.toString()}`,
       alignment: {
-        header: FlipTableAlignment.LEFT,
+        header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
       },
     }));
 
     if (anos.length >= 2) {
       defaultColumns.push({
-        propertyName: "variação (%)",
-        displayName: "Variação (%)",
+        propertyName: "variação",
+        displayName: "Variação",
         alignment: {
-          header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.RIGHT,
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
         },
       });
     }
@@ -189,8 +203,6 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
       defaultColumns,
       data: treeNodes,
     };
-
-    // console.log("RESULTADO FINAL", this.tableContent)
 
   }
 
@@ -244,7 +256,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
     ];
 
     if (anos.length >= 2) {
-      columns.push({ key: "variacao", label: "Variação (%)" });
+      columns.push({ key: "variacao", label: "Variação" });
     }
 
     const dataForDownload = categorias.map((categoria) => {
@@ -254,9 +266,8 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
         const item = this.receitaImpostoCharData.find(
           (d) => d.nome_item_patrimonial === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `${
-          item?.receitaLiquida.toLocaleString("pt-BR") || 0
-        }`;
+        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0
+          }`;
       });
 
       if (anos.length >= 2) {
@@ -279,7 +290,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
             ? ((valorFinal - valorInicial) / valorInicial) * 100
             : 0;
 
-        row["variacao"] = Number(variacao.toFixed(2));
+        row["variacao"] = `${variacao.toFixed(2)} %`;
       }
 
       return row;
@@ -293,9 +304,5 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
       columns,
       fileName
     );
-  }
-
-  handleTableSearch(query: string): void {
-    // Implementar busca
   }
 }

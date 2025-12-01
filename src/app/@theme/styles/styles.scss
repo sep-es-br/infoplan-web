@@ -32,7 +32,9 @@
   @include ngx-pace-theme();
 
   @include nb-overrides();
-};
+}
+
+;
 
 .context-menu {
   text-align: left;
@@ -41,4 +43,21 @@
 .box-limited {
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+/* Container do gráfico */
+:host ::ng-deep .echarts {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Quando maximizado, força a altura */
+.chart-container.maximized ::ng-deep .echarts {
+  min-height: 500px !important;
+  height: 100% !important;
+}
+
+/* Container do flip-card */
+:host ::ng-deep nb-card-body {
+  overflow: hidden !important;
 }

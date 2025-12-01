@@ -10,14 +10,37 @@ import {
 } from "../../../features/strategic-projects/flip-table-model/flip-table.component";
 
 const CHART_COLORS = [
-  "#F58B9B",
-  "#4DB6D2",
-  "#e4c26b",
-  "#2E88B9",
-  "#77D4B0",
-  "#A671C4",
-  "#F6D25A",
+  "#4DB6D2", // azul claro
+  "#F58B9B", // rosa
+  "#ffd56bff", // dourado
+  "#1791DE", // azul médio
+  "#39d898ff", // verde-azulado
+  "#d895ffff", // roxo
+  "#b9b8b8c2", // cinza claro
+
+  // Cores conectadas - variações das originais:
+  "#082784", // entre o azul claro e azul médio
+  "#ff8fa2ff", // rosa um tom mais suave
+  "#85cea6ff", // dourado mais claro
+  "#8EFFFD", // azul esverdeado (ponte entre azul e verde)
+  "#849299ff", // azul acinzentado (conecta azul com cinza)
+  "#B67DAD", // roxo rosado (ponte entre roxo e rosa)
+  "#a4d1b8ff"  // verde acinzentado (conecta verde com cinza)
 ];
+// const CHART_COLORS = [
+//   "#4DB6D2",    // Salmão suave - harmoniza com o rosa e amarelo
+//   "#F58B9B",    // Roxo médio - ponte entre o roxo e azul
+//   "#e4c26b",    // Verde-água forte - complementa os azuis e verdes
+//   "#2E88B9",    // Dourado - reforça a família dos amarelos
+//   "#77D4B0",    // Coral claro - variação do tom rosa
+//   "#A671C4",    // Azul céu - tom pastel para os azuis
+//   "#F6D25A",    // Verde menta pastel - contraste suave
+//   "#C5C5C5",    // Ameixa claro - tom roxo suavizado
+//   "#FFB6C1",    // Rosa claro - para variações mais suaves
+//   "#F0E68C",    // Khaki - tom terroso-amarelado
+//   "#E6E6FA",    // Lavanda - neutro colorido
+//   "#FFDEAD"     // Branco amêndoa - tom creme quente
+// ];
 
 @Injectable({
   providedIn: "root",
@@ -30,108 +53,206 @@ export class ChartDataProcessorService {
     fieldLabel: string,
     titleChart: string
   ): IChartOptions | null {
-    // Filtrar dados apenas de 2025
-    const dadosFiltrados = data.filter((d) => d.ano === 2025);
+    try {
+      // Validação inicial dos parâmetros
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        console.warn('Dados de entrada vazios ou inválidos');
+        return null;
+      }
 
-    const years = [...new Set(dadosFiltrados.map((res) => res.ano))].sort();
-    console.log("ANOS", years);
+      if (!fieldLabel || typeof fieldLabel !== 'string') {
+        console.warn('FieldLabel é obrigatório e deve ser uma string');
+        return null;
+      }
 
-    // CORREÇÃO: usar dadosFiltrados ao invés de data
-    const categorys = [
-      ...new Set(dadosFiltrados.map((d) => d[fieldLabel])),
-    ].filter(Boolean);
+      // Encontrar o ano mais recente nos dados (ano atual da consulta)
+      const anosDisponiveis = [...new Set(data.map(d => d.ano))].filter(ano => ano).sort((a, b) => b - a);
 
-    if (years.length === 0 || categorys.length === 0) {
-      console.warn(`Dados insuficientes para gerar o gráfico`);
+      if (anosDisponiveis.length === 0) {
+        console.warn('Nenhum ano válido encontrado nos dados');
+        return null;
+      }
+
+      const anoAtualConsulta = anosDisponiveis[0]; // Pega o ano mais recente
+
+      // Filtrar dados apenas do ano atual da consulta
+      const dadosAnoAtual = data.filter((d) => d?.ano === anoAtualConsulta);
+
+      if (dadosAnoAtual.length === 0) {
+        console.warn(`Nenhum dado encontrado para o ano ${anoAtualConsulta}`);
+        return null;
+      }
+
+      // Verificar se o fieldLabel existe nos dados
+      const primeiroItem = dadosAnoAtual[0];
+      if (!(fieldLabel in primeiroItem)) {
+        console.warn(`FieldLabel "${fieldLabel}" não encontrado nos dados`);
+        return null;
+      }
+
+      const categorys = [
+        ...new Set(dadosAnoAtual.map((d) => d[fieldLabel]?.toString() || '').filter(Boolean)),
+      ];
+
+      if (categorys.length === 0) {
+        console.warn('Nenhuma categoria encontrada para gerar o gráfico');
+        return null;
+      }
+
+      const chartOptions = this.construirDatasetsGndTotal(
+        dadosAnoAtual,
+        categorys,
+        fieldLabel,
+        titleChart,
+        anoAtualConsulta
+      );
+
+      return chartOptions;
+
+    } catch (error) {
+      console.error('Erro ao criar gráfico de despesa GND total:', error);
       return null;
     }
-
-    // Passar dadosFiltrados ao invés de data
-    return this.construirDatasetsGndTotal(
-      dadosFiltrados,
-      years,
-      categorys,
-      fieldLabel
-    );
   }
 
   private construirDatasetsGndTotal(
     data: IReceitaDespesaGNDTotalOrcamentariaResponse[],
-    years: number[],
     categorys: any[],
-    fieldLabel: string
+    fieldLabel: string,
+    titleChart: string,
+    ano: number
   ): IChartOptions | null {
-    const datasets = [
-      {
-        label: `Orçado`,
-        data: categorys.map((categoria) => {
-          const item = data.find(
-            (d) => d[fieldLabel] === categoria && d.ano === years[0]
-          );
-          return this.extrairValor(item, ["vlr_orcado"]);
-        }),
-        backgroundColor: this.colors[0],
-      },
-      {
-        label: `Autorizado`,
-        data: categorys.map((categoria) => {
-          const item = data.find(
-            (d) => d[fieldLabel] === categoria && d.ano === years[0]
-          );
-          return this.extrairValor(item, ["vlr_autorizado"]);
-        }),
-        backgroundColor: this.colors[1], // Corrigido para usar cores diferentes
-      },
-      {
-        label: `Empenhado`,
-        data: categorys.map((categoria) => {
-          const item = data.find(
-            (d) => d[fieldLabel] === categoria && d.ano === years[0]
-          );
-          return this.extrairValor(item, ["vlr_empenhado"]);
-        }),
-        backgroundColor: this.colors[2],
-      },
-      {
-        label: `Liquidado`,
-        data: categorys.map((categoria) => {
-          const item = data.find(
-            (d) => d[fieldLabel] === categoria && d.ano === years[0]
-          );
-          return this.extrairValor(item, ["vlr_liquidado"]);
-        }),
-        backgroundColor: this.colors[3],
-      },
-      {
-        label: `Pago com RAP`,
-        data: categorys.map((categoria) => {
-          const item = data.find(
-            (d) => d[fieldLabel] === categoria && d.ano === years[0]
-          );
-          return this.extrairValor(item, ["vlr_pago_com_rap"]);
-        }),
-        backgroundColor: this.colors[4],
-      },
-    ];
+    try {
+      // Definir cores para os datasets #71C273
+      const colors = ['#76c6d8', '#F58B9B', '#8FCCA2', '#A671C4', '#FFA948'];
+      const datasetLabels = ['Orçado', 'Autorizado', 'Empenhado', 'Liquidado', 'Pago com RAP'];
+      const valueFields = ['vlr_orcado', 'vlr_autorizado', 'vlr_empenhado', 'vlr_liquidado', 'vlr_pago_com_rap'];
 
-    if (!this.temDadosValidos(datasets.map((d) => d.data))) {
-      console.warn(`Nenhum dado financeiro encontrado para ${fieldLabel}`);
+      const datasets = datasetLabels.map((label, index) => {
+        const dataValues = categorys.map((categoria) => {
+          const item = data.find(
+            (d) => d[fieldLabel]?.toString() === categoria?.toString()
+          );
+
+          const valor = this.extrairValor(item, [valueFields[index]]);
+          return valor;
+        });
+
+        return {
+          label: label,
+          data: dataValues,
+          backgroundColor: colors[index],
+          borderColor: colors[index],
+          borderWidth: 1
+        };
+      });
+
+      // Verificar se há dados válidos
+      const todosDados = datasets.flatMap(d => d.data);
+      const temDadosValidos = todosDados.some(valor =>
+        valor !== null && valor !== undefined && valor !== 0
+      );
+
+      if (!temDadosValidos) {
+        console.warn(`Nenhum dado financeiro válido encontrado para ${ano}`);
+        return null;
+      }
+
+      return {
+        data: {
+          labels: categorys,
+          datasets: datasets,
+        },
+      };
+
+    } catch (error) {
+      console.error('Erro ao construir datasets:', error);
       return null;
     }
-
-    return {
-      data: {
-        labels: categorys,
-        datasets: datasets,
-      },
-    };
   }
+
+  // criarChartLiquidadoEPago(
+  //   dados: any[],
+  //   campoLabel: string,
+  //   tituloChart?: string
+  // ): IChartOptions | null {
+
+  //   // Extrair anos únicos dos dados automaticamente
+  //   const anos = [...new Set(dados.map((d) => d.ano))].sort();
+
+  //   // Extrair categorias únicas automaticamente
+  //   const categorias = [...new Set(dados.map((d) => d[campoLabel]))].filter(
+  //     Boolean
+  //   );
+
+  //   if (anos.length === 0 || categorias.length === 0) {
+  //     console.warn(`Dados insuficientes para gerar o gráfico`);
+  //     return null;
+  //   }
+
+
+  //   const datasets = [
+  //     {
+  //       label: `Liquidado ${anos[1] || anos[0]}`, // 2025 ou último ano
+  //       data: categorias.map((categoria) => {
+  //         const item = dados.find(
+  //           (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
+  //         );
+  //         return this.extrairValor(item, ["vlr_liquidado"]);
+  //       }),
+  //       backgroundColor: this.colors[0],
+  //     },
+  //     {
+  //       label: `Liquidado ${anos[0]}`, // 2024 ou primeiro ano
+  //       data: categorias.map((categoria) => {
+  //         const item = dados.find(
+  //           (d) => d[campoLabel] === categoria && d.ano === anos[0]
+  //         );
+  //         return this.extrairValor(item, ["vlr_liquidado"]);
+  //       }),
+  //       backgroundColor: this.colors[1],
+  //     },
+  //     {
+  //       label: `Pago com RAP ${anos[1] || anos[0]}`, // 2025 ou último ano
+  //       data: categorias.map((categoria) => {
+  //         const item = dados.find(
+  //           (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
+  //         );
+  //         return this.extrairValor(item, ["vlr_pago_com_rap"]);
+  //       }),
+  //       backgroundColor: CHART_COLORS[2],
+  //     },
+  //     {
+  //       label: `Pago com RAP ${anos[0]}`, // 2024 ou primeiro ano
+  //       data: categorias.map((categoria) => {
+  //         const item = dados.find(
+  //           (d) => d[campoLabel] === categoria && d.ano === anos[0]
+  //         );
+  //         return this.extrairValor(item, ["vlr_pago_com_rap"]);
+  //       }),
+  //       backgroundColor: CHART_COLORS[0],
+  //     },
+  //   ];
+
+  //   if (!this.temDadosValidos(datasets.map((d) => d.data))) {
+  //     console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
+  //     return null;
+  //   }
+
+  //   return {
+  //     data: {
+  //       labels: categorias,
+  //       datasets: datasets,
+  //     },
+  //   };
+  // }
 
   criarChartLiquidadoEPago(
     dados: any[],
     campoLabel: string,
     tituloChart?: string
   ): IChartOptions | null {
+
     // Extrair anos únicos dos dados automaticamente
     const anos = [...new Set(dados.map((d) => d.ano))].sort();
 
@@ -145,48 +266,63 @@ export class ChartDataProcessorService {
       return null;
     }
 
+    // DEFINIR CORES CONSISTENTEMENTE d390f9 A671C4 ffc78c
+    const cores = [
+      "#e6bcff", // azul claro - Liquidado 2025
+      "#A671C4", // rosa - Liquidado 2024
+      "#ffc78c", // dourado - Pago com RAP 2025
+      "#FFA948", // azul médio - Pago com RAP 2024
+    ];
+
     const datasets = [
       {
-        label: `Liquidado ${anos[1] || anos[0]}`, // 2025 ou último ano
+        label: `Liquidado ${anos[0] || anos[0]}`,
         data: categorias.map((categoria) => {
           const item = dados.find(
             (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
           );
           return this.extrairValor(item, ["vlr_liquidado"]);
         }),
-        backgroundColor: this.colors[0],
+        backgroundColor: cores[0],
       },
       {
-        label: `Liquidado ${anos[0]}`, // 2024 ou primeiro ano
+        label: `Liquidado ${anos[1]}`,
         data: categorias.map((categoria) => {
           const item = dados.find(
             (d) => d[campoLabel] === categoria && d.ano === anos[0]
           );
           return this.extrairValor(item, ["vlr_liquidado"]);
         }),
-        backgroundColor: this.colors[1],
+        backgroundColor: cores[1],
       },
       {
-        label: `Pago com RAP ${anos[1] || anos[0]}`, // 2025 ou último ano
+        label: `Pago com RAP ${anos[0] || anos[0]}`,
         data: categorias.map((categoria) => {
           const item = dados.find(
             (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
           );
           return this.extrairValor(item, ["vlr_pago_com_rap"]);
         }),
-        backgroundColor: this.colors[2],
+        backgroundColor: cores[2],
       },
       {
-        label: `Pago com RAP ${anos[0]}`, // 2024 ou primeiro ano
+        label: `Pago com RAP ${anos[1]}`,
         data: categorias.map((categoria) => {
           const item = dados.find(
             (d) => d[campoLabel] === categoria && d.ano === anos[0]
           );
           return this.extrairValor(item, ["vlr_pago_com_rap"]);
         }),
-        backgroundColor: this.colors[3],
+        backgroundColor: cores[3],
       },
     ];
+
+    // DEBUG: Verificar se as cores estão sendo atribuídas
+    console.log('Datasets com cores:', datasets.map(d => ({
+      label: d.label,
+      backgroundColor: d.backgroundColor,
+      data: d.data
+    })));
 
     if (!this.temDadosValidos(datasets.map((d) => d.data))) {
       console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
@@ -293,8 +429,6 @@ export class ChartDataProcessorService {
       "vlr_receita_liquida"
     );
 
-    console.log("ARRECADAO", dadosArrecadacao);
-    console.log("dadosPrevisao", dadosPrevisao, ano);
 
     if (!this.temDadosValidos([dadosPrevisao, dadosArrecadacao])) {
       console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
@@ -306,14 +440,14 @@ export class ChartDataProcessorService {
         labels: categorias,
         datasets: [
           {
-            label: `Previsão`,
+            label: `${ano}`,
             data: dadosPrevisao,
-            backgroundColor: this.colors[0],
+            backgroundColor: this.colors[1],
           },
           {
-            label: `Arrecadação`,
+            label: `${ano}`,
             data: dadosArrecadacao,
-            backgroundColor: this.colors[1],
+            backgroundColor: this.colors[0],
           },
         ],
       },
@@ -336,7 +470,6 @@ export class ChartDataProcessorService {
         "vlr_receita_liquida"
       );
 
-      console.log(" Dados referente anos multiplos", ano);
       return {
         label: `${ano}`,
         data: dadosAno,
@@ -435,7 +568,6 @@ export class ChartDataProcessorService {
       console.warn(
         `⚠️ Campo "${campoLabel}" não existe nos dados, usando fallback`
       );
-      console.log("Campos disponíveis:", Object.keys(primeiroItem || {}));
 
       // Tentar encontrar campo similar
       const camposDisponiveis = Object.keys(primeiroItem || {});
@@ -447,7 +579,6 @@ export class ChartDataProcessorService {
       );
 
       campoLabelFinal = campoNome || "name";
-      console.log(`🔄 Usando campo: "${campoLabelFinal}"`);
     }
 
     const categorias = this.extrairCategorias(dados, campoLabelFinal);
@@ -457,10 +588,6 @@ export class ChartDataProcessorService {
       console.error("❌ Nenhuma categoria ou ano encontrado");
       return null;
     }
-
-    console.log(
-      `✅ Criando FlipTable: ${categorias.length} categorias × ${anos.length} anos`
-    );
 
     // Criar colunas dinâmicas (uma para cada ano)
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
@@ -505,7 +632,7 @@ export class ChartDataProcessorService {
         nodeData.push({
           originalPropertyName: `ano_${ano}`,
           propertyName: ano.toString(),
-          value: this.extrairValor(item, camposValor),
+          value: this.extrairValor(item, camposValor).toString(),
         });
       });
 
@@ -539,110 +666,28 @@ export class ChartDataProcessorService {
       .sort();
   }
 
-  private extrairValor(item: any, camposValor: string[]): any {
-    if (!item) return null;
+  private extrairValor(item: any, campos: string[]): number {
+    if (!item) return 0;
 
-    for (const campo of camposValor) {
-      if (item.hasOwnProperty(campo)) {
-        return item[campo];
+    for (const campo of campos) {
+      const valor = item[campo];
+      if (valor !== undefined && valor !== null && valor !== '') {
+        return Number(valor) || 0;
       }
     }
 
-    // Fallback para campo 'value'
-    return item.value || null;
+    return 0;
   }
+  // private extrairValor(item: any, camposValor: string[]): any {
+  //   if (!item) return null;
+
+  //   for (const campo of camposValor) {
+  //     if (item.hasOwnProperty(campo)) {
+  //       return item[campo];
+  //     }
+  //   }
+
+  //   // Fallback para campo 'value'
+  //   return item.value || null;
+  // }
 }
-
-
-
-// REVER FUNÇÃO
-
-// processarDadosComparativo(
-//     dados: any[],
-//     campoLabel: string,
-//     labelDataset?: string
-//   ): IChartOptions | null {
-//     if (!dados?.length) {
-//       console.warn("Nenhum dado disponível para processamento");
-//       return null;
-//     }
-
-//     const categorias = this.extrairCategorias(dados, campoLabel);
-//     const anos = this.extrairAnos(dados);
-
-//     if (anos.length === 1) {
-//       // console.log(anos)
-//       const ano = anos[0];
-
-//       const dataForecast = this.extrairDadosPorCategoria(
-//         dados,
-//         categorias,
-//         ano,
-//         campoLabel,
-//         "vlr_receita_prevista"
-//       );
-
-//       const dataCollected = this.extrairDadosPorCategoria(
-//         dados,
-//         categorias,
-//         ano,
-//         campoLabel,
-//         "receitaLiquida",
-//         "vlr_receita_prevista"
-//       );
-
-//       console.log("Dados passados", dataCollected)
-
-//       if (!this.temDadosValidos([dataForecast, dataCollected])) {
-//         console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
-//         return null;
-//       }
-
-//       return {
-//         data: {
-//           labels: categorias,
-//           datasets: [
-//             {
-//               label: `Previsão (${ano})`,
-//               data: dataCollected,
-//               backgroundColor: this.colors[0],
-//             },
-//             {
-//               label: `Arrecadação (${ano})`,
-//               data: dataCollected,
-//               backgroundColor: this.colors[1],
-//             },
-//           ],
-//         },
-//       };
-//     }
-
-//     const datasets = anos.map((ano, index) => {
-//       const dataYear = this.extrairDadosPorCategoria(
-//         dados,
-//         categorias,
-//         ano,
-//         campoLabel || labelDataset,
-//         "receitaLiquida",
-//         "vlr_receita_liquida"
-//       );
-
-//       return {
-//         label: `${ano}`,
-//         data: dataYear,
-//         backgroundColor: this.colors[index % this.colors.length],
-//       };
-//     });
-
-//     if (!this.temDadosValidos(datasets.map((d) => d.data))) {
-//       console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
-//       return null;
-//     }
-
-//     return {
-//       data: {
-//         labels: categorias,
-//         datasets: datasets
-//       }
-//     }
-//   }

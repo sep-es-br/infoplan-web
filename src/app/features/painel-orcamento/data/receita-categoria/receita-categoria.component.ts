@@ -1,9 +1,11 @@
 import {
   Component,
+  EventEmitter,
   inject,
   Input,
   OnChanges,
   OnDestroy,
+  Output,
   SimpleChanges,
 } from "@angular/core";
 import {
@@ -22,6 +24,7 @@ import {
 import { finalize, takeUntil } from "rxjs/operators";
 import { ShortNumberPipe } from "../../../../@theme/pipes";
 import { DomSanitizer } from "@angular/platform-browser";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 @Component({
   selector: "ngx-receita-categoria",
@@ -33,14 +36,17 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
   readonly title: string = "Receita por Categoria";
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-  private readonly _shortNumberPipe = inject(ShortNumberPipe);
-  private readonly _sanitizer = inject(DomSanitizer);
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
+
+
+
   charData: IChartOptions;
   tableContent: FlipTableContent;
+  selectedMaximize: boolean = false;
 
   // MUDANÇA: Agora é sempre um array consistente
   private receitaData: IReceitaCategoriaOrcamentariaResponse[] = [];
@@ -56,6 +62,20 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
+  }
+
 
   private loadData(): void {
     this.loadingStatus = "loading";
@@ -93,7 +113,6 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
     try {
       // Processar gráfico
-      console.log("dados referente a receita-categoria", this.receitaData)
       this.charData = this._chartProcessor.processarDadosComparativo(
         this.receitaData,
         "categoria",
@@ -125,7 +144,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `ano_${ano}`,
-          value: `R$ ${dado?.receitaLiquida || 0}`,
+          value: `${dado?.receitaLiquida.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
       });
 
@@ -134,7 +153,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
         const variacao = this.calcularVariacao(categoria, anos);
         nodeData.push({
           propertyName: "variação",
-          value: `${variacao}%`,
+          value: `${variacao} %`,
         });
       }
 
@@ -144,9 +163,9 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     // Configurar colunas
     const defaultColumns = anos.map(ano => ({
       propertyName: `ano_${ano}`,
-      displayName: `Arrecadação LI - ${ano}`,
+      displayName: `Arrecadação Líquida - ${ano}`,
       alignment: {
-        header: FlipTableAlignment.LEFT,
+        header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
       },
     }));
@@ -154,10 +173,10 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     if (anos.length >= 2) {
       defaultColumns.push({
         propertyName: "variação",
-        displayName: `Variação (%) - ${anos[anos.length - 1]}`,
+        displayName: `Variação - ${anos[anos.length - 1]}`,
         alignment: {
-          header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.RIGHT,
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
         },
       });
     }
@@ -222,18 +241,18 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     ];
 
     if (anos.length >= 2) {
-      columns.push({ key: "variacao", label: "Variação (%)" });
+      columns.push({ key: "variacao", label: "Variação" });
     }
 
     // Criar dados para download usando os valores brutos
     const dataForDownload = categorias.map((categoria) => {
-      const row: any = { categoria};
+      const row: any = { categoria };
 
       anos.forEach((ano) => {
         const item = this.receitaData.find(
           (d) => d.categoria === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR") || 0}`;
+        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`;
       });
 
       if (anos.length >= 2) {
@@ -255,7 +274,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
             ? ((valorFinal - valorInicial) / valorInicial) * 100
             : 0;
 
-        row["variacao"] = Number(variacao.toFixed(2));
+        row["variacao"] = `${variacao.toFixed(2)} %`;
       }
 
       return row;
@@ -270,8 +289,4 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     );
   }
 
-  handleTableSearch(query: string): void {
-    // TODO: Implementar busca
-    console.log("Busca não implementada:", query);
-  }
 }

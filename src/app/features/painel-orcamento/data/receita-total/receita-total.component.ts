@@ -7,8 +7,11 @@ import {
   OnDestroy,
   inject,
   Inject,
+  Output,
+  EventEmitter,
+  OnInit,
 } from "@angular/core";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { takeUntil, finalize } from "rxjs/operators";
 import {
   IExecucaoOrcamentariaRequest,
@@ -22,6 +25,8 @@ import {
   FlipTableContent,
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ShortNumberPipe } from "../../../../shared/components/pipe/shortNumber-pipe";
+import { ComunicationCardsService } from "../../../../core/service/comunication-cards/comunication-cards.service";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 interface ITableRow {
   label: string;
@@ -36,21 +41,29 @@ interface ITableRow {
   providers: [ShortNumberPipe],
 })
 export class ReceitaTotalComponent implements OnChanges, OnDestroy {
-  @Input() filter!: IExecucaoOrcamentariaRequest;
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-  private readonly numberSuffixPipe = inject(ShortNumberPipe);
-  private readonly destroy$ = new Subject<void>();
+  @Input() filter!: IExecucaoOrcamentariaRequest;
+  @Output()
+  dataReceitaTotalCards: EventEmitter<IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]> = new EventEmitter<IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]>();
+
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+
+
+  private readonly destroy$: Subject<void> = new Subject<void>();
+  private responseData: IReceitaTotalOrcamentariaResponse[] | null = null;
 
   readonly title: string = "Receita Prevista x Realizada";
 
+
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
+  selectedMaximize: boolean = false;
   loadingStatus: "loading" | "loaded" | "error" = "loading";
 
-  private responseData: IReceitaTotalOrcamentariaResponse[] | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
@@ -77,6 +90,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
         next: (response) => {
           this.responseData = [response];
           this.processData(response);
+          this._comunicationCardsService.sendReceitaTotal(response)
         },
         error: (err) => {
           console.error("Erro ao carregar receita total:", err);
@@ -87,7 +101,6 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   }
 
   private processData(dados: IReceitaTotalOrcamentariaResponse): void {
-    // Processa dados para o gráfico
     this.chartData = {
       data: {
         labels: dados.ano ? [dados.ano.toString()] : [],
@@ -106,7 +119,6 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
       },
     };
 
-    // Processa dados para a tabela
     this.processTableData(dados);
   }
 
@@ -127,21 +139,21 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
             data: [
               {
                 propertyName: "label",
-                value: "Receita Realizada/Prevista (%)",
+                value: "Receita Realizada/Prevista",
               },
-              { propertyName: "valor", value: `${percentual}%` },
+              { propertyName: "valor", value: `${percentual} %` },
             ],
           },
           {
             data: [
               { propertyName: "label", value: "Arrecadação Líquida" },
-              { propertyName: "valor", value: `R$ ${arrecadacao.toLocaleString("pt-BR")}` },
+              { propertyName: "valor", value: `${arrecadacao.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}` },
             ],
           },
           {
             data: [
               { propertyName: "label", value: "Previsão Inicial Líquida" },
-              { propertyName: "valor", value: `R$ ${previsao.toLocaleString("pt-BR")}` },
+              { propertyName: "valor", value: `${previsao.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}` },
             ],
           },
           {
@@ -166,9 +178,9 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
       defaultColumns: [
         {
           propertyName: "valor",
-          displayName: "Valor",
+          displayName: "Valores",
           alignment: {
-            header: FlipTableAlignment.LEFT,
+            header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,
           },
         },
@@ -190,16 +202,16 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
 
         const ano = item.ano?.toString() || "";
         const receitaLiquida =
-          item.vlr_receita_liquida?.toLocaleString("pt-BR") || "";
+          item.vlr_receita_liquida?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || "0";
         const receitaPrevista =
-          item.vlr_receita_prevista?.toLocaleString("pt-BR") || "";
+          item.vlr_receita_prevista?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || "0";
 
         const percentual =
           item.vlr_receita_prevista > 0
             ? (
-                (item.vlr_receita_liquida / item.vlr_receita_prevista) *
-                100
-              ).toFixed(2)
+              (item.vlr_receita_liquida / item.vlr_receita_prevista) *
+              100
+            ).toFixed(2)
             : "0";
 
         return (
@@ -212,6 +224,18 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
     );
 
     this.processTableData(filtered);
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   handleTableDownload(): void {
@@ -228,6 +252,9 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
       const row: any = {};
 
       node.data.forEach((item) => {
+        if (item.propertyName != "Exercício") {
+          row[item.propertyName] = item.value.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim();
+        }
         row[item.propertyName] = item.value;
       });
 

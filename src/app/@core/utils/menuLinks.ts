@@ -67,7 +67,7 @@ export const menulinks = [
   },
   {
     id: 5,
-    status: checkRoles(environment.allowedRoles.gestaoFiscal),
+    status: false,
     name: "Gestão Fiscal",
     icon: "menu-icone-gestao-fiscal.svg",
     link: "/pages/gfiscal",
@@ -90,10 +90,10 @@ export const menulinks = [
   },
   {
     id: 7,
-    status: true,
     name: "Execução Orçamentaria",
     icon: "painelOrcamento.svg",
     link: "/pages/execucao-orcamentaria",
+    status: checkRoles(environment.allowedRoles.execucaoOrcamentaria),
     url: "",
     src: "Execução Orçamentária",
     menuIcon: "",

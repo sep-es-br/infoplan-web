@@ -8,13 +8,11 @@ import {
 } from "@angular/core";
 import {
   IExecucaoOrcamentariaRequest,
-  IReceitaCategoriaOrcamentariaResponse,
   IReceitaDespesaGNDOrcamentariaResponse,
 } from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
-import { ShortNumberPipe } from "../../../../@theme/pipes/shortNumber.pipe";
 import { Subject } from "rxjs";
 import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
 import {
@@ -24,6 +22,7 @@ import {
   TreeNode,
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { finalize, takeUntil } from "rxjs/operators";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 @Component({
   selector: "ngx-receita-despesa-gnd",
@@ -39,18 +38,16 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
     | IReceitaDespesaGNDOrcamentariaResponse[]
     | null = [];
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-  private readonly _shortNumberPipe = inject(ShortNumberPipe);
-
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
   chartData: IChartOptions;
-
   tableContent: FlipTableContent | null = null;
-
   loadingStatus: "loading" | "loaded" | "error" = "loading";
+  dataReceitaDespesaGNDOrcamentariaCards: IReceitaDespesaGNDOrcamentariaResponse[] | null = [];
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -59,6 +56,19 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) this.loadData();
+  }
+
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   private loadData(): void {
@@ -155,12 +165,12 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Despesa Liquidada - ${ano.toString()}`,
-          value: `R$ ${valorLiquidado|| 0}`,
+          value: `${valorLiquidado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
 
         nodeData.push({
           propertyName: `Pago com RAP - ${ano.toString()}`,
-          value: `R$ ${valorPagoComRAP|| 0}`,
+          value: `${valorPagoComRAP.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
         });
       });
 
@@ -172,8 +182,8 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
           "liquidado"
         );
         nodeData.push({
-          propertyName: "Variação Liquidado (%)",
-          value: `${variacaoLiquidado}%`,
+          propertyName: "Variação Liquidado",
+          value: `${variacaoLiquidado} %`,
         });
 
         const variacaoPagoRAP = this.calcularVariacao(
@@ -183,8 +193,8 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
           "pago_rap"
         );
         nodeData.push({
-          propertyName: "Variação Pago RAP (%)",
-          value: `${variacaoPagoRAP}%`,
+          propertyName: "Variação Pago RAP",
+          value: `${variacaoPagoRAP} %`,
         });
       }
 
@@ -202,7 +212,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
         propertyName: `Despesa Liquidada - ${ano.toString()}`,
         displayName: `Despesa Liquidada - ${ano.toString()}`,
         alignment: {
-          header: FlipTableAlignment.LEFT,
+          header: FlipTableAlignment.RIGHT,
           data: FlipTableAlignment.RIGHT,
         },
       });
@@ -211,7 +221,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
         propertyName: `Pago com RAP - ${ano.toString()}`,
         displayName: `Pago com RAP - ${ano.toString()}`,
         alignment: {
-          header: FlipTableAlignment.LEFT,
+          header: FlipTableAlignment.RIGHT,
           data: FlipTableAlignment.RIGHT,
         },
       });
@@ -219,20 +229,20 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
 
     if (anos.length >= 2) {
       defaultColumns.push({
-        propertyName: "Variação Liquidado (%)",
-        displayName: "Variação Liquidado (%)",
+        propertyName: "Variação Liquidado",
+        displayName: "Variação Liquidado",
         alignment: {
-          header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.RIGHT,
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
         },
       });
 
       defaultColumns.push({
-        propertyName: "Variação Pago RAP (%)",
-        displayName: "Variação Pago RAP (%)",
+        propertyName: "Variação Pago RAP",
+        displayName: "Variação Pago RAP",
         alignment: {
-          header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.RIGHT,
+          header: FlipTableAlignment.CENTER,
+          data: FlipTableAlignment.CENTER,
         },
       });
     }
@@ -309,8 +319,8 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
     // Adiciona colunas de variação se tiver mais de 1 ano
     if (anos.length >= 2) {
       columns.push(
-        { key: "variacao_liquidado", label: "Variação Liquidado (%)" },
-        { key: "variacao_pago_rap", label: "Variação Pago RAP (%)" }
+        { key: "variacao_liquidado", label: "Variação Liquidado" },
+        { key: "variacao_pago_rap", label: "Variação Pago RAP" }
       );
     }
 
@@ -332,14 +342,8 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
           0
         );
 
-        row[`liquidado_${ano}`] = valorLiquidado.toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-        row[`pago_rap_${ano}`] = valorPagoRAP.toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
+        row[`liquidado_${ano}`] = valorLiquidado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "");
+        row[`pago_rap_${ano}`] = valorPagoRAP.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "");
       });
 
       // Calcula variações
@@ -384,8 +388,8 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
             ? ((valorFinalRAP - valorInicialRAP) / valorInicialRAP) * 100
             : 0;
 
-        row["variacao_liquidado"] = Number(variacaoLiq.toFixed(2));
-        row["variacao_pago_rap"] = Number(variacaoRAP.toFixed(2));
+        row["variacao_liquidado"] = `${variacaoLiq.toFixed(2)} %`;
+        row["variacao_pago_rap"] = `${variacaoRAP.toFixed(2)} %`;
       }
 
       return row;

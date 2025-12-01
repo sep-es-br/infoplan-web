@@ -3,6 +3,7 @@
     width: 0;
     opacity: 0;
   }
+
   to {
     width: 60%;
     opacity: 1;
@@ -22,6 +23,10 @@
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.cdk-table {
+  background-color: aqua;
 }
 
 .outer-card {
@@ -49,6 +54,7 @@
       &.opening {
         animation: openSearch 500ms ease-out forwards;
       }
+
       // &.closing {
       //   animation: closeSearch 500ms ease-in forwards;
       // }
@@ -59,7 +65,10 @@
       }
     }
 
-    .search-button, .close-icon, .export-button, .flip-button {
+    .search-button,
+    .close-icon,
+    .export-button,
+    .flip-button {
       cursor: pointer;
     }
 
@@ -73,7 +82,9 @@
 
 
   .flip-card {
-    .card-front, .card-back {
+
+    .card-front,
+    .card-back {
       border: none;
     }
 
@@ -85,47 +96,111 @@
 
     .card-back {
       .flip-table {
-        font-family: var(--text-paragraph-font-family);
-        z-index: 2;
+        width: auto;
 
-        .nb-tree-grid-header-row {
-          position: sticky;
-          top: -1px;
-          z-index: 10;
-        }
-        th {
-          font-size: 12px !important;
-          padding: 0;
-          padding-left: .5em;
-          padding-right: .5em;
-          height: 20px;
-        }
-        th:nth-child(2) {
-          width: 25%;
+        &.minimized {
+          font-family: var(--text-paragraph-font-family);
+          z-index: 2;
+          // background-color: aqua;
 
-          @media screen and (max-width: 576px) {
-            width: 30%;
+
+          .nb-tree-grid-header-row {
+            position: sticky;
+            top: -1px;
+            z-index: 10;
           }
-        }
-        th:nth-child(3) {
-          width: 20%;
 
-          @media screen and (max-width: 576px) {
+          th {
+            font-size: 12px !important;
+            padding: 0;
+            padding-left: .5em;
+            padding-right: .5em;
+            height: 20px;
+            line-height: normal;
+          }
+
+          th:nth-child(2) {
             width: 25%;
+
+            @media screen and (max-width: 576px) {
+              width: 30%;
+              font-size: 5px !important;
+            }
           }
+
+          th:nth-child(3) {
+            // width: 20%;
+
+            @media screen and (max-width: 576px) {
+              width: 25%;
+            }
+          }
+
+          td {
+            font-size: 10px !important;
+            line-height: 125%;
+            padding-top: 0;
+            padding-bottom: 0;
+            padding-left: .5em;
+            height: 25px;
+          }
+
+          .icon {
+            color: var(--card-text-color);
+          }
+
         }
 
-        td {
-          font-size: 10px !important;
-          line-height: 125%;
-          padding-top: 0;
-          padding-bottom: 0;
-          padding-left: .5em;
-          height: 25px;
-        }
+        &.maximized {
+          font-family: var(--text-paragraph-font-family);
+          z-index: 2;
+          // background-color: aqua;
+          max-height: 80vh !important;
 
-        .icon {
-          color: var(--card-text-color);
+          .nb-tree-grid-header-row {
+            position: sticky;
+            top: -1px;
+            z-index: 10;
+          }
+
+          th {
+            font-size: 12px !important;
+            padding: 0;
+            padding-left: .5em;
+            padding-right: .5em;
+            height: 40px;
+            line-height: normal;
+          }
+
+          th:nth-child(2) {
+            // width: 25%;
+
+            @media screen and (max-width: 576px) {
+              width: 30%;
+              font-size: 5px !important;
+            }
+          }
+
+          th:nth-child(3) {
+            // width: 20%;
+
+            @media screen and (max-width: 576px) {
+              width: 25%;
+            }
+          }
+
+          td {
+            font-size: 10px !important;
+            line-height: 125%;
+            padding-top: 0;
+            padding-bottom: 0;
+            padding-left: .5em;
+            height: 25px;
+          }
+
+          .icon {
+            color: var(--card-text-color);
+          }
         }
       }
     }

@@ -7,8 +7,10 @@
   display: grid;
   grid-template-columns: 100%;
   gap: 2px;
-  // padding: 1rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+
 .execucao-orcamentaria-logo {
   min-height: 100px;
   padding: 1rem;
@@ -19,13 +21,6 @@
   align-items: center;
   height: 100%;
 }
-// .cards-exec {
-//   margin-bottom: 0px;
-//   border-radius: 8px;
-//   padding: 5px;
-//   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-//   text-align: center;
-// }
 
 .logo-wrapper {
   max-height: 100%;
@@ -36,6 +31,7 @@
   width: 95%;
   max-height: 56px;
 }
+
 .execucao-orcamentaria-content {
   display: flex;
   align-items: center;
@@ -43,217 +39,413 @@
   max-width: 80%;
 }
 
+::ng-deep {
+  .cdk-overlay-container {
+    z-index: 1060;
+  }
+}
+
 // ============================================
 // FILTROS - Card Único
 // ============================================
-.filter-container {
-  margin-bottom: 0;
+button:focus,
+select:focus,
+input:focus {
+  outline: none;
+  box-shadow: none;
 }
 
-.filters-wrapper {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+.filter-container {
+  position: relative;
+  width: 100%;
+  margin-top: -15px;
 
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  }
+  .filter-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
 
-  nb-card-header {
-    border-bottom: 1px solid #e4e9f2;
-    padding: 16px 20px;
+    .filter-tags {
+      display: flex;
+      overflow-x: auto;
+      white-space: nowrap;
+      gap: 8px;
+      padding: 6px 0;
+      scrollbar-width: thin;
+      scrollbar-color: #005c99 transparent;
 
-    h6 {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-      color: #222b45;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      .filter-tag {
+        background-color: var(--card-background-color);
+        border: 1px solid #CED4DA;
+        color: var(--card-text-color);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        font-size: 10px;
+        white-space: nowrap;
+
+        @media screen and (max-width: 576px) {
+          padding: 2px 12px;
+          font-size: 9px;
+        }
+
+        .tag-label {
+          font-weight: normal;
+        }
+
+        .tag-value {
+          margin-top: -6px;
+        }
+
+        button {
+          background: none;
+          border: none;
+          font-weight: bold;
+          margin-left: 4px;
+          font-size: 17px;
+          cursor: pointer;
+          color: #005C99;
+
+          transition: color .35s ease;
+
+          &:hover {
+            color: #DC3545;
+          }
+        }
+      }
+    }
+
+    .map-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+
+      @media (max-width: 767px) {
+        display: none !important;
+      }
+
+      .map-icon {
+        width: 24px;
+        height: 50px;
+        vertical-align: middle;
+      }
+
+      &:hover {
+        .map-icon {
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        }
+      }
+
+      &.map-btn-clicked {
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+      }
+    }
+
+    .filter-toggle {
+      color: var(--card-text-color);
+      min-width: 90px;
+      border: none;
+      background-color: transparent;
+      padding-bottom: 10px;
+      padding-top: 10px;
+      cursor: pointer;
+      z-index: 1;
+      border-radius: 4px;
     }
   }
 
-  nb-card-body {
-    padding: 24px 20px;
-  }
-}
+  .modal {
+    .modal-dialog {
+      max-width: 70vw;
+      justify-self: center;
 
-.filters-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
+      .modal-content {
+        width: 70vw;
+        background-color: var(--card-background-color);
+        color: var(--card-text-color);
 
-.filter-item {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+        .modal-body {
+          .close-filter-button {
+            color: var(--card-text-color);
+          }
 
-  label {
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #6c757d;
-    transition: color 0.2s ease;
-  }
+          .filter-row {
+            margin-bottom: .75em;
 
-  nb-select {
-    width: 100%;
-    font-size: 14px;
+            .filter-entity {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
 
-    ::ng-deep {
-      .select-button {
-        min-height: 42px;
-        padding: 8px 16px;
-        text-align: left;
+              span {
+                font-size: 12px;
+              }
 
-        .placeholder {
-          display: block;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+              nb-select,
+              input {
+                width: 100%;
+                max-width: 100%;
+                height: 2.5em;
+                font-size: 12px;
+              }
+            }
+          }
+        }
+
+        .modal-footer {
+          border: none;
         }
       }
     }
   }
+}
 
-  &:hover label {
-    color: #495057;
+
+// Aplica esses estilos sob o tema "default"
+:host-context(.nb-theme-default) {
+  .icon-top-right {
+    color: #005C99 !important;
+
+    &.previsto {
+      color: #487D7A !important
+    }
+
+    ;
+
+    &.realizado {
+      color: #00B26A !important
+    }
+
+    ;
+  }
+
+  .text-section {
+    color: #005C99 !important;
+
+    &.previsto {
+      color: #487D7A !important
+    }
+
+    ;
+
+    &.realizado {
+      color: #00B26A !important
+    }
+
+    ;
   }
 }
 
-// // // ============================================
-// // // CARDS DE MÉTRICAS
-// // // ============================================
-// .cards-container {
-//   display: grid;
-//   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-//   gap: 1.3rem;
-//   padding: 0;
+// Aplica esses estilos sob o tema "dark" e "cosmic"
+:host-context(.nb-theme-dark, .nb-theme-cosmic) {
 
-//   // Remove espaçamento extra do card pai
-//   nb-card-body > & {
-//     margin: 0;
-//   }
-// }
+  .icon-top-right,
+  .text-section {
+    color: #FFFFFF !important;
+  }
+}
 
-// // Estilização do card wrapper dos cards
-// nb-card:has(.cards-container) {
-//   border-radius: 12px;
-//   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-//   // transition: all 0.3s ease;
 
-//   &:hover {
-//     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-//   }
-
-//   nb-card-body {
-//     padding: 20px;
-//   }
-// }
-
-// // // ============================================
-// // // GRÁFICOS
-// // // ============================================
-// // .chart-container {
-// //   display: grid;
-// //   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-// //   gap: 20px;
-// //   width: 100%;
-
-// //   .chart-receita-prevista,
-// //   .chart-receita-categoria,
-// //   .chart-principais-origens {
-// //     min-height: 400px;
-
-// //     nb-card {
-// //       height: 100%;
-// //       border-radius: 12px;
-// //       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-// //       transition: all 0.3s ease;
-
-// //       &:hover {
-// //         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-// //       }
-
-// //       nb-card-body {
-// //         padding: 20px;
-// //         min-height: 300px;
-// //         // display: flex;
-// //         // align-items: center;
-// //         // justify-content: center;
-// //       }
-// //     }
-// //   }
-// // }
-// // // ============================================
-// // // RESPONSIVIDADE
-// // // ============================================
-
-// // // Mobile (até 768px)
-// // @media (max-width: 768px) {
-// //   .container {
-// //     padding: 0.5rem;
-// //     gap: 16px;
-// //   }
-
-// //   .filters-wrapper {
-// //     nb-card-header {
-// //       padding: 12px 16px;
-
-// //       h6 {
-// //         font-size: 14px;
-// //       }
-// //     }
-
-// //     nb-card-body {
-// //       padding: 16px;
-// //     }
-// //   }
-
-// //   .filters-grid {
-// //     grid-template-columns: 1fr;
-// //     gap: 16px;
-// //   }
-
-// //   .cards-container {
-// //     grid-template-columns: 1fr;
-// //     gap: 1rem;
-// //   }
-
-// //   nb-card:has(.cards-container) {
-// //     nb-card-body {
-// //       padding: 12px;
-// //     }
-// //   }
-
-// //   .chart-container {
-// //     nb-card-body {
-// //       padding: 12px;
-// //       min-height: 250px;
-// //     }
-// //   }
-// // }
-
-// // // Tablet (769px - 1024px)
-// // @media (min-width: 769px) and (max-width: 1024px) {
-// //   .filters-grid {
-// //     grid-template-columns: repeat(2, 1fr);
-// //   }
-
-// //   .cards-container {
-// //     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-// //   }
-// // }
-
-// // // Desktop grande (acima de 1440px)
 @media (min-width: 1440px) {
   .container {
     max-width: 1800px;
   }
 }
-//   .cards-container {
-//     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-//   }
-// }
+
+.chart-container.maximized {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  // height: 100vh !important;
+  max-height: 100% !important;
+  z-index: 99999 !important;
+  background: #ffffff;
+  padding: 1rem !important;
+  margin: 0 !important;
+  flex: none !important;
+  overflow: auto;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+
+  /* Centralização */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Remove todas as propriedades do Bootstrap */
+.chart-container.maximized.col-12,
+.chart-container.maximized.col-md-12,
+.chart-container.maximized.col-lg-6,
+.chart-container.maximized.col-xl-6,
+.chart-container.maximized.col-xxl-6,
+.chart-container.maximized.col-xxxl-4 {
+  width: 100% !important;
+  max-width: none !important;
+  flex: none !important;
+}
+
+/* Container interno responsivo */
+.chart-container.maximized ::ng-deep .flip-card-container,
+.chart-container.maximized ::ng-deep nb-card,
+.chart-container.maximized ::ng-deep .chart-wrapper {
+  width: 100% !important;
+  height: auto !important;
+  margin: 0 auto !important;
+
+  /* RESPONSIVO - Diferentes tamanhos para diferentes telas */
+  max-width: 98% !important;
+  /* Mobile - quase toda a largura */
+  max-height: 98vh !important;
+}
+
+/* Gráfico responsivo */
+.chart-container.maximized ::ng-deep .echarts {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 400px !important;
+  /* Altura mínima para mobile */
+}
+
+/* ========== MEDIA QUERIES RESPONSIVAS ========== */
+
+/* Tablets (768px para cima) */
+@media (min-width: 768px) {
+  .chart-container.maximized {
+    padding: 1.5rem !important;
+  }
+
+  .chart-container.maximized ::ng-deep .flip-card-container,
+  .chart-container.maximized ::ng-deep nb-card,
+  .chart-container.maximized ::ng-deep .chart-wrapper {
+    max-width: 95vw !important;
+    max-height: 95vh !important;
+  }
+
+  .chart-container.maximized ::ng-deep .echarts {
+    min-height: 600px !important;
+  }
+}
+
+/* Desktops pequenos (992px para cima) */
+@media (min-width: 992px) {
+  .chart-container.maximized {
+    padding: 1rem !important;
+  }
+
+  .chart-container.maximized ::ng-deep .flip-card-container,
+  .chart-container.maximized ::ng-deep nb-card,
+  .chart-container.maximized ::ng-deep .chart-wrapper {
+    max-width: 90% !important;
+    max-height: 90vh !important;
+  }
+}
+
+/* Desktops grandes (1200px para cima) */
+@media (min-width: 1200px) {
+
+  .chart-container.maximized ::ng-deep .flip-card-container,
+  .chart-container.maximized ::ng-deep nb-card,
+  .chart-container.maximized ::ng-deep .chart-wrapper {
+    max-width: 85% !important;
+    max-height: 85% !important;
+  }
+}
+
+/* Telas muito grandes (1400px para cima) */
+@media (min-width: 1400px) {
+
+  .chart-container.maximized ::ng-deep .flip-card-container,
+  .chart-container.maximized ::ng-deep nb-card,
+  .chart-container.maximized ::ng-deep .chart-wrapper {
+    max-width: 80% !important;
+    max-height: 80% !important;
+  }
+}
+
+/* ========== ORIENTAÇÃO DO CELULAR ========== */
+
+/* Celular em modo paisagem */
+@media (max-height: 600px) and (orientation: landscape) {
+  .chart-container.maximized {
+    padding: 0.5rem !important;
+  }
+
+  .chart-container.maximized ::ng-deep .flip-card-container,
+  .chart-container.maximized ::ng-deep nb-card,
+  .chart-container.maximized ::ng-deep .chart-wrapper {
+    max-width: 98% !important;
+    max-height: 98% !important;
+  }
+
+  .chart-container.maximized ::ng-deep .echarts {
+    min-height: 300px !important;
+  }
+}
+
+/* Telas muito pequenas (até 375px) */
+@media (max-width: 375px) {
+  .chart-container.maximized {
+    padding: 0.5rem !important;
+  }
+
+  .chart-container.maximized ::ng-deep .flip-card-container,
+  .chart-container.maximized ::ng-deep nb-card,
+  .chart-container.maximized ::ng-deep .chart-wrapper {
+    max-width: 99% !important;
+    max-height: 99% !important;
+  }
+}
+
+/* ========== MELHORIAS DE ACESSIBILIDADE ========== */
+
+/* Melhora o scroll em mobile */
+.chart-container.maximized {
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Previne zoom em iOS durante o scroll */
+@supports (-webkit-touch-callout: none) {
+  .chart-container.maximized {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) !important;
+  }
+}
+
+/* ========== ANIMAÇÃO SUAVE ========== */
+
+.chart-container.maximized {
+  animation: expandChart 0.3s ease-out;
+}
+
+@keyframes expandChart {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+chart-container.maximized::before:hover {
+  background: #e9ecef;
+  transform: scale(1.1);
+}
+
+/* Mobile - botão maior para touch */
+@media (max-width: 768px) {
+  .chart-container.maximized::before {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}

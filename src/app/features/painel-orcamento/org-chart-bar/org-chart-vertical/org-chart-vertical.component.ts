@@ -173,7 +173,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
           rotate: rotateAngle,
           margin: 12,
           overflow: 'truncate',
-          width: shouldRotate ? 140 : undefined, // Reduzi a width
+          width: shouldRotate ? 80 : undefined, // Reduzi a width
         },
         axisTick: {
           alignWithLabel: shouldRotate
@@ -186,7 +186,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,
           overflow: "truncate",
-          width: isMobile ? 80 : 100,
+          width: isMobile ? 20 : 100,
           formatter: (v: number) => this.formatValue(v),
         },
       },
@@ -196,7 +196,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
         data: data.map(res => res.valores[index]),
         itemStyle: {
           color: colors[index],
-          borderColor: colors[index],
+          // borderColor: colors[index],
           borderWidth: 1
         },
         barMaxWidth: isMobile ? 20 : 40,

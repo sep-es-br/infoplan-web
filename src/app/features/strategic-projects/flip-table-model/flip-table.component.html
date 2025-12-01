@@ -28,14 +28,15 @@
       </ng-container>
 
       <nb-icon class="export-button m-0 ms-3 p-0" [icon]="'cloud-download-outline'"
-        (click)="handleDownloadButtonClick()">
+        (click)="handleDownloadButtonClick()" title="Download XLS">
       </nb-icon>
 
       <ng-container *ngIf="isFlipCardFlipped else tableIcon">
-        <i class="flip-button fas fa-chart-pie m-0 ms-3 p-0" (click)="handleFlipButtonClick()"></i>
+        <i class="flip-button fas fa-chart-pie m-0 ms-3 p-0" (click)="handleFlipButtonClick()" title="Ver gráfico"></i>
       </ng-container>
       <ng-template #tableIcon>
-        <i *ngIf="showTableIcon" class="flip-button fas fa-table m-0 ms-3 p-0" (click)="handleFlipButtonClick()"></i>
+        <i *ngIf="showTableIcon" class="flip-button fas fa-table m-0 ms-3 p-0" (click)="handleFlipButtonClick()"
+          title="Ver tabela"></i>
       </ng-template>
 
       <ng-container *ngIf="!isMaximized; else maximizeIcon">
@@ -44,7 +45,7 @@
       </ng-container>
 
       <ng-template #maximizeIcon>
-        <i class="maximize-button m-0 ms-3 p-0 fas fa-compress" (click)="handleMaximizeButtonClick()" title="Minimizar">
+        <i class="maximize-button m-0 ms-3 p-0 fas fa-compress" (click)="handleMaximizeButtonClick()" title="Restaurar">
         </i>
       </ng-template>
     </div>

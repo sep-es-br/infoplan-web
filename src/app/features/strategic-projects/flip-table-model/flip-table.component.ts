@@ -70,7 +70,7 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() tableContent: FlipTableContent;
 
-  @Input() backCardHeight: number = 300;
+  @Input() backCardHeight: number = 150;
 
   @Input() customTableStyles: FlipTableCustomStyles = {
     cardBack: {

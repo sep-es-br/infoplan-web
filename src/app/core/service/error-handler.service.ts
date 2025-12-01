@@ -48,9 +48,11 @@ export class ErrorHandlerService {
     switch (errorCode) {
       case 401:
         this._router.navigateByUrl('login');
+        this._toastService.showToast('error', 'Acesso negado', ['Você não tem acesso a esse módulo']);
         break;
       case 403:
         this._router.navigateByUrl('login');
+        this._toastService.showToast('error', 'Acesso negado', ['Seu login não é valido ou não está logado']);
         break;
       default:
         break;

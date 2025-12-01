@@ -181,10 +181,10 @@ export class PieChartComponent implements OnInit, OnChanges {
           left: this.getLegendPosition(config.legendPosition).left,
           top: this.getLegendPosition(config.legendPosition).top,
           orient: config.legendOrient,
-          right: "3%",
+          right: "5%",
           textStyle: {
             color: themeStyles.textPrimaryColor,
-            fontSize: 10,
+            fontSize: 8,
           },
           type: "scroll",
           pageTextStyle: { color: themeStyles.textPrimaryColor },
@@ -232,10 +232,10 @@ export class PieChartComponent implements OnInit, OnChanges {
           },
 
           // Layout para evitar sobreposição
-          labelLayout: {
-            hideOverlap: true,
-            moveOverlap: "shiftY",
-          },
+          // labelLayout: {
+          //   hideOverlap: true,
+          //   moveOverlap: "shiftY",
+          // },
 
           animationType: "scale",
           animationEasing: "elasticOut",

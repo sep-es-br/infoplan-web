@@ -5,8 +5,6 @@ import {
   SimpleChanges,
   OnDestroy,
   inject,
-  Output,
-  EventEmitter,
 } from "@angular/core";
 import { Subject } from "rxjs";
 import { takeUntil, finalize } from "rxjs/operators";
@@ -19,6 +17,7 @@ import { PainelOrcamentoService } from "../../../../core/service/painel-orcament
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
 import { FlipTableAlignment, FlipTableColumn, FlipTableContent, TreeNode } from "../../../strategic-projects/flip-table-model/flip-table.component";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 @Component({
   selector: "ngx-receita-icms",
@@ -30,6 +29,14 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
 
   readonly title: string = "ICMS";
   readonly showTableIcon: Boolean = true;
+  private receitaICMSCharData: IReceitaICMSOrcamentariaResponse[] | null = [];
+
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+  private readonly destroy$ = new Subject<void>();
+
 
   chartData!: PieChartData[];
   tableContent: FlipTableContent | null = null
@@ -44,13 +51,6 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     centerPosition: ["70%", "50%"],
   };
 
-  private receitaICMSCharData: IReceitaICMSOrcamentariaResponse[] | null = [];
-
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-
-  private readonly destroy$ = new Subject<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
@@ -61,6 +61,18 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   private loadData(): void {
@@ -238,7 +250,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
       { key: "categoria", label: "Participação ICMS - Receita Total" },
       ...years.map(ano => ({
         key: `ano_${ano}`,
-        label: `Arrecadação LI - ${ano}`,
+        label: `Arrecadação Líquida - ${ano}`,
       })),
     ];
   }

@@ -1,6 +1,8 @@
-<ngx-flip-table [cardTitle]="title" [tableContent]="tableContent" [showTableIcon]="showTableIcon"
-  [loadingStatus]="loadingStatus" (executeSearch)="handleTableSearch" (executeDownload)="handleTableDownload()">
-  <ngx-pie-chart [data]="chartData" [colors]="['#F58B9B', '#4DB6D2']" [height]="'300'" [width]="'400'"
-    [config]="chartConfig" card-front>
+<ngx-flip-table [cardTitle]="title" [showSearchField]="true" [tableContent]="tableContent"
+  [showTableIcon]="showTableIcon" [loadingStatus]="loadingStatus" (executeDownload)="handleTableDownload()"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('receita-icms', $event)">
+  <ngx-pie-chart [data]="chartData" [colors]="['#F58B9B', '#4DB6D2']"
+    [height]="isChartMaximized('receita-icms') ? calcMaximizedHeight() : '300'" [width]="'400'" [config]="chartConfig"
+    card-front>
   </ngx-pie-chart>
 </ngx-flip-table>

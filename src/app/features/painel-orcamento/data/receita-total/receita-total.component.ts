@@ -26,6 +26,7 @@ import {
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ShortNumberPipe } from "../../../../shared/components/pipe/shortNumber-pipe";
 import { ComunicationCardsService } from "../../../../core/service/comunication-cards/comunication-cards.service";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 interface ITableRow {
   label: string;
@@ -45,19 +46,24 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   @Output()
   dataReceitaTotalCards: EventEmitter<IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]> = new EventEmitter<IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]>();
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-  private readonly _comunicationCardsService = inject(ComunicationCardsService);
-  private readonly destroy$ = new Subject<void>();
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+
+
+  private readonly destroy$: Subject<void> = new Subject<void>();
+  private responseData: IReceitaTotalOrcamentariaResponse[] | null = null;
 
   readonly title: string = "Receita Prevista x Realizada";
 
+
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
+  selectedMaximize: boolean = false;
   loadingStatus: "loading" | "loaded" | "error" = "loading";
 
-  private responseData: IReceitaTotalOrcamentariaResponse[] | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
@@ -218,6 +224,18 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
     );
 
     this.processTableData(filtered);
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   handleTableDownload(): void {

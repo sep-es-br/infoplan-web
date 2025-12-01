@@ -1,9 +1,11 @@
 import {
   Component,
+  EventEmitter,
   inject,
   Input,
   OnChanges,
   OnDestroy,
+  Output,
   SimpleChanges,
 } from "@angular/core";
 import {
@@ -22,6 +24,7 @@ import {
 import { finalize, takeUntil } from "rxjs/operators";
 import { ShortNumberPipe } from "../../../../@theme/pipes";
 import { DomSanitizer } from "@angular/platform-browser";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 @Component({
   selector: "ngx-receita-categoria",
@@ -33,14 +36,17 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
   readonly title: string = "Receita por Categoria";
 
-  private readonly _painelService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService = inject(ExportDataService);
-  private readonly _shortNumberPipe = inject(ShortNumberPipe);
-  private readonly _sanitizer = inject(DomSanitizer);
+  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
+  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
+
+
+
   charData: IChartOptions;
   tableContent: FlipTableContent;
+  selectedMaximize: boolean = false;
 
   // MUDANÇA: Agora é sempre um array consistente
   private receitaData: IReceitaCategoriaOrcamentariaResponse[] = [];
@@ -56,6 +62,20 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
+  }
+
 
   private loadData(): void {
     this.loadingStatus = "loading";
@@ -143,7 +163,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     // Configurar colunas
     const defaultColumns = anos.map(ano => ({
       propertyName: `ano_${ano}`,
-      displayName: `Arrecadação LI - ${ano}`,
+      displayName: `Arrecadação Líquida - ${ano}`,
       alignment: {
         header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
@@ -269,8 +289,4 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     );
   }
 
-  handleTableSearch(query: string): void {
-    // TODO: Implementar busca
-    console.log("Busca não implementada:", query);
-  }
 }

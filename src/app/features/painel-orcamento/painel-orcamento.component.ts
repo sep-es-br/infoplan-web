@@ -25,6 +25,7 @@ import { ComunicationCardsService } from "../../core/service/comunication-cards/
 import { ShortNumberPipe } from "../../@theme/pipes";
 import { environment } from "../../../environments/environment";
 import { NbSelectComponent } from "@nebular/theme";
+import { ChartMaximizeService, ChartMaximizeState } from "../../core/service/chart-maximize/chart-maximize.service";
 
 interface IDataCard {
   receitaTotal?: IReceitaTotalOrcamentariaResponse;
@@ -81,6 +82,9 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
   private readonly _sufixShortNumberPipe: ShortNumberPipe = inject(ShortNumberPipe);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+
+
   private subscription!: Subscription;
 
   dataCards: IDataCard;
@@ -88,11 +92,20 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
   // CORREÇÃO: Atualizar currentRequestParams quando filtrar
   currentRequestParams: IExecucaoOrcamentariaRequest = DEFAULT_EXECUCAO_ORCAMENTARIA_REQUEST_PARAMS;
-
+  maximizeChart: boolean = false;
   receitaTotal: IReceitaTotalOrcamentariaResponse | null = null;
   receitaDespesaGNDTotalOrcamento?: IReceitaDespesaGNDTotalOrcamentariaResponse[] | null = [];
-
   isFilterModalOpen: boolean = false;
+
+  maximizedChartId: string | null = null;
+
+  maximizeState: ChartMaximizeState = {
+    maximizedChartId: null,
+    isAnyChartMaximized: false,
+    maximizedHeight: this._chartMaximizeService.getCurrentHeight()
+  };
+
+  private subscriptionMaximizeState!: Subscription;
 
   filter: IExecucaoOrcamentariaFilters = {
     ano: environment.execucaoOrcamentariaFilter.ano,
@@ -121,24 +134,21 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     { num: 12, name: 'Dezembro' }
   ];
 
-  yearsList = [
-    { num: 2020 },
-    { num: 2021 },
-    { num: 2022 },
-    { num: 2023 },
-    { num: 2024 },
-    { num: 2025 },
-    { num: 2026 },
-    { num: 2027 },
-    { num: 2028 },
-    { num: 2029 },
-    { num: 2030 },
-    { num: 2031 },
-  ];
+  yearsList = Array.from(
+    { length: new Date().getFullYear() - 2014 + 1 },
+    (_, i) => ({ num: 2014 + i })
+  );
 
   activeFilters: { key: string; label: string; displayValue: Array<{ name: string; fullName?: string; }>; }[] = [];
 
   ngOnInit(): void {
+    this.subscriptionMaximizeState = this._chartMaximizeService.maximizeState$.subscribe(
+      (state: ChartMaximizeState) => {
+        console.log('📥 Dashboard - Estado atualizado:', state);
+        this.maximizeState = state;
+      }
+    );
+
     this.subscription = this._comunicationCardsService.data$.subscribe(
       (data) => {
         if (data.receitaTotal != null) {
@@ -151,7 +161,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
       }
     );
     this.updateActiveFilters();
-    // CARREGAR DADOS INICIAIS
     this.loadInitialData();
   }
 
@@ -160,6 +169,9 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+    if (this.subscriptionMaximizeState) {
+      this.subscriptionMaximizeState.unsubscribe();
     }
   }
 
@@ -191,11 +203,10 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     // CORREÇÃO: Emitir evento de filtro alterado
     this.filterChanged.emit(this.currentRequestParams);
 
-    // CORREÇÃO: Recarregar dados com novos filtros
+    // Recarregar dados com novos filtros
     this.loadDataWithFilters();
   }
 
-  // CORREÇÃO: Método para carregar dados com filtros
   loadDataWithFilters(): void {
     // Aqui você deve chamar os serviços para recarregar os dados
     // com os novos filtros. Exemplo:
@@ -340,8 +351,20 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     console.log('Dados recebidos:', event);
   }
 
+
+  handleMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  isAnyChartMaximized(): boolean {
+    return this._chartMaximizeService.isAnyChartMaximized();
+  }
+
   dataReceitaCards() {
-    // CORREÇÃO: Verificação segura para o array
     const receitaDespesa = this.receitaDespesaGNDTotalOrcamento || [];
     const primeiroItem = receitaDespesa[0];
     const segundoItem = receitaDespesa[1];

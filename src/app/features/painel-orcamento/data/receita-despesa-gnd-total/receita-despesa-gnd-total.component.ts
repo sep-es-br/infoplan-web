@@ -18,10 +18,10 @@ import {
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
-import { ShortNumberPipe } from "../../../../@theme/pipes/shortNumber.pipe";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ComunicationCardsService } from "../../../../core/service/comunication-cards/comunication-cards.service";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 @Component({
   selector: "ngx-receita-despesa-gnd-total",
@@ -46,8 +46,8 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
 
   private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
   private readonly _exportDataService: ExportDataService = inject(ExportDataService);
-  private readonly _shortNumberPipe: ShortNumberPipe = inject(ShortNumberPipe);
   private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -59,6 +59,18 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   private loadData(): void {
@@ -109,8 +121,11 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
       | IReceitaDespesaGNDTotalOrcamentariaResponse
       | IReceitaDespesaGNDTotalOrcamentariaResponse[]
   ): void {
-    const dadosArray = Array.isArray(dados) ? dados : [dados];
-    const ano = dadosArray[1]?.ano || new Date().getFullYear();
+    const currentYear = new Date().getFullYear();
+    const dadosArray = (Array.isArray(dados) ? dados : [dados]).filter(
+      (item) => item.ano === currentYear
+    );
+    const ano = currentYear;
     const treeNodes = dadosArray
       .map((item) => {
         const orcado = item.vlr_orcado || 0;

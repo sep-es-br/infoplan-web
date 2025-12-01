@@ -13,7 +13,6 @@ import {
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
-import { ShortNumberPipe } from "../../../../@theme/pipes/shortNumber.pipe";
 import { Subject } from "rxjs";
 import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
 import {
@@ -23,7 +22,7 @@ import {
   TreeNode,
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { finalize, takeUntil } from "rxjs/operators";
-import { ComunicationCardsService } from "../../../../core/service/comunication-cards/comunication-cards.service";
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 
 @Component({
   selector: "ngx-receita-despesa-gnd",
@@ -42,8 +41,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
   private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
   private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
   private readonly _exportDataService: ExportDataService = inject(ExportDataService);
-  private readonly _shortNumberPipe: ShortNumberPipe = inject(ShortNumberPipe);
-  private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
+  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
   chartData: IChartOptions;
@@ -58,6 +56,19 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) this.loadData();
+  }
+
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 
   private loadData(): void {
@@ -78,7 +89,6 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
       .subscribe({
         next: (res: IReceitaDespesaGNDOrcamentariaResponse[]) => {
           this.receitaDespesaOrcamento = res;
-          // this._comunicationCardsService.sendReceitaDespesaGNDOrcamentaria(res);
           this.processData();
         },
         error: (err) => {

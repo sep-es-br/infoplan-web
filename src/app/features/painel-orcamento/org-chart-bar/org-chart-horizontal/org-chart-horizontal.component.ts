@@ -91,6 +91,11 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
       dataset.backgroundColor || "#4DB6D2"
     );
 
+
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
+
     this.chartOptions = {
       tooltip: {
         trigger: "axis",
@@ -146,9 +151,11 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: 10,
-          overflow: "truncate",
-          width: 100,
+          fontSize: isPhone ? 8 : isTablet ? 8 : isMobile ? 10 : 10,
+          // lineHeight: 2,
+          // margin: 12,
+          overflow: "breakAll",
+          width: 119,
           formatter: (value: string) => {
             return this.quebrarTexto(value, this.charactersPerLine);
           },

@@ -179,9 +179,7 @@
           [class.col-xxl-6]="!isChartMaximized('receita-total')"
           [class.col-xxxl-4]="!isChartMaximized('receita-total')">
 
-          <ngx-receita-total class="w-100"
-            (sendMaximizeButtonClick)="handleMaximizeButtonClick('receita-total', $event)"
-            (dataReceitaTotalCards)="dataCards" [filter]="currentRequestParams">
+          <ngx-receita-total class="w-100" (dataReceitaTotalCards)="dataCards" [filter]="currentRequestParams">
           </ngx-receita-total>
         </div>
 

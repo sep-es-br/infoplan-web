@@ -97,8 +97,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   receitaDespesaGNDTotalOrcamento?: IReceitaDespesaGNDTotalOrcamentariaResponse[] | null = [];
   isFilterModalOpen: boolean = false;
 
-  maximizedChartId: string | null = null;
-
   maximizeState: ChartMaximizeState = {
     maximizedChartId: null,
     isAnyChartMaximized: false,
@@ -144,7 +142,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptionMaximizeState = this._chartMaximizeService.maximizeState$.subscribe(
       (state: ChartMaximizeState) => {
-        console.log('📥 Dashboard - Estado atualizado:', state);
         this.maximizeState = state;
       }
     );
@@ -345,12 +342,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
     if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
   }
-
-  // CORREÇÃO: Método para receber dados dos cards (se necessário)
-  onDataReceived(event: any): void {
-    console.log('Dados recebidos:', event);
-  }
-
 
   handleMaximizeButtonClick(chartId: string, event: boolean): void {
     this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);

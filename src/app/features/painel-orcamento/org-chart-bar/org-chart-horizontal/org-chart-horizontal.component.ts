@@ -4,6 +4,7 @@ import {
   Input,
   OnChanges,
   OnInit,
+  OnDestroy,
   SimpleChanges,
 } from "@angular/core";
 import { NbThemeService } from "@nebular/theme";
@@ -19,19 +20,24 @@ import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChart
   templateUrl: "./org-chart-horizontal.component.html",
   styles: ['.echarts { width: 100%; height: 100%; }'],
 })
-export class OrgChartHorizontalComponent implements OnInit, OnChanges {
+export class OrgChartHorizontalComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chart!: IChartOptions;
   @Input() height: number;
   @Input() charactersPerLine: number;
+  @Input() showMaximizeButton!: boolean;
 
   chartOptions: EChartsOption;
   echartsInstance: ECharts | null = null;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimer: any;
 
+  // ✅ LISTENER DE RESIZE COM DEBOUNCE
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
-    this.resizeChart();
+    clearTimeout(this.resizeTimer);
+    this.resizeTimer = setTimeout(() => {
+      this.updateChartOnResize();
+    }, 150);
   }
 
   constructor(private _themeService: NbThemeService) {
@@ -68,8 +74,52 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
     }
   }
 
+  // ✅ CLEANUP
+  ngOnDestroy(): void {
+    clearTimeout(this.resizeTimer);
+    if (this.echartsInstance) {
+      this.echartsInstance.dispose();
+      this.echartsInstance = null;
+    }
+  }
+
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
+  }
+
+  // ✅ ATUALIZA GRÁFICO QUANDO REDIMENSIONAR
+  private updateChartOnResize(): void {
+    if (!this.echartsInstance || !this.chart?.data) return;
+
+    const theme = getAvailableThemesStyles(this.currentTheme);
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
+
+    this.echartsInstance.setOption({
+      yAxis: {
+        axisLabel: {
+          color: theme.textPrimaryColor,
+          fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+          margin: 8,
+          overflow: "break",
+          width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
+          formatter: (value: string) => {
+            return this.quebrarTexto(value, this.charactersPerLine);
+          },
+        },
+      },
+      xAxis: {
+        axisLabel: {
+          fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+        }
+      },
+      series: this.chart.data.datasets.map(() => ({
+        barMaxWidth: isMobile ? 15 : 20,
+      }))
+    });
+
+    this.resizeChart();
   }
 
   initChartOptions(chart: IChartOptions) {
@@ -90,7 +140,6 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
     const colors = chart.data.datasets.map(dataset =>
       dataset.backgroundColor || "#4DB6D2"
     );
-
 
     const isMobile = window.innerWidth <= 1000;
     const isPhone = window.innerWidth <= 575;
@@ -139,7 +188,7 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
         type: "value",
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: 10,
+          fontSize: isMobile ? 8 : 10,
           formatter: (v: number) => this.formatValue(v),
         },
       },
@@ -147,15 +196,13 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
       yAxis: {
         type: "category",
         inverse: false,
-
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: isPhone ? 8 : isTablet ? 8 : isMobile ? 10 : 10,
-          // lineHeight: 2,
-          // margin: 12,
-          overflow: "breakAll",
-          width: 119,
+          fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+          margin: 8,
+          overflow: "break",
+          width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
           formatter: (value: string) => {
             return this.quebrarTexto(value, this.charactersPerLine);
           },
@@ -167,6 +214,10 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
         type: "bar",
         data: data.map(d => d.valores[index]),
         itemStyle: { color: colors[index] },
+        barCategoryGap: "10%",
+        barGap: "20%",
+        barMaxWidth: isMobile ? 15 : 20,
+        barMinHeight: 20,
       })),
 
       dataZoom: [
@@ -208,7 +259,37 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges {
 
   private quebrarTexto(texto: string, maxCaracteres: number): string {
     if (!texto) return '';
-    return texto.match(new RegExp(`.{1,${maxCaracteres}}`, 'g'))?.join('\n') || texto;
+
+    if (!this.showMaximizeButton) {
+      if (texto.includes('de Melhoria')) {
+        texto = texto.replace('de Melhoria', '...');
+      }
+    }
+
+    const words = texto.split(' ');
+    let lines: string[] = [];
+    let currentLine = '';
+
+    for (const word of words) {
+      if ((currentLine + (currentLine ? ' ' : '') + word).length > maxCaracteres) {
+        if (currentLine) {
+          lines.push(currentLine);
+          currentLine = '';
+        }
+
+        if (word.length > maxCaracteres) {
+          const chunks = word.match(new RegExp(`.{1,${maxCaracteres}}`, 'g'));
+          if (chunks) lines.push(...chunks);
+        } else {
+          currentLine = word;
+        }
+      } else {
+        currentLine += (currentLine ? ' ' : '') + word;
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+
+    return lines.join('\n');
   }
 
   private formatValue(value: number): string {

@@ -5,6 +5,7 @@ import {
   Input,
   OnChanges,
   OnInit,
+  OnDestroy,
   SimpleChanges,
 } from "@angular/core";
 import { NbThemeService } from "@nebular/theme";
@@ -40,9 +41,9 @@ export interface PieChartConfig {
   gridBottom?: string | number;
   gridLeft?: string | number;
   gridRight?: string | number;
-  minAngle?: number; // Novo: ângulo mínimo para slices
-  avoidLabelOverlap?: boolean; // Novo: evitar sobreposição
-  labelLayout?: any; // Novo: layout das labels
+  minAngle?: number;
+  avoidLabelOverlap?: boolean;
+  labelLayout?: any;
 }
 
 @Component({
@@ -52,7 +53,7 @@ export interface PieChartConfig {
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
-export class PieChartComponent implements OnInit, OnChanges {
+export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: PieChartData[] = [];
   @Input() colors: string[] = [];
   @Input() height: number;
@@ -62,6 +63,7 @@ export class PieChartComponent implements OnInit, OnChanges {
   chartOptions: EChartsOption = {};
   echartsInstance: ECharts | null = null;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
+  private resizeTimer: any;
 
   private readonly defaultConfig: PieChartConfig = {
     showTitle: false,
@@ -73,16 +75,16 @@ export class PieChartComponent implements OnInit, OnChanges {
     legendOrient: "vertical",
     showTooltip: true,
     showLabels: true,
-    radius: ["35%", "65%"], // Ajustado para melhor visualização
+    radius: ["35%", "65%"],
     animation: true,
     emphasisScale: false,
-    centerPosition: ["50%", "50%"], // Centralizado
+    centerPosition: ["50%", "50%"],
     gridTop: "15%",
     gridBottom: "15%",
     gridLeft: "10%",
     gridRight: "10%",
-    minAngle: 5, // Evita slices muito pequenos
-    avoidLabelOverlap: true, // Previne sobreposição
+    minAngle: 5,
+    avoidLabelOverlap: true,
   };
 
   constructor(private themeService: NbThemeService) {
@@ -94,9 +96,13 @@ export class PieChartComponent implements OnInit, OnChanges {
       });
   }
 
+  // ✅ LISTENER DE RESIZE COM DEBOUNCE
   @HostListener("window:resize")
   onResize() {
-    this.resizeChart();
+    clearTimeout(this.resizeTimer);
+    this.resizeTimer = setTimeout(() => {
+      this.updateChartOnResize();
+    }, 150);
   }
 
   ngOnInit() {
@@ -113,8 +119,73 @@ export class PieChartComponent implements OnInit, OnChanges {
     }
   }
 
+  // ✅ CLEANUP
+  ngOnDestroy(): void {
+    clearTimeout(this.resizeTimer);
+    if (this.echartsInstance) {
+      this.echartsInstance.dispose();
+      this.echartsInstance = null;
+    }
+  }
+
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
+  }
+
+  // ✅ ATUALIZA GRÁFICO QUANDO REDIMENSIONAR
+  private updateChartOnResize(): void {
+    if (!this.echartsInstance || !this.data || this.data.length === 0) return;
+
+    const config = { ...this.defaultConfig, ...this.config };
+    const themeStyles = getAvailableThemesStyles(this.currentTheme);
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
+
+    // Ajusta raio baseado no tamanho da tela
+    const radius = isMobile
+      ? (isPhone ? ["25%", "55%"] : ["30%", "60%"])
+      : config.radius;
+
+    // Ajusta posição da legenda
+    const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 12;
+    const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 12;
+
+    this.echartsInstance.setOption({
+      legend: config.showLegend
+        ? {
+          textStyle: {
+            color: themeStyles.textPrimaryColor,
+            fontSize: legendFontSize,
+          },
+          itemWidth: isMobile ? 8 : 10,
+          itemHeight: isMobile ? 8 : 10,
+          itemGap: isMobile ? 8 : 10,
+        }
+        : undefined,
+
+      series: [
+        {
+          radius: radius,
+          label: {
+            show: true,
+            position: "inside",
+            formatter: function (params) {
+              return params.percent >= 4 ? Math.round(params.percent) + '%' : '';
+            },
+            fontSize: labelFontSize,
+            color: "#FFFFFF",
+          },
+          labelLine: {
+            show: true,
+            length: isMobile ? 5 : 10,
+            length2: isMobile ? 3 : 5,
+          },
+        },
+      ],
+    });
+
+    this.resizeChart();
   }
 
   private buildChart() {
@@ -125,8 +196,17 @@ export class PieChartComponent implements OnInit, OnChanges {
 
     const config = { ...this.defaultConfig, ...this.config };
     const themeStyles = getAvailableThemesStyles(this.currentTheme);
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
 
-    // Filtra dados muito pequenos se necessário
+    // Responsividade inicial
+    const radius = isMobile
+      ? (isPhone ? ["25%", "55%"] : ["30%", "60%"])
+      : config.radius;
+    const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 12;
+    const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 12;
+
     const filteredData = this.filterSmallSlices(
       this.data,
       config.minAngle || 5
@@ -163,7 +243,6 @@ export class PieChartComponent implements OnInit, OnChanges {
                 ? data.value
                 : parseFloat(data.value);
 
-            // Formatar como Reais
             const formattedValue = new Intl.NumberFormat("pt-BR", {
               style: "currency",
               currency: "BRL",
@@ -176,6 +255,7 @@ export class PieChartComponent implements OnInit, OnChanges {
           textStyle: { color: themeStyles.textPrimaryColor },
         }
         : undefined,
+
       legend: config.showLegend
         ? {
           left: this.getLegendPosition(config.legendPosition).left,
@@ -184,13 +264,13 @@ export class PieChartComponent implements OnInit, OnChanges {
           right: "5%",
           textStyle: {
             color: themeStyles.textPrimaryColor,
-            fontSize: 8,
+            fontSize: legendFontSize,
           },
           type: "scroll",
           pageTextStyle: { color: themeStyles.textPrimaryColor },
-          itemWidth: 10,
-          itemHeight: 10,
-          itemGap: 10,
+          itemWidth: isMobile ? 8 : 10,
+          itemHeight: isMobile ? 8 : 10,
+          itemGap: isMobile ? 8 : 10,
           selectedMode: true,
         }
         : undefined,
@@ -199,11 +279,11 @@ export class PieChartComponent implements OnInit, OnChanges {
         {
           name: "Dados",
           type: "pie",
-          radius: config.radius,
+          radius: radius,
           center: config.centerPosition,
           data: filteredData,
-          minAngle: config.minAngle, // Ângulo mínimo para slices
-          avoidLabelOverlap: false, // Evita sobreposição
+          minAngle: config.minAngle,
+          avoidLabelOverlap: false,
           emphasis: {
             scale: config.emphasisScale,
             scaleSize: config.emphasisScale ? 10 : 0,
@@ -220,22 +300,16 @@ export class PieChartComponent implements OnInit, OnChanges {
             formatter: function (params) {
               return params.percent >= 4 ? Math.round(params.percent) + '%' : '';
             },
-            fontSize: 10,
+            fontSize: labelFontSize,
             color: "#FFFFFF",
           },
 
           labelLine: {
             show: true,
-            length: 10,
-            length2: 5,
+            length: isMobile ? 5 : 10,
+            length2: isMobile ? 3 : 5,
             smooth: true,
           },
-
-          // Layout para evitar sobreposição
-          // labelLayout: {
-          //   hideOverlap: true,
-          //   moveOverlap: "shiftY",
-          // },
 
           animationType: "scale",
           animationEasing: "elasticOut",
@@ -249,9 +323,6 @@ export class PieChartComponent implements OnInit, OnChanges {
     }
   }
 
-  /**
-   * Filtra slices muito pequenos para melhor visualização
-   */
   private filterSmallSlices(
     data: PieChartData[],
     minAngle: number
@@ -261,7 +332,6 @@ export class PieChartComponent implements OnInit, OnChanges {
 
     return data.map((item) => ({
       ...item,
-      // Mantém todos os dados, mas ajusta a visualização via minAngle
     }));
   }
 

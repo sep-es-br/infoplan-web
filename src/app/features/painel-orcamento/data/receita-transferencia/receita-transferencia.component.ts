@@ -232,10 +232,6 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
     return Number(variacao.toFixed(2));
   }
 
-  handleTableSearch(query: string): void {
-    console.log("Busca não implementada:", query);
-  }
-
   handleTableDownload(): void {
     if (!this.receitaTransferenciaCorrente?.length) return;
 

@@ -3,7 +3,9 @@ import {
   Input,
   OnChanges,
   OnInit,
+  OnDestroy,
   SimpleChanges,
+  HostListener,
 } from "@angular/core";
 import { NbThemeService } from "@nebular/theme";
 import { ECharts, EChartsOption } from "echarts";
@@ -30,14 +32,17 @@ import { IChartOptions } from "./../../../../shared/models/painel-orcamento/ICha
     }
   `],
 })
-export class OrgChartVerticalComponent implements OnInit, OnChanges {
+export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chart!: IChartOptions;
   @Input() height: number;
   @Input() barGap: string = "30";
   @Input() isMaximized!: boolean;
+  @Input() charactersPerLine: number;
+
   echartsInstance: ECharts | null = null;
   chartOptions: EChartsOption;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
+  private resizeTimeout: any;
 
   constructor(private _themeService: NbThemeService) {
     this._themeService.onThemeChange().subscribe((newTheme) => {
@@ -59,6 +64,15 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
     });
   }
 
+  // ✅ LISTENER DE RESIZE DA JANELA
+  @HostListener('window:resize', ['$event'])
+  onWindowResize(event?: Event) {
+    clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = setTimeout(() => {
+      this.updateChartOnResize();
+    }, 150);
+  }
+
   ngOnInit(): void {
     this.currentTheme = this._themeService.currentTheme as AvailableThemes;
     if (this.chart) this.initChartOptions(this.chart);
@@ -67,6 +81,13 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["chart"] && this.chart) {
       this.initChartOptions(this.chart);
+
+      if (this.echartsInstance) {
+        this.echartsInstance.setOption({
+          xAxis: this.chartOptions.xAxis,
+          series: this.chartOptions.series,
+        });
+      }
     }
 
     if (changes["height"] || changes["isMaximized"]) {
@@ -74,20 +95,65 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
     }
   }
 
+  // ✅ CLEANUP
+  ngOnDestroy(): void {
+    clearTimeout(this.resizeTimeout);
+    if (this.echartsInstance) {
+      this.echartsInstance.dispose();
+      this.echartsInstance = null;
+    }
+  }
+
+  // ✅ ATUALIZA GRÁFICO QUANDO REDIMENSIONAR
+  private updateChartOnResize(): void {
+    if (!this.echartsInstance || !this.chart?.data) return;
+
+    const theme = getAvailableThemesStyles(this.currentTheme);
+
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
+
+    this.echartsInstance.setOption({
+      xAxis: {
+        axisLabel: {
+          color: theme.textPrimaryColor,
+          fontSize: isMobile ? 6 : 9,
+          interval: 0,
+          rotate: 0,
+          margin: 12,
+          overflow: 'breakAll',
+          width: isPhone ? 30 : isTablet ? 40 : isMobile ? 100 : 150,
+          formatter: (value: string) => this.quebrarTexto(value, this.charactersPerLine),
+        },
+        axisTick: {
+          alignWithLabel: true
+        }
+      },
+      yAxis: {
+        axisLabel: {
+          fontSize: isMobile ? 8 : 10,
+          width: isMobile ? 20 : 100,
+        }
+      },
+      series: this.chart.data.datasets.map((dataset, index) => ({
+        barMaxWidth: isMobile ? 20 : 40,
+      }))
+    });
+
+    this.resizeChart();
+  }
+
   private resizeChart(): void {
     if (this.echartsInstance) {
       setTimeout(() => {
         this.echartsInstance?.resize({
           width: 'auto',
-          height: this.height // ⬅️ USA A ALTURA NUMÉRICA
+          height: this.height
         });
-        console.log("📐 Gráfico redimensionado para altura:", this.height);
       }, 100);
-    } else {
-      console.log("⚠️ echartsInstance não disponível para redimensionar");
     }
   }
-
 
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
@@ -112,23 +178,15 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
       valores: chart.data.datasets.map(dataset => dataset.data[i] ?? 0)
     }));
 
-    const isMobile = window.innerWidth <= 768;
-
-    // ⬇️ LÓGICA INTELIGENTE PARA ROTAÇÃO ⬇️
-    const shouldRotate = this.shouldRotateLabels(data.map(d => d.category), isMobile);
-    const rotateAngle = shouldRotate ? 45 : 0;
-
-    console.log("🔍 Detecção de rotação:", {
-      labels: data.map(d => d.category),
-      shouldRotate,
-      rotateAngle
-    });
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
 
     this.chartOptions = {
       grid: {
         top: "20%",
         left: "12%",
-        bottom: shouldRotate ? "15%" : "8%", // Aumentei o bottom quando rotacionado
+        bottom: "10%",
         right: "5%",
         containLabel: true,
       },
@@ -168,15 +226,16 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: isMobile ? 8 : 9,
+          fontSize: isMobile ? 6 : 9,
           interval: 0,
-          rotate: rotateAngle,
+          rotate: 0,
           margin: 12,
-          overflow: 'truncate',
-          width: shouldRotate ? 80 : undefined, // Reduzi a width
+          overflow: 'breakAll',
+          width: isPhone ? 30 : isTablet ? 40 : isMobile ? 100 : 150,
+          formatter: (value: string) => this.quebrarTexto(value, this.charactersPerLine),
         },
         axisTick: {
-          alignWithLabel: shouldRotate
+          alignWithLabel: true
         }
       },
       yAxis: {
@@ -196,11 +255,10 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
         data: data.map(res => res.valores[index]),
         itemStyle: {
           color: colors[index],
-          // borderColor: colors[index],
           borderWidth: 1
         },
         barMaxWidth: isMobile ? 20 : 40,
-        barCategoryGap: shouldRotate ? '20%' : '30%',
+        barCategoryGap: '20%',
         barGap: `${this.barGap}%`,
         emphasis: {
           itemStyle: {
@@ -210,51 +268,20 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges {
         }
       }))
     };
+
+    if (this.echartsInstance) {
+      this.echartsInstance.setOption({
+        xAxis: this.chartOptions.xAxis,
+        series: this.chartOptions.series,
+      });
+    }
   }
 
-  /**
-   * Lógica inteligente para decidir quando rotacionar labels
-   */
-  private shouldRotateLabels(labels: string[], isMobile: boolean): boolean {
-    // Se for mobile, sempre rotaciona se tiver mais de 3 labels
-    if (isMobile && labels.length > 3) {
-      return true;
-    }
-
-    // Se tiver apenas 1 label, nunca rotaciona
-    if (labels.length === 1) {
-      return false;
-    }
-
-    // Verifica se há labels longos que precisam de rotação
-    const hasLongLabels = labels.some(label => {
-      const labelLength = label.toString().length;
-      return labelLength > 10; // Considera "longo" se tiver mais de 10 caracteres
-    });
-
-    // Verifica se há muitos labels (mais de 6)
-    const hasManyLabels = labels.length > 6;
-
-    // Verifica se todos os labels são curtos (apenas números ou palavras curtas)
-    const allLabelsAreShort = labels.every(label => {
-      const labelStr = label.toString();
-      const isYear = /^\d{4}$/.test(labelStr); // 2024, 2025, etc
-      const isShortWord = labelStr.length <= 8; // Palavras com até 8 caracteres
-      return isYear || isShortWord;
-    });
-
-    console.log("📊 Análise de labels:", {
-      labels,
-      isMobile,
-      hasLongLabels,
-      hasManyLabels,
-      allLabelsAreShort
-    });
-
-    // Rotaciona apenas se tiver labels longos OU muitos labels E não forem todos curtos
-    return (hasLongLabels || hasManyLabels) && !allLabelsAreShort;
+  private quebrarTexto(texto: string, maxCaracteres: number): string {
+    if (!texto) return '';
+    return texto.match(new RegExp(`.{1,${maxCaracteres}}`, 'g'))?.join('\n') || texto;
   }
-  // MÉTODO PARA CORES DE FALLBACK
+
   private getFallbackColor(index: number): string {
     const fallbackColors = [
       "#4DB6D2", "#F58B9B", "#AF9552", "#2E88B9",

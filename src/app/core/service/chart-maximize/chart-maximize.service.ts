@@ -31,14 +31,12 @@ export class ChartMaximizeService {
         isAnyChartMaximized: true,
         maximizedHeight: this.calcMaximizedHeight()
       };
-      console.log(`📊 Service - Maximizando gráfico: ${chartId}`);
     } else {
       newState = {
         maximizedChartId: null,
         isAnyChartMaximized: false,
         maximizedHeight: this.calcMaximizedHeight()
       };
-      console.log(`📊 Service - Minimizando gráfico: ${chartId}`);
     }
 
     this.maximizeState.next(newState);

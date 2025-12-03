@@ -90,7 +90,7 @@ export const menulinks = [
   },
   {
     id: 7,
-    name: "Execução Orçamentaria",
+    name: "Execução Orçamentária",
     icon: "painelOrcamento.svg",
     link: "/pages/execucao-orcamentaria",
     status: checkRoles(environment.allowedRoles.execucaoOrcamentaria),

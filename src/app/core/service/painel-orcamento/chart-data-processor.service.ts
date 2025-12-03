@@ -12,15 +12,15 @@ import {
 const CHART_COLORS = [
   "#4DB6D2", // azul claro
   "#F58B9B", // rosa
-  "#ffd56bff", // dourado
+  "#ffd774ff", // dourado
   "#1791DE", // azul médio
   "#39d898ff", // verde-azulado
   "#d895ffff", // roxo
   "#b9b8b8c2", // cinza claro
 
   // Cores conectadas - variações das originais:
-  "#082784", // entre o azul claro e azul médio
-  "#ff8fa2ff", // rosa um tom mais suave
+  "#4afad4ff", // entre o azul claro e azul médio
+  "#fd9fafff", // rosa um tom mais suave
   "#85cea6ff", // dourado mais claro
   "#8EFFFD", // azul esverdeado (ponte entre azul e verde)
   "#849299ff", // azul acinzentado (conecta azul com cinza)

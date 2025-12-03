@@ -28,7 +28,7 @@ import { ChartMaximizeService } from '../../../../core/service/chart-maximize/ch
 export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
   @Input() filter: IExecucaoOrcamentariaRequest;
 
-  readonly title: string = "Transfêrencias Correntes";
+  readonly title: string = "Transferências Correntes";
 
   private receitaTransferenciaCorrente: IReceitaTransfereciaCorrenteOrcamentariaResponse[];
 
@@ -191,7 +191,7 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
     const customColumn: FlipTableColumn = {
       propertyName: "categoria",
-      displayName: "Transfrências Correntes",
+      displayName: "Transferências Correntes",
       alignment: {
         header: FlipTableAlignment.LEFT,
         data: FlipTableAlignment.LEFT,
@@ -230,10 +230,6 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
     const variacao = ((valorFinal - valorInicial) / valorInicial) * 100;
     return Number(variacao.toFixed(2));
-  }
-
-  handleTableSearch(query: string): void {
-    console.log("Busca não implementada:", query);
   }
 
   handleTableDownload(): void {

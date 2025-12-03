@@ -39,10 +39,12 @@
           title="Ver tabela"></i>
       </ng-template>
 
-      <ng-container *ngIf="!isMaximized; else maximizeIcon">
-        <i class="maximize-button m-0 ms-3 p-0 fas fa-expand" (click)="handleMaximizeButtonClick()" title="Maximizar">
-        </i>
-      </ng-container>
+      <div *ngIf="showMaximizeButton">
+        <ng-container *ngIf="!isMaximized; else maximizeIcon">
+          <i class="maximize-button m-0 ms-3 p-0 fas fa-expand" (click)="handleMaximizeButtonClick()" title="Maximizar">
+          </i>
+        </ng-container>
+      </div>
 
       <ng-template #maximizeIcon>
         <i class="maximize-button m-0 ms-3 p-0 fas fa-compress" (click)="handleMaximizeButtonClick()" title="Restaurar">
@@ -59,7 +61,7 @@
       </nb-card>
     </nb-card-front>
     <nb-card-back>
-      <nb-card class="card-back box-limited m-0 px-3" [style]="{ 'height': backCardHeight + 'px' }">
+      <nb-card class="card-back box-limited m-0 px-3" [style]="{ 'max-height': backCardHeight + 'px' }">
         <ng-container *ngIf="tableContent">
           <table class="flip-table" [ngClass]="isMaximized ? 'maximized' : 'minimized'" [nbTreeGrid]="tableContent.data"
             [nbSort]="tableContent.data" (sort)="handleSortClick($event)">

@@ -2,8 +2,12 @@
   [cardTitle]="'Projetos por Status'"
   [tableContent]="flipTableContent"
   [loadingStatus]="requestStatus"
+  [outerCardHeight]="275"
+  [backCardHeight]="isChartMaximized('projects-by-status') ? 700 : 150"
+  [showMaximizeButton]="true"
   (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('projects-by-status', $event)"
 >
   <ngx-pie-chart-model [data]="chartData" [colors]="chartColors" [height]="150" card-front>
   </ngx-pie-chart-model>

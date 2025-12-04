@@ -61,3 +61,7 @@
 :host ::ng-deep nb-card-body {
   overflow: hidden !important;
 }
+
+:host ::ng-deep .cdk-overlay-container {
+    z-index: 99999;
+}

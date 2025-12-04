@@ -1,4 +1,4 @@
-<nb-card class="outer-card m-0 pb-5" [nbSpinner]="loadingStatus === 'Loading'" [nbSpinnerStatus]="'success'">
+<nb-card class="outer-card m-0" [style]="{ 'height': outerCardHeight + 'px' }" [nbSpinner]="loadingStatus === 'Loading'" [nbSpinnerStatus]="'success'">
   <nb-card-header class="card-header d-flex justify-content-between align-items-start p-2 px-3">
     <ng-container *ngIf="cardTitle else customHeader">
       <span class="card-title m-0">{{ cardTitle }}</span>
@@ -61,7 +61,7 @@
       </nb-card>
     </nb-card-front>
     <nb-card-back>
-      <nb-card class="card-back box-limited m-0 px-3" [style]="{ 'max-height': backCardHeight + 'px' }">
+      <nb-card class="card-back box-limited m-0 px-3" [style.max-height]="backCardHeight + 'px !important'" [style.height]="backCardHeight + 'px !important'">
         <ng-container *ngIf="tableContent">
           <table class="flip-table" [ngClass]="isMaximized ? 'maximized' : 'minimized'" [nbTreeGrid]="tableContent.data"
             [nbSort]="tableContent.data" (sort)="handleSortClick($event)">

@@ -50,6 +50,14 @@ export class ChartMaximizeService {
     return Math.max(calculatedHeight, 250); // Altura mínima de 250px
   }
 
+  calcMaximizedWidth(): number {
+    const windowWidth = window.innerWidth;
+    const calculatedWidth = windowWidth - 250; // ajusta conforme teu layout
+
+    return Math.max(calculatedWidth, 250); // largura mínima de 250px
+  }
+
+
   // ✅ MÉTODO PARA ATUALIZAR ALTURA (útil para resize da janela)
   updateMaximizedHeight(): void {
     const currentState = this.maximizeState.value;

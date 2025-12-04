@@ -7,6 +7,7 @@ import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } fr
 import { ExportDataService } from '../../../../core/service/export-data';
 import { UtilitiesService } from '../../../../core/service/utilities.service';
 import { RequestStatus } from '../../strategicProjects.component';
+import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
 
 @Component({
@@ -38,6 +39,7 @@ export class AccumulatedInvestmentComponent implements OnChanges {
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
     private utilitiesService: UtilitiesService,
+    private chartMaximizeService: ChartMaximizeService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -45,6 +47,19 @@ export class AccumulatedInvestmentComponent implements OnChanges {
       this.loadData();
     }
   }
+
+   onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this.chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this.chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this.chartMaximizeService.calcMaximizedHeight();
+  }
+
 
   loadData() {
     this.requestStatus = RequestStatus.LOADING;
@@ -57,8 +72,8 @@ export class AccumulatedInvestmentComponent implements OnChanges {
 
         this.chartData = this.accumulatedInvestmentData.map(item => ({
           date: this.formatDate(item.anoMes),
-          previsto: item.custoPrevistoAcumulado, 
-          realizado: item.custoRealizadoAcumulado, 
+          previsto: item.custoPrevistoAcumulado,
+          realizado: item.custoRealizadoAcumulado,
         }));
 
         this.assembleFlipTableContent(this.accumulatedInvestmentData);
@@ -74,11 +89,11 @@ export class AccumulatedInvestmentComponent implements OnChanges {
   }
 
   private formatDate(anoMes: number): string {
-    const anoMesStr = anoMes.toString(); 
-    const year = anoMesStr.substring(0, 4); 
+    const anoMesStr = anoMes.toString();
+    const year = anoMesStr.substring(0, 4);
     const month = anoMesStr.substring(4, 6);
 
-    return `${month}-${year}`; 
+    return `${month}-${year}`;
   }
 
   assembleFlipTableContent(rawData: IStrategicProjectAccumulatedInvestment[], shouldStartExpanded: boolean = false) {
@@ -116,7 +131,7 @@ export class AccumulatedInvestmentComponent implements OnChanges {
       data: finalData,
     };
   }
-  
+
   handleUserTableSearch(searchTerm: string) {
     if (searchTerm.length > 0) {
       const preparedSearchTerm = searchTerm.toLowerCase();
@@ -127,7 +142,7 @@ export class AccumulatedInvestmentComponent implements OnChanges {
         this.utilitiesService.formatCurrencyUsingBrazilianStandards(investimento.custoRealizado, 'R$').includes(preparedSearchTerm) ||
         this.utilitiesService.formatCurrencyUsingBrazilianStandards(investimento.custoRealizadoAcumulado, 'R$').includes(preparedSearchTerm)
       ));
-  
+
       this.assembleFlipTableContent(filteredItems, true);
     } else {
       this.assembleFlipTableContent(this.accumulatedInvestmentData);

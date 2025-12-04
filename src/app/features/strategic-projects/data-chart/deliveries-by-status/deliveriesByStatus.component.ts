@@ -246,4 +246,8 @@ export class DeliveriesByStatusComponent implements OnChanges {
   calcMaximizedHeight(): number {
     return this.chartMaximizeService.calcMaximizedHeight();
   }
+
+  callMaximizedWidth(): number {
+    return this.chartMaximizeService.calcMaximizedWidth();
+  }
 }

@@ -1,8 +1,16 @@
-<ngx-flip-table [cardTitle]="'Entregas por Desempenho'" [tableContent]="flipTableContent"
-  [loadingStatus]="requestStatus" (executeSearch)="handleUserTableSearch($event)"
+<ngx-flip-table
+  [cardTitle]="'Entregas por Desempenho'"
+  [tableContent]="flipTableContent"
+  [showMaximizeButton]="true"
+  [loadingStatus]="requestStatus"
+  [outerCardHeight]="275"
+  [backCardHeight]="isChartMaximized('deliveries-by-performace') ? 700 : 150"
+  (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
   (showMaximizeButtonClick)="onMaximizeButtonClick('deliveries-by-performace', $event)">
   <ngx-pie-chart-model [data]="chartData" [colors]="chartColors"
-    [height]="isChartMaximized('deliveries-by-performance') ? calcMaximizedHeight() : 150" card-front>
+    [height]="isChartMaximized('deliveries-by-performace') ? 180 : 150" card-front>
   </ngx-pie-chart-model>
 </ngx-flip-table>
+
+<!-- [backCardHeight]="isChartMaximized('deliveries-by-performace') ? 308 : 150" -->

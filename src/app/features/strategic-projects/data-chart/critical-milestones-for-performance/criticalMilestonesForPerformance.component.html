@@ -2,8 +2,12 @@
   [cardTitle]="'Marcos Críticos por Desempenho'"
   [tableContent]="flipTableContent"
   [loadingStatus]="requestStatus"
+  [outerCardHeight]="275"
+  [backCardHeight]="isChartMaximized('critical-milestones-for-performance') ? 700 : 150"
+  [showMaximizeButton]="true"
   (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('critical-milestones-for-performance', $event)"
 >
   <ngx-pie-chart-model [data]="chartData" [colors]="chartColors" [height]="150" card-front>
   </ngx-pie-chart-model>

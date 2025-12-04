@@ -20,7 +20,7 @@ const CHART_COLORS = [
 
   // Cores conectadas - variações das originais:
   "#4afad4ff", // entre o azul claro e azul médio
-  "#fd9fafff", // rosa um tom mais suave
+  "#ff6c84ff", // rosa um tom mais suave
   "#85cea6ff", // dourado mais claro
   "#8EFFFD", // azul esverdeado (ponte entre azul e verde)
   "#849299ff", // azul acinzentado (conecta azul com cinza)

@@ -1,10 +1,12 @@
 <ngx-flip-table
   [cardTitle]="'Investimento Acumulado'"
   [tableContent]="flipTableContent"
-  [backCardHeight]="400"
+  [backCardHeight]="isChartMaximized('accumulated-investment') ? 700 : 400"
+  [showMaximizeButton]="true"
   [loadingStatus]="requestStatus"
   (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
+   (showMaximizeButtonClick)="onMaximizeButtonClick('accumulated-investment', $event)"
 >
   <ngx-vertical-bar-chart-model [data]="chartData" [colors]="chartColors" [height]="400" card-front>
   </ngx-vertical-bar-chart-model>

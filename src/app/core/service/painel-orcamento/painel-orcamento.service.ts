@@ -1,6 +1,11 @@
 import { Injectable } from "@angular/core";
 import { environment } from "../../../../environments/environment";
-import { HttpClient, HttpErrorResponse, HttpParams, HttpStatusCode } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+  HttpStatusCode,
+} from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import {
   IExecucaoOrcamentariaRequest,
@@ -13,6 +18,7 @@ import {
   IReceitaICMSOrcamentariaResponse,
   IReceitaImpostoOrcamentariaResponse,
   IReceitaTransfereciaCorrenteOrcamentariaResponse,
+  IExecucaoOrcamentariaTimestamp,
 } from "../../interfaces/painel-orcamento/painel-orcamento";
 import { Router } from "@angular/router";
 import { catchError } from "rxjs/operators";
@@ -25,7 +31,6 @@ export class PainelOrcamentoService {
 
   private router: Router;
 
-
   constructor(private _http: HttpClient, private _router: Router) {
     this.router = _router;
   }
@@ -33,10 +38,10 @@ export class PainelOrcamentoService {
     request: IExecucaoOrcamentariaRequest
   ): Observable<IReceitaTotalOrcamentariaResponse> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaTotalOrcamentariaResponse>(
-      `${this._URI}/receita-total`,
-      { params }
-    )
+    return this._http
+      .get<IReceitaTotalOrcamentariaResponse>(`${this._URI}/receita-total`, {
+        params,
+      })
       .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
@@ -45,10 +50,11 @@ export class PainelOrcamentoService {
   ): Observable<IReceitaOrigemOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
 
-    return this._http.get<IReceitaOrigemOrcamentariaResponse[]>(
-      `${this._URI}/receita-origem`,
-      { params }
-    )
+    return this._http
+      .get<IReceitaOrigemOrcamentariaResponse[]>(
+        `${this._URI}/receita-origem`,
+        { params }
+      )
       .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
@@ -57,10 +63,11 @@ export class PainelOrcamentoService {
   ): Observable<IReceitaCategoriaOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
 
-    return this._http.get<IReceitaCategoriaOrcamentariaResponse[]>(
-      `${this._URI}/receita-categoria`,
-      { params }
-    )
+    return this._http
+      .get<IReceitaCategoriaOrcamentariaResponse[]>(
+        `${this._URI}/receita-categoria`,
+        { params }
+      )
       .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
@@ -68,10 +75,11 @@ export class PainelOrcamentoService {
     request: IExecucaoOrcamentariaRequest
   ): Observable<IReceitaParticipacaoOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaParticipacaoOrcamentariaResponse[]>(
-      `${this._URI}/receita-participacao`,
-      { params }
-    )
+    return this._http
+      .get<IReceitaParticipacaoOrcamentariaResponse[]>(
+        `${this._URI}/receita-participacao`,
+        { params }
+      )
       .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
@@ -79,10 +87,11 @@ export class PainelOrcamentoService {
     request: IExecucaoOrcamentariaRequest
   ): Observable<IReceitaDespesaGNDOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaDespesaGNDOrcamentariaResponse[]>(
-      `${this._URI}/receita-despesas-gnd`,
-      { params }
-    )
+    return this._http
+      .get<IReceitaDespesaGNDOrcamentariaResponse[]>(
+        `${this._URI}/receita-despesas-gnd`,
+        { params }
+      )
       .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
@@ -90,10 +99,11 @@ export class PainelOrcamentoService {
     request: IExecucaoOrcamentariaRequest
   ): Observable<IReceitaDespesaGNDTotalOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaDespesaGNDTotalOrcamentariaResponse[]>(
-      `${this._URI}/receita-despesas-gnd-total`,
-      { params }
-    )
+    return this._http
+      .get<IReceitaDespesaGNDTotalOrcamentariaResponse[]>(
+        `${this._URI}/receita-despesas-gnd-total`,
+        { params }
+      )
       .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
@@ -101,10 +111,10 @@ export class PainelOrcamentoService {
     request: IExecucaoOrcamentariaRequest
   ): Observable<IReceitaICMSOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaICMSOrcamentariaResponse[]>(
-      `${this._URI}/receita-icms`,
-      { params }
-    )
+    return this._http
+      .get<IReceitaICMSOrcamentariaResponse[]>(`${this._URI}/receita-icms`, {
+        params,
+      })
       .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
@@ -112,10 +122,11 @@ export class PainelOrcamentoService {
     request: IExecucaoOrcamentariaRequest
   ): Observable<IReceitaImpostoOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaImpostoOrcamentariaResponse[]>(
-      `${this._URI}/receita-impostos`,
-      { params }
-    )
+    return this._http
+      .get<IReceitaImpostoOrcamentariaResponse[]>(
+        `${this._URI}/receita-impostos`,
+        { params }
+      )
       .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
@@ -123,14 +134,23 @@ export class PainelOrcamentoService {
     request: IExecucaoOrcamentariaRequest
   ): Observable<IReceitaTransfereciaCorrenteOrcamentariaResponse[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<IReceitaTransfereciaCorrenteOrcamentariaResponse[]>(
-      `${this._URI}/receita-transferencia-corrente`,
-      { params }
-    )
+    return this._http
+      .get<IReceitaTransfereciaCorrenteOrcamentariaResponse[]>(
+        `${this._URI}/receita-transferencia-corrente`,
+        { params }
+      )
       .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
-  private returnParams(execucaoOrcamentaria: IExecucaoOrcamentariaRequest): HttpParams {
+  public getTimestamp(): Observable<IExecucaoOrcamentariaTimestamp> {
+    return this._http
+      .get<IExecucaoOrcamentariaTimestamp>(`${this._URI}/timestamp`)
+      .pipe(catchError((err) => this.handleError(err, this.router)));
+  }
+
+  private returnParams(
+    execucaoOrcamentaria: IExecucaoOrcamentariaRequest
+  ): HttpParams {
     let params = new HttpParams()
       .set("ano", String(execucaoOrcamentaria.ano))
       .set(
@@ -167,13 +187,12 @@ export class PainelOrcamentoService {
   private handleError(err: any, router: Router): Observable<never> {
     console.log(err, "dasdsadas");
     if ((err as HttpErrorResponse).status == HttpStatusCode.Unauthorized) {
-      router.navigate(['pages/home']);
+      router.navigate(["pages/home"]);
     } else if ((err as HttpErrorResponse).status == HttpStatusCode.Forbidden) {
       console.log("Forbidden");
-      router.navigate(['login']);
+      router.navigate(["login"]);
     }
 
     return throwError(() => err);
   }
-
 }

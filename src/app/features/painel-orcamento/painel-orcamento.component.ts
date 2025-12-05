@@ -13,6 +13,7 @@ import {
 import { Subject, Subscription } from "rxjs";
 import {
   IExecucaoOrcamentariaRequest,
+  IExecucaoOrcamentariaTimestamp,
   IReceitaDespesaGNDTotalOrcamentariaResponse,
   IReceitaTotalOrcamentariaResponse,
 } from "../../core/interfaces/painel-orcamento/painel-orcamento";
@@ -26,6 +27,7 @@ import { ShortNumberPipe } from "../../@theme/pipes";
 import { environment } from "../../../environments/environment";
 import { NbSelectComponent } from "@nebular/theme";
 import { ChartMaximizeService, ChartMaximizeState } from "../../core/service/chart-maximize/chart-maximize.service";
+import { PainelOrcamentoService } from "../../core/service/painel-orcamento/painel-orcamento.service";
 
 interface IDataCard {
   receitaTotal?: IReceitaTotalOrcamentariaResponse;
@@ -83,12 +85,14 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
   private readonly _sufixShortNumberPipe: ShortNumberPipe = inject(ShortNumberPipe);
   private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
-
+  private readonly _execucaoOrcamentariaService = inject(PainelOrcamentoService);
 
   private subscription!: Subscription;
 
   dataCards: IDataCard;
   sendCards: ICards[] = [];
+  timestamp: string;
+
 
   // CORREÇÃO: Atualizar currentRequestParams quando filtrar
   currentRequestParams: IExecucaoOrcamentariaRequest = DEFAULT_EXECUCAO_ORCAMENTARIA_REQUEST_PARAMS;
@@ -139,6 +143,10 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
   activeFilters: { key: string; label: string; displayValue: Array<{ name: string; fullName?: string; }>; }[] = [];
 
+  constructor() {
+    this.loadTimestamp();
+  }
+
   ngOnInit(): void {
     this.subscriptionMaximizeState = this._chartMaximizeService.maximizeState$.subscribe(
       (state: ChartMaximizeState) => {
@@ -171,6 +179,18 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
       this.subscriptionMaximizeState.unsubscribe();
     }
   }
+
+
+    loadTimestamp() {
+      this._execucaoOrcamentariaService.getReceitaTotal(this.currentRequestParams).subscribe(
+        (data: IReceitaTotalOrcamentariaResponse) => {
+          this.timestamp = data.timesTemp;
+        },
+        (error) => {
+          console.error('Erro ao carregar os totais:', error);
+        }
+      );
+    }
 
   // CORREÇÃO: Método para carregar dados iniciais
   loadInitialData(): void {

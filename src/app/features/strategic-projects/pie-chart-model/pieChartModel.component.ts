@@ -27,32 +27,17 @@ import { debounceTime } from "rxjs/operators";
 })
 export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: { value: number; name: string }[] = [];
-
   @Input() colors: string[] = [];
-
   @Input() height: number;
-
-
   @Input() width: number;
-
   @Input() fontSizeLegend: number = 9;
-
-  @HostListener("window:resize", ["$event"])
-  onResize(event: any) {
-    if (this.echartsInstance) {
-      this.echartsInstance.resize();
-    }
-    this.updateTitlePosition();
-  }
-
-  chartOptions: EChartsOption;
+  @Input() isMaximized: boolean = false;
 
   echartsInstance: ECharts = null;
+  chartOptions: EChartsOption;
 
   centerX: number = 70;
-
   centerY: number = 50;
-
   pieRadius = ["60%", "100%"];
 
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
@@ -64,34 +49,24 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
       .onThemeChange()
       .subscribe((newTheme: { name: AvailableThemes; previous: string }) => {
         if (this.echartsInstance) {
-          this.currentTheme = newTheme.name;
-
           const newStyles = getAvailableThemesStyles(newTheme.name);
-          const newTextColor = newStyles.textPrimaryColor;
-          const newBackgroundColor = newStyles.themePrimaryColor;
 
           this.echartsInstance.setOption({
             tooltip: {
-              textStyle: {
-                color: newTextColor,
-              },
-              backgroundColor: newBackgroundColor,
-              borderColor: newBackgroundColor,
+              textStyle: { color: newStyles.textPrimaryColor },
+              backgroundColor: newStyles.themePrimaryColor,
+              borderColor: newStyles.themePrimaryColor,
             },
             title: {
-              textStyle: {
-                color: newTextColor,
-              },
+              textStyle: { color: newStyles.textPrimaryColor },
             },
             legend: {
-              textStyle: {
-                color: newTextColor,
-              },
+              textStyle: { color: newStyles.textPrimaryColor },
               tooltip: {
-                backgroundColor: newBackgroundColor,
-                borderColor: newBackgroundColor,
+                backgroundColor: newStyles.themePrimaryColor,
+                borderColor: newStyles.themePrimaryColor,
                 textStyle: {
-                  color: newTextColor,
+                  color: newStyles.textPrimaryColor,
                 },
               },
             },
@@ -99,27 +74,24 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
         }
       });
 
-    // Adiciona um listener mais robusto para redimensionamento
-    this.resizeSubscription = fromEvent(window, 'resize')
+    this.resizeSubscription = fromEvent(window, "resize")
       .pipe(debounceTime(100))
-      .subscribe(() => {
-        this.handleResize();
-      });
+      .subscribe(() => this.handleResize());
   }
 
   ngOnInit() {
     this.currentTheme = this.themeService.currentTheme as AvailableThemes;
-
-    // Inicializa o gráfico se já houver dados
     if (this.data && this.data.length > 0) {
       this.initChartOptions(this.data, this.colors);
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['height'] && this.echartsInstance) {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["height"] && this.echartsInstance) {
       setTimeout(() => {
-        this.echartsInstance.resize();
+        this.echartsInstance.resize({
+          height: this.getResponsiveHeight(),
+        });
       }, 0);
     }
 
@@ -127,7 +99,6 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
       this.updateTitlePosition();
       this.initChartOptions(this.data, this.colors);
 
-      // Se o gráfico já foi inicializado, atualize as opções
       if (this.echartsInstance) {
         setTimeout(() => {
           this.echartsInstance.setOption(this.chartOptions, true);
@@ -138,30 +109,42 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
     if (changes["fontSizeLegend"] && this.echartsInstance) {
       this.echartsInstance.setOption({
         legend: {
-          textStyle: {
-            fontSize: this.fontSizeLegend,
-          },
+          textStyle: { fontSize: this.fontSizeLegend },
         },
         title: {
-          textStyle: {
-            fontSize: this.fontSizeLegend * 1.5, // Título um pouco maior
-          },
+          textStyle: { fontSize: this.fontSizeLegend * 1.5 },
         },
         series: [
           {
-            label: {
-              fontSize: this.fontSizeLegend,
-            },
+            label: { fontSize: this.fontSizeLegend },
           },
         ],
       });
     }
+
+    if (changes["isMaximized"] && this.echartsInstance) {
+      this.echartsInstance.setOption({
+        legend: {
+          textStyle: { fontSize: this.isMaximized ? 11 : 9 },
+          itemWidth: this.isMaximized ? 12 : 10,
+          itemHeight: this.isMaximized ? 12 : 10,
+        },
+        title: {
+          textStyle: { fontSize: this.isMaximized ? 22 : 16 },
+        },
+        series: [
+          {
+            label: { fontSize: this.isMaximized ? 11 : 20 },
+          },
+        ],
+      });
+
+      this.updateTitlePosition();
+    }
   }
 
   ngOnDestroy() {
-    if (this.resizeSubscription) {
-      this.resizeSubscription.unsubscribe();
-    }
+    this.resizeSubscription?.unsubscribe();
 
     if (this.echartsInstance) {
       this.echartsInstance.dispose();
@@ -169,51 +152,72 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  onChartInit(chartInstance: ECharts) {
-    this.echartsInstance = chartInstance;
+  private getResponsiveHeight(): number {
+    if (!this.isMaximized) {
+      return this.height ?? 150;
+    }
 
-    // Dispara resize imediatamente após inicialização
+    const w = window.innerWidth;
+
+    if (w < 350) return 220;
+    if (w < 500) return 200;
+    if (w < 768) return 300;
+    if (w < 922) return 340;
+    if (w < 1100) return 380;
+
+    return this.height || 420;
+  }
+
+  @HostListener("window:resize")
+  onResize() {
+    if (this.echartsInstance) {
+      const newHeight = this.getResponsiveHeight();
+      this.echartsInstance.resize({ height: newHeight });
+    }
+
+    this.updateTitlePosition();
+  }
+
+  onChartInit(chart: ECharts) {
+    this.echartsInstance = chart;
+
     setTimeout(() => {
-      if (this.echartsInstance) {
-        this.echartsInstance.resize();
-        this.updateTitlePosition();
-      }
-    }, 100);
+      chart.resize({
+        height: this.getResponsiveHeight(),
+      });
+      this.updateTitlePosition();
+    }, 50);
 
-    this.echartsInstance.on("legendselectchanged", (params: any) => {
+    chart.on("legendselectchanged", (params: any) => {
       const selected = params.selected;
+      const newTotal = this.data.reduce((sum, item) => {
+        return selected[item.name] ? sum + item.value : sum;
+      }, 0);
 
-      if (Array.isArray(this.data) && this.data.length > 0) {
-        const newTotal = this.data.reduce((sum, item) => {
-          return selected[item.name] ? sum + item.value : sum;
-        }, 0);
-
-        chartInstance.setOption({
-          title: {
-            text: `${newTotal}`,
-          },
-        }, false); // Use false para merge suave
-      }
+      chart.setOption({ title: { text: `${newTotal}` } }, false);
     });
 
-    // Adiciona listener para restauração de zoom
-    this.echartsInstance.on('restore', () => {
+    chart.on("restore", () => {
       setTimeout(() => {
         this.updateTitlePosition();
-        chartInstance.resize();
+        chart.resize({
+          height: this.getResponsiveHeight(),
+        });
       }, 10);
     });
   }
 
-  private handleResize(): void {
+  private handleResize() {
     if (this.echartsInstance) {
-      // Força o redimensionamento do gráfico
       setTimeout(() => {
-        this.echartsInstance.resize();
+        this.echartsInstance.resize({
+          height: this.getResponsiveHeight(),
+        });
         this.updateTitlePosition();
       }, 0);
     }
   }
+
 
   updateTitlePosition() {
     if (!this.echartsInstance) return;
@@ -222,7 +226,6 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
     let centerX = this.centerX;
     let centerY = this.centerY;
 
-    // Ajustes responsivos mais detalhados
     if (screenWidth < 320) {
       this.pieRadius = ["35%", "70%"];
       centerX = 50;
@@ -230,165 +233,149 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
     } else if (screenWidth < 420) {
       this.pieRadius = ["40%", "80%"];
       centerX = 55;
-      centerY = 50;
     } else if (screenWidth < 768) {
       this.pieRadius = ["45%", "85%"];
     } else if (screenWidth <= 1000) {
       this.pieRadius = ["50%", "90%"];
-      centerX = this.centerX - 2;
+      centerX -= 2;
     } else if (screenWidth >= 1600) {
-      centerX = this.centerX - 2;
+      centerX -= 2;
     } else {
       this.pieRadius = ["60%", "100%"];
     }
 
-    // Calcula offset baseado no tamanho da tela
     let offset = centerX - 1;
-    if (screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)) {
-      offset = centerX - 2;
+    if (screenWidth >= 1800 || (screenWidth >= 768 && screenWidth <= 1000)) {
+      offset = centerX - 1;
     }
+
+    const isPhone = screenWidth < 500;
 
     try {
-      this.echartsInstance.setOption({
-        title: {
-          left: `${offset}%`,
-          top: `${centerY}%`,
+      this.echartsInstance.setOption(
+        {
+          title: {
+            left: `${offset}%`,
+            top: `${centerY}%`,
+            textStyle: {
+              fontSize: this.isMaximized
+                ? isPhone
+                  ? 12
+                  : this.fontSizeLegend
+                : this.fontSizeLegend,
+              fontWeight: "bold",
+            }
+          },
+          legend: {
+            textStyle: {
+              fontSize: this.isMaximized
+                ? isPhone
+                  ? 12
+                  : this.fontSizeLegend
+                : this.fontSizeLegend,
+            },
+            left: this.isMaximized ? "left" : "left",
+            top: this.isMaximized ? "center" : "top",
+            itemWidth: 10,
+            itemHeight: 10,
+            itemGap: 10,
+          },
+          series: [
+            {
+              center: [`${centerX}%`, `${centerY}%`],
+              radius: this.pieRadius,
+              label: {
+                fontSize: this.isMaximized
+                  ? isPhone
+                    ? 11
+                    : this.fontSizeLegend
+                  : this.fontSizeLegend,
+             }
+            },
+          ],
         },
-        series: [{
-          center: [`${centerX}%`, `${centerY}%`],
-          radius: this.pieRadius,
-        }]
-      }, false); // Use false para merge suave
-    } catch (error) {
-      console.warn('Erro ao atualizar posição do título:', error);
-    }
+        false
+      );
+    } catch {}
   }
 
-  // Método público para forçar redraw
-  public redrawChart(): void {
+  public redrawChart() {
     if (this.echartsInstance) {
       setTimeout(() => {
-        this.echartsInstance.resize();
+        this.echartsInstance.resize({
+          height: this.getResponsiveHeight(),
+        });
         this.updateTitlePosition();
       }, 0);
     }
   }
 
   initChartOptions(data: { value: number; name: string }[], colors: string[]) {
-    const total =
-      Array.isArray(data) && data.length > 0
-        ? data.reduce((sum, item) => sum + item.value, 0)
-        : 0;
-
+    const total = data?.reduce((s, i) => s + i.value, 0) ?? 0;
     const screenWidth = window.innerWidth;
-    let offset = this.centerX - 1;
-    if (screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)) {
-      offset = this.centerX - 2;
-    }
 
-    const currentThemeStyles = getAvailableThemesStyles(this.currentTheme);
+    const offset =
+      screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
+        ? this.centerX - 2
+        : this.centerX - 1;
 
-    // Ajusta tamanho da fonte baseado no fontSizeLegend
-    const titleFontSize = Math.max(this.fontSizeLegend * 1.5, 12);
-    const legendFontSize = Math.max(this.fontSizeLegend, 8);
-    const labelFontSize = Math.max(this.fontSizeLegend, 8);
+    const s = getAvailableThemesStyles(this.currentTheme);
 
     this.chartOptions = {
-      backgroundColor: 'transparent',
       tooltip: {
         trigger: "item",
-        formatter: function (params: any) {
-          return `${params.name}: ${params.value} (${params.percent}%)`;
-        },
-        textStyle: {
-          color: currentThemeStyles.textPrimaryColor,
-          fontSize: legendFontSize,
-        },
-        backgroundColor: currentThemeStyles.themePrimaryColor,
-        borderColor: currentThemeStyles.themePrimaryColor,
+        formatter: (p) => `${p.name}: ${p.value} (${p.percent}%)`,
+        backgroundColor: s.themePrimaryColor,
+        borderColor: s.themePrimaryColor,
+        textStyle: { color: s.textPrimaryColor },
       },
       title: {
         text: `${total}`,
-        left: `${offset}%`,
+        left: `${offset-2}%`,
         top: `${this.centerY}%`,
         textAlign: "center",
         textVerticalAlign: "middle",
         textStyle: {
-          fontSize: titleFontSize,
+          fontSize: 16,
           fontWeight: "bold",
-          color: currentThemeStyles.textPrimaryColor,
+          color: s.textPrimaryColor,
         },
       },
       legend: {
         orient: "vertical",
         left: "left",
-        top: "center",
-        tooltip: {
-          textStyle: {
-            color: currentThemeStyles.textPrimaryColor,
-            fontSize: legendFontSize,
-          },
-          backgroundColor: currentThemeStyles.themePrimaryColor,
-          borderColor: currentThemeStyles.themePrimaryColor,
-          show: true,
-          formatter: function (params: any) {
-            const item = data.find((item) => item.name === params.name);
-            if (item) {
-              const percent = (item.value / total) * 100;
-              return `${item.name}: ${item.value} (${percent.toFixed(2)}%)`;
-            }
-            return "";
-          },
-        },
-        data: data ? data.map((item) => item.name) : [],
+        top: "top",
+        data: data?.map((i) => i.name),
         textStyle: {
-          fontSize: legendFontSize,
-          color: currentThemeStyles.textPrimaryColor,
+          fontSize: 9,
+          color: s.textPrimaryColor,
         },
         itemWidth: 10,
         itemHeight: 10,
         itemGap: 10,
-        selectedMode: true,
       },
       series: [
         {
-          name: "Status",
           type: "pie",
-          radius: this.pieRadius,
-          center: [`${this.centerX}%`, `${this.centerY}%`],
-          data: data || [],
-          emphasis: {
-            scale: false,
-            focus: 'self',
-            // itemStyle: {
-            //   shadowBlur: 10,
-            //   shadowOffsetX: 0,
-            //   // shadowColor: 'rgba(0, 0, 0, 0.5)'
-            // }
-          },
-          avoidLabelOverlap: true,
+          radius: this.isMaximized ? ["70%", "100%"] : this.pieRadius,
+          center: [
+            `${this.isMaximized ? 50 : this.centerX}%`,
+            `${this.centerY}%`,
+          ],
+          data,
+          emphasis: { scale: false },
           label: {
             show: true,
             position: "inside",
-            formatter: function (params: any) {
-              return params.percent >= 5
-                ? Math.round(params.percent) + "%"
-                : "";
-            },
-            color: "#FFFFFF",
-            fontSize: labelFontSize,
-            fontWeight: 'bold',
+            formatter: (p) =>
+              p.percent >= 6 ? Math.round(p.percent) + "%" : "",
+            color: "#FFF",
+            fontSize: 9,
           },
-          labelLine: {
-            show: false
-          },
-          itemStyle: {
-            borderColor: currentThemeStyles.themePrimaryColor,
-            borderWidth: 1
-          },
+          labelLine: { show: false },
         },
       ],
-      color: colors || [],
+      color: colors,
     };
   }
 }

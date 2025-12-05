@@ -8,6 +8,10 @@
   (executeDownload)="handleUserTableDownload()"
    (showMaximizeButtonClick)="onMaximizeButtonClick('accumulated-investment', $event)"
 >
-  <ngx-vertical-bar-chart-model [data]="chartData" [colors]="chartColors" [height]="400" card-front>
+  <ngx-vertical-bar-chart-model
+    [data]="chartData"
+    [colors]="chartColors"
+    [height]="isChartMaximized('accumulated-investment') ? calcMaximizedHeight() : 400"
+    card-front>
   </ngx-vertical-bar-chart-model>
 </ngx-flip-table>

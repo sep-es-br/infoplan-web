@@ -9,6 +9,12 @@
   (executeDownload)="handleUserTableDownload()"
   (showMaximizeButtonClick)="onMaximizeButtonClick('projects-by-status', $event)"
 >
-  <ngx-pie-chart-model [data]="chartData" [colors]="chartColors" [height]="150" card-front>
+  <ngx-pie-chart-model
+    [data]="chartData"
+    [colors]="chartColors"
+    [height]="isChartMaximized('projects-by-status') ?   400 : 150"
+    [fontSizeLegend]="isChartMaximized('projects-by-status') ? 20 : 9"
+    [isMaximized]="isChartMaximized('projects-by-status')"
+    card-front>
   </ngx-pie-chart-model>
 </ngx-flip-table>

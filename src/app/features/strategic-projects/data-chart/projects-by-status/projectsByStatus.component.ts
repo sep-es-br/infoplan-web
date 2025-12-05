@@ -1,3 +1,4 @@
+import { ChartMaximizeService } from './../../../../core/service/chart-maximize/chart-maximize.service';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { PieChartModelComponent } from '../../pie-chart-model/pieChartModel.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
@@ -35,12 +36,26 @@ export class ProjectsByStatusComponent implements OnChanges {
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
+    private chartMaximizeService: ChartMaximizeService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {
       this.loadData();
     }
+  }
+
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this.chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this.chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this.chartMaximizeService.calcMaximizedHeight();
   }
 
   loadData() {
@@ -97,7 +112,7 @@ export class ProjectsByStatusComponent implements OnChanges {
     const tableColumns = [{ propertyName: 'nomeStatus', displayName: 'Status' }];
 
     const finalData: Array<TreeNode> = [];
-    
+
     rawData.forEach((projeto) => {
       const areaIsAlreadyListed = finalData.find((area) => {
         const areaName = area.data.find((prop) => prop.propertyName === 'firstColumn' && prop.value === projeto.nomeArea);
@@ -155,7 +170,7 @@ export class ProjectsByStatusComponent implements OnChanges {
         projeto.nomeProjeto.toLowerCase().includes(preparedSearchTerm) ||
         projeto.nomeStatus.toLowerCase().includes(preparedSearchTerm)
       ));
-  
+
       this.assembleFlipTableContent(filteredItems, true);
     } else {
       this.assembleFlipTableContent(this.statusData);

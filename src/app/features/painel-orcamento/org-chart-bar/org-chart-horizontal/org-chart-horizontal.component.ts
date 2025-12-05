@@ -214,7 +214,7 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges, OnDestroy
         type: "bar",
         data: data.map(d => d.valores[index]),
         itemStyle: { color: colors[index] },
-        barCategoryGap: "10%",
+        barCategoryGap: "30%",
         barGap: "20%",
         barMaxWidth: isMobile ? 15 : 20,
         barMinHeight: 20,

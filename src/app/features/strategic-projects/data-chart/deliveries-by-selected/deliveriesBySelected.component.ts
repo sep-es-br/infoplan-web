@@ -9,6 +9,7 @@ import { ExportDataService } from '../../../../core/service/export-data';
 import { CustomTableFilteringTrigger, RequestStatus } from '../../strategicProjects.component';
 import { BehaviorSubject } from 'rxjs';
 import { OffcanvasInfoModelComponent } from '../../offcanvas-info-model/offcanvas-info-model.components';
+import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
 @Component({
   selector: 'ngx-deliveries-by-selected',
@@ -45,9 +46,9 @@ export class DeliveriesBySelectedComponent implements OnChanges {
   deliveriesSelectedOption: string = 'Área Temática';
 
   flipTableContent: FlipTableContent;
-  
+
   selectedItemDetails: StrategicProjectProgramDetails | StrategicProjectProjectDetails;
-  
+
   offcanvasRequestStatus: RequestStatus = RequestStatus.EMPTY;
 
   requestStatus: RequestStatus = RequestStatus.EMPTY;
@@ -58,12 +59,13 @@ export class DeliveriesBySelectedComponent implements OnChanges {
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
     private changeDetectorRef: ChangeDetectorRef,
+    private chartMaximizeService: ChartMaximizeService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['filter'] && this.filter)) {
       if (this.deliveriesSelectedOption != undefined) {
-        this.loadData(); 
+        this.loadData();
       }
     }
 
@@ -78,6 +80,18 @@ export class DeliveriesBySelectedComponent implements OnChanges {
         }
       });
     }
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this.chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this.chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this.chartMaximizeService.calcMaximizedHeight();
   }
 
   loadData() {
@@ -120,7 +134,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
       }
     );
   }
-  
+
   loadDeliveriesByProgram(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
 
@@ -136,7 +150,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
       }
     );
   }
-  
+
   loadDeliveriesByCrossProgramAt(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
 
@@ -152,7 +166,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
       }
     );
   }
-  
+
   loadDeliveriesByProject(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
 
@@ -168,12 +182,12 @@ export class DeliveriesBySelectedComponent implements OnChanges {
       }
     );
   }
-  
+
   formatDeliveriesChartData(): void {
     this.chartData = this.deliveriesData.map(item => ({
-      category: item.nome,         
-      emExecucao: item.execucao,     
-      concluida: item.concluida     
+      category: item.nome,
+      emExecucao: item.execucao,
+      concluida: item.concluida
     }));
 
     this.assembleFlipTableContent(this.deliveriesData);
@@ -233,7 +247,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
         entrega.concluida.toString().includes(preparedSearchTerm) ||
         entrega.execucao.toString().includes(preparedSearchTerm)
       ));
-  
+
       this.assembleFlipTableContent(filteredItems, true);
     } else {
       this.assembleFlipTableContent(this.deliveriesData);
@@ -286,7 +300,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
           projetoId: selectedItem.id,
         };
         this.deliveriesSelectedOption = 'Projeto';
-        break;      
+        break;
       default:
         console.warn('Opção não reconhecida:', this.deliveriesSelectedOption);
         break;
@@ -297,7 +311,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
 
   handleChartLabelClick(event: HorizontalBarChartLabelClick) {
     const selectedDelivery = this.deliveriesData.find((el) => el.nome === event.value);
-    this.offcanvasRequestStatus = RequestStatus.LOADING;      
+    this.offcanvasRequestStatus = RequestStatus.LOADING;
     setTimeout(() => this.offcanvasTrigger.nativeElement.click(), 50);
 
     if (['Programa', 'Programas Transversais'].includes(this.deliveriesSelectedOption)) {
@@ -333,7 +347,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
     if (!this.isDoingDrillDownActions) {
       this.isDoingDrillDownActions = true;
       this.handleCustomFiltering(event.labelName);
-      
+
       setTimeout(() => {
         this.isDoingDrillDownActions = false;
       }, 500);

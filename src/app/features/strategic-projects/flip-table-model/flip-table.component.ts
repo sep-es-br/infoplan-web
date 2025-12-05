@@ -97,6 +97,8 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() height: number = 400;
 
+  @Input() outerCardHeight: number;
+
 
   @HostBinding('class.maximized') get maximizedClass() {
     return this.isMaximized;

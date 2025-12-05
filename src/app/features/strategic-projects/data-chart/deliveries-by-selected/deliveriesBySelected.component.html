@@ -1,10 +1,12 @@
 <ngx-flip-table
   [tableContent]="flipTableContent"
-  [backCardHeight]="290"
+  [backCardHeight]="isChartMaximized('DeliveriesBy') ? 700 : 290"
   [loadingStatus]="requestStatus"
+  [showMaximizeButton]="true"
   (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
   (executeCustomFiltering)="handleCustomFiltering($event)"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('DeliveriesBy', $event)"
 >
   <div class="d-flex flex-column flex-sm-row p-0" custom-header>
     <span class="text-card me-2">Entregas por</span>
@@ -20,7 +22,7 @@
     card-front
     [data]="chartData"
     [colors]="chartColors"
-    [height]="290"
+    [height]="isChartMaximized('DeliveriesBy') ? calcMaximizedHeight() : 290"
     [customConfig]="chartCustomConfig"
     (labelClick)="handleChartLabelClick($event)"
     (barClick)="handleChartBarClick($event)"

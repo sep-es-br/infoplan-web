@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, HostListener, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { PieChartModelComponent } from '../../pie-chart-model/pieChartModel.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
@@ -243,7 +243,12 @@ export class DeliveriesByStatusComponent implements OnChanges {
     return this.chartMaximizeService.isChartMaximized(chartId);
   }
 
+
   calcMaximizedHeight(): number {
     return this.chartMaximizeService.calcMaximizedHeight();
+  }
+
+  callMaximizedWidth(): number {
+    return this.chartMaximizeService.calcMaximizedWidth();
   }
 }

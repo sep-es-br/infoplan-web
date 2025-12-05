@@ -148,8 +148,8 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
       : config.radius;
 
     // Ajusta posição da legenda
-    const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 12;
-    const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 12;
+    const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 10;
+    const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 10;
 
     this.echartsInstance.setOption({
       legend: config.showLegend

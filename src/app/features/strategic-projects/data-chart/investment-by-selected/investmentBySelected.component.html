@@ -1,11 +1,14 @@
 <ngx-flip-table
   [tableContent]="flipTableContent"
-  [backCardHeight]="290"
+  [backCardHeight]="isChartMaximized('InvestmentBy') ? 700 : 290"
   [loadingStatus]="requestStatus"
+  [outerCardHeight]="isChartMaximized('InvestmentBy') ? 720 : 415"
+  [showMaximizeButton]="true"
   (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
   (executeCustomFiltering)="handleCustomFiltering($event)"
->
+  (showMaximizeButtonClick)="onMaximizeButtonClick('InvestmentBy', $event)"
+  >
   <div class="d-flex flex-column flex-sm-row p-0" custom-header>
     <span class="text-card text-truncate me-2">Investimento por</span>
     <nb-select class="investment-select" size="tiny" shape="semi-round" [(selected)]="selectedInvestmentOption" (selectedChange)="loadData()">
@@ -21,7 +24,7 @@
     card-front
     [data]="chartData"
     [colors]="chartColors"
-    [height]="290"
+    [height]="isChartMaximized('InvestmentBy') ? calcMaximizedHeight() : 290"
     [customConfig]="chartCustomConfig"
     (labelClick)="handleChartLabelClick($event)"
     (barClick)="handleChartBarClick($event)"

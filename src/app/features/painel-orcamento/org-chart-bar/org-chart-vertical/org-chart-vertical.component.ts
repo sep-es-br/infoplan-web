@@ -25,8 +25,8 @@ import { IChartOptions } from "./../../../../shared/models/painel-orcamento/ICha
       height: 100%;
       overflow: hidden;
     }
-    .echarts { 
-      width: 100%; 
+    .echarts {
+      width: 100%;
       height: 100%;
       min-height: 0;
     }

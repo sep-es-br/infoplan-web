@@ -6,6 +6,7 @@ import { StrategicProjectsService } from '../../../../core/service/strategic-pro
 import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { RequestStatus } from '../../strategicProjects.component';
+import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
 @Component({
   selector: 'ngx-risks-by-classification',
@@ -35,12 +36,25 @@ export class RisksByClassificationComponent implements OnChanges {
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
+    private chartMaximizeService: ChartMaximizeService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {
       this.loadData();
     }
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this.chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this.chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this.chartMaximizeService.calcMaximizedHeight();
   }
 
   loadData() {
@@ -97,7 +111,7 @@ export class RisksByClassificationComponent implements OnChanges {
     const tableColumns = [{ propertyName: 'riscoImportancia', displayName: 'Importância' }];
 
     const finalData: Array<TreeNode> = [];
-    
+
     rawData.forEach((risco) => {
       const areaIsAlreadyListed = finalData.find((area) => {
         const areaName = area.data.find((prop) => prop.propertyName === 'firstColumn' && prop.value === risco.nomeArea);
@@ -186,7 +200,7 @@ export class RisksByClassificationComponent implements OnChanges {
         risco.nomeRisco.toLowerCase().includes(preparedSearchTerm) ||
         risco.riscoImportancia.toLowerCase().includes(preparedSearchTerm)
       ));
-  
+
       this.assembleFlipTableContent(filteredItems, true);
     } else {
       this.assembleFlipTableContent(this.riskData);

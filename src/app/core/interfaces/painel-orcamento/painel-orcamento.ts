@@ -9,6 +9,7 @@ export interface IReceitaTotalOrcamentariaResponse {
   vlr_receita_prevista: number;
   vlr_receita_liquida: number;
   porcentagem: number;
+  timesTemp: string;
 }
 
 export interface IExecucaoOrcamentariaReceitaOrigem {
@@ -82,4 +83,3 @@ export interface IReceitaTransfereciaCorrenteOrcamentariaResponse {
   nome_item_patrimonial: string;
   receitaLiquida: number;
 }
-

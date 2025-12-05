@@ -83,8 +83,3 @@ export interface IReceitaTransfereciaCorrenteOrcamentariaResponse {
   nome_item_patrimonial: string;
   receitaLiquida: number;
 }
-
-
-export interface IExecucaoOrcamentariaTimestamp {
-  timestamp: string;
-}

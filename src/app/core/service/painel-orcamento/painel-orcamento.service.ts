@@ -18,7 +18,6 @@ import {
   IReceitaICMSOrcamentariaResponse,
   IReceitaImpostoOrcamentariaResponse,
   IReceitaTransfereciaCorrenteOrcamentariaResponse,
-  IExecucaoOrcamentariaTimestamp,
 } from "../../interfaces/painel-orcamento/painel-orcamento";
 import { Router } from "@angular/router";
 import { catchError } from "rxjs/operators";
@@ -142,12 +141,6 @@ export class PainelOrcamentoService {
       .pipe(catchError((err) => this.handleError(err, this.router)));
   }
 
-  public getTimestamp(): Observable<IExecucaoOrcamentariaTimestamp> {
-    return this._http
-      .get<IExecucaoOrcamentariaTimestamp>(`${this._URI}/timestamp`)
-      .pipe(catchError((err) => this.handleError(err, this.router)));
-  }
-
   private returnParams(
     execucaoOrcamentaria: IExecucaoOrcamentariaRequest
   ): HttpParams {
@@ -162,27 +155,6 @@ export class PainelOrcamentoService {
       .set("tipoFonte", String(execucaoOrcamentaria.tipoFonte));
     return params;
   }
-
-  // private handleError(
-  //   err: HttpErrorResponse,
-  //   router: Router,
-  //   callback?: (error: any) => void
-  // ): Observable<never> {
-  //   console.log(err);
-
-  //   if (err.status === HttpStatusCode.Unauthorized) {
-  //     router.navigate(['pages/home']);
-  //   } else if (err.status === HttpStatusCode.Forbidden) {
-  //     router.navigate(['login']);
-  //   }
-
-  //   if (callback) {
-  //     callback(err);
-  //   }
-
-  //   // Retorna um Observable que emite erro
-  //   return throwError(() => err);
-  // }
 
   private handleError(err: any, router: Router): Observable<never> {
     console.log(err, "dasdsadas");

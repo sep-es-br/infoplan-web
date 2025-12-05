@@ -13,7 +13,6 @@ import {
 import { Subject, Subscription } from "rxjs";
 import {
   IExecucaoOrcamentariaRequest,
-  IExecucaoOrcamentariaTimestamp,
   IReceitaDespesaGNDTotalOrcamentariaResponse,
   IReceitaTotalOrcamentariaResponse,
 } from "../../core/interfaces/painel-orcamento/painel-orcamento";

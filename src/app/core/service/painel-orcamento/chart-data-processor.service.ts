@@ -276,53 +276,46 @@ export class ChartDataProcessorService {
 
     const datasets = [
       {
-        label: `Liquidado ${anos[0] || anos[0]}`,
+        label: `Liquidado ${anos[1] || anos[0]}`,
         data: categorias.map((categoria) => {
-          const item = dados.find(
+          const items = dados.filter(
             (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
           );
-          return this.extrairValor(item, ["vlr_liquidado"]);
+          return items.reduce((acc, item) => acc + this.extrairValor(item, ["vlr_liquidado"]), 0);
         }),
         backgroundColor: cores[0],
       },
       {
-        label: `Liquidado ${anos[1]}`,
+        label: `Liquidado ${anos[0]}`,
         data: categorias.map((categoria) => {
-          const item = dados.find(
+          const items = dados.filter(
             (d) => d[campoLabel] === categoria && d.ano === anos[0]
           );
-          return this.extrairValor(item, ["vlr_liquidado"]);
+          return items.reduce((acc, item) => acc + this.extrairValor(item, ["vlr_liquidado"]), 0);
         }),
         backgroundColor: cores[1],
       },
       {
-        label: `Pago com RAP ${anos[0] || anos[0]}`,
+        label: `Pago com RAP ${anos[1] || anos[0]}`,
         data: categorias.map((categoria) => {
-          const item = dados.find(
+          const items = dados.filter(
             (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
           );
-          return this.extrairValor(item, ["vlr_pago_com_rap"]);
+          return items.reduce((acc, item) => acc + this.extrairValor(item, ["vlr_pago_com_rap"]), 0);
         }),
         backgroundColor: cores[2],
       },
       {
-        label: `Pago com RAP ${anos[1]}`,
+        label: `Pago com RAP ${anos[0]}`,
         data: categorias.map((categoria) => {
-          const item = dados.find(
+          const items = dados.filter(
             (d) => d[campoLabel] === categoria && d.ano === anos[0]
           );
-          return this.extrairValor(item, ["vlr_pago_com_rap"]);
+          return items.reduce((acc, item) => acc + this.extrairValor(item, ["vlr_pago_com_rap"]), 0);
         }),
         backgroundColor: cores[3],
       },
     ];
-
-    // DEBUG: Verificar se as cores estão sendo atribuídas
-    console.log('Datasets com cores:', datasets.map(d => ({
-      label: d.label,
-      backgroundColor: d.backgroundColor,
-      data: d.data
-    })));
 
     if (!this.temDadosValidos(datasets.map((d) => d.data))) {
       console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);

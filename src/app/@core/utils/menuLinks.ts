@@ -100,4 +100,17 @@ export const menulinks = [
     color: "#4DB6D2",
     subTitle: "Execução Orçamentária",
   },
+    {
+    id: 8,
+    name: "Planejamento Orçamentário",
+    icon: "logo-spo-azul.svg",
+    link: "/pages/planejamento-orcamentario",
+    // status: checkRoles(environment.allowedRoles.planejamentoOrcamentario),
+    status: true,
+    url: "",
+    src: "Sistema de Planejamento Orçamentário",
+    menuIcon: "",
+    color: "#ffff ",
+    subTitle: "Sistema de Planejamento Orçamentário",
+  },
 ];

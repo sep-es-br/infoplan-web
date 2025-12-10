@@ -7,6 +7,7 @@ import { PainelOrcamentoComponent } from "../features/painel-orcamento/painel-or
 import { StrategicProjectsComponent } from "../features/strategic-projects/strategicProjects.component";
 import { NotFoundComponent } from "./miscellaneous/not-found/not-found.component";
 import { PagesComponent } from "./pages.component";
+import { PlanejamentoOrcamentarioComponent } from "../features/spo/planejamento-orcamentario.component";
 
 const routes: Routes = [
   {
@@ -31,6 +32,11 @@ const routes: Routes = [
         path: "execucao-orcamentaria",
         component: PainelOrcamentoComponent,
         data: { dataSource: "Execução Orçamentária" },
+      },
+      {
+        path: "planejamento-orcamentario",
+        component: PlanejamentoOrcamentarioComponent,
+        data: { dataSource: "Sistema de Planejamento Orçamentário" },
       },
       {
         path: "",

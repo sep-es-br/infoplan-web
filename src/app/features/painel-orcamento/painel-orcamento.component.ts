@@ -75,6 +75,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   readonly meses = MESES_DATA;
   readonly ano = ANO_DATA;
   readonly cards = CARDS_DATA;
+
   readonly tipoFonteList = [
     { id: 1, name: 'Caixas Tesouros' },
     { id: 2, name: 'Demais Fontes' },

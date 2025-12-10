@@ -49,24 +49,46 @@ export class PagesComponent implements OnInit {
     await Promise.all(
       menulinks.map(async (item) => {
         const iconName = item.icon.split(".")[0];
+        // Função antiga de carregamento de ícones
+        // if (item.icon.endsWith(".svg")) {
+        //   try {
+        //     const response = await fetch(`assets/images/app/${item.icon}`);
+        //     const svgContent = await response.text();
+
+        //     customIcons[iconName] = svgContent;
+
+        //   } catch (error) {
+        //     console.error(`Erro ao carregar o ícone ${item.icon}:`, error);
+        //   }
+        // } else {
+        //   customIcons[
+        //     iconName
+        //   ] = `<img src="assets/images/app/${iconName}.png" width="20px" />`;
+        // }
 
         if (item.icon.endsWith(".svg")) {
           try {
             const response = await fetch(`assets/images/app/${item.icon}`);
-            const svgContent = await response.text();
+            let svgContent = await response.text();
+
+            // Adiciona currentColor dinamicamente
+            svgContent = svgContent.replace(
+              /fill="[^"]*"/g,
+              'fill="currentColor"'
+            );
+            svgContent = svgContent.replace(
+              /style="fill:[^;"]*/g,
+              'style="fill:currentColor'
+            );
 
             customIcons[iconName] = svgContent;
-
           } catch (error) {
             console.error(`Erro ao carregar o ícone ${item.icon}:`, error);
           }
-        } else {
-          customIcons[
-            iconName
-          ] = `<img src="assets/images/app/${iconName}.png" width="20px" />`;
         }
       })
     );
+
     const mergedIcons = { ...customIcons, ...icones };
     this.iconsLibrary.registerSvgPack("custom-icons", mergedIcons, icones);
 

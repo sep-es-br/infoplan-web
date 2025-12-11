@@ -30,7 +30,7 @@ const routes: Routes = [
       {
         path: "execucao-orcamentaria",
         component: PainelOrcamentoComponent,
-        data: { dataSource: "Execução Orçamentária" },
+        data: { dataSource: "Sigefes" },
       },
       {
         path: "",

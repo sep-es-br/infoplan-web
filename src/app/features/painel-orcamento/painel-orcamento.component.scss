@@ -47,7 +47,8 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   text-align: center;
   height: 100%;
-
+  line-height: 16px;
+  padding-right: 33px;
   .delivery-select {
     min-width: 200px;
   }
@@ -61,7 +62,7 @@
 
   .card-content {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     width: 100%;
     padding: 5px 0 5px 5px;
     height: 100%;
@@ -145,26 +146,29 @@
       font-size: 12px;
       font-weight: bold;
       width: 100%;
-      justify-content: start;
+      text-align: start;
+      height: 100%;
+      line-height: 16px;
+      padding-right: 33px;
     }
   }
 }
 
-:host {
-  @media screen and (min-width: 1330px) and (max-width: 1530px) {
-    .card .card-content {
-      gap: 10px;
-      font-size: 11px;
-    }
-  }
+// :host {
+//   @media screen and (min-width: 1330px) and (max-width: 1530px) {
+//     .card .card-content {
+//       gap: 10px;
+//       font-size: 11px;
+//     }
+//   }
 
-  @media screen and (min-width: 348px) and (max-width: 1329px) {
-    .card .card-content {
-      gap: 20px;
-      font-size: 11px;
-    }
-  }
-}
+//   @media screen and (min-width: 348px) and (max-width: 1329px) {
+//     .card .card-content {
+//       gap: 20px;
+//       font-size: 11px;
+//     }
+//   }
+// }
 
 :host-context(.nb-theme-default, .nb-theme-dark, .nb-theme-cosmic) {
   .icon-top-right {

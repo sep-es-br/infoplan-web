@@ -11,8 +11,7 @@
   <ngx-pie-chart-model
     [data]="chartData"
     [colors]="chartColors"
-    [height]="isChartMaximized('deliveries-by-type') ?   400 : 150"
-    [fontSizeLegend]="isChartMaximized('deliveries-by-type') ? 20 : 9"
+    [height]="isChartMaximized('deliveries-by-type') ? calcMaximizedHeight() : 150"
     [isMaximized]="isChartMaximized('deliveries-by-type')"
     card-front>
   </ngx-pie-chart-model>

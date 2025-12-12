@@ -64,7 +64,7 @@ import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
     FilterComponent,
     PieChartComponent,
     FlipTableComponent,
-    NbLayoutModule
+    NbLayoutModule,
   ],
   providers: [
     ShortNumberPipe

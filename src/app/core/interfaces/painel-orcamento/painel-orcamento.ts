@@ -84,3 +84,12 @@ export interface IReceitaTransfereciaCorrenteOrcamentariaResponse {
   nome_item_patrimonial: string;
   receitaLiquida: number;
 }
+
+
+export interface IExecucaoOrcamentariaTotals {
+  totalReceitaPrevista: number;
+  totalReceitaRealizada: number;
+  porcentagemReceitaRealizadaPrevista: number;
+  porcentagemReceitaEmpenhadaAutorizada: number;
+  porcentagemReceitaLiquidadaAutorizada: number;
+}

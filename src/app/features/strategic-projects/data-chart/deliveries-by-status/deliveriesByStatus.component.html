@@ -26,12 +26,11 @@
   (executeDownload)="handleUserTableDownload()"
   (showMaximizeButtonClick)="onMaximizeButtonClick('deliveries-by-status', $event)"
   >
-  <ngx-pie-chart-model class="w-100"
+  <ngx-pie-chart-model
     card-front
     [data]="chartData"
     [colors]="chartColors"
-    [height]="isChartMaximized('deliveries-by-status') ?   400 : 150"
-    [fontSizeLegend]="isChartMaximized('deliveries-by-status') ? 20 : 9"
+    [height]="isChartMaximized('deliveries-by-status') ? calcMaximizedHeight() : 150"
     [isMaximized]="isChartMaximized('deliveries-by-status')"
     >
   </ngx-pie-chart-model>

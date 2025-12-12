@@ -19,7 +19,7 @@ export class FooterComponent {
 
   dataSrc : string;
 
-  constructor(private route : ActivatedRoute) {  
+  constructor(private route : ActivatedRoute) {
     this.dataSrc = this.route.snapshot.data['dataSource'];
   }
 }

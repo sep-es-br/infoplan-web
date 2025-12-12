@@ -11,7 +11,8 @@
   <ngx-pie-chart-model
     [data]="chartData"
     [colors]="chartColors"
-    [height]="isChartMaximized('risks-by-classification') ?   400 : 150"
+    [height]="isChartMaximized('risks-by-classification') ? calcMaximizedHeight() : 150"
+    [isMaximized]="isChartMaximized('risks-by-classification')"
     card-front>
   </ngx-pie-chart-model>
 </ngx-flip-table>

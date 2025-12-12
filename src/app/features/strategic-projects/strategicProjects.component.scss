@@ -43,7 +43,7 @@ input:focus {
 
       .filter-tag {
         background-color: var(--card-background-color);
-        border: 1px solid #CED4DA;
+        border: 1px solid #ced4da;
         color: var(--card-text-color);
         padding: 4px 12px;
         border-radius: 20px;
@@ -73,12 +73,12 @@ input:focus {
           margin-left: 4px;
           font-size: 17px;
           cursor: pointer;
-          color: #005C99;
+          color: #005c99;
 
-          transition: color .35s ease;
+          transition: color 0.35s ease;
 
           &:hover {
-            color: #DC3545;
+            color: #dc3545;
           }
         }
       }
@@ -102,12 +102,14 @@ input:focus {
 
       &:hover {
         .map-icon {
-          filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
         }
       }
 
       &.map-btn-clicked {
-        filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+          saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
       }
     }
 
@@ -140,7 +142,7 @@ input:focus {
           }
 
           .filter-row {
-            margin-bottom: .75em;
+            margin-bottom: 0.75em;
 
             .filter-entity {
               padding-left: 0.5rem;
@@ -199,19 +201,33 @@ input:focus {
       width: 3rem;
       height: 3rem;
       border-width: 0.35em;
+      // animation: spinner-border 0.75s linear infinite;
 
       &.qt-programas,
       &.qt-projetos,
       &.total-entregas {
-        color: #005C99 !important;
+        color: #005c99 !important;
       }
 
       &.total-previsto {
-        color: #487D7A !important;
+        color: #487d7a !important;
       }
 
       &.total-realizado {
-        color: #00B26A !important;
+        color: #00b26a !important;
+      }
+
+      .sr-only,
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
     }
 
@@ -223,7 +239,7 @@ input:focus {
     }
 
     .number-box {
-      background-color: #005C99;
+      background-color: #005c99;
       color: white;
       font-size: 16px;
       font-weight: bold;
@@ -236,11 +252,11 @@ input:focus {
       min-width: 40%;
 
       &.previsto {
-        background-color: #487D7A !important;
+        background-color: #487d7a !important;
       }
 
       &.realizado {
-        background-color: #00B26A !important;
+        background-color: #00b26a !important;
       }
 
       .currency {
@@ -264,48 +280,37 @@ nb-option-list {
 // Aplica esses estilos sob o tema "default"
 :host-context(.nb-theme-default) {
   .icon-top-right {
-    color: #005C99 !important;
+    color: #005c99 !important;
 
     &.previsto {
-      color: #487D7A !important
+      color: #487d7a !important;
     }
-
-    ;
 
     &.realizado {
-      color: #00B26A !important
+      color: #00b26a !important;
     }
-
-    ;
   }
 
   .text-section {
-    color: #005C99 !important;
+    color: #005c99 !important;
 
     &.previsto {
-      color: #487D7A !important
+      color: #487d7a !important;
     }
-
-    ;
 
     &.realizado {
-      color: #00B26A !important
+      color: #00b26a !important;
     }
-
-    ;
   }
 }
 
 // Aplica esses estilos sob o tema "dark" e "cosmic"
 :host-context(.nb-theme-dark, .nb-theme-cosmic) {
-
   .icon-top-right,
   .text-section {
-    color: #FFFFFF !important;
+    color: #ffffff !important;
   }
 }
-
-
 
 @media (min-width: 1440px) {
   .container {
@@ -335,8 +340,6 @@ nb-option-list {
   justify-content: center !important;
 }
 
-
-
 .chart-container.maximized.col-12,
 .chart-container.maximized.col-md-12,
 .chart-container.maximized.col-lg-6,
@@ -354,7 +357,6 @@ nb-option-list {
   width: 100% !important;
   height: auto !important;
   margin: 0 auto !important;
-
 
   max-width: 98% !important;
   max-height: 98vh !important;
@@ -388,8 +390,6 @@ chart-container.maximized::before:hover {
   transform: scale(1.1);
 }
 
-
-
 // .chart-container.maximized {
 //   position: fixed !important;
 //   top: 0 !important;
@@ -412,7 +412,6 @@ chart-container.maximized::before:hover {
 //   justify-content: center !important;
 // }
 
-
 // // .chart-container.maximized.col-12,
 // // .chart-container.maximized.col-md-6,
 // // .chart-container.maximized.col-lg-6,
@@ -431,7 +430,6 @@ chart-container.maximized::before:hover {
 //   height: auto !important;
 //   margin: 0 auto !important;
 
-
 //   max-width: 98% !important;
 //   max-height: 100vh !important;
 //   background-color: #43525c;
@@ -442,7 +440,6 @@ chart-container.maximized::before:hover {
 //   height: 100% !important;
 //   min-height: 400px !important;
 // }
-
 
 // /* ========== ANIMAÇÃO SUAVE ========== */
 

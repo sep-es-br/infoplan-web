@@ -12,7 +12,8 @@
   <ngx-pie-chart-model
     [data]="chartData"
     [colors]="chartColors"
-    [height]="isChartMaximized('critical-milestones-for-performance') ?   400 : 150"
+    [height]="isChartMaximized('critical-milestones-for-performance') ? calcMaximizedHeight() : 150"
+    [isMaximized]="isChartMaximized('critical-milestones-for-performance')"
     card-front>
   </ngx-pie-chart-model>
 </ngx-flip-table>

@@ -12,7 +12,8 @@
   <ngx-pie-chart-model
     [data]="chartData"
     [colors]="chartColors"
-    [height]="isChartMaximized('projects-by-status') ?   400 : 150"
+    [height]="isChartMaximized('projects-by-status') ? calcMaximizedHeight() : 150"
+    [isMaximized]="isChartMaximized('projects-by-status')"
     card-front>
   </ngx-pie-chart-model>
 </ngx-flip-table>

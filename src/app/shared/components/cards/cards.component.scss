@@ -6,8 +6,8 @@ nb-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none;
   margin: 0;
-  min-width: calc(40%);
-  height: 100%;
+  min-width: 50%;
+  height: 65px;
 
   // &:hover {
   //   transform: translateY(-2px);
@@ -15,9 +15,9 @@ nb-card {
   // }
 
   & .card-dinamico-body {
-    height: 100%;
+    // height: 100%;
     padding: 0.5rem;
-
+    width: 100%;
     & .card-content {
       display: flex;
       flex-direction: column;
@@ -26,7 +26,7 @@ nb-card {
       text-align: center;
 
       & .card-value {
-        font-weight: bold;
+        font-weight: 700;
         font-size: 16px; // Tamanho fixo em todas as resoluções
         line-height: 1.2;
         margin: 0;
@@ -39,12 +39,12 @@ nb-card {
   font-size: 0.8rem; // Tamanho fixo em todas as resoluções
   line-height: 130%;
   padding-right: 5px;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
 }
 
 .currency-symbol {
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .theme-default {

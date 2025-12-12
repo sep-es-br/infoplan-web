@@ -107,39 +107,11 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (changes["fontSizeLegend"] && this.echartsInstance) {
-      this.echartsInstance.setOption({
-        legend: {
-          textStyle: { fontSize: this.fontSizeLegend },
-        },
-        title: {
-          textStyle: { fontSize: this.fontSizeLegend * 1.5 },
-        },
-        series: [
-          {
-            label: { fontSize: this.fontSizeLegend },
-          },
-        ],
-      });
+      this.updateChartFontSizes();
     }
 
     if (changes["isMaximized"] && this.echartsInstance) {
-      this.echartsInstance.setOption({
-        legend: {
-          textStyle: { fontSize: this.isMaximized ? 11 : 9 },
-          itemWidth: this.isMaximized ? 12 : 10,
-          itemHeight: this.isMaximized ? 12 : 10,
-        },
-        title: {
-          textStyle: { fontSize: this.isMaximized ? 22 : 16 },
-        },
-        series: [
-          {
-            label: { fontSize: this.isMaximized ? 11 : 20 },
-          },
-        ],
-      });
-
-      this.updateTitlePosition();
+      this.handleMaximizeChange();
     }
   }
 
@@ -161,7 +133,7 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
 
     if (w < 350) return 220;
     if (w < 500) return 200;
-    if (w < 768) return 300;
+    if (w < 768) return 200;
     if (w < 922) return 340;
     if (w < 1100) return 380;
 
@@ -218,35 +190,117 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-
-  updateTitlePosition() {
+  private handleMaximizeChange() {
     if (!this.echartsInstance) return;
 
     const screenWidth = window.innerWidth;
-    let centerX = this.centerX;
-    let centerY = this.centerY;
+    const isPhone = screenWidth < 500;
 
+    if (this.isMaximized) {
+      // NO MODO MAXIMIZADO: Gráfico centralizado, legenda no topo à esquerda
+      this.echartsInstance.setOption({
+        legend: {
+          left: "left",
+          top: "top",
+          textStyle: { fontSize: isPhone ? 11 : 13 },
+          itemWidth: 12,
+          itemHeight: 12,
+          itemGap: 12,
+        },
+        title: {
+          left: "50%",
+          top: "50%",
+          textStyle: { fontSize: isPhone ? 18 : 24 },
+        },
+        series: [
+          {
+            center: ["50%", "50%"],
+            radius: isPhone ? ["50%", "85%"] : ["55%", "90%"],
+            label: { fontSize: isPhone ? 10 : 12 }
+          },
+        ],
+      });
+    } else {
+      // NO MODO NORMAL: Layout original com gráfico deslocado
+      const currentThemeStyles = getAvailableThemesStyles(this.currentTheme);
+
+      this.echartsInstance.setOption({
+        legend: {
+          left: "left",
+          top: "top",
+          textStyle: {
+            fontSize: this.fontSizeLegend,
+            color: currentThemeStyles.textPrimaryColor
+          },
+          itemWidth: 10,
+          itemHeight: 10,
+          itemGap: 10,
+        },
+        title: {
+          textStyle: {
+            fontSize: 16,
+            color: currentThemeStyles.textPrimaryColor
+          },
+        },
+        series: [
+          {
+            center: [`${this.centerX}%`, `${this.centerY}%`],
+            radius: this.pieRadius,
+            label: { fontSize: 9 }
+          },
+        ],
+      });
+
+      // Reaplica o posicionamento correto do título
+      this.updateTitlePosition();
+    }
+  }
+
+  private updateChartFontSizes() {
+    if (this.echartsInstance && !this.isMaximized) {
+      this.echartsInstance.setOption({
+        legend: {
+          textStyle: { fontSize: this.fontSizeLegend },
+        },
+        title: {
+          textStyle: { fontSize: this.fontSizeLegend * 1.5 },
+        },
+        series: [
+          {
+            label: { fontSize: this.fontSizeLegend },
+          },
+        ],
+      });
+    }
+  }
+
+  updateTitlePosition() {
+    if (!this.echartsInstance || this.isMaximized) return;
+
+    const screenWidth = window.innerWidth;
+
+    // Ajusta o raio e posição do gráfico conforme a largura da tela
     if (screenWidth < 320) {
       this.pieRadius = ["35%", "70%"];
-      centerX = 50;
-      centerY = 50;
+      this.centerX = 50;
+      this.centerY = 50;
     } else if (screenWidth < 420) {
       this.pieRadius = ["40%", "80%"];
-      centerX = 55;
+      this.centerX = 55;
     } else if (screenWidth < 768) {
       this.pieRadius = ["45%", "85%"];
     } else if (screenWidth <= 1000) {
       this.pieRadius = ["50%", "90%"];
-      centerX -= 2;
+      this.centerX = 68;
     } else if (screenWidth >= 1600) {
-      centerX -= 2;
+      this.centerX = 68;
     } else {
       this.pieRadius = ["60%", "100%"];
     }
 
-    let offset = centerX - 1;
+    let offset = this.centerX - 1;
     if (screenWidth >= 1800 || (screenWidth >= 768 && screenWidth <= 1000)) {
-      offset = centerX - 1;
+      offset = this.centerX - 1;
     }
 
     const isPhone = screenWidth < 500;
@@ -256,41 +310,29 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
         {
           title: {
             left: `${offset}%`,
-            top: `${centerY}%`,
+            top: `${this.centerY}%`,
             textStyle: {
-              fontSize: this.isMaximized
-                ? isPhone
-                  ? 12
-                  : this.fontSizeLegend
-                : this.fontSizeLegend,
+              fontSize: isPhone ? 12 : 16,
               fontWeight: "bold",
             }
           },
           legend: {
             textStyle: {
-              fontSize: this.isMaximized
-                ? isPhone
-                  ? 12
-                  : this.fontSizeLegend
-                : this.fontSizeLegend,
+              fontSize: this.fontSizeLegend,
             },
-            left: this.isMaximized ? "left" : "left",
-            top: this.isMaximized ? "center" : "top",
+            left: "left",
+            top: "top",
             itemWidth: 10,
             itemHeight: 10,
             itemGap: 10,
           },
           series: [
             {
-              center: [`${centerX}%`, `${centerY}%`],
+              center: [`${this.centerX}%`, `${this.centerY}%`],
               radius: this.pieRadius,
               label: {
-                fontSize: this.isMaximized
-                  ? isPhone
-                    ? 11
-                    : this.fontSizeLegend
-                  : this.fontSizeLegend,
-             }
+                fontSize: this.fontSizeLegend,
+              }
             },
           ],
         },
@@ -313,69 +355,125 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
   initChartOptions(data: { value: number; name: string }[], colors: string[]) {
     const total = data?.reduce((s, i) => s + i.value, 0) ?? 0;
     const screenWidth = window.innerWidth;
-
-    const offset =
-      screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
-        ? this.centerX - 2
-        : this.centerX - 1;
-
     const s = getAvailableThemesStyles(this.currentTheme);
 
-    this.chartOptions = {
-      tooltip: {
-        trigger: "item",
-        formatter: (p) => `${p.name}: ${p.value} (${p.percent}%)`,
-        backgroundColor: s.themePrimaryColor,
-        borderColor: s.themePrimaryColor,
-        textStyle: { color: s.textPrimaryColor },
-      },
-      title: {
-        text: `${total}`,
-        left: `${offset-2}%`,
-        top: `${this.centerY}%`,
-        textAlign: "center",
-        textVerticalAlign: "middle",
-        textStyle: {
-          fontSize: 16,
-          fontWeight: "bold",
-          color: s.textPrimaryColor,
+    if (this.isMaximized) {
+      // MODO MAXIMIZADO: Gráfico centralizado
+      const isPhone = screenWidth < 500;
+
+      this.chartOptions = {
+        tooltip: {
+          trigger: "item",
+          formatter: (p) => `${p.name}: ${p.value} (${p.percent}%)`,
+          backgroundColor: s.themePrimaryColor,
+          borderColor: s.themePrimaryColor,
+          textStyle: { color: s.textPrimaryColor },
         },
-      },
-      legend: {
-        orient: "vertical",
-        left: "left",
-        top: "top",
-        data: data?.map((i) => i.name),
-        textStyle: {
-          fontSize: 9,
-          color: s.textPrimaryColor,
-        },
-        itemWidth: 10,
-        itemHeight: 10,
-        itemGap: 10,
-      },
-      series: [
-        {
-          type: "pie",
-          radius: this.isMaximized ? ["70%", "100%"] : this.pieRadius,
-          center: [
-            `${this.isMaximized ? 50 : this.centerX}%`,
-            `${this.centerY}%`,
-          ],
-          data,
-          emphasis: { scale: false },
-          label: {
-            show: true,
-            position: "inside",
-            formatter: (p) =>
-              p.percent >= 6 ? Math.round(p.percent) + "%" : "",
-            color: "#FFF",
-            fontSize: 9,
+        title: {
+          text: `${total}`,
+          left: "50%",
+          top: "50%",
+          textAlign: "center",
+          textVerticalAlign: "middle",
+          textStyle: {
+            fontSize: isPhone ? 18 : 24,
+            fontWeight: "bold",
+            color: s.textPrimaryColor,
           },
-          labelLine: { show: false },
         },
-      ],
-      color: colors,
-    };
+        legend: {
+          orient: "vertical",
+          left: "left",
+          top: "top",
+          data: data?.map((i) => i.name),
+          textStyle: {
+            fontSize: isPhone ? 11 : 13,
+            color: s.textPrimaryColor,
+          },
+          itemWidth: 12,
+          itemHeight: 12,
+          itemGap: 12,
+        },
+        series: [
+          {
+            type: "pie",
+            radius: isPhone ? ["50%", "85%"] : ["55%", "90%"],
+            center: ["50%", "50%"],
+            data,
+            emphasis: { scale: false },
+            label: {
+              show: true,
+              position: "inside",
+              formatter: (p) =>
+                p.percent >= 6 ? Math.round(p.percent) + "%" : "",
+              color: "#FFF",
+              fontSize: isPhone ? 10 : 12,
+            },
+            labelLine: { show: false },
+          },
+        ],
+        color: colors,
+      };
+    } else {
+      // MODO NORMAL: Layout original com gráfico deslocado
+      const offset =
+        screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
+          ? this.centerX - 2
+          : this.centerX - 1;
+
+      this.chartOptions = {
+        tooltip: {
+          trigger: "item",
+          formatter: (p) => `${p.name}: ${p.value} (${p.percent}%)`,
+          backgroundColor: s.themePrimaryColor,
+          borderColor: s.themePrimaryColor,
+          textStyle: { color: s.textPrimaryColor },
+        },
+        title: {
+          text: `${total}`,
+          left: `${offset}%`,
+          top: `${this.centerY}%`,
+          textAlign: "center",
+          textVerticalAlign: "middle",
+          textStyle: {
+            fontSize: 16,
+            fontWeight: "bold",
+            color: s.textPrimaryColor,
+          },
+        },
+        legend: {
+          orient: "vertical",
+          left: "left",
+          top: "top",
+          data: data?.map((i) => i.name),
+          textStyle: {
+            fontSize: 9,
+            color: s.textPrimaryColor,
+          },
+          itemWidth: 10,
+          itemHeight: 10,
+          itemGap: 10,
+        },
+        series: [
+          {
+            type: "pie",
+            radius: this.pieRadius,
+            center: [`${this.centerX}%`, `${this.centerY}%`],
+            data,
+            emphasis: { scale: false },
+            label: {
+              show: true,
+              position: "inside",
+              formatter: (p) =>
+                p.percent >= 6 ? Math.round(p.percent) + "%" : "",
+              color: "#FFF",
+              fontSize: 9,
+            },
+            labelLine: { show: false },
+          },
+        ],
+        color: colors,
+      };
+    }
   }
 }

@@ -1,0 +1,530 @@
+<div class="col-12">
+  <div class="filter-container">
+    <div class="filter-button px-2">
+      <div class="filter-tags">
+        <div *ngFor="let tag of activeFilters; let i = index">
+          <div class="filter-tag" [ngClass]="{ 'invisible-tag': showFilters }">
+            <div>
+              <div class="tag-label">{{ tag.label }}:</div>
+
+              <div class="tag-value">
+                <ng-container
+                  *ngFor="let value of tag.displayValue; let index = index"
+                >
+                  <ng-container
+                    *ngIf="value.name?.length <= 20; else spanWithTooltip"
+                  >
+                    <span>
+                      {{
+                        (index > 0 ? " " : "") +
+                          (tag.displayValue.length > 1
+                            ? value.name + ";"
+                            : value.name)
+                      }}
+                    </span>
+                  </ng-container>
+
+                  <ng-template #spanWithTooltip>
+                    <span
+                      [nbTooltip]="value.fullName ? value.fullName : value.name"
+                    >
+                      {{
+                        (index > 0 ? " " : "") +
+                          (value.name | TextTruncate : 17 : ";")
+                      }}
+                    </span>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+            <button
+              *ngIf="tag.key !== 'ano'"
+              class="remove-button"
+              (click)="removeFilter(tag.key)"
+            >
+              x
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-button">
+        <button
+          class="filter-toggle p-0"
+          type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#filtrosModal"
+        >
+          Filtros
+          <nb-icon [icon]="'funnel-outline'"></nb-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Painel de Filtros Simplificado -->
+    <div
+      class="modal fade"
+      id="filtrosModal"
+      tabindex="-1"
+      aria-labelledby="filtrosModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-body">
+            <form class="w-100">
+              <div class="form-header w-100 d-flex justify-content-end">
+                <button
+                  class="btn p-0 close-filter-button"
+                  data-bs-dismiss="modal"
+                  #modalCloseButton
+                  (click)="closeFilterModal()"
+                >
+                  <nb-icon [icon]="'close-outline'"></nb-icon>
+                </button>
+              </div>
+
+              <div class="d-flex flex-column w-100">
+                <div
+                  class="filter-row d-flex flex-column flex-md-row flex-wrap w-100"
+                >
+                  <!-- Ano -->
+                  <div
+                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
+                  >
+                    <span class="mb-1">Ano</span>
+                    <nb-select
+                      name="ano"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.ano"
+                      (selectedChange)="handleFilterChange('ano', [$event])"
+                      #customSelect
+                    >
+                      <nb-option
+                        *ngFor="let ano of yearsList"
+                        [value]="ano.num"
+                      >
+                        {{ ano.num }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+
+                  <!-- Mês -->
+                  <div
+                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
+                  >
+                    <span class="mb-1">Mês</span>
+                    <nb-select
+                      multiple
+                      name="mes"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.mes"
+                      (selectedChange)="handleFilterChange('mes', $event)"
+                      #customSelect
+                    >
+                      <nb-option
+                        *ngFor="let mes of monthsList"
+                        [value]="mes.num"
+                      >
+                        {{ mes.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div
+                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
+                  >
+                    <span class="mb-1">UOS</span>
+                    <nb-select
+                      multiple
+                      name="uo"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.uo"
+                      (selectedChange)="handleFilterChange('uo', $event)"
+                      #customSelect
+                    >
+                      <nb-option *ngFor="let uo of UOList" [value]="uo.id">
+                        {{ uo.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div
+                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
+                  >
+                    <span class="mb-1">GND</span>
+                    <nb-select
+                      multiple
+                      name="gnd"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.gnd"
+                      (selectedChange)="handleFilterChange('gnd', $event)"
+                      #customSelect
+                    >
+                      <nb-option *ngFor="let gnd of GNDList" [value]="gnd.id">
+                        {{ gnd.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+
+                  <!-- Tipo de Fonte -->
+                  <div
+                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
+                  >
+                    <span class="mb-1">Tipo de Fonte</span>
+                    <nb-select
+                      multiple
+                      name="tipoFonte"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.tipoFonte"
+                      (selectedChange)="handleFilterChange('tipoFonte', $event)"
+                      #customSelect
+                    >
+                      <nb-option [value]="1">Caixas Tesouros</nb-option>
+                      <nb-option [value]="2">Demais Fontes</nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div
+                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
+                  >
+                    <span class="mb-1">PO</span>
+                    <nb-select
+                      multiple
+                      name="po"
+                      placeholder="Selecionar"
+                      size="tiny"
+                      [(ngModel)]="filter.po"
+                      (selectedChange)="handleFilterChange('po', $event)"
+                      #customSelect
+                    >
+                      <nb-option *ngFor="let po of POList" [value]="po.id">
+                        {{ po.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div
+            class="modal-footer d-flex flex-column flex-sm-row justify-content-center justify-content-sm-end"
+          >
+            <button
+              class="mx-4"
+              nbButton
+              size="small"
+              status="warning"
+              outline
+              shape="semi-round"
+              (click)="resetFilters()"
+            >
+              Restaurar Filtros
+            </button>
+            <button
+              nbButton
+              size="small"
+              status="success"
+              hero
+              shape="semi-round"
+              data-bs-dismiss="modal"
+              (click)="filtrar($event)"
+            >
+              Filtrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row px-2 cards-group">
+    <div class="col-12 col-md-12 col-xxl-12 mb-2 px-1">
+      <div class="card">
+        <div class="icon-top-right logo">
+          <i class="fas fa-hand-holding-usd"></i>
+        </div>
+        <div class="card-content">
+          <div class="portfolio-content">
+            <img
+              class="portfolio-logo w-100"
+              [src]="planejamentoLogoUrl"
+              alt="Logo SPO"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-12 col-xxl-12 mb-2 px-1">
+      <div class="card">
+        <div
+          class="icon-top-right planejado"
+          *ngIf="requestStatus.totals !== 'Loading'"
+        >
+          <span class="material-symbols-outlined">monitoring</span>
+        </div>
+        <div class="card-content">
+          <ng-container
+            *ngIf="requestStatus.totals === 'Loading'; else planejadoContent"
+          >
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div class="spinner-border total-planejado" role="status">
+                <span class="sr-only">Carregando...</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #planejadoContent>
+            <div class="number-box planejado">
+              <div
+                class="d-flex"
+                style="flex-direction: column; align-items: start"
+              >
+                <div class="currency">R$</div>
+                <div
+                  class="value"
+                  [title]="'R$ ' + (totals.totalPlanejado | number : '1.2-2')"
+                >
+                  {{ formatNumber(totals.totalPlanejado) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="text-section planejado">
+              <span>Planejado</span>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-12 col-xxl-12 mb-2 px-1">
+      <div class="card">
+        <div
+          class="icon-top-right contratado"
+          *ngIf="requestStatus.totals !== 'Loading'"
+        >
+          <span class="material-symbols-outlined">handshake</span>
+        </div>
+        <div class="card-content">
+          <ng-container
+            *ngIf="requestStatus.totals === 'Loading'; else contratadoContent"
+          >
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div class="spinner-border total-contratado" role="status">
+                <span class="sr-only">Carregando...</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #contratadoContent>
+            <div class="number-box contratado">
+              <div
+                class="d-flex"
+                style="flex-direction: column; align-items: start"
+              >
+                <div class="currency">R$</div>
+                <div
+                  class="value"
+                  [title]="'R$ ' + (totals.totalContratado | number : '1.2-2')"
+                >
+                  {{ formatNumber(totals.totalContratado) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="text-section contratado">
+              <span>Contratado</span>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-12 col-xxl-12 mb-2 px-1">
+      <div class="card">
+        <div
+          class="icon-top-right autorizado"
+          *ngIf="requestStatus.totals !== 'Loading'"
+        >
+          <span class="material-symbols-outlined">check_circle</span>
+        </div>
+        <div class="card-content">
+          <ng-container
+            *ngIf="requestStatus.totals === 'Loading'; else autorizadoContent"
+          >
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div class="spinner-border total-autorizado" role="status">
+                <span class="sr-only">Carregando...</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #autorizadoContent>
+            <div class="number-box autorizado">
+              <div
+                class="d-flex"
+                style="flex-direction: column; align-items: start"
+              >
+                <div class="currency">R$</div>
+                <div
+                  class="value"
+                  [title]="'R$ ' + (totals.totalAutorizado | number : '1.2-2')"
+                >
+                  {{ formatNumber(totals.totalAutorizado) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="text-section autorizado">
+              <span>autorizado</span>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-12 col-xxl-12 mb-2 px-1">
+      <div class="card">
+        <div
+          class="icon-top-right empenhado"
+          *ngIf="requestStatus.totals !== 'Loading'"
+        >
+          <span class="material-symbols-outlined">gavel</span>
+        </div>
+        <div class="card-content">
+          <ng-container
+            *ngIf="requestStatus.totals === 'Loading'; else empenhadoContent"
+          >
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div class="spinner-border total-empenhado" role="status">
+                <span class="sr-only">Carregando...</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #empenhadoContent>
+            <div class="number-box empenhado">
+              <div
+                class="d-flex"
+                style="flex-direction: column; align-items: start"
+              >
+                <div class="currency">R$</div>
+                <div
+                  class="value"
+                  [title]="'R$ ' + (totals.totalEmpenhado | number : '1.2-2')"
+                >
+                  {{ formatNumber(totals.totalEmpenhado) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="text-section empenhado">
+              <span>Empenhado</span>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-12 col-xxl-12 mb-2 px-1">
+      <div class="card">
+        <div
+          class="icon-top-right liquidado"
+          *ngIf="requestStatus.totals !== 'Loading'"
+        >
+          <span class="material-symbols-outlined">checkbook</span>
+        </div>
+        <div class="card-content">
+          <ng-container
+            *ngIf="requestStatus.totals === 'Loading'; else liquidadoContent"
+          >
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div class="spinner-border total-liquidado" role="status">
+                <span class="sr-only">Carregando...</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #liquidadoContent>
+            <div class="number-box liquidado">
+              <div
+                class="d-flex"
+                style="flex-direction: column; align-items: start"
+              >
+                <div class="currency">R$</div>
+                <div
+                  class="value"
+                  [title]="'R$ ' + (totals.totalLiquidado | number : '1.2-2')"
+                >
+                  {{ formatNumber(totals.totalLiquidado) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="text-section liquidado">
+              <span>Liquidado</span>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-12 col-xxl-12 mb-2 px-1">
+      <div class="card">
+        <div
+          class="icon-top-right pago"
+          *ngIf="requestStatus.totals !== 'Loading'"
+        >
+          <span class="material-symbols-outlined">paid</span>
+        </div>
+        <div class="card-content">
+          <ng-container
+            *ngIf="requestStatus.totals === 'Loading'; else pagoContent"
+          >
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div class="spinner-border total-pago" role="status">
+                <span class="sr-only">Carregando...</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #pagoContent>
+            <div class="number-box pago">
+              <div
+                class="d-flex"
+                style="flex-direction: column; align-items: start"
+              >
+                <div class="currency">R$</div>
+                <div
+                  class="value"
+                  [title]="
+                    'Pago sem RAP R$ ' +
+                    (totals.totalRestosAPagar | number : '1.2-2')
+                  "
+                >
+                  {{ formatNumber(totals.totalPago) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="text-section pago">
+              <span>Pago</span>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row px-2">
+    <div class="d-flex flex-wrap col-12 col-xxl-6 p-0"></div>
+  </div>
+</div>

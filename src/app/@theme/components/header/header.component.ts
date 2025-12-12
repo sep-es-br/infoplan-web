@@ -81,7 +81,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.currentTheme = this.themeService.currentTheme;
     this.setImageForTheme(this.currentTheme);
 
-    const userData = sessionStorage.getItem('user-profile'); 
+    const userData = sessionStorage.getItem('user-profile');
     if (userData) {
       this.user = JSON.parse(userData);
     }
@@ -113,16 +113,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
   setImageForTheme(themeName: string): void {
     switch (themeName) {
       case 'default':
-        this.imageLogoSrc = 'assets/images/app/icone-info-plan.png';
+        this.imageLogoSrc = 'assets/images/app/logo-infoplan-roxo-v2.png';
         break;
       case 'dark':
-        this.imageLogoSrc = 'assets/images/app/icone-info-plan.png';
+        this.imageLogoSrc = 'assets/images/app/logo-infoplan-branco-v2.png';
         break;
       case 'cosmic':
-        this.imageLogoSrc = 'assets/images/app/icone-info-plan.png';
+        this.imageLogoSrc = 'assets/images/app/logo-infoplan-branco-v2.png';
         break;
       case 'corporate':
-        this.imageLogoSrc = 'assets/images/app/icone-info-plan.png';
+        this.imageLogoSrc = 'assets/images/app/logo-infoplan-branco-v2.png';
         break;
       default:
         this.imageLogoSrc = 'assets/images/app/icone-info-plan-cinza.png';

@@ -1,0 +1,347 @@
+::ng-deep {
+  .cdk-overlay-container {
+    z-index: 1060;
+  }
+}
+
+.filter-container {
+  position: relative;
+  width: 100%;
+  margin-top: -15px;
+
+  .filter-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+
+    .filter-tags {
+      display: flex;
+      overflow-x: auto;
+      white-space: nowrap;
+      gap: 8px;
+      padding: 6px 0;
+      scrollbar-width: thin;
+      scrollbar-color: #005c99 transparent;
+
+      .filter-tag {
+        background-color: var(--card-background-color);
+        border: 1px solid #ced4da;
+        color: var(--card-text-color);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        font-size: 10px;
+        white-space: nowrap;
+
+        @media screen and (max-width: 576px) {
+          padding: 2px 12px;
+          font-size: 9px;
+        }
+
+        .tag-label {
+          font-weight: normal;
+        }
+
+        .tag-value {
+          margin-top: -6px;
+        }
+
+        button {
+          background: none;
+          border: none;
+          font-weight: bold;
+          margin-left: 4px;
+          font-size: 17px;
+          cursor: pointer;
+          color: #005c99;
+
+          transition: color 0.35s ease;
+
+          &:hover {
+            color: #dc3545;
+          }
+        }
+      }
+    }
+
+    .map-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+
+      @media (max-width: 767px) {
+        display: none !important;
+      }
+
+      .map-icon {
+        width: 24px;
+        height: 50px;
+        vertical-align: middle;
+      }
+
+      &:hover {
+        .map-icon {
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        }
+      }
+
+      &.map-btn-clicked {
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+          saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+      }
+    }
+
+    .filter-toggle {
+      color: var(--card-text-color);
+      min-width: 90px;
+      border: none;
+      background-color: transparent;
+      padding-bottom: 10px;
+      padding-top: 10px;
+      cursor: pointer;
+      z-index: 1;
+      border-radius: 4px;
+    }
+  }
+
+  .modal {
+    .modal-dialog {
+      max-width: 70vw;
+      justify-self: center;
+
+      .modal-content {
+        width: 70vw;
+        background-color: var(--card-background-color);
+        color: var(--card-text-color);
+
+        .modal-body {
+          .close-filter-button {
+            color: var(--card-text-color);
+          }
+
+          .filter-row {
+            margin-bottom: 0.75em;
+
+            .filter-entity {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+
+              span {
+                font-size: 12px;
+              }
+
+              nb-select,
+              input {
+                width: 100%;
+                max-width: 100%;
+                height: 2.5em;
+                font-size: 12px;
+              }
+            }
+          }
+        }
+
+        .modal-footer {
+          border: none;
+        }
+      }
+    }
+  }
+}
+
+.cards-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 2fr));
+  gap: 16px;
+}
+
+.card {
+  background-color: var(--card-background-color);
+  border-radius: 8px;
+  padding: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  height: 100%;
+
+  .delivery-select {
+    min-width: 100px;
+  }
+
+  .icon-top-right {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+  }
+
+  .card-content {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    padding: 5px 0 5px 5px;
+    height: 100%;
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+      border-width: 0.35em;
+
+      &.qt-programas,
+      &.qt-projetos,
+      &.total-entregas {
+        color: #005c99 !important;
+      }
+
+      &.total-previsto {
+        color: #487d7a !important;
+      }
+
+      &.total-realizado {
+        color: #00b26a !important;
+      }
+    }
+
+    .portfolio-content {
+      display: flex;
+      align-items: center;
+      height: 65px;
+      max-width: 80%;
+    }
+
+    .number-box {
+      background-color: #005c99;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 65px;
+      min-width: 40%;
+
+      &.logo {
+        color: #000480 !important;
+      }
+
+      &.planejado {
+        background-color: #7e3b8a !important;
+      }
+
+      &.contratado {
+        background-color: #38369a !important;
+      }
+
+      &.autorizado {
+        background-color: #4a90e2 !important;
+      }
+
+      &.empenhado {
+        background-color: #1bbc9c !important;
+      }
+
+      &.liquidado {
+        background-color: #fabe00 !important;
+      }
+
+      &.pago {
+        background-color: #f77d00 !important;
+      }
+
+      .currency {
+        font-size: 15px;
+      }
+    }
+
+    .text-section {
+      display: flex;
+      align-items: end;
+      font-size: 13px;
+      font-weight: bold;
+    }
+  }
+}
+
+:host-context(.nb-theme-default, .nb-theme-dark, .nb-theme-cosmic) {
+  .icon-top-right {
+    color: #005c99 !important;
+
+    &.logo {
+      color: #000480 !important;
+    }
+    &.planejado {
+      color: #7e3b8a !important;
+    }
+
+    &.contratado {
+      color: #38369a !important;
+    }
+
+    &.autorizado {
+      color: #4a90e2 !important;
+    }
+
+    &.empenhado {
+      color: #1bbc9c !important;
+    }
+
+    &.liquidado {
+      color: #fabe00 !important;
+    }
+
+    &.pago {
+      color: #f77d00 !important;
+    }
+  }
+
+  .text-section {
+    color: #005c99 !important;
+
+    &.planejado {
+      color: #7e3b8a !important;
+    }
+
+    &.contratado {
+      color: #38369a !important;
+    }
+
+    &.autorizado {
+      color: #4a90e2 !important;
+    }
+
+    &.empenhado {
+      color: #1bbc9c !important;
+    }
+
+    &.liquidado {
+      color: #fabe00 !important;
+    }
+
+    &.pago {
+      color: #f77d00 !important;
+    }
+  }
+}
+
+// // Aplica esses estilos sob o tema "dark" e "cosmic"
+:host-context(.nb-theme-dark, .nb-theme-cosmic) {
+  .icon-top-right,
+  .text-section {
+    &.logo {
+      color: #ffffff !important;
+    }
+    color: #ffffff !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1800px;
+  }
+}

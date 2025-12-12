@@ -46,6 +46,7 @@ export interface IReceitaDespesaGNDOrcamentariaResponse {
   ano: number;
   mes: number;
   nome_gnd: string;
+  tipo_fonte: number;
   vlr_orcado: string;
   vlr_autorizado: number;
   vlr_empenhado: number;

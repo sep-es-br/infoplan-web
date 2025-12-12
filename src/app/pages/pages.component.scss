@@ -31,7 +31,7 @@
 //   }
 // }
 
-@import '../@theme/styles/themes';
+@import "../@theme/styles/themes";
 
 @include nb-install-component() {
   ::ng-deep router-outlet + * {
@@ -51,13 +51,25 @@
 
   ::ng-deep {
     // Estilos do menu
-    .menu-item a:hover, .menu-item a.active, .menu-item a.active .menu-icon, .menu-item a:hover .menu-icon {
-      color: #DC3545;
+    // .menu-item a:hover,
+    // .menu-item a.active,
+    // .menu-item a.active .menu-icon,
+    // .menu-item a:hover .menu-icon {
+    //   color: currentColor;
+    // }
+
+    :host-context(.nb-theme-dark, .nb-theme-cosmic) {
+      .menu-item a:hover,
+      .menu-item a.active,
+      .menu-item a.active .menu-icon,
+      .menu-item a:hover .menu-icon {
+        color: #dac8ff !important;
+      }
     }
 
-    .menu-item a.active::before {
-      background: #DC3545 !important;
-    }
+    // .menu-item a.active::before {
+    //   background: #b18aff  !important;
+    // }
 
     // Estilos dos ícones - CORREÇÃO PARA O PROBLEMA
     nb-menu {
@@ -84,7 +96,8 @@
           vertical-align: top; // Remove espaço abaixo
 
           // Garante que todos os elementos com fill usem currentColor
-          &, * {
+          &,
+          * {
             &[fill]:not([fill="none"]):not([fill="transparent"]) {
               fill: currentColor !important;
             }
@@ -95,7 +108,9 @@
           }
 
           // Se houver style com fill
-          &[style*="fill"]:not([style*="fill: none"]):not([style*="fill: transparent"]) {
+          &[style*="fill"]:not([style*="fill: none"]):not(
+              [style*="fill: transparent"]
+            ) {
             fill: currentColor !important;
           }
         }
@@ -117,7 +132,8 @@
       .menu-item:hover {
         nb-icon {
           svg {
-            &, * {
+            &,
+            * {
               &[fill]:not([fill="none"]):not([fill="transparent"]) {
                 fill: currentColor !important;
               }
@@ -133,13 +149,14 @@
       .menu-item.active {
         nb-icon {
           svg {
-            &, * {
+            &,
+            * {
               &[fill]:not([fill="none"]):not([fill="transparent"]) {
-                fill: #DC3545 !important;
+                fill: currentColor !important;
               }
 
               &[stroke]:not([stroke="none"]):not([stroke="transparent"]) {
-                stroke: #DC3545 !important;
+                stroke: currentColor !important;
               }
             }
           }
@@ -148,7 +165,8 @@
     }
 
     // Remove o piscar/flash inicial
-    nb-icon svg, nb-icon img {
+    nb-icon svg,
+    nb-icon img {
       opacity: 1 !important;
       visibility: visible !important;
       transition: none !important;

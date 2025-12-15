@@ -4,6 +4,7 @@ import {
   ElementRef,
   EventEmitter,
   inject,
+  OnDestroy,
   OnInit,
   Output,
   QueryList,
@@ -13,6 +14,11 @@ import {
 import { NbSelectComponent, NbThemeService } from "@nebular/theme";
 import { environment } from "../../../environments/environment";
 import { IPlanejamentoOrcamentarioTotals } from "../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
+import {
+  ChartMaximizeService,
+  ChartMaximizeState,
+} from "../../core/service/chart-maximize/chart-maximize.service";
+import { Subject, Subscription } from "rxjs";
 
 const DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS: IPlanejamentoOrcamentarioFilter =
   {
@@ -49,17 +55,17 @@ export enum RequestStatus {
 }
 
 export enum AvailableThemes {
-  DEFAULT = 'default',
-  DARK = 'dark',
-  COSMIC = 'cosmic',
-};
+  DEFAULT = "default",
+  DARK = "dark",
+  COSMIC = "cosmic",
+}
 
 @Component({
   selector: "ngx-planejamento-orcamentario-component",
   templateUrl: "./planejamento-orcamentario.component.html",
   styleUrls: ["./planejamento-orcamentario.component.scss"],
 })
-export class PlanejamentoOrcamentarioComponent implements OnInit {
+export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   @ViewChild("modalCloseButton") modalCloseButtonRef: ElementRef;
   @ViewChildren("customSelect") customSelectRefs: QueryList<NbSelectComponent>;
   @Output() filterChanged = new EventEmitter<IPlanejamentoOrcamentarioFilter>();
@@ -187,28 +193,66 @@ export class PlanejamentoOrcamentarioComponent implements OnInit {
     },
   ];
 
-  currentRequestParams: IPlanejamentoOrcamentarioFilter =DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS;
+  currentRequestParams: IPlanejamentoOrcamentarioFilter =
+    DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS;
 
   private _themeService: NbThemeService = inject(NbThemeService);
+  private subscriptionMaximizeState!: Subscription;
+  private readonly _chartMaximizeService: ChartMaximizeService =
+    inject(ChartMaximizeService);
+  private readonly destroy$ = new Subject<void>();
+
+  maximizeState: ChartMaximizeState = {
+    maximizedChartId: null,
+    isAnyChartMaximized: false,
+    maximizedHeight: this._chartMaximizeService.getCurrentHeight(),
+  };
 
   get planejamentoLogoUrl(): string {
     const currentTheme = this._themeService.currentTheme;
 
-        switch (currentTheme) {
-          case AvailableThemes.DEFAULT:
-            return 'assets/images/app/logo_SPO_engrossada.png';
-          case AvailableThemes.DARK:
-          case AvailableThemes.COSMIC:
-            return 'assets/images/app/Ícone SPO_negativa.png';
-          default:
-            return 'assets/images/app/Ícone SPO_negativa.png';
-        }
+    switch (currentTheme) {
+      case AvailableThemes.DEFAULT:
+        return "assets/images/app/logo_SPO_engrossada.png";
+      case AvailableThemes.DARK:
+      case AvailableThemes.COSMIC:
+        return "assets/images/app/Ícone SPO_negativa.png";
+      default:
+        return "assets/images/app/Ícone SPO_negativa.png";
+    }
   }
 
-
   ngOnInit(): void {
+    this.subscriptionMaximizeState =
+      this._chartMaximizeService.maximizeState$.subscribe(
+        (state: ChartMaximizeState) => {
+          this.maximizeState = state;
+        }
+      );
+
     this.updateActiveFilters();
     this.loadInitialData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+
+    if (this.subscriptionMaximizeState) {
+      this.subscriptionMaximizeState.unsubscribe();
+    }
+  }
+
+  handleMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  isAnyChartMaximized(): boolean {
+    return this._chartMaximizeService.isAnyChartMaximized();
   }
 
   closeFilterModal() {
@@ -385,25 +429,32 @@ export class PlanejamentoOrcamentarioComponent implements OnInit {
     this.filterChanged.emit(this.currentRequestParams);
   }
 
-
   formatNumber(value: number): string {
     if (!value) {
-      return 'R$ 0';
+      return "R$ 0";
     }
 
     if (value >= 1_000_000_000) {
-      return `${(value / 1_000_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} bi`;
+      return `${(value / 1_000_000_000).toLocaleString("pt-BR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 1,
+      })} bi`;
     }
 
     if (value >= 1_000_000) {
-      return `${(value / 1_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} mi`;
+      return `${(value / 1_000_000).toLocaleString("pt-BR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 1,
+      })} mi`;
     }
 
     if (value >= 1_000) {
-      return `${(value / 1_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} mil`;
+      return `${(value / 1_000).toLocaleString("pt-BR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })} mil`;
     }
 
-    return `R$ ${value.toLocaleString('pt-BR')}`;
+    return `R$ ${value.toLocaleString("pt-BR")}`;
   }
-
 }

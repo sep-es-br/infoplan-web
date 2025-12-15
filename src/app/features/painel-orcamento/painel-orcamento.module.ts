@@ -6,7 +6,6 @@ import { NbCardModule, NbSelectModule, NbIconModule, NbButtonModule, NbDatepicke
 import { NgxChartsModule } from "@swimlane/ngx-charts";
 import { NgxEchartsModule } from "ngx-echarts";
 import { CardsModule } from "../../shared/components/cards/cards.module";
-import { OrgChartHorizontalComponent } from "./org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { OrgChartVerticalComponent } from "./org-chart-bar/org-chart-vertical/org-chart-vertical.component";
 import { PainelOrcamentoComponent } from "./painel-orcamento.component";
 import { VerticalBarChartModelComponent } from "../strategic-projects/bar-chart-model/vertical-bar-chart-model/vertical-bar-chart-model.component";
@@ -30,20 +29,14 @@ import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
 @NgModule({
   declarations: [
     PainelOrcamentoComponent,
-    OrgChartHorizontalComponent,
-    OrgChartHorizontalComponent,
     OrgChartVerticalComponent,
     ReceitaTotalComponent,
-    ReceitaOrigemComponent,
-    ReceitaCategoriaComponent,
-    ReceitaImpostosComponent,
-    ReceitaParticipacaoComponent,
-    ReceitaTransferenciaComponent,
     ReceitaDespesaGndTotalComponent,
     ReceitaDespesaGndComponent,
     ReceitaICMSComponent,
     ReceitaParticipacaoComponent,
-    ReceitaTransferenciaComponent
+
+
   ],
   imports: [
     CommonModule,
@@ -65,9 +58,15 @@ import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
     PieChartComponent,
     FlipTableComponent,
     NbLayoutModule,
+    ReceitaImpostosComponent,
+    ReceitaCategoriaComponent,
+    ReceitaOrigemComponent,
+    ReceitaTransferenciaComponent,
+
+
   ],
   providers: [
-    ShortNumberPipe
-  ]
+    ShortNumberPipe,
+  ],
 })
 export class PainelOrcamentoModule { }

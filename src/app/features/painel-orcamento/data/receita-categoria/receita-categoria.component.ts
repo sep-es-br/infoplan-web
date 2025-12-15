@@ -1,11 +1,9 @@
 import {
   Component,
-  EventEmitter,
   inject,
   Input,
   OnChanges,
   OnDestroy,
-  Output,
   SimpleChanges,
 } from "@angular/core";
 import {
@@ -19,30 +17,36 @@ import { Subject } from "rxjs";
 import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
 import {
   FlipTableAlignment,
+  FlipTableComponent,
   FlipTableContent,
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { finalize, takeUntil } from "rxjs/operators";
-import { ShortNumberPipe } from "../../../../@theme/pipes";
-import { DomSanitizer } from "@angular/platform-browser";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
+import { OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-receita-categoria",
   templateUrl: "./receita-categoria.component.html",
   styleUrls: ["./receita-categoria.component.scss"],
+  standalone: true,
+  imports: [OrgChartHorizontalComponent, FlipTableComponent],
 })
 export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
   @Input() filter!: IExecucaoOrcamentariaRequest;
 
   readonly title: string = "Receita por Categoria";
 
-  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
-  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
-  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+  private readonly _painelService: PainelOrcamentoService = inject(
+    PainelOrcamentoService
+  );
+  private readonly _chartProcessor: ChartDataProcessorService = inject(
+    ChartDataProcessorService
+  );
+  private readonly _exportDataService: ExportDataService =
+    inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService =
+    inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
-
-
 
   charData: IChartOptions;
   tableContent: FlipTableContent;
@@ -63,7 +67,6 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     this.destroy$.complete();
   }
 
-
   onMaximizeButtonClick(chartId: string, event: boolean): void {
     this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
   }
@@ -75,7 +78,6 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
   calcMaximizedHeight(): number {
     return this._chartMaximizeService.calcMaximizedHeight();
   }
-
 
   private loadData(): void {
     this.loadingStatus = "loading";
@@ -130,21 +132,30 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
   }
 
   private processTable(): void {
-    const anos = [...new Set(this.receitaData.map(item => item.ano))].sort((a, b) => a - b);
-    const categorias = [...new Set(this.receitaData.map(item => item.categoria))];
+    const anos = [...new Set(this.receitaData.map((item) => item.ano))].sort(
+      (a, b) => a - b
+    );
+    const categorias = [
+      ...new Set(this.receitaData.map((item) => item.categoria)),
+    ];
 
-    const treeNodes = categorias.map(categoria => {
+    const treeNodes = categorias.map((categoria) => {
       const nodeData = [{ propertyName: "label", value: categoria }];
 
       // Adicionar colunas de anos
-      anos.forEach(ano => {
+      anos.forEach((ano) => {
         const dado = this.receitaData.find(
-          d => d.categoria === categoria && d.ano === ano
+          (d) => d.categoria === categoria && d.ano === ano
         );
 
         nodeData.push({
           propertyName: `ano_${ano}`,
-          value: `${dado?.receitaLiquida.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+          value: `${
+            dado?.receitaLiquida
+              .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+              .replace("R$", "")
+              .trim() || 0
+          }`,
         });
       });
 
@@ -161,7 +172,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     });
 
     // Configurar colunas
-    const defaultColumns = anos.map(ano => ({
+    const defaultColumns = anos.map((ano) => ({
       propertyName: `ano_${ano}`,
       displayName: `Arrecadação Líquida - ${ano}`,
       alignment: {
@@ -200,14 +211,15 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     const primeiroAno = anos[0];
     const ultimoAno = anos[anos.length - 1];
 
+    const valorInicial =
+      this.receitaData.find(
+        (d) => d.categoria === categoria && d.ano === primeiroAno
+      )?.receitaLiquida ?? 0;
 
-    const valorInicial = this.receitaData.find(
-      d => d.categoria === categoria && d.ano === primeiroAno
-    )?.receitaLiquida ?? 0;
-
-    const valorFinal = this.receitaData.find(
-      d => d.categoria === categoria && d.ano === ultimoAno
-    )?.receitaLiquida ?? 0;
+    const valorFinal =
+      this.receitaData.find(
+        (d) => d.categoria === categoria && d.ano === ultimoAno
+      )?.receitaLiquida ?? 0;
 
     if (valorInicial === 0) return 0;
 
@@ -220,9 +232,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     if (!this.receitaData?.length) return;
 
     // Extrair anos únicos e ordenar (igual no processTableData)
-    const anos = [
-      ...new Set(this.receitaData.map((item) => item.ano)),
-    ]
+    const anos = [...new Set(this.receitaData.map((item) => item.ano))]
       .filter((ano) => ano != null)
       .sort();
 
@@ -252,7 +262,12 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
         const item = this.receitaData.find(
           (d) => d.categoria === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`;
+        row[`ano_${ano}`] = `${
+          item?.receitaLiquida
+            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+            .replace("R$", "")
+            .trim() || 0
+        }`;
       });
 
       if (anos.length >= 2) {
@@ -288,5 +303,4 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       `Receita_Categoria_${anoAtual}.xlsx`
     );
   }
-
 }

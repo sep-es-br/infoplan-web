@@ -160,6 +160,11 @@
 //   gap: 16px;
 // }
 
+.portfolio-logo {
+  max-width: 100%;
+  max-height: 45px;
+}
+
 .card {
   background-color: var(--card-background-color);
   border-radius: 8px;
@@ -209,8 +214,9 @@
     .portfolio-content {
       display: flex;
       align-items: center;
-      height: 65px;
-      max-width: 80%;
+      // height: 65px;
+      // max-width: 80%;
+      padding: 10px;
     }
 
     .number-box {
@@ -231,15 +237,15 @@
       }
 
       &.planejado {
-        background-color: #7e3b8a !important;
+        background-color: #A970B6 !important;
       }
 
       &.contratado {
-        background-color: #38369a !important;
+        background-color: #9089E7 !important;
       }
 
       &.autorizado {
-        background-color: #4a90e2 !important;
+        background-color: #5E9FCC !important;
       }
 
       &.empenhado {
@@ -247,7 +253,7 @@
       }
 
       &.liquidado {
-        background-color: #fabe00 !important;
+        background-color: #D9AC21 !important;
       }
 
       &.pago {
@@ -276,15 +282,15 @@
       color: #000480 !important;
     }
     &.planejado {
-      color: #7e3b8a !important;
+      color: #A970B6 !important;
     }
 
     &.contratado {
-      color: #38369a !important;
+      color: #9089E7 !important;
     }
 
     &.autorizado {
-      color: #4a90e2 !important;
+      color: #5E9FCC !important;
     }
 
     &.empenhado {
@@ -292,7 +298,7 @@
     }
 
     &.liquidado {
-      color: #fabe00 !important;
+      color: #D9AC21 !important;
     }
 
     &.pago {
@@ -304,15 +310,15 @@
     color: #005c99 !important;
 
     &.planejado {
-      color: #7e3b8a !important;
+      color: #A970B6 !important;
     }
 
     &.contratado {
-      color: #38369a !important;
+      color: #9089E7 !important;
     }
 
     &.autorizado {
-      color: #4a90e2 !important;
+      color: #5E9FCC !important;
     }
 
     &.empenhado {
@@ -320,7 +326,7 @@
     }
 
     &.liquidado {
-      color: #fabe00 !important;
+      color: #D9AC21 !important;
     }
 
     &.pago {
@@ -419,8 +425,8 @@ chart-container.maximized::before:hover {
   }
 }
 
-@media screen and (min-width: 1400px) and (max-width:1622px){
-  .card-content {
-    gap: 0px !important;
-  }
-}
+// @media screen and (min-width: 1400px) and (max-width:1622px){
+//   .card-content {
+//     gap: 0px !important;
+//   }
+// }

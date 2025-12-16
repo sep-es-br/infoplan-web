@@ -244,325 +244,14 @@
     </div>
   </div>
 
-  <!--
-  <div class="row px-2 g-2">
-    <div class="col-6 d-flex flex-wrap">
-      <div class="col-3 px-2">
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-12">
-          <div class="card h-100">
-            <div class="icon-top-right logo">
-              <i class="fas fa-hand-holding-usd"></i>
-            </div>
-            <div class="card-content">
-              <div class="portfolio-content">
-                <img
-                  class="portfolio-logo w-100"
-                  [src]="planejamentoLogoUrl"
-                  alt="Logo SPO"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-3 d-flex nowrap px-2">
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-12">
-          <div class="card h-100">
-            <div
-              class="icon-top-right planejado"
-              *ngIf="requestStatus.totals !== 'Loading'"
-            >
-              <span class="material-symbols-outlined">monitoring</span>
-            </div>
-            <div class="card-content">
-              <ng-container
-                *ngIf="
-                  requestStatus.totals === 'Loading';
-                  else planejadoContent
-                "
-              >
-                <div
-                  class="d-flex justify-content-center align-items-center w-100 h-100"
-                >
-                  <div class="spinner-border total-planejado" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #planejadoContent>
-                <div class="number-box planejado">
-                  <div class="d-flex flex-column align-items-start">
-                    <div class="currency">R$</div>
-                    <div
-                      class="value"
-                      [title]="
-                        'R$ ' + (totals.totalPlanejado | number : '1.2-2')
-                      "
-                    >
-                      {{ formatNumber(totals.totalPlanejado) }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section planejado">
-                  <span>Planejado</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-12">
-          <div class="card h-100">
-            <div
-              class="icon-top-right contratado"
-              *ngIf="requestStatus.totals !== 'Loading'"
-            >
-              <span class="material-symbols-outlined">handshake</span>
-            </div>
-            <div class="card-content">
-              <ng-container
-                *ngIf="
-                  requestStatus.totals === 'Loading';
-                  else contratadoContent
-                "
-              >
-                <div
-                  class="d-flex justify-content-center align-items-center w-100 h-100"
-                >
-                  <div class="spinner-border total-contratado" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #contratadoContent>
-                <div class="number-box contratado">
-                  <div class="d-flex flex-column align-items-start">
-                    <div class="currency">R$</div>
-                    <div
-                      class="value"
-                      [title]="
-                        'R$ ' + (totals.totalContratado | number : '1.2-2')
-                      "
-                    >
-                      {{ formatNumber(totals.totalContratado) }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section contratado">
-                  <span>Contratado</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row col-6 d-flex">
-      <div class="col-3 d-flex nowrap">
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-6">
-          <div class="card h-100">
-            <div
-              class="icon-top-right autorizado"
-              *ngIf="requestStatus.totals !== 'Loading'"
-            >
-              <span class="material-symbols-outlined">check_circle</span>
-            </div>
-            <div class="card-content">
-              <ng-container
-                *ngIf="
-                  requestStatus.totals === 'Loading';
-                  else autorizadoContent
-                "
-              >
-                <div
-                  class="d-flex justify-content-center align-items-center w-100 h-100"
-                >
-                  <div class="spinner-border total-autorizado" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #autorizadoContent>
-                <div class="number-box autorizado">
-                  <div class="d-flex flex-column align-items-start">
-                    <div class="currency">R$</div>
-                    <div
-                      class="value"
-                      [title]="
-                        'R$ ' + (totals.totalAutorizado | number : '1.2-2')
-                      "
-                    >
-                      {{ formatNumber(totals.totalAutorizado) }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section autorizado">
-                  <span>Autorizado</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-6 col-sm-4 col-md-4 col-lg-2 col-xl-6">
-          <div class="card h-100">
-            <div
-              class="icon-top-right empenhado"
-              *ngIf="requestStatus.totals !== 'Loading'"
-            >
-              <span class="material-symbols-outlined">gavel</span>
-            </div>
-            <div class="card-content">
-              <ng-container
-                *ngIf="
-                  requestStatus.totals === 'Loading';
-                  else empenhadoContent
-                "
-              >
-                <div
-                  class="d-flex justify-content-center align-items-center w-100 h-100"
-                >
-                  <div class="spinner-border total-empenhado" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #empenhadoContent>
-                <div class="number-box empenhado">
-                  <div class="d-flex flex-column align-items-start">
-                    <div class="currency">R$</div>
-                    <div
-                      class="value"
-                      [title]="
-                        'R$ ' + (totals.totalEmpenhado | number : '1.2-2')
-                      "
-                    >
-                      {{ formatNumber(totals.totalEmpenhado) }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section empenhado">
-                  <span>Empenhado</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-3 d-flex nowrap">
-        <div class="col-6 col-sm-4 col-md-4 col-lg-1 col-xl-6">
-          <div class="card h-100">
-            <div
-              class="icon-top-right liquidado"
-              *ngIf="requestStatus.totals !== 'Loading'"
-            >
-              <span class="material-symbols-outlined">checkbook</span>
-            </div>
-            <div class="card-content">
-              <ng-container
-                *ngIf="
-                  requestStatus.totals === 'Loading';
-                  else liquidadoContent
-                "
-              >
-                <div
-                  class="d-flex justify-content-center align-items-center w-100 h-100"
-                >
-                  <div class="spinner-border total-liquidado" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #liquidadoContent>
-                <div class="number-box liquidado">
-                  <div class="d-flex flex-column align-items-start">
-                    <div class="currency">R$</div>
-                    <div
-                      class="value"
-                      [title]="
-                        'R$ ' + (totals.totalLiquidado | number : '1.2-2')
-                      "
-                    >
-                      {{ formatNumber(totals.totalLiquidado) }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section liquidado">
-                  <span>Liquidado</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-6 col-sm-4 col-md-4 col-lg-1 col-xl-6">
-          <div class="card h-100">
-            <div
-              class="icon-top-right pago"
-              *ngIf="requestStatus.totals !== 'Loading'"
-            >
-              <span class="material-symbols-outlined">paid</span>
-            </div>
-            <div class="card-content">
-              <ng-container
-                *ngIf="requestStatus.totals === 'Loading'; else pagoContent"
-              >
-                <div
-                  class="d-flex justify-content-center align-items-center w-100 h-100"
-                >
-                  <div class="spinner-border total-pago" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #pagoContent>
-                <div class="number-box pago">
-                  <div class="d-flex flex-column align-items-start">
-                    <div class="currency">R$</div>
-                    <div
-                      class="value"
-                      [title]="'R$ ' + (totals.totalPago | number : '1.2-2')"
-                    >
-                      {{ formatNumber(totals.totalPago) }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section pago">
-                  <span>Pago</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
-
   <div class="row g-2 px-2">
     <!-- Card 1: Logo -->
-    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl">
+    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xxl-4 col-xxxl">
       <div class="card h-100">
-        <div class="icon-top-right logo">
-          <i class="fas fa-hand-holding-usd"></i>
-        </div>
         <div class="card-content">
           <div class="portfolio-content">
             <img
-              class="portfolio-logo w-100"
+              class="portfolio-logo"
               [src]="planejamentoLogoUrl"
               alt="Logo SPO"
             />
@@ -572,7 +261,7 @@
     </div>
 
     <!-- Card 2: Planejado -->
-    <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 col-xxl">
+    <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xxl-4 col-xxxl">
       <div class="card h-100">
         <div
           class="icon-top-right planejado"
@@ -596,7 +285,7 @@
           <ng-template #planejadoContent>
             <div class="number-box planejado">
               <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
+                <!-- <div class="currency">R$</div> -->
                 <div
                   class="value"
                   [title]="'R$ ' + (totals.totalPlanejado | number : '1.2-2')"
@@ -615,7 +304,7 @@
     </div>
 
     <!-- Card 3: Contratado -->
-    <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 col-xxl">
+    <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xxl-4 col-xxxl">
       <div class="card h-100">
         <div
           class="icon-top-right contratado"
@@ -639,7 +328,7 @@
           <ng-template #contratadoContent>
             <div class="number-box contratado">
               <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
+                <!-- <div class="currency">R$</div> -->
                 <div
                   class="value"
                   [title]="'R$ ' + (totals.totalContratado | number : '1.2-2')"
@@ -658,7 +347,7 @@
     </div>
 
     <!-- Card 4: Autorizado -->
-    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl">
+    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
         <div
           class="icon-top-right autorizado"
@@ -682,7 +371,7 @@
           <ng-template #autorizadoContent>
             <div class="number-box autorizado">
               <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
+                <!-- <div class="currency">R$</div> -->
                 <div
                   class="value"
                   [title]="'R$ ' + (totals.totalAutorizado | number : '1.2-2')"
@@ -701,7 +390,7 @@
     </div>
 
     <!-- Card 5: Empenhado -->
-    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl">
+    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
         <div
           class="icon-top-right empenhado"
@@ -725,7 +414,7 @@
           <ng-template #empenhadoContent>
             <div class="number-box empenhado">
               <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
+                <!-- <div class="currency">R$</div> -->
                 <div
                   class="value"
                   [title]="'R$ ' + (totals.totalEmpenhado | number : '1.2-2')"
@@ -744,7 +433,7 @@
     </div>
 
     <!-- Card 6: Liquidado -->
-    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl">
+    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
         <div
           class="icon-top-right liquidado"
@@ -768,7 +457,7 @@
           <ng-template #liquidadoContent>
             <div class="number-box liquidado">
               <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
+                <!-- <div class="currency">R$</div> -->
                 <div
                   class="value"
                   [title]="'R$ ' + (totals.totalLiquidado | number : '1.2-2')"
@@ -787,7 +476,7 @@
     </div>
 
     <!-- Card 7: Pago -->
-    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl">
+    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
         <div
           class="icon-top-right pago"
@@ -811,7 +500,7 @@
           <ng-template #pagoContent>
             <div class="number-box pago">
               <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
+                <!-- <div class="currency">R$</div> -->
                 <div
                   class="value"
                   [title]="'R$ ' + (totals.totalPago | number : '1.2-2')"
@@ -837,9 +526,7 @@
           [class.col-12]="!isChartMaximized('pos-chart')"
           [class.col-md-12]="!isChartMaximized('pos-chart')"
           [class.col-lg-6]="!isChartMaximized('pos-chart')"
-          [class.col-xl-6]="!isChartMaximized('pos-chart')"
-          [class.col-xxl-6]="!isChartMaximized('pos-chart')"
-          [class.col-xxxl-4]="!isChartMaximized('pos-chart')"
+          [class.col-xl-7]="!isChartMaximized('pos-chart')"
         >
           <ngx-chart-horizontal-pos-component
             class="w-100"

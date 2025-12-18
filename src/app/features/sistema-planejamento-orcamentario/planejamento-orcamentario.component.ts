@@ -1,4 +1,3 @@
-import { filter } from "rxjs/operators";
 import {
   Component,
   ElementRef,
@@ -13,29 +12,38 @@ import {
 } from "@angular/core";
 import { NbSelectComponent, NbThemeService } from "@nebular/theme";
 import { environment } from "../../../environments/environment";
-import { IPlanejamentoOrcamentarioTotals } from "../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
+import {
+  ISPOTotalAutorizadoDTO,
+  ISPOTotalAutorizadoFilter,
+  ISPOTotalPrevistoDTO,
+  ISPOTotalPrevistoFilter,
+  ISPOTotals,
+} from "../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
 import {
   ChartMaximizeService,
   ChartMaximizeState,
 } from "../../core/service/chart-maximize/chart-maximize.service";
 import { Subject, Subscription } from "rxjs";
+import { ComunicationCardsService } from "../../core/service/comunication-cards/comunication-cards.service";
+import { PlanejamentoOrcamentarioService } from "../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
+import { finalize, takeUntil } from "rxjs/operators";
 
 const DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS: IPlanejamentoOrcamentarioFilter =
-  {
-    ano: 2023,
-    tipoFonte: [-1],
-    uo: "",
-    mes: [-1],
-    po: "",
-    gnd: [],
-  };
+{
+  ano: environment.planejamentoOrcamentarioFilter.ano,
+  tipoFonte: environment.planejamentoOrcamentarioFilter.tipoFonte,
+  uo: environment.planejamentoOrcamentarioFilter.uo,
+  mes: environment.planejamentoOrcamentarioFilter.mes,
+  po: environment.planejamentoOrcamentarioFilter.po,
+  gnd: environment.planejamentoOrcamentarioFilter.gnd,
+};
 
 interface IPlanejamentoOrcamentarioFilter {
-  ano: number;
+  ano: number[];
   mes: number[];
   tipoFonte: number[];
-  uo: string;
-  po: string;
+  uo: any[];
+  po: any[];
   gnd: number[];
 }
 
@@ -79,33 +87,23 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   isFilterModalOpen: boolean = false;
 
   filter: IPlanejamentoOrcamentarioFilter = {
-    ano: 2025,
-    tipoFonte: [-1],
-    mes: [-1],
-    uo: "",
-    po: "",
-    gnd: [],
+    ...DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS,
   };
 
   finalFilter: IPlanejamentoOrcamentarioFilter = {
-    ano: 2025,
-    tipoFonte: [-1],
-    mes: [-1],
-    uo: "",
-    po: "",
-    gnd: [],
+    ...DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS,
   };
 
   yearsList = Array.from(
-    { length: new Date().getFullYear() - 2014 + 1 },
-    (_, i) => ({ num: 2014 + i })
+    { length: new Date().getFullYear() - 2024 + 1 },
+    (_, i) => ({ num: 2024 + i })
   );
 
   requestStatus = {
     totals: RequestStatus.EMPTY,
   };
 
-  totals: IPlanejamentoOrcamentarioTotals = {
+  totals: ISPOTotals = {
     totalAutorizado: 0,
     totalContratado: 0,
     totalEmpenhado: 0,
@@ -141,9 +139,9 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   ];
 
   readonly UOList = [
-    { id: "35201 - DER-ES", name: "35201 - DER-ES" },
-    { id: "35202 - SEAG", name: "35202 - SEAG" },
-    { id: "35203 - SEINFRA", name: "35203 - SEINFRA" },
+    { id: "35201", name: "35201 - DER-ES" },
+    { id: "35202", name: "35202 - SEAG" },
+    { id: "35203", name: "35203 - SEINFRA" },
   ];
 
   readonly POList = [
@@ -193,20 +191,39 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     },
   ];
 
+  loadingStatus: "loading" | "loaded" | "error" = "loading";
+
+  timesTamp: string;
+
   currentRequestParams: IPlanejamentoOrcamentarioFilter =
     DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS;
 
   private _themeService: NbThemeService = inject(NbThemeService);
-  private subscriptionMaximizeState!: Subscription;
+
   private readonly _chartMaximizeService: ChartMaximizeService =
     inject(ChartMaximizeService);
+
+  private readonly _comunicationCardsService: ComunicationCardsService = inject(
+    ComunicationCardsService
+  );
+
+  private readonly _planejamentoOrcamentarioService: PlanejamentoOrcamentarioService =
+    inject(PlanejamentoOrcamentarioService);
+
   private readonly destroy$ = new Subject<void>();
+
+  private subscription!: Subscription;
+  private subscriptionMaximizeState!: Subscription;
+
+  totalPrevistoResponse: ISPOTotalPrevistoDTO[] | null = null;
+  totalAutorizadoResponse: ISPOTotalAutorizadoDTO[] | null = null;
 
   maximizeState: ChartMaximizeState = {
     maximizedChartId: null,
     isAnyChartMaximized: false,
     maximizedHeight: this._chartMaximizeService.getCurrentHeight(),
   };
+
 
   get planejamentoLogoUrl(): string {
     const currentTheme = this._themeService.currentTheme;
@@ -222,6 +239,16 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     }
   }
 
+  get selectedYear(): number {
+    return this.filter.ano && this.filter.ano.length > 0
+      ? this.filter.ano[0]
+      : null;
+  }
+
+  set selectedYear(value: number) {
+    this.filter.ano = value ? [value] : [];
+  }
+
   ngOnInit(): void {
     this.subscriptionMaximizeState =
       this._chartMaximizeService.maximizeState$.subscribe(
@@ -229,9 +256,43 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
           this.maximizeState = state;
         }
       );
-
+    this.getTotais();
     this.updateActiveFilters();
     this.loadInitialData();
+  }
+
+  private dataCards() {
+    this.totals.totalAutorizado =
+      this.totalAutorizadoResponse?.reduce(
+        (total, item) => total + item.autorizado,
+        0
+      ) || 0;
+    this.totals.totalContratado =
+      this.totalPrevistoResponse?.reduce((total, item) => item.contratado, 0) ||
+      0;
+    this.totals.totalEmpenhado =
+      this.totalAutorizadoResponse?.reduce(
+        (total, item) => total + item.empenhado,
+        0
+      ) || 0;
+    this.totals.totalLiquidado =
+      this.totalAutorizadoResponse?.reduce(
+        (total, item) => total + item.liquidado,
+        0
+      ) || 0;
+    this.totals.totalPago =
+      this.totalAutorizadoResponse?.reduce(
+        (total, item) => total + item.pago,
+        0
+      ) || 0;
+    this.totals.totalPlanejado =
+      this.totalPrevistoResponse?.reduce((total, item) => item.previsto, 0) ||
+      0;
+    this.totals.totalRestosAPagar =
+      this.totalAutorizadoResponse?.reduce(
+        (total, item) => total + item.pago_sem_rap,
+        0
+      ) || 0;
   }
 
   ngOnDestroy(): void {
@@ -261,17 +322,21 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   }
 
   handleFilterChange(origin: AvailableFilters | string, newValue: any) {
-    // CORREÇÃO: Lógica melhorada para "Todos"
+    console.log("filtro", newValue)
     if (Array.isArray(newValue)) {
-      if (newValue.includes(-1)) {
-        // Se selecionou "Todos", manter apenas -1
+      if (newValue.length === 0) {
         if (origin === "mes") {
           this.filter.mes = [-1];
         } else if (origin === "tipoFonte") {
           this.filter.tipoFonte = [-1];
+        } else if (origin === "uo") {
+          this.filter.uo = [-1];
+        } else if (origin === "gnd") {
+          this.filter.gnd = [-1];
+        } else if (origin === "po") {
+          this.filter.po = [-1];
         }
       } else if (newValue.length > 0) {
-        // Se selecionou itens específicos, remover -1 se existir
         if (origin === "mes" && this.filter.mes.includes(-1)) {
           this.filter.mes = this.filter.mes.filter((m) => m !== -1);
         } else if (
@@ -279,25 +344,68 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
           this.filter.tipoFonte.includes(-1)
         ) {
           this.filter.tipoFonte = this.filter.tipoFonte.filter((t) => t !== -1);
+        } else if (origin === "uo" && this.filter.uo.includes(-1)) {
+          this.filter.uo = this.filter.uo.filter((u) => u !== -1);
+        } else if (origin === "gnd" && this.filter.gnd.includes(-1)) {
+          this.filter.gnd = this.filter.gnd.filter((g) => g !== -1);
+        } else if (origin === "po" && this.filter.po.includes(-1)) {
+          this.filter.po = this.filter.po.filter((p) => p !== -1);
         }
       }
     }
+  }
+
+  removeFilter(key: string): void {
+    if (key === "ano") {
+      this.filter.ano = environment.planejamentoOrcamentarioFilter.ano;
+      this.finalFilter.ano = environment.planejamentoOrcamentarioFilter.ano;
+    } else if (key === "mes") {
+      this.filter.mes = environment.planejamentoOrcamentarioFilter.mes;
+      this.finalFilter.mes = environment.planejamentoOrcamentarioFilter.mes;
+    } else if (key === "tipoFonte") {
+      this.filter.tipoFonte =
+        environment.planejamentoOrcamentarioFilter.tipoFonte;
+      this.finalFilter.tipoFonte =
+        environment.planejamentoOrcamentarioFilter.tipoFonte;
+    } else if (key === "uo") {
+      this.filter.uo = environment.planejamentoOrcamentarioFilter.uo;
+      this.finalFilter.uo = environment.planejamentoOrcamentarioFilter.uo;
+    } else if (key === "po") {
+      this.filter.po = environment.planejamentoOrcamentarioFilter.po;
+      this.finalFilter.po = environment.planejamentoOrcamentarioFilter.po;
+    } else if (key === "gnd") {
+      this.filter.gnd = environment.planejamentoOrcamentarioFilter.gnd;
+      this.finalFilter.gnd = environment.planejamentoOrcamentarioFilter.gnd;
+    }
+
+    this.currentRequestParams = {
+      ano: this.finalFilter.ano,
+      mes: this.finalFilter.mes,
+      tipoFonte: this.finalFilter.tipoFonte,
+      uo: this.finalFilter.uo,
+      po: this.finalFilter.po,
+      gnd: this.finalFilter.gnd,
+    };
+
+    this.updateActiveFilters();
+    this.getTotais();
+    this.filterChanged.emit(this.currentRequestParams);
+    this.loadDataWithFilters();
   }
 
   resetFilters(): void {
     this.closeFilterModal();
 
     this.finalFilter = {
-      ano: environment.execucaoOrcamentariaFilter.ano,
-      tipoFonte: environment.execucaoOrcamentariaFilter.tipoFonte,
-      gnd: environment.execucaoOrcamentariaFilter.mes,
-      po: environment.planjejamentoOrcamentarioFilter.po,
-      mes: environment.execucaoOrcamentariaFilter.mes,
-      uo: environment.planjejamentoOrcamentarioFilter.uo,
+      ano: environment.planejamentoOrcamentarioFilter.ano,
+      tipoFonte: environment.planejamentoOrcamentarioFilter.tipoFonte,
+      gnd: environment.planejamentoOrcamentarioFilter.gnd,
+      po: environment.planejamentoOrcamentarioFilter.po,
+      mes: environment.planejamentoOrcamentarioFilter.mes,
+      uo: environment.planejamentoOrcamentarioFilter.uo,
     };
     this.filter = { ...this.finalFilter };
 
-    // CORREÇÃO: Atualizar currentRequestParams ao resetar
     this.currentRequestParams = {
       ano: this.finalFilter.ano,
       tipoFonte: this.finalFilter.tipoFonte,
@@ -313,7 +421,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   updateActiveFilters() {
     this.activeFilters = [];
 
-    // Filtro Ano
     if (this.finalFilter.ano) {
       this.activeFilters.push({
         key: "ano",
@@ -322,14 +429,8 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Filtro Mês
     if (this.finalFilter.mes && this.finalFilter.mes.length >= 1) {
       if (this.finalFilter.mes.includes(-1)) {
-        // this.activeFilters.push({
-        //   key: 'mes',
-        //   label: 'Mês',
-        //   displayValue: [{ name: '' }]
-        // });
       } else {
         const mesesSelecionados = this.finalFilter.mes.map((mesNum) => {
           const mes = this.monthsList.find((m) => m.num === mesNum);
@@ -343,14 +444,8 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Filtro Tipo Fonte
     if (this.finalFilter.tipoFonte && this.finalFilter.tipoFonte.length >= 1) {
       if (this.finalFilter.tipoFonte.includes(-1)) {
-        // this.activeFilters.push({
-        //   key: 'tipoFonte',
-        //   label: 'Tipo de Fonte',
-        //   displayValue: [{ name: 'Caixas Tesouros' }]
-        // });
       } else {
         const tiposSelecionados = this.finalFilter.tipoFonte.map((tipoNum) => {
           const tipo = this.tipoFonteList.find((t) => t.id === tipoNum);
@@ -365,34 +460,48 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     }
 
     if (this.finalFilter.uo && this.finalFilter.uo.length >= 1) {
-      if (!this.finalFilter.uo.includes("-1")) {
+      if (this.finalFilter.uo.includes(-1)) {
+      } else {
+        const uosSelecionados = this.finalFilter.uo.map((uoId) => {
+          const uo = this.UOList.find((u) => u.id === uoId);
+          return { name: uo ? uo.name : uoId };
+        });
         this.activeFilters.push({
           key: "uo",
           label: "UO",
-          displayValue: [{ name: this.finalFilter.uo }],
+          displayValue: uosSelecionados,
         });
       }
     }
 
     if (this.finalFilter.po && this.finalFilter.po.length >= 1) {
-      this.activeFilters.push({
-        key: "po",
-        label: "PO",
-        displayValue: [{ name: this.finalFilter.po }],
-      });
+      if (this.finalFilter.po.includes(-1)) {
+      } else {
+        const posSelecionados = this.finalFilter.po.map((poId) => {
+          const po = this.POList.find((p) => p.id === poId);
+          return { name: po ? po.name : poId };
+        });
+        this.activeFilters.push({
+          key: "po",
+          label: "PO",
+          displayValue: posSelecionados,
+        });
+      }
     }
 
     if (this.finalFilter.gnd && this.finalFilter.gnd.length >= 1) {
-      const gndsSelecionados = this.finalFilter.gnd.map((gndNum) => {
-        const gnd = this.GNDList.find((g) => g.id === gndNum);
-        return { name: gnd ? gnd.name : `GND ${gndNum}` };
-      });
-      console.log(gndsSelecionados);
-      this.activeFilters.push({
-        key: "gnd",
-        label: "GND",
-        displayValue: gndsSelecionados,
-      });
+      if (this.finalFilter.gnd.includes(-1)) {
+        // Ignorar "Todos"
+      } else {
+        this.activeFilters.push({
+          key: "gnd",
+          label: "GND",
+          displayValue: this.finalFilter.gnd.map((gndNum) => {
+            const gnd = this.GNDList.find((g) => g.id === gndNum);
+            return { name: gnd ? gnd.name : `GND ${gndNum}` };
+          }),
+        });
+      }
     }
   }
 
@@ -401,7 +510,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     this.closeFilterModal();
     this.finalFilter = { ...this.filter };
 
-    // CORREÇÃO: Atualizar currentRequestParams com os filtros selecionados
     this.currentRequestParams = {
       ano: this.finalFilter.ano,
       mes: this.finalFilter.mes,
@@ -412,8 +520,88 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     };
 
     this.updateActiveFilters();
-
+    this.getTotais();
     this.filterChanged.emit(this.currentRequestParams);
+    this.loadDataWithFilters();
+  }
+
+  private getTotais() {
+    this.getAutorizadoMes();
+    this.getAutorizadoAno();
+  }
+
+  private getAutorizadoMes() {
+    // const years = this.currentRequestParams.ano || [];
+    // [...years, ...years.map((y) => y - 1)]
+    const filterAutorizado: ISPOTotalAutorizadoFilter = {
+      ano: this.currentRequestParams.ano,
+      gnd: this.currentRequestParams.gnd,
+      mes: this.currentRequestParams.mes,
+      po: this.currentRequestParams.po,
+      tipoFonte: this.currentRequestParams.tipoFonte,
+      uo: this.currentRequestParams.uo,
+    };
+
+    this._planejamentoOrcamentarioService
+      .getTotalAutorizado(filterAutorizado)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          this.loadingStatus = this.totalAutorizadoResponse
+            ? "loaded"
+            : "error";
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          console.log("dados", response);
+
+          this.totalAutorizadoResponse = response;
+          this.dataCards();
+        },
+        error: (err) => {
+          console.error("Erro ao carregar receita total:", err);
+          this.loadingStatus = "error";
+          this.totalAutorizadoResponse = null;
+        },
+      });
+  }
+
+  private getAutorizadoAno() {
+    // const years = this.currentRequestParams.ano || [];
+    //  [...years, ...years.map((y) => y - 1)],
+    const filterPrevisto: ISPOTotalPrevistoFilter = {
+      ano: this.currentRequestParams.ano,
+      gnd: this.currentRequestParams.gnd,
+      po: this.currentRequestParams.po,
+      tipoFonte: this.currentRequestParams.tipoFonte,
+      uo: this.currentRequestParams.uo,
+    };
+
+    this._planejamentoOrcamentarioService
+      .getTotalPrevisto(filterPrevisto)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          this.loadingStatus = this.totalPrevistoResponse ? "loaded" : "error";
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.totalPrevistoResponse = response;
+          this.timesTamp = response[0]['times_temp'];
+          this.dataCards();
+        },
+        error: (err) => {
+          console.error("Erro ao carregar receita total:", err);
+          this.loadingStatus = "error";
+          this.totalAutorizadoResponse = null;
+        },
+      });
+  }
+
+  loadDataWithFilters(): void {
+    this.dataCards();
   }
 
   loadInitialData(): void {
@@ -431,7 +619,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
   formatNumber(value: number): string {
     if (!value) {
-      return "R$ 0";
+      return "0";
     }
 
     if (value >= 1_000_000_000) {
@@ -455,6 +643,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       })} mil`;
     }
 
-    return `R$ ${value.toLocaleString("pt-BR")}`;
+    return `${value.toLocaleString("pt-BR")}`;
   }
 }

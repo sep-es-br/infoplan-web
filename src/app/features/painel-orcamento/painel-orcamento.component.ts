@@ -57,11 +57,11 @@ enum AvailableFilters {
 }
 
 const DEFAULT_EXECUCAO_ORCAMENTARIA_REQUEST_PARAMS: IExecucaoOrcamentariaRequest =
-  {
-    ano: 2023,
-    mes: [-1],
-    tipoFonte: [-1],
-  };
+{
+  ano: 2023,
+  mes: [-1],
+  tipoFonte: [-1],
+};
 
 @Component({
   selector: "ngx-painel-orcamento",
@@ -254,11 +254,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   }
 
   loadDataWithFilters(): void {
-    // Aqui você deve chamar os serviços para recarregar os dados
-    // com os novos filtros. Exemplo:
-    // this._comunicationCardsService.loadDataWithFilters(this.currentRequestParams);
-
-    // Por enquanto, vamos apenas recarregar os cards
     this.dataReceitaCards();
   }
 
@@ -277,11 +272,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     // Filtro Mês
     if (this.finalFilter.mes && this.finalFilter.mes.length >= 1) {
       if (this.finalFilter.mes.includes(-1)) {
-        // this.activeFilters.push({
-        //   key: 'mes',
-        //   label: 'Mês',
-        //   displayValue: [{ name: '' }]
-        // });
       } else {
         const mesesSelecionados = this.finalFilter.mes.map((mesNum) => {
           const mes = this.monthsList.find((m) => m.num === mesNum);
@@ -362,7 +352,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   handleFilterChange(origin: AvailableFilters | string, newValue: any) {
     // CORREÇÃO: Lógica melhorada para "Todos"
     if (Array.isArray(newValue)) {
-      if (newValue.includes(-1)) {
+      if (newValue.length === 0) {
         // Se selecionou "Todos", manter apenas -1
         if (origin === "mes") {
           this.filter.mes = [-1];
@@ -385,13 +375,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
 
   closeFilterModal() {
     (document.activeElement as HTMLElement)?.blur();
-    /*
-     * Isso serve pra evitar um erro de "Blocked aria-hidden on an element because its descendent retained focus..."
-     * que ocorre quando se fecha um elemento/componente (tipo um offcanvas ou nesse caso um modal) com aria-hidden="true" (utilizado por leitores de telas)
-     * enquanto um elemento dentro desse componente ainda está com foco.
-     * Por isso se faz necessário remover o foco desse elemento antes de fechar o componente.
-     */
-
     if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
   }
 
@@ -421,69 +404,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
       totalReceitaPrevista: this.receitaTotal?.vlr_receita_prevista || 0,
       totalReceitaRealizada: this.receitaTotal?.vlr_receita_liquida || 0,
     };
-
-    // this.sendCards = [
-    //   {
-    //     value: `${
-    //       this._sufixShortNumberPipe.transform(
-    //         this.receitaTotal?.vlr_receita_prevista,
-    //         2
-    //       ) || 0
-    //     }`,
-    //     description: "Receita Prevista",
-    //     cor: "primary",
-    //     icone: "fa fa-crosshairs",
-    //     prefixo: "R$",
-    //     tooltip: `R$ ${
-    //       this.receitaTotal?.vlr_receita_prevista
-    //         .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-    //         .replace("R$", "")
-    //         .trim() || 0
-    //     }`,
-    //   },
-    //   {
-    //     value: `${
-    //       this._sufixShortNumberPipe.transform(
-    //         this.receitaTotal?.vlr_receita_liquida,
-    //         2
-    //       ) || 0
-    //     }`,
-    //     description: "Receita Realizada",
-    //     cor: "success",
-    //     icone: "fa fa-check-circle",
-    //     prefixo: "R$",
-    //     tooltip: `R$ ${
-    //       this.receitaTotal?.vlr_receita_liquida
-    //         .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-    //         .replace("R$", "")
-    //         .trim() || 0
-    //     }`,
-    //   },
-    //   {
-    //     value: `${this.receitaTotal?.porcentagem || 0} %`,
-    //     description: "Receita Realizada/ Prevista",
-    //     cor: "warning",
-    //     icone: "assets/images/app/icone-receita-realizada-prevista.png",
-    //     subfixo: "",
-    //     tooltip: "",
-    //   },
-    //   {
-    //     value: `${segundoItem?.porcentagem_empenhada || 0} %`,
-    //     description: "Despesa Empenhada/ Autorizada",
-    //     cor: "info",
-    //     icone: "fa fa-handshake",
-    //     subfixo: "",
-    //     tooltip: "",
-    //   },
-    //   {
-    //     value: `${segundoItem?.porcentagem_liquidada || 0} %`,
-    //     description: "Despesa Liquidada/ Autorizada",
-    //     cor: "danger",
-    //     icone: "fas fa-hand-holding-usd",
-    //     subfixo: "",
-    //     tooltip: "",
-    //   },
-    // ];
   }
 
   trackByFn(index: number, item: any): any {

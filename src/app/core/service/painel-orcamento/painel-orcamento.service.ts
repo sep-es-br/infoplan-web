@@ -153,6 +153,14 @@ export class PainelOrcamentoService {
           : String(execucaoOrcamentaria.mes)
       )
       .set("tipoFonte", String(execucaoOrcamentaria.tipoFonte));
+
+    if (execucaoOrcamentaria.uo) {
+      params = params.set("uo", execucaoOrcamentaria.uo);
+    }
+
+    if (execucaoOrcamentaria.po) {
+      params = params.set("po", execucaoOrcamentaria.po);
+    }
     return params;
   }
 

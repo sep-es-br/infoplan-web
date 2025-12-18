@@ -2,6 +2,8 @@ export interface IExecucaoOrcamentariaRequest {
   ano: number;
   mes: number[];
   tipoFonte: number[];
+  uo?: string;
+  po?: string;
 }
 
 export interface IReceitaTotalOrcamentariaResponse {

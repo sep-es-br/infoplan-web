@@ -36,7 +36,7 @@ const routes: Routes = [
       {
         path: "planejamento-orcamentario",
         component: PlanejamentoOrcamentarioComponent,
-        data: { dataSource: "Sistema de Planejamento Orçamentário" },
+        data: { dataSource: "SPO" },
       },
       {
         path: "",

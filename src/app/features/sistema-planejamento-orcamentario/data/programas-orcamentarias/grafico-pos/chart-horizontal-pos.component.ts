@@ -16,7 +16,7 @@ import { ChartDataProcessorService } from "../../../../../core/service/painel-or
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { Subject } from "rxjs";
-import { IPlanejamentoOrcamentarioFilter } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
+import { ISPOTotalPrevistoFilter } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
 
 @Component({
   selector: "ngx-chart-horizontal-pos-component",
@@ -26,7 +26,7 @@ import { IPlanejamentoOrcamentarioFilter } from "../../../../../core/interfaces/
   imports: [OrgChartHorizontalComponent, FlipTableComponent],
 })
 export class ChartHorizontalPOSComponent implements OnChanges, OnDestroy {
-  @Input() filter!: IPlanejamentoOrcamentarioFilter;
+  @Input() filter!: ISPOTotalPrevistoFilter;
 
   readonly title: string = "UOS - Unidades Orçamentárias";
   chartData!: IChartOptions;
@@ -48,7 +48,9 @@ export class ChartHorizontalPOSComponent implements OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    throw new Error("Method not implemented.");
+    if (changes['filter'].currentValue) {
+      // console.log("dados", this.filter)
+    }
   }
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {
@@ -63,5 +65,5 @@ export class ChartHorizontalPOSComponent implements OnChanges, OnDestroy {
     return this._chartMaximizeService.calcMaximizedHeight();
   }
 
-  handleTableDownload(): void {}
+  handleTableDownload(): void { }
 }

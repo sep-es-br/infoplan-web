@@ -85,14 +85,12 @@
 
       &:hover {
         .map-icon {
-          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
         }
       }
 
       &.map-btn-clicked {
-        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-          saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
       }
     }
 
@@ -281,6 +279,7 @@
     &.logo {
       color: #000480 !important;
     }
+
     &.planejado {
       color: #A970B6 !important;
     }
@@ -410,11 +409,13 @@ chart-container.maximized::before:hover {
 
 // // Aplica esses estilos sob o tema "dark" e "cosmic"
 :host-context(.nb-theme-dark, .nb-theme-cosmic) {
+
   .icon-top-right,
   .text-section {
     &.logo {
       color: #ffffff !important;
     }
+
     color: #ffffff !important;
   }
 }

@@ -8,40 +8,30 @@
               <div class="tag-label">{{ tag.label }}:</div>
 
               <div class="tag-value">
-                <ng-container
-                  *ngFor="let value of tag.displayValue; let index = index"
-                >
-                  <ng-container
-                    *ngIf="value.name?.length <= 20; else spanWithTooltip"
-                  >
+                <ng-container *ngFor="let value of tag.displayValue; let index = index">
+                  <ng-container *ngIf="value.name?.length <= 20; else spanWithTooltip">
                     <span>
                       {{
-                        (index > 0 ? " " : "") +
-                          (tag.displayValue.length > 1
-                            ? value.name + ";"
-                            : value.name)
+                      (index > 0 ? " " : "") +
+                      (tag.displayValue.length > 1
+                      ? value.name + ";"
+                      : value.name)
                       }}
                     </span>
                   </ng-container>
 
                   <ng-template #spanWithTooltip>
-                    <span
-                      [nbTooltip]="value.fullName ? value.fullName : value.name"
-                    >
+                    <span [nbTooltip]="value.fullName ? value.fullName : value.name">
                       {{
-                        (index > 0 ? " " : "") +
-                          (value.name | TextTruncate : 17 : ";")
+                      (index > 0 ? " " : "") +
+                      (value.name | TextTruncate : 17 : ";")
                       }}
                     </span>
                   </ng-template>
                 </ng-container>
               </div>
             </div>
-            <button
-              *ngIf="tag.key !== 'ano'"
-              class="remove-button"
-              (click)="removeFilter(tag.key)"
-            >
+            <button *ngIf="tag.key !== 'ano'" class="remove-button" (click)="removeFilter(tag.key)">
               x
             </button>
           </div>
@@ -49,12 +39,7 @@
       </div>
 
       <div class="filter-button">
-        <button
-          class="filter-toggle p-0"
-          type="button"
-          data-bs-toggle="modal"
-          data-bs-target="#filtrosModal"
-        >
+        <button class="filter-toggle p-0" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
           Filtros
           <nb-icon [icon]="'funnel-outline'"></nb-icon>
         </button>
@@ -62,109 +47,56 @@
     </div>
 
     <!-- Painel de Filtros Simplificado -->
-    <div
-      class="modal fade"
-      id="filtrosModal"
-      tabindex="-1"
-      aria-labelledby="filtrosModalLabel"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-body">
             <form class="w-100">
               <div class="form-header w-100 d-flex justify-content-end">
-                <button
-                  class="btn p-0 close-filter-button"
-                  data-bs-dismiss="modal"
-                  #modalCloseButton
-                  (click)="closeFilterModal()"
-                >
+                <button class="btn p-0 close-filter-button" data-bs-dismiss="modal" #modalCloseButton
+                  (click)="closeFilterModal()">
                   <nb-icon [icon]="'close-outline'"></nb-icon>
                 </button>
               </div>
 
               <div class="d-flex flex-column w-100">
-                <div
-                  class="filter-row d-flex flex-column flex-md-row flex-wrap w-100"
-                >
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
                   <!-- Ano -->
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Ano</span>
-                    <nb-select
-                      name="ano"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.ano"
-                      (selectedChange)="handleFilterChange('ano', [$event])"
-                      #customSelect
-                    >
-                      <nb-option
-                        *ngFor="let ano of yearsList"
-                        [value]="ano.num"
-                      >
+                    <nb-select name="ano" placeholder="Selecionar" size="tiny" [(ngModel)]="selectedYear"
+                      (selectedChange)="handleFilterChange('ano', [$event])" #customSelect>
+                      <nb-option *ngFor="let ano of yearsList" [value]="ano.num">
                         {{ ano.num }}
                       </nb-option>
                     </nb-select>
                   </div>
 
                   <!-- Mês -->
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Mês</span>
-                    <nb-select
-                      multiple
-                      name="mes"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.mes"
-                      (selectedChange)="handleFilterChange('mes', $event)"
-                      #customSelect
-                    >
-                      <nb-option
-                        *ngFor="let mes of monthsList"
-                        [value]="mes.num"
-                      >
+                    <nb-select multiple name="mes" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.mes"
+                      (selectedChange)="handleFilterChange('mes', $event)" #customSelect>
+                      <nb-option *ngFor="let mes of monthsList" [value]="mes.num">
                         {{ mes.name }}
                       </nb-option>
                     </nb-select>
                   </div>
 
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">UOS</span>
-                    <nb-select
-                      multiple
-                      name="uo"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.uo"
-                      (selectedChange)="handleFilterChange('uo', $event)"
-                      #customSelect
-                    >
+                    <nb-select multiple name="uo" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.uo"
+                      (selectedChange)="handleFilterChange('uo', $event)" #customSelect>
                       <nb-option *ngFor="let uo of UOList" [value]="uo.id">
                         {{ uo.name }}
                       </nb-option>
                     </nb-select>
                   </div>
 
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">GND</span>
-                    <nb-select
-                      multiple
-                      name="gnd"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.gnd"
-                      (selectedChange)="handleFilterChange('gnd', $event)"
-                      #customSelect
-                    >
+                    <nb-select multiple name="gnd" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.gnd"
+                      (selectedChange)="handleFilterChange('gnd', $event)" #customSelect>
                       <nb-option *ngFor="let gnd of GNDList" [value]="gnd.id">
                         {{ gnd.name }}
                       </nb-option>
@@ -172,37 +104,20 @@
                   </div>
 
                   <!-- Tipo de Fonte -->
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Tipo de Fonte</span>
-                    <nb-select
-                      multiple
-                      name="tipoFonte"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.tipoFonte"
-                      (selectedChange)="handleFilterChange('tipoFonte', $event)"
-                      #customSelect
-                    >
+                    <nb-select multiple name="tipoFonte" placeholder="Selecionar" size="tiny"
+                      [(ngModel)]="filter.tipoFonte" (selectedChange)="handleFilterChange('tipoFonte', $event)"
+                      #customSelect>
                       <nb-option [value]="1">Caixas Tesouros</nb-option>
                       <nb-option [value]="2">Demais Fontes</nb-option>
                     </nb-select>
                   </div>
 
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
-                    <span class="mb-1">PO</span>
-                    <nb-select
-                      multiple
-                      name="po"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.po"
-                      (selectedChange)="handleFilterChange('po', $event)"
-                      #customSelect
-                    >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
+                    <span class="mb-1">POS</span>
+                    <nb-select multiple name="po" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.po"
+                      (selectedChange)="handleFilterChange('po', $event)" #customSelect>
                       <nb-option *ngFor="let po of POList" [value]="po.id">
                         {{ po.name }}
                       </nb-option>
@@ -213,29 +128,13 @@
             </form>
           </div>
 
-          <div
-            class="modal-footer d-flex flex-column flex-sm-row justify-content-center justify-content-sm-end"
-          >
-            <button
-              class="mx-4"
-              nbButton
-              size="small"
-              status="warning"
-              outline
-              shape="semi-round"
-              (click)="resetFilters()"
-            >
+          <div class="modal-footer d-flex flex-column flex-sm-row justify-content-center justify-content-sm-end">
+            <button class="mx-4" nbButton size="small" status="warning" outline shape="semi-round"
+              (click)="resetFilters()">
               Restaurar Filtros
             </button>
-            <button
-              nbButton
-              size="small"
-              status="success"
-              hero
-              shape="semi-round"
-              data-bs-dismiss="modal"
-              (click)="filtrar($event)"
-            >
+            <button nbButton size="small" status="success" hero shape="semi-round" data-bs-dismiss="modal"
+              (click)="filtrar($event)">
               Filtrar
             </button>
           </div>
@@ -250,11 +149,7 @@
       <div class="card h-100">
         <div class="card-content">
           <div class="portfolio-content">
-            <img
-              class="portfolio-logo"
-              [src]="planejamentoLogoUrl"
-              alt="Logo SPO"
-            />
+            <img class="portfolio-logo" [src]="planejamentoLogoUrl" alt="Logo SPO" />
           </div>
         </div>
       </div>
@@ -263,19 +158,12 @@
     <!-- Card 2: Planejado -->
     <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xxl-4 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right planejado"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right planejado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">monitoring</span>
         </div>
         <div class="card-content">
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else planejadoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else planejadoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-planejado" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -285,11 +173,8 @@
           <ng-template #planejadoContent>
             <div class="number-box planejado">
               <div class="d-flex flex-column align-items-start">
-                <!-- <div class="currency">R$</div> -->
-                <div
-                  class="value"
-                  [title]="'R$ ' + (totals.totalPlanejado | number : '1.2-2')"
-                >
+                <div class="currency">R$</div>
+                <div class="value" [title]="'' + (totals.totalPlanejado | number : '1.2-2')">
                   {{ formatNumber(totals.totalPlanejado) }}
                 </div>
               </div>
@@ -306,19 +191,12 @@
     <!-- Card 3: Contratado -->
     <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xxl-4 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right contratado"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right contratado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">handshake</span>
         </div>
         <div class="card-content">
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else contratadoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else contratadoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-contratado" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -328,11 +206,8 @@
           <ng-template #contratadoContent>
             <div class="number-box contratado">
               <div class="d-flex flex-column align-items-start">
-                <!-- <div class="currency">R$</div> -->
-                <div
-                  class="value"
-                  [title]="'R$ ' + (totals.totalContratado | number : '1.2-2')"
-                >
+                <div class="currency">R$</div>
+                <div class="value" [title]="'R$ ' + (totals.totalContratado | number : '1.2-2')">
                   {{ formatNumber(totals.totalContratado) }}
                 </div>
               </div>
@@ -349,19 +224,12 @@
     <!-- Card 4: Autorizado -->
     <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right autorizado"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right autorizado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">check_circle</span>
         </div>
         <div class="card-content">
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else autorizadoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else autorizadoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-autorizado" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -371,11 +239,8 @@
           <ng-template #autorizadoContent>
             <div class="number-box autorizado">
               <div class="d-flex flex-column align-items-start">
-                <!-- <div class="currency">R$</div> -->
-                <div
-                  class="value"
-                  [title]="'R$ ' + (totals.totalAutorizado | number : '1.2-2')"
-                >
+                <div class="currency">R$</div>
+                <div class="value" [title]="'R$ ' + (totals.totalAutorizado | number : '1.2-2')">
                   {{ formatNumber(totals.totalAutorizado) }}
                 </div>
               </div>
@@ -392,19 +257,12 @@
     <!-- Card 5: Empenhado -->
     <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right empenhado"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right empenhado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">gavel</span>
         </div>
         <div class="card-content">
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else empenhadoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else empenhadoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-empenhado" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -414,11 +272,8 @@
           <ng-template #empenhadoContent>
             <div class="number-box empenhado">
               <div class="d-flex flex-column align-items-start">
-                <!-- <div class="currency">R$</div> -->
-                <div
-                  class="value"
-                  [title]="'R$ ' + (totals.totalEmpenhado | number : '1.2-2')"
-                >
+                <div class="currency">R$</div>
+                <div class="value" [title]="'R$ ' + (totals.totalEmpenhado | number : '1.2-2')">
                   {{ formatNumber(totals.totalEmpenhado) }}
                 </div>
               </div>
@@ -435,19 +290,12 @@
     <!-- Card 6: Liquidado -->
     <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right liquidado"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right liquidado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">checkbook</span>
         </div>
         <div class="card-content">
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else liquidadoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else liquidadoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-liquidado" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -457,11 +305,8 @@
           <ng-template #liquidadoContent>
             <div class="number-box liquidado">
               <div class="d-flex flex-column align-items-start">
-                <!-- <div class="currency">R$</div> -->
-                <div
-                  class="value"
-                  [title]="'R$ ' + (totals.totalLiquidado | number : '1.2-2')"
-                >
+                <div class="currency">R$</div>
+                <div class="value" [title]="'R$ ' + (totals.totalLiquidado | number : '1.2-2')">
                   {{ formatNumber(totals.totalLiquidado) }}
                 </div>
               </div>
@@ -478,19 +323,12 @@
     <!-- Card 7: Pago -->
     <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right pago"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right pago" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">paid</span>
         </div>
         <div class="card-content">
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else pagoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else pagoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-pago" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -500,11 +338,8 @@
           <ng-template #pagoContent>
             <div class="number-box pago">
               <div class="d-flex flex-column align-items-start">
-                <!-- <div class="currency">R$</div> -->
-                <div
-                  class="value"
-                  [title]="'R$ ' + (totals.totalPago | number : '1.2-2')"
-                >
+                <div class="currency">R$</div>
+                <div class="value" [title]="'R$ ' + (totals.totalPago | number : '1.2-2')">
                   {{ formatNumber(totals.totalPago) }}
                 </div>
               </div>
@@ -519,25 +354,22 @@
     </div>
   </div>
 
-      <div class="row g-2 px-2 py-1">
-        <div
-          class="chart-container"
-          [class.maximized]="isChartMaximized('pos-chart')"
-          [class.col-12]="!isChartMaximized('pos-chart')"
-          [class.col-md-12]="!isChartMaximized('pos-chart')"
-          [class.col-lg-6]="!isChartMaximized('pos-chart')"
-          [class.col-xl-7]="!isChartMaximized('pos-chart')"
-        >
-          <ngx-chart-horizontal-pos-component
-            class="w-100"
-            [filter]="currentRequestParams"
-          ></ngx-chart-horizontal-pos-component>
-        </div>
-      </div>
-    <div class="d-flex flex-wrap col-12 col-xxl-6 p-0">
-      <div class="col-12 col-md-6 px-x1 mb-1 align-self-start"></div>
+  <div class="row g-2 px-2 py-2">
+    <div class="chart-container" [class.maximized]="isChartMaximized('pos-chart')"
+      [class.col-12]="!isChartMaximized('pos-chart')" [class.col-md-12]="!isChartMaximized('pos-chart')"
+      [class.col-lg-6]="!isChartMaximized('pos-chart')" [class.col-xl-7]="!isChartMaximized('pos-chart')">
+      <ngx-chart-horizontal-pos-component class="w-100"
+        [filter]="currentRequestParams"></ngx-chart-horizontal-pos-component>
     </div>
-  <div class="row px-2">
-    <div class="d-flex flex-wrap col-12 col-xxl-6 p-0"></div>
   </div>
+  <div class="d-flex flex-wrap col-12 col-xxl-6 p-0">
+    <div class="col-12 col-md-6 px-x1 mb-1 align-self-start"></div>
+  </div>
+  <!-- <div class="row px-2">
+    <div class="d-flex flex-wrap col-12 col-xxl-6 p-0"></div>
+  </div> -->
+
 </div>
+  <nb-layout-footer class="mt-2">
+    <ngx-footer [timestamp]="timesTamp"></ngx-footer>
+  </nb-layout-footer>

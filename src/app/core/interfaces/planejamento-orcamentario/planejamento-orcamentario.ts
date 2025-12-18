@@ -10,8 +10,8 @@ export interface ISPOTotalAutorizadoFilter {
   ano: number[];
   tipoFonte: number[];
   mes: number[];
-  uo: number[];
-  po: number[];
+  uo: number[] | string;
+  po: number[] | string;
   gnd: number[];
 }
 
@@ -25,7 +25,6 @@ export interface ISPOTotals {
   totalAutorizado: number;
 }
 
-
 export interface ISPOTotalAutorizadoDTO {
   autorizado: number;
   empenhado: number;
@@ -34,10 +33,18 @@ export interface ISPOTotalAutorizadoDTO {
   pago_sem_rap: number;
 }
 
-
 export interface ISPOTotalPrevistoDTO {
   previsto: number;
   contratado: number;
-  times_temp: number;
+  times_temp: string;
 }
 
+// export interface ISPOTotals {
+//   totalAutorizado: number;
+//   totalContratado: number;
+//   totalEmpenhado: number;
+//   totalLiquidado: number;
+//   totalPago: number;
+//   totalPlanejado: number;
+//   totalRestosAPagar: number;
+// }

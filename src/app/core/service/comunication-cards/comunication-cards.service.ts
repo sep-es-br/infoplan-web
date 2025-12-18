@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { IReceitaDespesaGNDOrcamentariaResponse, IReceitaDespesaGNDTotalOrcamentariaResponse, IReceitaTotalOrcamentariaResponse } from '../../interfaces/painel-orcamento/painel-orcamento';
+import { IReceitaDespesaGNDTotalOrcamentariaResponse, IReceitaTotalOrcamentariaResponse } from '../../interfaces/painel-orcamento/painel-orcamento';
+import { ISPOTotalAutorizadoDTO, ISPOTotalPrevistoDTO } from '../../interfaces/planejamento-orcamentario/planejamento-orcamentario';
 
 interface IDataCard {
   receitaTotal?: IReceitaTotalOrcamentariaResponse | null;
   receitaDespesaGNDOrcamentaria?: IReceitaDespesaGNDTotalOrcamentariaResponse[] | null;
+  totalPrevisto?: ISPOTotalPrevistoDTO[] | null;
+  totalAutorizado?: ISPOTotalAutorizadoDTO[] | null;
 }
 
 @Injectable({
@@ -32,6 +35,14 @@ export class ComunicationCardsService {
     this.dataSubject.next({ receitaDespesaGNDOrcamentaria });
   }
 
+
+  sendTotalPrevisto(totalPrevisto: ISPOTotalPrevistoDTO[]) {
+    this.dataSubject.next({totalPrevisto})
+  }
+
+  sendTotalAutorizado(totalAutorizado: ISPOTotalAutorizadoDTO[]) {
+    this.dataSubject.next({totalAutorizado})
+  }
 
   // Método para obter o valor atual
   getDataAtual(): IDataCard {

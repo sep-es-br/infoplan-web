@@ -1,4 +1,3 @@
-
 import {
   Component,
   Input,
@@ -21,17 +20,20 @@ import { ChartDataProcessorService } from "../../../../core/service/painel-orcam
 import {
   FlipTableAlignment,
   FlipTableColumn,
+  FlipTableComponent,
   FlipTableContent,
   TreeNode,
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ExportDataService } from "../../../../core/service/export-data";
-import { ShortNumberPipe } from "../../../../@theme/pipes/shortNumber.pipe";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
+import { OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-receita-origem",
   templateUrl: "./receita-origem.component.html",
   styleUrls: ["./receita-origem.component.scss"],
+  standalone: true,
+  imports: [OrgChartHorizontalComponent, FlipTableComponent],
 })
 export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
   @Input() filter: IExecucaoOrcamentariaRequest;
@@ -39,7 +41,6 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
   private readonly _painelService = inject(PainelOrcamentoService);
   private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
-  private readonly _shortNumberPipe = inject(ShortNumberPipe);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
 
   private readonly destroy$ = new Subject<void>();
@@ -150,7 +151,11 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Arrecadação LI - ${ano.toString()}`,
-          value: `${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+          value: `${valor
+              .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+              .replace("R$", "")
+              .trim() || 0
+            }`,
         });
       });
 
@@ -264,7 +269,11 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
         const item = this.receitaOrigemCharData.find(
           (d) => d.origem === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`;
+        row[`ano_${ano}`] = `${item?.receitaLiquida
+            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+            .replace("R$", "")
+            .trim() || 0
+          }`;
       });
 
       if (anos.length >= 2) {

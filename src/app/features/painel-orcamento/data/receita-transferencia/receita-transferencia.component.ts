@@ -1,4 +1,10 @@
-import { FlipTableAlignment, FlipTableColumn, FlipTableComponent, FlipTableContent, TreeNode } from './../../../strategic-projects/flip-table-model/flip-table.component';
+import {
+  FlipTableAlignment,
+  FlipTableColumn,
+  FlipTableComponent,
+  FlipTableContent,
+  TreeNode,
+} from "./../../../strategic-projects/flip-table-model/flip-table.component";
 import { IChartOptions } from "./../../../../shared/models/painel-orcamento/IChartOptions";
 import {
   Component,
@@ -17,13 +23,15 @@ import { ChartDataProcessorService } from "../../../../core/service/painel-orcam
 import { ExportDataService } from "../../../../core/service/export-data";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
-import { ShortNumberPipe } from '../../../../@theme/pipes';
-import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
+import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
+import { OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-receita-transferencia",
   templateUrl: "./receita-transferencia.component.html",
   styleUrls: ["./receita-transferencia.component.scss"],
+  standalone: true,
+  imports: [OrgChartHorizontalComponent, FlipTableComponent],
 })
 export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
   @Input() filter: IExecucaoOrcamentariaRequest;
@@ -32,15 +40,21 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
   private receitaTransferenciaCorrente: IReceitaTransfereciaCorrenteOrcamentariaResponse[];
 
-  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
-  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
-  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+  private readonly _painelService: PainelOrcamentoService = inject(
+    PainelOrcamentoService
+  );
+  private readonly _chartProcessor: ChartDataProcessorService = inject(
+    ChartDataProcessorService
+  );
+  private readonly _exportDataService: ExportDataService =
+    inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService =
+    inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
   chartData: IChartOptions;
 
-  tableContent: FlipTableContent | null = null
+  tableContent: FlipTableContent | null = null;
 
   loadingStatus: "loading" | "loaded" | "error" = "loading";
 
@@ -115,7 +129,9 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
     );
   }
 
-  private processTableData(dados: IReceitaTransfereciaCorrenteOrcamentariaResponse[]): void {
+  private processTableData(
+    dados: IReceitaTransfereciaCorrenteOrcamentariaResponse[]
+  ): void {
     if (!dados?.length) {
       this.tableContent = null;
       return;
@@ -150,7 +166,11 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Arrecadação LI - ${ano.toString()}`,
-          value: `${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+          value: `${valor
+              .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+              .replace("R$", "")
+              .trim() || 0
+            }`,
         });
       });
 
@@ -198,7 +218,6 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
       },
     };
 
-
     this.tableContent = {
       customColumn,
       defaultColumns,
@@ -243,7 +262,9 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
     const categorias = [
       ...new Set(
-        this.receitaTransferenciaCorrente.map((item) => item.nome_item_patrimonial)
+        this.receitaTransferenciaCorrente.map(
+          (item) => item.nome_item_patrimonial
+        )
       ),
     ].filter(Boolean);
 
@@ -266,7 +287,10 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
         const item = this.receitaTransferenciaCorrente.find(
           (d) => d.nome_item_patrimonial === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `${item?.receitaLiquida.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0
+        row[`ano_${ano}`] = `${item?.receitaLiquida
+            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+            .replace("R$", "")
+            .trim() || 0
           }`;
       });
 

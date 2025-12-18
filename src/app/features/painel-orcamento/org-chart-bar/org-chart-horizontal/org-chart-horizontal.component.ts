@@ -14,13 +14,19 @@ import {
   getAvailableThemesStyles,
 } from "../../../../@theme/theme.module";
 import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
+import { CommonModule } from "@angular/common";
+import { NgxEchartsModule } from "ngx-echarts";
 
 @Component({
   selector: "ngx-org-chart-horizontal",
   templateUrl: "./org-chart-horizontal.component.html",
-  styles: ['.echarts { width: 100%; height: 100%; }'],
+  styles: [".echarts { width: 100%; height: 100%; }"],
+  standalone: true,
+  imports: [NgxEchartsModule, CommonModule],
 })
-export class OrgChartHorizontalComponent implements OnInit, OnChanges, OnDestroy {
+export class OrgChartHorizontalComponent
+  implements OnInit, OnChanges, OnDestroy
+{
   @Input() chart!: IChartOptions;
   @Input() height: number;
   @Input() charactersPerLine: number;
@@ -32,7 +38,7 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges, OnDestroy
   private resizeTimer: any;
 
   // ✅ LISTENER DE RESIZE COM DEBOUNCE
-  @HostListener('window:resize', ['$event'])
+  @HostListener("window:resize", ["$event"])
   onResize(event: any) {
     clearTimeout(this.resizeTimer);
     this.resizeTimer = setTimeout(() => {
@@ -112,11 +118,11 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges, OnDestroy
       xAxis: {
         axisLabel: {
           fontSize: isTablet ? 9 : isMobile ? 10 : 11,
-        }
+        },
       },
       series: this.chart.data.datasets.map(() => ({
         barMaxWidth: isMobile ? 15 : 20,
-      }))
+      })),
     });
 
     this.resizeChart();
@@ -130,15 +136,15 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges, OnDestroy
 
     const theme = getAvailableThemesStyles(this.currentTheme);
 
-    const datasetLabels = chart.data.datasets.map(dataset => dataset.label);
+    const datasetLabels = chart.data.datasets.map((dataset) => dataset.label);
 
     const data = chart.data.labels.map((label: string, i: number) => ({
       category: label,
-      valores: chart.data.datasets.map(dataset => dataset.data[i] ?? 0)
+      valores: chart.data.datasets.map((dataset) => dataset.data[i] ?? 0),
     }));
 
-    const colors = chart.data.datasets.map(dataset =>
-      dataset.backgroundColor || "#4DB6D2"
+    const colors = chart.data.datasets.map(
+      (dataset) => dataset.backgroundColor || "#4DB6D2"
     );
 
     const isMobile = window.innerWidth <= 1000;
@@ -212,7 +218,7 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges, OnDestroy
       series: chart.data.datasets.map((dataset, index) => ({
         name: dataset.label,
         type: "bar",
-        data: data.map(d => d.valores[index]),
+        data: data.map((d) => d.valores[index]),
         itemStyle: { color: colors[index] },
         barCategoryGap: "30%",
         barGap: "20%",
@@ -234,8 +240,8 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges, OnDestroy
           showDetail: false,
           showDataShadow: false,
           textStyle: {
-            fontSize: 0
-          }
+            fontSize: 0,
+          },
         },
         {
           type: "inside",
@@ -258,38 +264,40 @@ export class OrgChartHorizontalComponent implements OnInit, OnChanges, OnDestroy
   }
 
   private quebrarTexto(texto: string, maxCaracteres: number): string {
-    if (!texto) return '';
+    if (!texto) return "";
 
     if (!this.showMaximizeButton) {
-      if (texto.includes('de Melhoria')) {
-        texto = texto.replace('de Melhoria', '...');
+      if (texto.includes("de Melhoria")) {
+        texto = texto.replace("de Melhoria", "...");
       }
     }
 
-    const words = texto.split(' ');
+    const words = texto.split(" ");
     let lines: string[] = [];
-    let currentLine = '';
+    let currentLine = "";
 
     for (const word of words) {
-      if ((currentLine + (currentLine ? ' ' : '') + word).length > maxCaracteres) {
+      if (
+        (currentLine + (currentLine ? " " : "") + word).length > maxCaracteres
+      ) {
         if (currentLine) {
           lines.push(currentLine);
-          currentLine = '';
+          currentLine = "";
         }
 
         if (word.length > maxCaracteres) {
-          const chunks = word.match(new RegExp(`.{1,${maxCaracteres}}`, 'g'));
+          const chunks = word.match(new RegExp(`.{1,${maxCaracteres}}`, "g"));
           if (chunks) lines.push(...chunks);
         } else {
           currentLine = word;
         }
       } else {
-        currentLine += (currentLine ? ' ' : '') + word;
+        currentLine += (currentLine ? " " : "") + word;
       }
     }
     if (currentLine) lines.push(currentLine);
 
-    return lines.join('\n');
+    return lines.join("\n");
   }
 
   private formatValue(value: number): string {

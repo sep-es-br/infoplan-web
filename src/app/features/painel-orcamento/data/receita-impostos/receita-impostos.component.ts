@@ -18,17 +18,23 @@ import { finalize, takeUntil } from "rxjs/operators";
 import {
   FlipTableAlignment,
   FlipTableColumn,
+  FlipTableComponent,
   FlipTableContent,
   TreeNode,
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ExportDataService } from "../../../../core/service/export-data";
-import { ShortNumberPipe } from "../../../../@theme/pipes/shortNumber.pipe";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
+import { OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-receita-impostos",
   templateUrl: "./receita-impostos.component.html",
   styleUrls: ["./receita-impostos.component.scss"],
+  standalone: true,
+  imports: [
+    OrgChartHorizontalComponent,
+    FlipTableComponent
+  ]
 })
 export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
   @Input() filter: IExecucaoOrcamentariaRequest;

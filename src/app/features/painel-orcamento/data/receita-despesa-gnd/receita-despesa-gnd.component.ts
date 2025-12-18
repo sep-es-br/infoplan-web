@@ -88,7 +88,6 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
       )
       .subscribe({
         next: (res: IReceitaDespesaGNDOrcamentariaResponse[]) => {
-          console.log("carregando dados ", res)
           this.receitaDespesaOrcamento = res;
           this.processData();
         },

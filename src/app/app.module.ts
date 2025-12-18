@@ -35,7 +35,9 @@ import { LOCALE_ID } from "@angular/core";
 
 registerLocaleData(ptBr);
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

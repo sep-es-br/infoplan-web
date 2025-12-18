@@ -2,6 +2,8 @@ export interface IExecucaoOrcamentariaRequest {
   ano: number;
   mes: number[];
   tipoFonte: number[];
+  uo?: string;
+  po?: string;
 }
 
 export interface IReceitaTotalOrcamentariaResponse {
@@ -73,11 +75,7 @@ export interface IReceitaICMSOrcamentariaResponse {
   receitaLiquida: number;
 }
 
-export interface IReceitaImpostoOrcamentariaResponse {
-  ano: number;
-  nome_item_patrimonial: string;
-  receitaLiquida: number;
-}
+
 
 export interface IReceitaTransfereciaCorrenteOrcamentariaResponse {
   ano: number;

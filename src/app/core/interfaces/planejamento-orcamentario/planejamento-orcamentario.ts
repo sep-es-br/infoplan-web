@@ -1,5 +1,5 @@
 export interface ISPOTotalPrevistoFilter {
-  ano: number[];
+  ano: number;
   tipoFonte: number[];
   uo: number[];
   po: number[];
@@ -7,7 +7,7 @@ export interface ISPOTotalPrevistoFilter {
 }
 
 export interface ISPOTotalAutorizadoFilter {
-  ano: number[];
+  ano: number;
   tipoFonte: number[];
   mes: number[];
   uo: number[] | string;
@@ -37,6 +37,17 @@ export interface ISPOTotalPrevistoDTO {
   previsto: number;
   contratado: number;
   times_temp: string;
+}
+
+export interface ISPOFiltroUos {
+  nome_uo: string;
+  cod_uo: string;
+}
+
+
+export interface ISPOFiltroPos {
+  nome_po: string;
+  cod_po: string;
 }
 
 // export interface ISPOTotals {

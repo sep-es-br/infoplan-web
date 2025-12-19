@@ -165,11 +165,9 @@ export class PainelOrcamentoService {
   }
 
   private handleError(err: any, router: Router): Observable<never> {
-    console.log(err, "dasdsadas");
     if ((err as HttpErrorResponse).status == HttpStatusCode.Unauthorized) {
       router.navigate(["pages/home"]);
     } else if ((err as HttpErrorResponse).status == HttpStatusCode.Forbidden) {
-      console.log("Forbidden");
       router.navigate(["login"]);
     }
 

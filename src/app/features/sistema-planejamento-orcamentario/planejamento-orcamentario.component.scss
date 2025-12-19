@@ -405,6 +405,14 @@ chart-container.maximized::before:hover {
   transform: scale(1.1);
 }
 
+.autocomplete-input-uo {
+  padding-left: 0.75rem !important;
+}
+
+.autocomplete-input-uo {
+  height: 26px !important;
+  border-radius: 6px !important;
+}
 
 
 // // Aplica esses estilos sob o tema "dark" e "cosmic"
@@ -426,8 +434,63 @@ chart-container.maximized::before:hover {
   }
 }
 
-// @media screen and (min-width: 1400px) and (max-width:1622px){
-//   .card-content {
-//     gap: 0px !important;
-//   }
-// }
+
+.chips-container {
+  display: flex;
+  flex-direction: row;
+  /* Chips em linha horizontal */
+  flex-wrap: wrap;
+  /* Quebra para próxima linha se necessário */
+  gap: 4px;
+  /* Espaçamento menor entre chips */
+  margin-top: 8px;
+  min-height: 24px;
+  align-items: center;
+  width: 100%;
+}
+
+nb-tag {
+  background-color: var(--color-primary-500);
+  color: white;
+  font-size: 10px !important;
+  /* Fonte menor */
+  padding: 3px 8px !important;
+  /* Padding reduzido */
+  height: auto !important;
+  min-height: 22px !important;
+  /* Altura menor */
+  display: inline-flex !important;
+  /* Inline para ajustar ao conteúdo */
+  width: auto !important;
+  /* Largura automática */
+  max-width: fit-content;
+  /* Ajusta ao conteúdo */
+  box-sizing: border-box;
+  border-radius: 12px;
+  /* Bordas mais arredondadas */
+
+  &:hover {
+    background-color: var(--color-primary-600);
+  }
+
+  ::ng-deep {
+    .nb-tag-text {
+      font-size: 10px !important;
+      /* Fonte menor */
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+      /* Largura máxima reduzida */
+      display: inline-block;
+    }
+
+    .nb-tag-remove {
+      font-size: 12px !important;
+      /* Botão X menor */
+      margin-left: 4px;
+      flex-shrink: 0;
+    }
+  }
+}

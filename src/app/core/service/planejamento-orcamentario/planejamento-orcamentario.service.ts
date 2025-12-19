@@ -9,6 +9,8 @@ import {
 import { Router } from "@angular/router";
 import { Observable, throwError } from "rxjs";
 import {
+  ISPOFiltroPos,
+  ISPOFiltroUos,
   ISPOTotalAutorizadoDTO,
   ISPOTotalAutorizadoFilter,
   ISPOTotalPrevistoDTO,
@@ -43,6 +45,19 @@ export class PlanejamentoOrcamentarioService {
       .get<ISPOTotalAutorizadoDTO[]>(`${this.API_URL}/totalAutorizado`, {
         params,
       })
+      .pipe(catchError((err) => this.handleError(err, this._router)));
+  }
+
+  getFiltroUos() : Observable<ISPOFiltroUos[]> {
+    return this._http
+      .get<ISPOFiltroUos[]>(`${this.API_URL}/filtroUos`)
+      .pipe(catchError((err) => this.handleError(err, this._router)));
+  }
+
+
+  getFiltroPos(ano: number,codUosList: string[]) : Observable<ISPOFiltroPos[]> {
+    return this._http
+      .get<ISPOFiltroPos[]>(`${this.API_URL}/filtroPos/${ano}/${codUosList}`)
       .pipe(catchError((err) => this.handleError(err, this._router)));
   }
 

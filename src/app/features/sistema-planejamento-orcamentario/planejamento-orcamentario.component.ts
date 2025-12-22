@@ -230,8 +230,17 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
         next: (response: ISPOFiltroPos[]) => {
           this.POList = response;
           this.filteredPOList = [...response];
+
+          // Sincroniza selectedPOs com as novas POs carregadas
           this.updateSelectedPOs();
-          console.log("POS", response);
+
+          // Atualiza filteredPOList removendo as POs já selecionadas
+          this.filteredPOList = this.POList.filter(po =>
+            !this.selectedPOs.some(s => s.cod_po === po.cod_po)
+          );
+
+          console.log("POS carregadas:", response);
+          console.log("POs selecionadas:", this.selectedPOs);
         },
         error: (err) => {
           console.error("Erro ao carregar as POS:", err);
@@ -438,15 +447,15 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
     // Verifica se já foi selecionado
     if (!this.filter.po.includes(po.cod_po)) {
-      this.filter.po.push(po.cod_po);
-      this.selectedPOs.push(po);
+      this.filter.po = [...this.filter.po, po.cod_po]; // Cria novo array para reatividade
+      this.selectedPOs = [...this.selectedPOs, po]; // Cria novo array para reatividade
 
-      // Atualiza lista filtrada
+      // Atualiza lista filtrada removendo o item selecionado
       this.filteredPOList = this.filteredPOList.filter(item =>
         item.cod_po !== po.cod_po
       );
 
-      this.handleFilterChange("po", this.filter.po);
+      console.log('✅ PO Adicionada:', po.cod_po, 'Filter.po agora:', this.filter.po);
     }
 
     // Limpa o campo de busca
@@ -463,7 +472,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
     // Adiciona de volta à lista filtrada se existir
     if (removedPO && this.POList) {
-      this.filteredPOList.push(removedPO);
+      this.filteredPOList = [...this.filteredPOList, removedPO];
       this.filteredPOList.sort((a, b) => a.nome_po.localeCompare(b.nome_po));
     }
 
@@ -471,7 +480,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       this.filter.po = [-1];
     }
 
-    this.handleFilterChange("po", this.filter.po);
+    console.log('❌ PO Removida:', poId, 'Filter.po agora:', this.filter.po);
   }
 
   // Atualiza listas de selecionados quando os dados são carregados
@@ -497,9 +506,12 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.selectedPOs = this.POList.filter(po =>
-      this.filter.po.includes(po.cod_po)
-    );
+    // Sincroniza selectedPOs com os IDs em filter.po usando a nova lista POList
+    this.selectedPOs = this.filter.po
+      .map(poId => this.POList.find(po => po.cod_po === poId))
+      .filter((po): po is ISPOFiltroPos => po !== undefined);
+
+    console.log('🔄 updateSelectedPOs sincronizado:', this.selectedPOs);
 
     // Atualiza lista filtrada
     this.filteredPOList = this.POList.filter(po =>
@@ -602,10 +614,10 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
       if (!this.filter.uo.length) return;
 
-      this.filter.po = [-1];
+      // IMPORTANTE: Manter as POs selecionadas quando UO for alterada
+      // Apenas resetar a lista de POs disponíveis e recarregar
       this.POList = [];
       this.filteredPOList = [];
-      this.selectedPOs = [];
       this.poSearchTerm = '';
       this.getListPos(this.filter.ano, this.filter.uo);
     } else if (origin === "gnd" && this.filter.gnd.includes(-1)) {

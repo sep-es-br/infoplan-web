@@ -64,7 +64,7 @@
                   <!-- Ano -->
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Ano</span>
-                    <nb-select name="ano" placeholder="Selecionar" size="tiny" [(ngModel)]="selectedYear"
+                    <nb-select name="ano" placeholder="Selecionar" size="tiny" [(ngModel)]="this.filter.ano"
                       (selectedChange)="handleFilterChange('ano', [$event])" #customSelect>
                       <nb-option *ngFor="let ano of yearsList" [value]="ano.num">
                         {{ ano.num }}
@@ -83,15 +83,6 @@
                     </nb-select>
                   </div>
 
-                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
-                    <span class="mb-1">UOS</span>
-                    <nb-select multiple name="uo" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.uo"
-                      (selectedChange)="handleFilterChange('uo', $event)" #customSelect>
-                      <nb-option *ngFor="let uo of UOList" [value]="uo.id">
-                        {{ uo.name }}
-                      </nb-option>
-                    </nb-select>
-                  </div>
 
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">GND</span>
@@ -114,15 +105,57 @@
                     </nb-select>
                   </div>
 
+                  <!-- UO com autocomplete e chips -->
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
+                    <span class="mb-1">UOS</span>
+
+                    <!-- Input de busca para UO -->
+                    <input class="autocomplete-input-uo" type="text" nbInput fullWidth name="uoSearch"
+                      placeholder="Buscar UO..." autocomplete="off" [nbAutocomplete]="autoUo" [(ngModel)]="uoSearchTerm"
+                      (input)="onUOSearch($event)" fieldSize="tiny" />
+
+                    <nb-autocomplete #autoUo (selectedChange)="onUOSelected($event)">
+                      <nb-option *ngFor="let uo of filteredUOList" [value]="uo" (mousedown)="onUOSelected(uo)">
+                        {{ uo.cod_uo }} - {{ uo.nome_uo }}
+                      </nb-option>
+                    </nb-autocomplete>
+
+                    <!-- Chips para UOs selecionadas -->
+                    <div class="chips-container mt-2" *ngIf="selectedUOs.length > 0">
+                      <nb-tag *ngFor="let uo of selectedUOs" [text]="formatUOName(uo)" [removable]="true"
+                        [nbTooltip]="uo.cod_uo + ' - ' + uo.nome_uo" (remove)="removeUO(uo.cod_uo)" size="tiny"
+                        appearance="filled">
+                      </nb-tag>
+                    </div>
+                  </div>
+
+                  <!-- PO com multiselect -->
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">POS</span>
+
                     <nb-select multiple name="po" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.po"
-                      (selectedChange)="handleFilterChange('po', $event)" #customSelect>
-                      <nb-option *ngFor="let po of POList" [value]="po.id">
-                        {{ po.name }}
+                      (selectedChange)="handleFilterChange('po', $event)"
+                      [disabled]="!filter.uo || filter.uo.length === 0 || filter.uo.includes(-1) || !POList || POList.length === 0"
+                      #customSelect>
+                      <nb-option *ngFor="let po of POList" [value]="po.cod_po">
+                        {{ po.cod_po }} - {{ po.nome_po }}
                       </nb-option>
                     </nb-select>
+
+                    <!-- Mensagem quando não há UOs selecionadas -->
+                    <div *ngIf="!filter.uo || filter.uo.length === 0 || filter.uo.includes(-1)"
+                      class="text-muted small mt-1 sub-title-po">
+                      Selecione uma UO primeiro
+                    </div>
+
+                    <!-- Mensagem quando não há POs -->
+                    <div
+                      *ngIf="filter.uo && filter.uo.length > 0 && !filter.uo.includes(-1) && (!POList || POList.length === 0)"
+                      class="text-warning small mt-1">
+                      Nenhuma PO disponível para as UOs selecionadas
+                    </div>
                   </div>
+
                 </div>
               </div>
             </form>
@@ -368,8 +401,7 @@
   <!-- <div class="row px-2">
     <div class="d-flex flex-wrap col-12 col-xxl-6 p-0"></div>
   </div> -->
-
 </div>
-  <nb-layout-footer class="mt-2">
-    <ngx-footer [timestamp]="timesTamp"></ngx-footer>
-  </nb-layout-footer>
+<nb-layout-footer class="mt-2">
+  <ngx-footer [timestamp]="timesTamp"></ngx-footer>
+</nb-layout-footer>

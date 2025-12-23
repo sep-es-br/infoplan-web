@@ -292,8 +292,8 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private formatValue(value: number): string {
-    if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(0) + "B";
-    if (value >= 1_000_000) return (value / 1_000_000).toFixed(0) + "M";
+    if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(0) + " bi";
+    if (value >= 1_000_000) return (value / 1_000_000).toFixed(0) + " mi";
     return value.toString();
   }
 

@@ -108,8 +108,8 @@ export class DashboardUoComponent implements OnChanges, OnDestroy {
       .slice(0, 5)
       .reverse();
 
-      console.log("ORDEM - : ", top5)
-      console.log("DADOS VINDO : ", dados)
+    console.log("ORDEM - : ", top5);
+    console.log("DADOS VINDO : ", dados);
     this.chartData = {
       data: {
         labels: top5.map((d) => `${d.uo} - ${d.nome}`),
@@ -208,6 +208,46 @@ export class DashboardUoComponent implements OnChanges, OnDestroy {
     });
   }
 
+  // handleTableSearch(query: string): void {
+  //   if (!query || query.length < 3) {
+  //     this.processarDados(this.dasboardResponse);
+  //     return;
+  //   }
+
+  //   const search = query.toLowerCase().trim();
+
+  //   const filtered = this.dasboardResponse.filter((item: ISPODashboardUo) => {
+  //     const autorizado =
+  //       item.vlr_autorizado
+  //         ?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+  //         .replace("R$", "")
+  //         .trim() || "0";
+  //     const contratado =
+  //       item.vlr_contratado
+  //         ?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+  //         .replace("R$", "")
+  //         .trim() || "0";
+  //     const previsto =
+  //       item.vlr_previsto
+  //         ?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+  //         .replace("R$", "")
+  //         .trim() || "0";
+  //     const codigoUO = item.uo;
+  //     const nome = item.nome;
+  //     return (
+  //       nome.toLocaleLowerCase().includes(search) ||
+  //       codigoUO.toLowerCase().includes(search) ||
+  //       autorizado.toLowerCase().includes(search) ||
+  //       contratado.toLowerCase().includes(search) ||
+  //       previsto.includes(search)
+  //     );
+  //   });
+
+  //   this.processarDados(filtered);
+  // }
+
+  // ==================== Busca Inteligente ====================
+
   handleTableSearch(query: string): void {
     if (!query || query.length < 3) {
       this.processarDados(this.dasboardResponse);
@@ -215,18 +255,70 @@ export class DashboardUoComponent implements OnChanges, OnDestroy {
     }
 
     const search = query.toLowerCase().trim();
-
-    const filtered = this.dasboardResponse.filter((item: ISPODashboardUo) => {
-
-      const codigoUO = item.uo;
-      const nome = item.nome;
-      return (
-        nome.toLocaleLowerCase().includes(search) ||
-        codigoUO.toLowerCase().includes(search)
-      );
-    });
+    const filtered = this.dasboardResponse.filter(
+      (item: ISPODashboardUo) =>
+        this.buscarEmTexto(search, item) ||
+        this.buscarValorMonetario(search, [
+          item.vlr_autorizado,
+          item.vlr_contratado,
+          item.vlr_previsto,
+        ])
+    );
 
     this.processarDados(filtered);
+  }
+
+  private buscarEmTexto(search: string, item: ISPODashboardUo): boolean {
+    return [item.nome, item.uo, item.sigla?.toString()].some((campo) =>
+      campo?.toLowerCase().includes(search)
+    );
+  }
+
+  private buscarValorMonetario(
+    query: string,
+    valores: (number | null | undefined)[]
+  ): boolean {
+    const match = query.match(
+      /^(>=?|<=?|=)?(\d{3,}(?:[.,]\d+)?)(k|m|mi|b|bi)?$/
+    );
+    if (!match) return false;
+
+    const [, operador = "=", numero, sufixo] = match;
+    const valorConvertido = this.converterParaNumero(numero, sufixo);
+
+    return valores.some(
+      (valor) =>
+        valor != null && this.compararValores(valor, valorConvertido, operador)
+    );
+  }
+
+  private converterParaNumero(numero: string, sufixo?: string): number {
+    const multiplicadores: Record<string, number> = {
+      k: 1e3,
+      m: 1e6,
+      mi: 1e6,
+      b: 1e9,
+      bi: 1e9,
+    };
+
+    const valor = parseFloat(numero.replace(",", "."));
+    return valor * (sufixo ? multiplicadores[sufixo] : 1);
+  }
+
+  private compararValores(
+    valorItem: number,
+    valorBusca: number,
+    operador: string
+  ): boolean {
+    const operacoes: Record<string, (a: number, b: number) => boolean> = {
+      ">": (a, b) => a > b,
+      ">=": (a, b) => a >= b,
+      "<": (a, b) => a < b,
+      "<=": (a, b) => a <= b,
+      "=": (a, b) => Math.abs(a - b) <= b * 0.01,
+    };
+
+    return operacoes[operador]?.(valorItem, valorBusca) ?? false;
   }
 
   handleTableDownload(): void {

@@ -59,7 +59,6 @@ export class DashboardUoComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"].currentValue) {
-      console.log("filtro", this.filter);
       this.loadData();
     }
   }

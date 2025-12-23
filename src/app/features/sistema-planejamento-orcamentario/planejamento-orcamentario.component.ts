@@ -31,14 +31,14 @@ import { PlanejamentoOrcamentarioService } from "../../core/service/planejamento
 import { finalize, takeUntil } from "rxjs/operators";
 
 const DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS: IPlanejamentoOrcamentarioFilter =
-{
-  ano: environment.planejamentoOrcamentarioFilter.ano,
-  tipoFonte: environment.planejamentoOrcamentarioFilter.tipoFonte,
-  uo: environment.planejamentoOrcamentarioFilter.uo,
-  mes: environment.planejamentoOrcamentarioFilter.mes,
-  po: environment.planejamentoOrcamentarioFilter.po,
-  gnd: environment.planejamentoOrcamentarioFilter.gnd,
-};
+  {
+    ano: environment.planejamentoOrcamentarioFilter.ano,
+    tipoFonte: environment.planejamentoOrcamentarioFilter.tipoFonte,
+    uo: environment.planejamentoOrcamentarioFilter.uo,
+    mes: environment.planejamentoOrcamentarioFilter.mes,
+    po: environment.planejamentoOrcamentarioFilter.po,
+    gnd: environment.planejamentoOrcamentarioFilter.gnd,
+  };
 
 interface IPlanejamentoOrcamentarioFilter {
   ano: number;
@@ -144,8 +144,8 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   POList: ISPOFiltroPos[];
 
   // Propriedades para autocomplete e chips
-  uoSearchTerm: string = '';
-  poSearchTerm: string = '';
+  uoSearchTerm: string = "";
+  poSearchTerm: string = "";
   filteredUOList: ISPOFiltroUos[] = [];
   filteredPOList: ISPOFiltroPos[] = [];
   selectedUOs: ISPOFiltroUos[] = [];
@@ -235,8 +235,8 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
           this.updateSelectedPOs();
 
           // Atualiza filteredPOList removendo as POs já selecionadas
-          this.filteredPOList = this.POList.filter(po =>
-            !this.selectedPOs.some(s => s.cod_po === po.cod_po)
+          this.filteredPOList = this.POList.filter(
+            (po) => !this.selectedPOs.some((s) => s.cod_po === po.cod_po)
           );
 
           console.log("POS carregadas:", response);
@@ -268,7 +268,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
           this.UOList = response;
           this.filteredUOList = [...response];
           this.updateSelectedUOs();
-          console.log("UOS", response);
         },
         error: (err) => {
           console.error("Erro ao carregar as UOS:", err);
@@ -280,244 +279,136 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       });
   }
 
-  // Métodos para autocomplete UO
-  onUOSearch(event: any): void {
-    const searchTerm = event.target.value.toLowerCase();
-    this.uoSearchTerm = searchTerm;
+  // removeUO(uoId: string): void {
+  //   this.filter.uo = this.filter.uo.filter((id) => id !== uoId);
 
-    if (searchTerm.trim() === '') {
-      this.filteredUOList = this.UOList.filter(uo =>
-        !this.selectedUOs.some(s => s.cod_uo === uo.cod_uo)
-      );
-      return;
-    }
+  //   const removedUO = this.selectedUOs.find((uo) => uo.cod_uo === uoId);
+  //   this.selectedUOs = this.selectedUOs.filter((uo) => uo.cod_uo !== uoId);
 
-    this.filteredUOList = this.UOList.filter(uo =>
-      (uo.nome_uo.toLowerCase().includes(searchTerm) ||
-        uo.cod_uo.toString().toLowerCase().includes(searchTerm)) &&
-      !this.selectedUOs.some(s => s.cod_uo === uo.cod_uo)
-    );
-  }
+  //   if (removedUO) {
+  //     this.filteredUOList.push(removedUO);
+  //     this.filteredUOList.sort((a, b) => a.nome_uo.localeCompare(b.nome_uo));
+  //   }
 
-  onUOSelected(selectedValue: any): void {
-    console.log('🎯 onUOSelected chamado com:', selectedValue);
+  //   if (this.filter.uo.length === 0) {
+  //     this.POList = [];
+  //     this.filteredPOList = [];
+  //     this.selectedPOs = [];
+  //     this.handleFilterChange("uo", this.filter.uo);
+  //   } else {
+  //     this.getListPos(this.filter.ano, this.filter.uo);
+  //     this.handleFilterChange("uo", this.filter.uo);
+  //   }
+  // }
 
-    // Previne que o objeto seja exibido no input
-    setTimeout(() => {
-      this.uoSearchTerm = '';
-    }, 0);
+  // onPOSearch(event: any): void {
+  //   const searchTerm = event.target.value.toLowerCase();
+  //   this.poSearchTerm = searchTerm;
 
-    // Chama o método de seleção
-    if (selectedValue && selectedValue.cod_uo) {
-      this.selectUO(selectedValue);
-    }
-  }
+  //   if (searchTerm.trim() === "") {
+  //     this.filteredPOList =
+  //       this.POList?.filter(
+  //         (po) => !this.selectedPOs.some((s) => s.cod_po === po.cod_po)
+  //       ) || [];
+  //     return;
+  //   }
 
-  selectUO(uo: ISPOFiltroUos): void {
-    console.log('🔵 selectUO chamado!', uo);
+  //   this.filteredPOList = (this.POList || []).filter(
+  //     (po) =>
+  //       (po.nome_po.toLowerCase().includes(searchTerm) ||
+  //         po.cod_po.toString().toLowerCase().includes(searchTerm)) &&
+  //       !this.selectedPOs.some((s) => s.cod_po === po.cod_po)
+  //   );
+  // }
 
-    // Validação do objeto
-    if (!uo || !uo.cod_uo) {
-      console.error('❌ UO inválida:', uo);
-      return;
-    }
+  // onPOSelected(selectedValue: any): void {
+  //   setTimeout(() => {
+  //     this.poSearchTerm = "";
+  //   }, 0);
 
-    if (!this.filter.uo) {
-      this.filter.uo = [];
-    }
+  //   if (selectedValue && selectedValue.cod_po) {
+  //     this.selectPO(selectedValue);
+  //   }
+  // }
 
-    // Remove o valor -1 (todos) se existir
-    if (this.filter.uo.includes(-1)) {
-      console.log('🔄 Removendo -1 do filter.uo');
-      this.filter.uo = this.filter.uo.filter(id => id !== -1);
-    }
+  // selectPO(po: ISPOFiltroPos): void {
+  //   if (!po || !po.cod_po) {
+  //     console.error("PO inválida:", po);
+  //     return;
+  //   }
 
-    // Verifica se já foi selecionado
-    if (!this.filter.uo.includes(uo.cod_uo)) {
-      console.log('✅ Adicionando UO:', uo.cod_uo, uo.nome_uo);
-      this.filter.uo.push(uo.cod_uo);
-      this.selectedUOs.push(uo);
-      console.log('📋 selectedUOs agora tem:', this.selectedUOs.length, 'itens');
+  //   if (!this.filter.po) {
+  //     this.filter.po = [];
+  //   }
 
-      // Atualiza lista filtrada
-      this.filteredUOList = this.filteredUOList.filter(item =>
-        item.cod_uo !== uo.cod_uo
-      );
+  //   // Remove o valor -1 (todos) se existir
+  //   if (this.filter.po.includes(-1)) {
+  //     this.filter.po = this.filter.po.filter((id) => id !== -1);
+  //   }
 
-      this.handleFilterChange("uo", this.filter.uo);
-    } else {
-      console.log('⚠️ UO já estava selecionada:', uo.nome_uo);
-    }
+  //   // Verifica se já foi selecionado
+  //   if (!this.filter.po.includes(po.cod_po)) {
+  //     this.filter.po = [...this.filter.po, po.cod_po]; // Cria novo array para reatividade
+  //     this.selectedPOs = [...this.selectedPOs, po]; // Cria novo array para reatividade
 
-    // Limpa o campo de busca
-    this.uoSearchTerm = '';
-    console.log('🧹 Campo de busca limpo');
-  }
+  //     // Atualiza lista filtrada removendo o item selecionado
+  //     this.filteredPOList = this.filteredPOList.filter(
+  //       (item) => item.cod_po !== po.cod_po
+  //     );
+  //   }
 
-  formatUOName(uo: any): string {
-    const fullText = `${uo.cod_uo} - ${uo.nome_uo}`;
+  //   this.poSearchTerm = "";
+  // }
 
-    // Define um limite de caracteres (ajuste conforme necessário)
-    const maxLength = 40;
+  // removePO(poId: string): void {
+  //   // Remove do filtro
+  //   this.filter.po = this.filter.po.filter((id) => id !== poId);
 
-    if (fullText.length > maxLength) {
-      return `${uo.cod_uo} - ${uo.nome_uo.substring(0, maxLength - 30)}...`;
-    }
+  //   // Remove da lista de selecionados
+  //   const removedPO = this.selectedPOs.find((po) => po.cod_po === poId);
+  //   this.selectedPOs = this.selectedPOs.filter((po) => po.cod_po !== poId);
 
-    return fullText;
-  }
+  //   // Adiciona de volta à lista filtrada se existir
+  //   if (removedPO && this.POList) {
+  //     this.filteredPOList = [...this.filteredPOList, removedPO];
+  //     this.filteredPOList.sort((a, b) => a.nome_po.localeCompare(b.nome_po));
+  //   }
 
-  removeUO(uoId: string): void {
-    // Remove do filtro
-    this.filter.uo = this.filter.uo.filter(id => id !== uoId);
+  //   if (this.filter.po.length === 0) {
+  //     this.filter.po = [-1];
+  //   }
 
-    // Remove da lista de selecionados
-    const removedUO = this.selectedUOs.find(uo => uo.cod_uo === uoId);
-    this.selectedUOs = this.selectedUOs.filter(uo => uo.cod_uo !== uoId);
+  // }
 
-    // Adiciona de volta à lista filtrada se existir
-    if (removedUO) {
-      this.filteredUOList.push(removedUO);
-      this.filteredUOList.sort((a, b) => a.nome_uo.localeCompare(b.nome_uo));
-    }
+  // private updateSelectedUOs(): void {
+  //   if (!this.filter.uo || this.filter.uo.includes(-1)) {
+  //     this.selectedUOs = [];
+  //     return;
+  //   }
 
-    // Se não houver UOs selecionadas, limpa POs
-    if (this.filter.uo.length === 0) {
-      this.filter.uo = [-1];
-      this.filter.po = [-1];
-      this.POList = [];
-      this.filteredPOList = [];
-      this.selectedPOs = [];
-    } else {
-      // Busca POs atualizadas
-      this.getListPos(this.filter.ano, this.filter.uo);
-    }
+  //   this.selectedUOs = this.UOList.filter((uo) =>
+  //     this.filter.uo.includes(uo.cod_uo)
+  //   );
 
-    this.handleFilterChange("uo", this.filter.uo);
-  }
+  //   this.filteredUOList = this.UOList.filter(
+  //     (uo) => !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
+  //   );
+  // }
 
-  // Métodos para autocomplete PO
-  onPOSearch(event: any): void {
-    const searchTerm = event.target.value.toLowerCase();
-    this.poSearchTerm = searchTerm;
+  // private updateSelectedPOs(): void {
+  //   if (!this.filter.po || this.filter.po.includes(-1) || !this.POList) {
+  //     this.selectedPOs = [];
+  //     return;
+  //   }
 
-    if (searchTerm.trim() === '') {
-      this.filteredPOList = this.POList?.filter(po =>
-        !this.selectedPOs.some(s => s.cod_po === po.cod_po)
-      ) || [];
-      return;
-    }
+  //   this.selectedPOs = this.filter.po
+  //     .map((poId) => this.POList.find((po) => po.cod_po === poId))
+  //     .filter((po): po is ISPOFiltroPos => po !== undefined);
 
-    this.filteredPOList = (this.POList || []).filter(po =>
-      (po.nome_po.toLowerCase().includes(searchTerm) ||
-        po.cod_po.toString().toLowerCase().includes(searchTerm)) &&
-      !this.selectedPOs.some(s => s.cod_po === po.cod_po)
-    );
-  }
-
-  onPOSelected(selectedValue: any): void {
-    console.log('🎯 onPOSelected chamado com:', selectedValue);
-
-    // Previne que o objeto seja exibido no input
-    setTimeout(() => {
-      this.poSearchTerm = '';
-    }, 0);
-
-    // Chama o método de seleção
-    if (selectedValue && selectedValue.cod_po) {
-      this.selectPO(selectedValue);
-    }
-  }
-
-  selectPO(po: ISPOFiltroPos): void {
-    // Validação do objeto
-    if (!po || !po.cod_po) {
-      console.error('PO inválida:', po);
-      return;
-    }
-
-    if (!this.filter.po) {
-      this.filter.po = [];
-    }
-
-    // Remove o valor -1 (todos) se existir
-    if (this.filter.po.includes(-1)) {
-      this.filter.po = this.filter.po.filter(id => id !== -1);
-    }
-
-    // Verifica se já foi selecionado
-    if (!this.filter.po.includes(po.cod_po)) {
-      this.filter.po = [...this.filter.po, po.cod_po]; // Cria novo array para reatividade
-      this.selectedPOs = [...this.selectedPOs, po]; // Cria novo array para reatividade
-
-      // Atualiza lista filtrada removendo o item selecionado
-      this.filteredPOList = this.filteredPOList.filter(item =>
-        item.cod_po !== po.cod_po
-      );
-
-      console.log('✅ PO Adicionada:', po.cod_po, 'Filter.po agora:', this.filter.po);
-    }
-
-    // Limpa o campo de busca
-    this.poSearchTerm = '';
-  }
-
-  removePO(poId: string): void {
-    // Remove do filtro
-    this.filter.po = this.filter.po.filter(id => id !== poId);
-
-    // Remove da lista de selecionados
-    const removedPO = this.selectedPOs.find(po => po.cod_po === poId);
-    this.selectedPOs = this.selectedPOs.filter(po => po.cod_po !== poId);
-
-    // Adiciona de volta à lista filtrada se existir
-    if (removedPO && this.POList) {
-      this.filteredPOList = [...this.filteredPOList, removedPO];
-      this.filteredPOList.sort((a, b) => a.nome_po.localeCompare(b.nome_po));
-    }
-
-    if (this.filter.po.length === 0) {
-      this.filter.po = [-1];
-    }
-
-    console.log('❌ PO Removida:', poId, 'Filter.po agora:', this.filter.po);
-  }
-
-  // Atualiza listas de selecionados quando os dados são carregados
-  private updateSelectedUOs(): void {
-    if (!this.filter.uo || this.filter.uo.includes(-1)) {
-      this.selectedUOs = [];
-      return;
-    }
-
-    this.selectedUOs = this.UOList.filter(uo =>
-      this.filter.uo.includes(uo.cod_uo)
-    );
-
-    // Atualiza lista filtrada
-    this.filteredUOList = this.UOList.filter(uo =>
-      !this.selectedUOs.some(s => s.cod_uo === uo.cod_uo)
-    );
-  }
-
-  private updateSelectedPOs(): void {
-    if (!this.filter.po || this.filter.po.includes(-1) || !this.POList) {
-      this.selectedPOs = [];
-      return;
-    }
-
-    // Sincroniza selectedPOs com os IDs em filter.po usando a nova lista POList
-    this.selectedPOs = this.filter.po
-      .map(poId => this.POList.find(po => po.cod_po === poId))
-      .filter((po): po is ISPOFiltroPos => po !== undefined);
-
-    console.log('🔄 updateSelectedPOs sincronizado:', this.selectedPOs);
-
-    // Atualiza lista filtrada
-    this.filteredPOList = this.POList.filter(po =>
-      !this.selectedPOs.some(s => s.cod_po === po.cod_po)
-    );
-  }
+  //   this.filteredPOList = this.POList.filter(
+  //     (po) => !this.selectedPOs.some((s) => s.cod_po === po.cod_po)
+  //   );
+  // }
 
   private dataCards() {
     this.totals.totalAutorizado =
@@ -526,8 +417,10 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
         0
       ) || 0;
     this.totals.totalContratado =
-      this.totalPrevistoResponse?.reduce((total, item) => total + item.contratado, 0) ||
-      0;
+      this.totalPrevistoResponse?.reduce(
+        (total, item) => total + item.contratado,
+        0
+      ) || 0;
     this.totals.totalEmpenhado =
       this.totalAutorizadoResponse?.reduce(
         (total, item) => total + item.empenhado,
@@ -544,8 +437,10 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
         0
       ) || 0;
     this.totals.totalPlanejado =
-      this.totalPrevistoResponse?.reduce((total, item) => total + item.previsto, 0) ||
-      0;
+      this.totalPrevistoResponse?.reduce(
+        (total, item) => total + item.previsto,
+        0
+      ) || 0;
     this.totals.totalRestosAPagar =
       this.totalAutorizadoResponse?.reduce(
         (total, item) => total + item.pago_sem_rap,
@@ -594,13 +489,13 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
         this.filteredPOList = [];
         this.selectedUOs = [];
         this.selectedPOs = [];
-        this.uoSearchTerm = '';
+        this.uoSearchTerm = "";
       } else if (origin === "gnd") {
         this.filter.gnd = [-1];
       } else if (origin === "po") {
         this.filter.po = [-1];
         this.selectedPOs = [];
-        this.poSearchTerm = '';
+        this.poSearchTerm = "";
       }
       return;
     }
@@ -613,12 +508,9 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       this.filter.uo = this.filter.uo.filter((u) => u !== -1);
 
       if (!this.filter.uo.length) return;
-
-      // IMPORTANTE: Manter as POs selecionadas quando UO for alterada
-      // Apenas resetar a lista de POs disponíveis e recarregar
       this.POList = [];
       this.filteredPOList = [];
-      this.poSearchTerm = '';
+      this.poSearchTerm = "";
       this.getListPos(this.filter.ano, this.filter.uo);
     } else if (origin === "gnd" && this.filter.gnd.includes(-1)) {
       this.filter.gnd = this.filter.gnd.filter((g) => g !== -1);
@@ -644,7 +536,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       this.finalFilter.uo = environment.planejamentoOrcamentarioFilter.uo;
       // Limpa seleções
       this.selectedUOs = [];
-      this.uoSearchTerm = '';
+      this.uoSearchTerm = "";
       if (this.UOList) {
         this.filteredUOList = [...this.UOList];
       }
@@ -653,7 +545,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       this.finalFilter.po = environment.planejamentoOrcamentarioFilter.po;
       // Limpa seleções
       this.selectedPOs = [];
-      this.poSearchTerm = '';
+      this.poSearchTerm = "";
       if (this.POList) {
         this.filteredPOList = [...this.POList];
       }
@@ -702,8 +594,8 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     // Limpa seleções
     this.selectedUOs = [];
     this.selectedPOs = [];
-    this.uoSearchTerm = '';
-    this.poSearchTerm = '';
+    this.uoSearchTerm = "";
+    this.poSearchTerm = "";
 
     // Atualiza listas filtradas
     if (this.UOList) {
@@ -909,6 +801,343 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     };
 
     this.filterChanged.emit(this.currentRequestParams);
+  }
+
+  // Métodos para autocomplete UO
+  onUOSearch(event: any): void {
+    const searchTerm = event.target.value.toLowerCase();
+    this.uoSearchTerm = searchTerm;
+
+    // Sempre filtra da lista ORIGINAL completa
+    if (searchTerm.trim() === "") {
+      // Mostra todas as UOs que NÃO estão selecionadas
+      this.filteredUOList = this.UOList.filter(
+        (uo) => !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
+      );
+    } else {
+      // Filtra por termo de busca E remove as selecionadas
+      this.filteredUOList = this.UOList.filter(
+        (uo) =>
+          (uo.nome_uo.toLowerCase().includes(searchTerm) ||
+            uo.cod_uo.toString().toLowerCase().includes(searchTerm)) &&
+          !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
+      );
+    }
+  }
+
+  onUOSelected(selectedValue: any): void {
+    // Previne que o objeto seja exibido no input
+    setTimeout(() => {
+      this.uoSearchTerm = "";
+    }, 0);
+
+    // Chama o método de seleção
+    if (selectedValue && selectedValue.cod_uo) {
+      this.selectUO(selectedValue);
+    }
+  }
+
+  selectUO(uo: ISPOFiltroUos): void {
+    // Validação do objeto
+    if (!uo || !uo.cod_uo) {
+      console.error("❌ UO inválida:", uo);
+      return;
+    }
+
+    if (!this.filter.uo) {
+      this.filter.uo = [];
+    }
+
+    // Remove o valor -1 (todos) se existir
+    if (this.filter.uo.includes(-1)) {
+      console.log("🔄 Removendo -1 do filter.uo");
+      this.filter.uo = this.filter.uo.filter((id) => id !== -1);
+    }
+
+    if (!this.filter.uo.includes(uo.cod_uo)) {
+      this.filter.uo.push(uo.cod_uo);
+      this.selectedUOs.push(uo);
+
+      this.filteredUOList = this.filteredUOList.filter(
+        (item) => item.cod_uo !== uo.cod_uo
+      );
+
+      this.handleFilterChange("uo", this.filter.uo);
+    } else {
+      console.log("⚠️ UO já estava selecionada:", uo.nome_uo);
+    }
+
+    // Limpa o campo de busca
+    this.uoSearchTerm = "";
+    console.log("🧹 Campo de busca limpo");
+  }
+
+  formatUOName(uo: any): string {
+    const fullText = `${uo.cod_uo} - ${uo.nome_uo}`;
+
+    // Define um limite de caracteres (ajuste conforme necessário)
+    const maxLength = 40;
+
+    if (fullText.length > maxLength) {
+      return `${uo.cod_uo} - ${uo.nome_uo.substring(0, maxLength - 30)}...`;
+    }
+
+    return fullText;
+  }
+  // ==================== Métodos de UO ====================
+
+  removeUO(uoId: string): void {
+    const uoRemovida = this.removerDaSelecao(
+      uoId,
+      this.selectedUOs,
+      this.filter.uo,
+      "cod_uo"
+    );
+
+    if (uoRemovida) {
+      this.adicionarDeVoltaAListaFiltrada(
+        uoRemovida,
+        this.filteredUOList,
+        "nome_uo"
+      );
+    }
+
+    this.gerenciarMudancaFiltroUO();
+  }
+
+  private gerenciarMudancaFiltroUO(): void {
+    if (this.filter.uo.length === 0) {
+      this.resetarSelecaoPO();
+    } else {
+      this.getListPos(this.filter.ano, this.filter.uo);
+    }
+
+    this.handleFilterChange("uo", this.filter.uo);
+  }
+
+  private resetarSelecaoPO(): void {
+    this.POList = [];
+    this.filteredPOList = [];
+    this.selectedPOs = [];
+  }
+
+  private updateSelectedUOs(): void {
+    if (this.deveLimparSelecao(this.filter.uo)) {
+      this.selectedUOs = [];
+      this.filteredUOList = [...this.UOList];
+      return;
+    }
+
+    this.selectedUOs = this.UOList.filter((uo) =>
+      this.filter.uo.includes(uo.cod_uo)
+    );
+
+    this.filteredUOList = this.UOList.filter(
+      (uo) => !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
+    );
+  }
+
+  // ==================== Métodos de PO ====================
+
+  onPOSearch(event: any): void {
+    this.realizarBusca(
+      event.target.value,
+      "poSearchTerm",
+      this.POList,
+      this.selectedPOs,
+      "filteredPOList",
+      ["nome_po", "cod_po"]
+    );
+  }
+
+  onPOSelected(selectedValue: any): void {
+    this.limparTermoBuscaAposSelecao("poSearchTerm");
+
+    if (selectedValue?.cod_po) {
+      this.selectPO(selectedValue);
+    }
+  }
+
+  selectPO(po: ISPOFiltroPos): void {
+    if (!this.validarEntidade(po, "cod_po")) {
+      console.error("PO inválida:", po);
+      return;
+    }
+
+    this.inicializarFiltroSeNecessario("po");
+    this.removerValorPadrao(this.filter.po, -1);
+
+    if (!this.filter.po.includes(po.cod_po)) {
+      this.adicionarASelecao(po, this.selectedPOs, this.filter.po, "cod_po");
+      this.removerDaListaFiltrada(po, this.filteredPOList, "cod_po");
+    }
+
+    this.poSearchTerm = "";
+  }
+
+  removePO(poId: string): void {
+    const poRemovida = this.removerDaSelecao(
+      poId,
+      this.selectedPOs,
+      this.filter.po,
+      "cod_po"
+    );
+
+    if (poRemovida && this.POList) {
+      this.adicionarDeVoltaAListaFiltrada(
+        poRemovida,
+        this.filteredPOList,
+        "nome_po"
+      );
+    }
+
+    if (this.filter.po.length === 0) {
+      this.filter.po = [-1];
+    }
+  }
+
+  private updateSelectedPOs(): void {
+    if (this.deveLimparSelecao(this.filter.po) || !this.POList) {
+      this.selectedPOs = [];
+      this.filteredPOList = this.POList ? [...this.POList] : [];
+      return;
+    }
+
+    this.selectedPOs = this.filter.po
+      .map((poId) => this.POList.find((po) => po.cod_po === poId))
+      .filter((po): po is ISPOFiltroPos => po !== undefined);
+
+    this.filteredPOList = this.POList.filter(
+      (po) => !this.selectedPOs.some((s) => s.cod_po === po.cod_po)
+    );
+  }
+
+  // ==================== Métodos Auxiliares Genéricos ====================
+
+  private realizarBusca<T>(
+    valorBusca: string,
+    propriedadeTermoBusca: string,
+    listaOrigem: T[] | null | undefined,
+    listaSelecionados: T[],
+    propriedadeListaFiltrada: string,
+    camposBusca: string[]
+  ): void {
+    const termoBusca = valorBusca.toLowerCase().trim();
+    (this as any)[propriedadeTermoBusca] = termoBusca;
+
+    const lista = listaOrigem || [];
+
+    if (termoBusca === "") {
+      (this as any)[propriedadeListaFiltrada] = lista.filter(
+        (item) => !listaSelecionados.some((s) => this.mesmaEntidade(s, item))
+      );
+      return;
+    }
+
+    (this as any)[propriedadeListaFiltrada] = lista.filter((item) => {
+      const correspondeBusca = camposBusca.some((campo) =>
+        String((item as any)[campo])
+          .toLowerCase()
+          .includes(termoBusca)
+      );
+      const naoSelecionado = !listaSelecionados.some((s) =>
+        this.mesmaEntidade(s, item)
+      );
+      return correspondeBusca && naoSelecionado;
+    });
+  }
+
+  private removerDaSelecao<T>(
+    id: string,
+    listaSelecionados: T[],
+    arrayFiltro: any[],
+    campoId: string
+  ): T | undefined {
+    const indice = arrayFiltro.indexOf(id);
+    if (indice > -1) {
+      arrayFiltro.splice(indice, 1);
+    }
+
+    const itemRemovido = listaSelecionados.find(
+      (item) => (item as any)[campoId] === id
+    );
+
+    const indiceSelecionado = listaSelecionados.findIndex(
+      (item) => (item as any)[campoId] === id
+    );
+    if (indiceSelecionado > -1) {
+      listaSelecionados.splice(indiceSelecionado, 1);
+    }
+
+    return itemRemovido;
+  }
+
+  private adicionarASelecao<T>(
+    item: T,
+    listaSelecionados: T[],
+    arrayFiltro: any[],
+    campoId: string
+  ): void {
+    listaSelecionados.push(item);
+    arrayFiltro.push((item as any)[campoId]);
+  }
+
+  private removerDaListaFiltrada<T>(
+    item: T,
+    listaFiltrada: T[],
+    campoId: string
+  ): void {
+    const indice = listaFiltrada.findIndex(
+      (itemLista) => (itemLista as any)[campoId] === (item as any)[campoId]
+    );
+    if (indice > -1) {
+      listaFiltrada.splice(indice, 1);
+    }
+  }
+
+  private adicionarDeVoltaAListaFiltrada<T>(
+    item: T,
+    listaFiltrada: T[],
+    campoOrdenacao: string
+  ): void {
+    listaFiltrada.push(item);
+    listaFiltrada.sort((a, b) =>
+      (a as any)[campoOrdenacao].localeCompare((b as any)[campoOrdenacao])
+    );
+  }
+
+  private deveLimparSelecao(arrayFiltro: any[] | undefined): boolean {
+    return !arrayFiltro || arrayFiltro.includes(-1);
+  }
+
+  private validarEntidade(entidade: any, campoId: string): boolean {
+    return entidade && entidade[campoId];
+  }
+
+  private inicializarFiltroSeNecessario(chaveFiltro: string): void {
+    if (!(this.filter as any)[chaveFiltro]) {
+      (this.filter as any)[chaveFiltro] = [];
+    }
+  }
+
+  private removerValorPadrao(arrayFiltro: any[], valorPadrao: number): void {
+    const indice = arrayFiltro.indexOf(valorPadrao);
+    if (indice > -1) {
+      arrayFiltro.splice(indice, 1);
+    }
+  }
+
+  private mesmaEntidade(entidade1: any, entidade2: any): boolean {
+    return (
+      entidade1.cod_uo === entidade2.cod_uo ||
+      entidade1.cod_po === entidade2.cod_po
+    );
+  }
+
+  private limparTermoBuscaAposSelecao(propriedadeTermoBusca: string): void {
+    setTimeout(() => {
+      (this as any)[propriedadeTermoBusca] = "";
+    }, 0);
   }
 
   formatNumber(value: number): string {

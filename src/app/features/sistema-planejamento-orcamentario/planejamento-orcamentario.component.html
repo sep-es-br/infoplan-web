@@ -107,9 +107,8 @@
 
                   <!-- UO com autocomplete e chips -->
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
-                    <span class="mb-1">UOS</span>
+                    <span class="mb-1">UO</span>
 
-                    <!-- Input de busca para UO -->
                     <input class="autocomplete-input-uo" type="text" nbInput fullWidth name="uoSearch"
                       placeholder="Buscar UO..." autocomplete="off" [nbAutocomplete]="autoUo" [(ngModel)]="uoSearchTerm"
                       (input)="onUOSearch($event)" fieldSize="tiny" />
@@ -120,7 +119,6 @@
                       </nb-option>
                     </nb-autocomplete>
 
-                    <!-- Chips para UOs selecionadas -->
                     <div class="chips-container mt-2" *ngIf="selectedUOs.length > 0">
                       <nb-tag *ngFor="let uo of selectedUOs" [text]="formatUOName(uo)" [removable]="true"
                         [nbTooltip]="uo.cod_uo + ' - ' + uo.nome_uo" (remove)="removeUO(uo.cod_uo)" size="tiny"
@@ -131,7 +129,7 @@
 
                   <!-- PO com multiselect -->
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
-                    <span class="mb-1">POS</span>
+                    <span class="mb-1">PO</span>
 
                     <nb-select multiple name="po" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.po"
                       (selectedChange)="handleFilterChange('po', $event)"

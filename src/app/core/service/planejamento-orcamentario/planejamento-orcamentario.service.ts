@@ -9,6 +9,7 @@ import {
 import { Router } from "@angular/router";
 import { Observable, throwError } from "rxjs";
 import {
+  ISPODashboardUo,
   ISPOFiltroPos,
   ISPOFiltroUos,
   ISPOTotalAutorizadoDTO,
@@ -27,6 +28,14 @@ export class PlanejamentoOrcamentarioService {
   private readonly _router: Router = inject(Router);
 
   constructor() { }
+
+
+  getDashboardUo(filtro: ISPOTotalAutorizadoFilter) : Observable<ISPODashboardUo[]> {
+    const params: HttpParams = this.returnParamsAutorizado(filtro);
+    return this._http
+      .get<ISPODashboardUo[]>(`${this.API_URL}/dashboardUo`, { params })
+      .pipe(catchError((err) => this.handleError(err, this._router)));
+  }
 
   getTotalPrevisto(
     filter: ISPOTotalPrevistoFilter

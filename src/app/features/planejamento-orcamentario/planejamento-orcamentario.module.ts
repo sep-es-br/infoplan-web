@@ -1,15 +1,15 @@
 import { CommonModule } from "@angular/common";
 import { PlanejamentoOrcamentarioComponent } from "./planejamento-orcamentario.component";
 import { NgModule } from "@angular/core";
-import { NbButtonModule, NbCardModule, NbIconModule, NbSelectModule, NbLayoutModule, NbAutocompleteModule, NbTagListComponent, NbTagModule } from "@nebular/theme";
+import { NbButtonModule, NbCardModule, NbIconModule, NbSelectModule, NbLayoutModule, NbAutocompleteModule, NbTagModule } from "@nebular/theme";
 import { FormsModule } from "@angular/forms";
 import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
-import { ChartHorizontalPOSComponent } from "./data/programas-orcamentarias/grafico-pos/chart-horizontal-pos.component";
 import { ThemeModule } from "../../@theme/theme.module";
+import { DashboardUoComponent } from "./data/dashboard-uo/dashboard-uo/dashboard-uo.component";
 
 @NgModule({
   declarations: [
-    PlanejamentoOrcamentarioComponent
+    PlanejamentoOrcamentarioComponent,
   ],
   imports: [
     CommonModule,
@@ -19,11 +19,11 @@ import { ThemeModule } from "../../@theme/theme.module";
     NbSelectModule,
     NbCardModule,
     TextTruncatePipe,
-    ChartHorizontalPOSComponent,
     NbLayoutModule,
     ThemeModule,
     NbAutocompleteModule,
-    NbTagModule
+    NbTagModule,
+    DashboardUoComponent
 ],
 })
 export class PlanejamentoOrcamentarioModule {}

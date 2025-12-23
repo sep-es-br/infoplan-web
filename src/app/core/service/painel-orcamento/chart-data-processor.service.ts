@@ -25,8 +25,12 @@ const CHART_COLORS = [
   "#8EFFFD", // azul esverdeado (ponte entre azul e verde)
   "#849299ff", // azul acinzentado (conecta azul com cinza)
   "#B67DAD", // roxo rosado (ponte entre roxo e rosa)
-  "#a4d1b8ff"  // verde acinzentado (conecta verde com cinza)
+  "#a4d1b8ff",  // verde acinzentado (conecta verde com cinza)
+  "#A970B6", // PREVISTO
+  "#9089E7", // CONTRATADO
+  "#5E9FCC" // AUTORIZADO
 ];
+
 // const CHART_COLORS = [
 //   "#4DB6D2",    // Salmão suave - harmoniza com o rosa e amarelo
 //   "#F58B9B",    // Roxo médio - ponte entre o roxo e azul

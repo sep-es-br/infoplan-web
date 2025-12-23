@@ -1,0 +1,15 @@
+<ngx-flip-table [showSearchField]="true"
+  [cardTitle]="title"
+  [loadingStatus]="loadingStatus"
+  [tableContent]="tableContent"
+  (executeDownload)="handleTableDownload()"
+  [backCardHeight]="500"
+  (executeSearch)="handleTableSearch($event)"
+  [showMaximizeButton]="true"
+  [showSearchField]="true"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('dashboard-uo',$event)">
+  <ngx-org-chart-horizontal
+    [chart]="chartData"
+    [height]="isChartMaximized('dashboard-uo') ? calcMaximizedHeight() : 500" card-front>
+  </ngx-org-chart-horizontal>
+</ngx-flip-table>

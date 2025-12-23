@@ -49,7 +49,6 @@ export class ChartHorizontalPOSComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'].currentValue) {
-      // console.log("dados", this.filter)
     }
   }
 

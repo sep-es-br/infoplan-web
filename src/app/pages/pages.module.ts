@@ -9,7 +9,7 @@ import { StrategicProjectsModule } from "../features/strategic-projects/strategi
 import { MiscellaneousModule } from "./miscellaneous/miscellaneous.module";
 import { PagesRoutingModule } from "./pages-routing.module";
 import { PagesComponent } from "./pages.component";
-import { PlanejamentoOrcamentarioModule } from "../features/sistema-planejamento-orcamentario/planejamento-orcamentario.module";
+import { PlanejamentoOrcamentarioModule } from "../features/planejamento-orcamentario/planejamento-orcamentario.module";
 
 @NgModule({
   imports: [

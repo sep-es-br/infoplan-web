@@ -386,19 +386,20 @@
   </div>
 
   <div class="row g-2 px-2 py-2">
-    <div class="chart-container" [class.maximized]="isChartMaximized('pos-chart')"
-      [class.col-12]="!isChartMaximized('pos-chart')" [class.col-md-12]="!isChartMaximized('pos-chart')"
-      [class.col-lg-6]="!isChartMaximized('pos-chart')" [class.col-xl-7]="!isChartMaximized('pos-chart')">
-      <ngx-chart-horizontal-pos-component class="w-100"
-        [filter]="currentRequestParams"></ngx-chart-horizontal-pos-component>
+    <div class="chart-container"
+      [class.maximized]="isChartMaximized('dashboard-uo')"
+      [class.col-12]="!isChartMaximized('dashboard-uo')"
+      [class.col-md-12]="!isChartMaximized('dashboard-uo')"
+      [class.col-lg-6]="!isChartMaximized('dashboard-uo')"
+      [class.col-xl-7]="!isChartMaximized('dashboard-uo')">
+      <ngx-dashboard-uo class="w-100" [filter]="currentRequestParams"></ngx-dashboard-uo>
+      <!-- <ngx-chart-horizontal-pos-component class="w-100"
+        [filter]="currentRequestParams"></ngx-chart-horizontal-pos-component> -->
     </div>
   </div>
   <div class="d-flex flex-wrap col-12 col-xxl-6 p-0">
     <div class="col-12 col-md-6 px-x1 mb-1 align-self-start"></div>
   </div>
-  <!-- <div class="row px-2">
-    <div class="d-flex flex-wrap col-12 col-xxl-6 p-0"></div>
-  </div> -->
 </div>
 <nb-layout-footer class="mt-2">
   <ngx-footer [timestamp]="timesTamp"></ngx-footer>

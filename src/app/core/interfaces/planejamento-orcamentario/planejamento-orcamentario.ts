@@ -44,10 +44,18 @@ export interface ISPOFiltroUos {
   cod_uo: string;
 }
 
-
 export interface ISPOFiltroPos {
   nome_po: string;
   cod_po: string;
+}
+
+export interface ISPODashboardUo {
+  uo: string;
+  nome: string;
+  sigla: number;
+  vlr_previsto: number;
+  vlr_contratado: number;
+  vlr_autorizado: number;
 }
 
 // export interface ISPOTotals {

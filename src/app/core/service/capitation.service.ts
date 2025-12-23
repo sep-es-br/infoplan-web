@@ -63,7 +63,6 @@ export class CapitationService {
     }
 
     private handleError(err : any, router : Router, callback) : void {
-        console.log(err);
         if((err as HttpErrorResponse).status == HttpStatusCode.Unauthorized) {
             router.navigate(['pages/home']);
         } else if((err as HttpErrorResponse).status == HttpStatusCode.Forbidden) {

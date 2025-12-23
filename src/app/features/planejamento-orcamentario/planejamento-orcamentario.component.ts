@@ -239,8 +239,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
             (po) => !this.selectedPOs.some((s) => s.cod_po === po.cod_po)
           );
 
-          console.log("POS carregadas:", response);
-          console.log("POs selecionadas:", this.selectedPOs);
         },
         error: (err) => {
           console.error("Erro ao carregar as POS:", err);
@@ -742,8 +740,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (response) => {
-          console.log("dados", response);
-
           this.totalAutorizadoResponse = response;
           this.dataCards();
         },
@@ -850,7 +846,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
     // Remove o valor -1 (todos) se existir
     if (this.filter.uo.includes(-1)) {
-      console.log("🔄 Removendo -1 do filter.uo");
       this.filter.uo = this.filter.uo.filter((id) => id !== -1);
     }
 
@@ -863,13 +858,9 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       );
 
       this.handleFilterChange("uo", this.filter.uo);
-    } else {
-      console.log("⚠️ UO já estava selecionada:", uo.nome_uo);
     }
-
     // Limpa o campo de busca
     this.uoSearchTerm = "";
-    console.log("🧹 Campo de busca limpo");
   }
 
   formatUOName(uo: any): string {

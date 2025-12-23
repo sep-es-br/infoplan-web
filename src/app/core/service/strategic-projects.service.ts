@@ -195,9 +195,7 @@ export class StrategicProjectsService {
   }
 
   public getProjectDetails(filter: IStrategicProjectFilterValuesDto, projectId: number): Observable<StrategicProjectProjectDetails> {
-    console.log("antes", filter)
     filter = this.removeEmptyValues(filter);
-    console.log("deposis", filter)
     return this.http.get<StrategicProjectProjectDetails>(this._urlBase + 'projectDetails', {
       params: {
         filterJson: JSON.stringify({ projetos: [projectId], dataInicio: filter.dataInicio, dataFim: filter.dataFim })
@@ -206,7 +204,6 @@ export class StrategicProjectsService {
   }
 
   private handleError(err: any, router: Router): Observable<never> {
-    console.log(err);
     if ((err as HttpErrorResponse).status == HttpStatusCode.Unauthorized) {
       router.navigate(['pages/home']);
     } else if ((err as HttpErrorResponse).status == HttpStatusCode.Forbidden) {

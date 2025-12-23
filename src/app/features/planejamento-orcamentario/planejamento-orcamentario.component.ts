@@ -875,7 +875,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
     return fullText;
   }
-  // ==================== Métodos de UO ====================
 
   removeUO(uoId: string): void {
     const uoRemovida = this.removerDaSelecao(

@@ -105,8 +105,11 @@ export class DashboardUoComponent implements OnChanges, OnDestroy {
   private processarDados(dados: ISPODashboardUo[]): void {
     const top5 = dados
       .sort((a, b) => b.vlr_previsto - a.vlr_previsto)
-      .slice(0, 5);
+      .slice(0, 5)
+      .reverse();
 
+      console.log("ORDEM - : ", top5)
+      console.log("DADOS VINDO : ", dados)
     this.chartData = {
       data: {
         labels: top5.map((d) => `${d.uo} - ${d.nome}`),
@@ -214,27 +217,12 @@ export class DashboardUoComponent implements OnChanges, OnDestroy {
     const search = query.toLowerCase().trim();
 
     const filtered = this.dasboardResponse.filter((item: ISPODashboardUo) => {
-      const autorizado =
-        item.vlr_autorizado
-          ?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-          .replace("R$", "")
-          .trim() || "0";
-      const contratado =
-        item.vlr_contratado
-          ?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-          .replace("R$", "")
-          .trim() || "0";
-      const previsto =
-        item.vlr_previsto
-          ?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-          .replace("R$", "")
-          .trim() || "0";
+
       const codigoUO = item.uo;
+      const nome = item.nome;
       return (
-        codigoUO.toLowerCase().includes(search) ||
-        autorizado.toLowerCase().includes(search) ||
-        contratado.toLowerCase().includes(search) ||
-        previsto.includes(search)
+        nome.toLocaleLowerCase().includes(search) ||
+        codigoUO.toLowerCase().includes(search)
       );
     });
 

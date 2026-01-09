@@ -22,7 +22,11 @@ import {
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
-import { OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import {
+  ChartDataConfig,
+  OrgChartHorizontalComponent,
+} from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 
 @Component({
   selector: "ngx-receita-categoria",
@@ -36,16 +40,10 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
   readonly title: string = "Receita por Categoria";
 
-  private readonly _painelService: PainelOrcamentoService = inject(
-    PainelOrcamentoService
-  );
-  private readonly _chartProcessor: ChartDataProcessorService = inject(
-    ChartDataProcessorService
-  );
-  private readonly _exportDataService: ExportDataService =
-    inject(ExportDataService);
-  private readonly _chartMaximizeService: ChartMaximizeService =
-    inject(ChartMaximizeService);
+  private readonly _painelService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
+  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
   charData: IChartOptions;
@@ -54,7 +52,16 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
   // MUDANÇA: Agora é sempre um array consistente
   private receitaData: IReceitaCategoriaOrcamentariaResponse[] = [];
-  loadingStatus: "loading" | "loaded" | "error" = "loading";
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
+  chartDataConfig: ChartDataConfig = {
+    grid: {
+      top: "10%",
+      left: "2%",
+      right: "3%",
+      bottom: "0%",
+      containLabel: true,
+    },
+  };
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
@@ -80,25 +87,24 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
   }
 
   private loadData(): void {
-    this.loadingStatus = "loading";
+    this.requestStatus = RequestStatus.LOADING;
 
     this._painelService
       .getReceitaPorCategoria(this.filter)
       .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus = this.receitaData.length > 0 ? "loaded" : "error";
-        })
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (response) => {
           // Backend já retorna array, não precisa de normalização
           this.receitaData = response;
           this.processarDados();
+
+         this.requestStatus = RequestStatus.SUCCESS;
         },
         error: (err) => {
           console.error("Erro ao carregar receita categoria:", err);
-          this.loadingStatus = "error";
+          this.requestStatus = RequestStatus.ERROR;
           this.receitaData = [];
         },
       });
@@ -124,10 +130,10 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       // Processar tabela
       this.processTable();
 
-      this.loadingStatus = "loaded";
+      this.requestStatus = RequestStatus.SUCCESS;
     } catch (error) {
       console.error("Erro ao processar dados:", error);
-      this.loadingStatus = "error";
+      this.requestStatus = RequestStatus.ERROR;
     }
   }
 

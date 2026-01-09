@@ -23,6 +23,8 @@ import {
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
+import { ChartDataConfig } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 
 @Component({
   selector: "ngx-receita-despesa-gnd",
@@ -38,16 +40,28 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
     | IReceitaDespesaGNDOrcamentariaResponse[]
     | null = [];
 
-  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
-  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
-  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+  private readonly _painelService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
+  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
   chartData: IChartOptions;
   tableContent: FlipTableContent | null = null;
-  loadingStatus: "loading" | "loaded" | "error" = "loading";
-  dataReceitaDespesaGNDOrcamentariaCards: IReceitaDespesaGNDOrcamentariaResponse[] | null = [];
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
+  chartDataConfig: ChartDataConfig = {
+    grid: {
+      top: "10%",
+      left: "0%",
+      right: "0%",
+      bottom: "0%",
+      containLabel: true,
+    },
+  };
+
+  dataReceitaDespesaGNDOrcamentariaCards:
+    | IReceitaDespesaGNDOrcamentariaResponse[]
+    | null = [];
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -57,7 +71,6 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) this.loadData();
   }
-
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {
     this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
@@ -72,28 +85,26 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
   }
 
   private loadData(): void {
-    this.loadingStatus = "loading";
     this.getReceitaDespesaGND();
   }
 
   private getReceitaDespesaGND(): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this._painelService
       .getRceitaPorDespesaGND(this.filter)
       .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus =
-            this.receitaDespesaOrcamento.length > 0 ? "loading" : "error";
-        })
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (res: IReceitaDespesaGNDOrcamentariaResponse[]) => {
           this.receitaDespesaOrcamento = res;
           this.processData();
+          this.requestStatus = RequestStatus.SUCCESS;
         },
         error: (err) => {
-          console.error("Erro ao carregar receita categoria:", err);
-          this.loadingStatus = "error";
+          console.error("Erro ao carregar receita despesa GND:", err);
+          this.requestStatus = RequestStatus.ERROR;
           this.receitaDespesaOrcamento = [];
         },
       });
@@ -165,12 +176,22 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Despesa Liquidada - ${ano.toString()}`,
-          value: `${valorLiquidado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+          value: `${
+            valorLiquidado
+              .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+              .replace("R$", "")
+              .trim() || 0
+          }`,
         });
 
         nodeData.push({
           propertyName: `Pago com RAP - ${ano.toString()}`,
-          value: `${valorPagoComRAP.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+          value: `${
+            valorPagoComRAP
+              .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+              .replace("R$", "")
+              .trim() || 0
+          }`,
         });
       });
 
@@ -342,8 +363,12 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
           0
         );
 
-        row[`liquidado_${ano}`] = valorLiquidado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "");
-        row[`pago_rap_${ano}`] = valorPagoRAP.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "");
+        row[`liquidado_${ano}`] = valorLiquidado
+          .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+          .replace("R$", "");
+        row[`pago_rap_${ano}`] = valorPagoRAP
+          .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+          .replace("R$", "");
       });
 
       // Calcula variações

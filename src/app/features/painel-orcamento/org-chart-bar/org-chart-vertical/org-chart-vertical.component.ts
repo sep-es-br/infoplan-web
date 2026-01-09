@@ -16,6 +16,7 @@ import {
 import { IChartOptions } from "./../../../../shared/models/painel-orcamento/IChartOptions";
 import { NgxEchartsModule } from "ngx-echarts";
 import { CommonModule } from "@angular/common";
+import { ChartDataConfig } from "../org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-org-chart-vertical",
@@ -42,6 +43,8 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
   @Input() barGap: string = "30";
   @Input() isMaximized!: boolean;
   @Input() charactersPerLine: number;
+
+  @Input() chartDataConfig!: ChartDataConfig;
 
   echartsInstance: ECharts | null = null;
   chartOptions: EChartsOption;
@@ -189,10 +192,10 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
 
     this.chartOptions = {
       grid: {
-        top: "20%",
-        left: "12%",
-        bottom: "10%",
-        right: "5%",
+        top: this.chartDataConfig?.grid?.top || "20%",
+        left: this.chartDataConfig?.grid?.left || "12%",
+        bottom: this.chartDataConfig?.grid?.bottom || "10%",
+        right: this.chartDataConfig?.grid?.right || "5%",
         containLabel: true,
       },
       tooltip: {
@@ -251,7 +254,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           fontSize: isMobile ? 8 : 10,
           overflow: "truncate",
           width: isMobile ? 20 : 100,
-          formatter: (v: number) => this.formatValue(v),
+          formatter: (v: number) => `${this.formatValue(v)}`,
         },
       },
       series: chart.data.datasets.map((dataset, index) => ({
@@ -297,8 +300,8 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private formatValue(value: number): string {
-    if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(0) + " bi";
-    if (value >= 1_000_000) return (value / 1_000_000).toFixed(0) + " mi";
+    if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(2) + " B";
+    if (value >= 1_000_000) return (value / 1_000_000).toFixed(2) + " M";
     return value.toString();
   }
 

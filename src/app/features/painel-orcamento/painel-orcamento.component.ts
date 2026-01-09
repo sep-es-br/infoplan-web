@@ -84,12 +84,12 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   ];
 
   private readonly destroy$ = new Subject<void>();
-  private readonly _comunicationCardsService: ComunicationCardsService = inject(
+  private readonly _comunicationCardsService = inject(
     ComunicationCardsService
   );
   private readonly _sufixShortNumberPipe: ShortNumberPipe =
     inject(ShortNumberPipe);
-  private readonly _chartMaximizeService: ChartMaximizeService =
+  private readonly _chartMaximizeService =
     inject(ChartMaximizeService);
   private readonly _execucaoOrcamentariaService = inject(
     PainelOrcamentoService
@@ -180,7 +180,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
           this.maximizeState = state;
         }
       );
-
     this.subscription = this._comunicationCardsService.data$.subscribe(
       (data) => {
         if (data.receitaTotal != null) {

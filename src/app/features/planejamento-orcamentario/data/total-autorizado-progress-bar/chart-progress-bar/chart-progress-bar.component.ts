@@ -296,8 +296,8 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
     if (!texto) return "";
 
     if (!this.showMaximizeButton) {
-      if (texto.includes("de Melhoria")) {
-        texto = texto.replace("de Melhoria", "...");
+      if (texto.includes("DAS UNIDADES ESCOLARES")) {
+        texto = texto.replace("DAS UNIDADES ESCOLARES", "...");
       }
     }
 

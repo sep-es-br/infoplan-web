@@ -74,24 +74,24 @@
 
       &.qt-programas,
       &.qt-projetos,
-      &.prevista {
-        background-color: var(--receita-prevista) !important;
+      &.total-prevista {
+        color: var(--receita-prevista) !important;
       }
 
-      &.realizada {
-        background-color: var(--receita-realizada) !important;
+      &.total-realizada {
+        color: var(--receita-realizada) !important;
       }
 
-      &.realizada-prevista {
-        background-color: var(--receita-realizada-prevista) !important;
+      &.total-realizada-prevista {
+        color: var(--receita-realizada-prevista) !important;
       }
 
-      &.empenhada-autorizada {
-        background-color: var(--despesa-empenhada-autorizada) !important;
+      &.total-empenhada-autorizada {
+        color: var(--despesa-empenhada-autorizada) !important;
       }
 
-      &.liquidada-autorizada {
-        background-color: var(--despesa-liquida-autorizada) !important;
+      &.total-liquidada-autorizada {
+        color: var(--despesa-liquida-autorizada) !important;
       }
     }
 

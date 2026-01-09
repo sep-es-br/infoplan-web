@@ -1,5 +1,5 @@
 <ngx-flip-table [cardTitle]="title" [showSearchField]="true" [tableContent]="tableContent"
-  [showTableIcon]="showTableIcon" [loadingStatus]="loadingStatus" (executeDownload)="handleTableDownload()"
+  [showTableIcon]="showTableIcon" [loadingStatus]="requestStatus" (executeDownload)="handleTableDownload()"
   [backCardHeight]="308" [showMaximizeButton]="true"
   (showMaximizeButtonClick)="onMaximizeButtonClick('receita-icms', $event)">
   <ngx-pie-chart [data]="chartData" [colors]="['#F58B9B', '#4DB6D2']"

@@ -1,7 +1,16 @@
-<ngx-flip-table [showSearchField]="true" [cardTitle]="title" [tableContent]="tableContent"
-  [loadingStatus]="loadingStatus" (executeDownload)="handleTableDownload()" [backCardHeight]="308"
-  [showMaximizeButton]="true" (showMaximizeButtonClick)="onMaximizeButtonClick('receita-categoria', $event)">
-  <ngx-org-chart-horizontal [chart]="charData" [charactersPerLine]="19"
-    [height]="isChartMaximized('receita-categoria') ? calcMaximizedHeight() : 300"
+<ngx-flip-table
+  [showSearchField]="true"
+  [cardTitle]="title"
+  [tableContent]="tableContent"
+  [loadingStatus]="requestStatus"
+  (executeDownload)="handleTableDownload()"
+  [backCardHeight]="308"
+  [showMaximizeButton]="true"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('receita-categoria', $event)">
+  <ngx-org-chart-horizontal
+  [chart]="charData"
+  [charactersPerLine]="19"
+  [ChartDataConfig]="chartDataConfig"
+  [height]="isChartMaximized('receita-categoria') ? calcMaximizedHeight() : 300"
     card-front></ngx-org-chart-horizontal>
 </ngx-flip-table>

@@ -5,8 +5,6 @@ import {
   SimpleChanges,
   OnDestroy,
   inject,
-  Output,
-  EventEmitter,
 } from "@angular/core";
 import { Subject } from "rxjs";
 import { takeUntil, finalize } from "rxjs/operators";
@@ -26,7 +24,11 @@ import {
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ExportDataService } from "../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
-import { OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import {
+  ChartDataConfig,
+  OrgChartHorizontalComponent,
+} from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 
 @Component({
   selector: "ngx-receita-origem",
@@ -49,7 +51,16 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
 
   chartData!: IChartOptions;
   tableContent: FlipTableContent | null = null;
-  loadingStatus: "loading" | "loaded" | "error" = "loading";
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
+  chartDataConfig: ChartDataConfig = {
+    grid: {
+      top: "10%",
+      left: "2%",
+      right: "3%",
+      bottom: "0%",
+      containLabel: true,
+    },
+  };
   private receitaOrigemCharData: IReceitaOrigemOrcamentariaResponse[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -76,25 +87,22 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
   }
 
   private loadData(): void {
-    this.loadingStatus = "loading";
+    this.requestStatus = RequestStatus.LOADING;
 
     this._painelService
       .getReceitaOrigem(this.filter)
       .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus =
-            this.receitaOrigemCharData.length > 0 ? "loaded" : "error";
-        })
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (response) => {
           this.receitaOrigemCharData = response;
           this.processData();
+          this.requestStatus = RequestStatus.SUCCESS;
         },
         error: (err) => {
           console.error("Erro ao carregar receita origem:", err);
-          this.loadingStatus = "error";
+          this.requestStatus = RequestStatus.ERROR;
         },
       });
   }
@@ -151,11 +159,12 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Arrecadação LI - ${ano.toString()}`,
-          value: `${valor
+          value: `${
+            valor
               .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
               .replace("R$", "")
               .trim() || 0
-            }`,
+          }`,
         });
       });
 
@@ -269,11 +278,12 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
         const item = this.receitaOrigemCharData.find(
           (d) => d.origem === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `${item?.receitaLiquida
+        row[`ano_${ano}`] = `${
+          item?.receitaLiquida
             .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
             .replace("R$", "")
             .trim() || 0
-          }`;
+        }`;
       });
 
       if (anos.length >= 2) {

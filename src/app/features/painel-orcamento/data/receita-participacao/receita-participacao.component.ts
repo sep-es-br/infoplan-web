@@ -19,6 +19,7 @@ import { ExportDataService } from "../../../../core/service/export-data";
 import { Subject } from "rxjs";
 import { FlipTableAlignment, FlipTableColumn, FlipTableContent, TreeNode } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
+import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 
 @Component({
   selector: "ngx-receita-participacao",
@@ -33,7 +34,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
 
   chartData!: PieChartData[];
   tableContent: FlipTableContent | null = null;
-  loadingStatus: "loading" | "loaded" | "error" = "loading";
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
 
   chartConfig = {
     showTitle: true,
@@ -48,10 +49,10 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   private receitaICMSCharData: IReceitaParticipacaoOrcamentariaResponse[] | null =
     [];
 
-  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
-  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
-  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+  private readonly _painelService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
+  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
 
   private readonly destroy$ = new Subject<void>();
 
@@ -79,28 +80,25 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   }
 
   private loadData(): void {
-    this.loadingStatus = "loading";
     this.getReceitaICMS();
   }
 
   private getReceitaICMS(): void {
+    this.requestStatus = RequestStatus.LOADING;
     this._painelService
       .getReceitaPorParticipacao(this.filter)
       .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus =
-            this.receitaICMSCharData.length > 0 ? "loaded" : "error";
-        })
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (response: IReceitaParticipacaoOrcamentariaResponse[]) => {
           this.receitaICMSCharData = response;
           this.processData();
+          this.requestStatus = RequestStatus.SUCCESS;
         },
         error: (err) => {
-          console.error("Erro ao carregar receita ICMS:", err);
-          this.loadingStatus = "error";
+          console.error("Erro ao carregar receita Participação ICMS - Receita Total:", err);
+          this.requestStatus = RequestStatus.ERROR;
         },
       });
   }

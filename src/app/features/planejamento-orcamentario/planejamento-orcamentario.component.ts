@@ -29,7 +29,6 @@ import { Subject, Subscription } from "rxjs";
 import { ComunicationCardsService } from "../../core/service/comunication-cards/comunication-cards.service";
 import { PlanejamentoOrcamentarioService } from "../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import { debounceTime, distinctUntilChanged, finalize, takeUntil } from "rxjs/operators";
-import { clear } from "console";
 
 const DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS: IPlanejamentoOrcamentarioFilter =
   {
@@ -156,8 +155,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   uoSearchTerm: string = "";
   poSearchTerm: string = "";
 
-  loadingStatus: "loading" | "loaded" | "error" = "loading";
-
   timesTamp: string;
 
   currentRequestParams: IPlanejamentoOrcamentarioFilter =
@@ -257,7 +254,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error("Erro ao carregar as POS:", err);
-          this.loadingStatus = "error";
           this.POList = null;
           this.filteredPOList = [];
           this.selectedPOs = [];
@@ -279,7 +275,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error("Erro ao carregar as UOS:", err);
-          this.loadingStatus = "error";
           this.totalAutorizadoResponse = null;
           this.filteredUOList = [];
           this.selectedUOs = [];
@@ -649,7 +644,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error("Erro ao carregar receita total:", err);
-          this.loadingStatus = "error";
           this.totalAutorizadoResponse = null;
         },
       });

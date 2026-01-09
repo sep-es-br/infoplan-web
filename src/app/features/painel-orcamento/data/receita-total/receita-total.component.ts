@@ -27,6 +27,8 @@ import {
 import { ShortNumberPipe } from "../../../../shared/components/pipe/shortNumber-pipe";
 import { ComunicationCardsService } from "../../../../core/service/comunication-cards/comunication-cards.service";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
+import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
+import { ChartDataConfig } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 interface ITableRow {
   label: string;
@@ -41,29 +43,41 @@ interface ITableRow {
   providers: [ShortNumberPipe],
 })
 export class ReceitaTotalComponent implements OnChanges, OnDestroy {
-
   @Input() filter!: IExecucaoOrcamentariaRequest;
   @Output()
-  dataReceitaTotalCards: EventEmitter<IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]> = new EventEmitter<IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]>();
+  dataReceitaTotalCards: EventEmitter<
+    IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]
+  > = new EventEmitter<
+    IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]
+  >();
 
-  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
-  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
-  private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
-  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
-
-
+  private readonly _painelService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
+  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _comunicationCardsService = inject(ComunicationCardsService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$: Subject<void> = new Subject<void>();
+
   private responseData: IReceitaTotalOrcamentariaResponse[] | null = null;
 
   readonly title: string = "Receita Prevista x Realizada";
 
-
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
   selectedMaximize: boolean = false;
-  loadingStatus: "loading" | "loaded" | "error" = "loading";
-
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
+  requestStatusCards = {
+    totals: RequestStatus.EMPTY,
+  };
+  chartDataConfig: ChartDataConfig = {
+    grid: {
+      top: "10%",
+      left: "0%",
+      right: "0%",
+      bottom: "0%",
+      containLabel: true,
+    },
+  };
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
@@ -77,25 +91,23 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   }
 
   private loadData(): void {
-    this.loadingStatus = "loading";
+    this.requestStatus = RequestStatus.LOADING;
     this._painelService
       .getReceitaTotal(this.filter)
       .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus = this.responseData ? "loaded" : "error";
-        })
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (response) => {
           this.responseData = [response];
           this.processData(response);
-          this._comunicationCardsService.sendReceitaTotal(response)
+          this._comunicationCardsService.sendReceitaTotal(response);
+          this.requestStatus = RequestStatus.SUCCESS;
         },
         error: (err) => {
           console.error("Erro ao carregar receita total:", err);
-          this.loadingStatus = "error";
-          this.responseData = null;
+          this.requestStatus = RequestStatus.ERROR;
+          this.responseData = [];
         },
       });
   }
@@ -123,7 +135,9 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   }
 
   private processTableData(
-    dados: IReceitaTotalOrcamentariaResponse | IReceitaTotalOrcamentariaResponse[]
+    dados:
+      | IReceitaTotalOrcamentariaResponse
+      | IReceitaTotalOrcamentariaResponse[]
   ): void {
     const dadosArray = Array.isArray(dados) ? dados : [dados];
     const ano = dadosArray[0]?.ano || new Date().getFullYear();
@@ -147,13 +161,35 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
           {
             data: [
               { propertyName: "label", value: "Arrecadação Líquida" },
-              { propertyName: "valor", value: `${arrecadacao.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}` },
+              {
+                propertyName: "valor",
+                value: `${
+                  arrecadacao
+                    .toLocaleString("pt-BR", {
+                      currency: "BRL",
+                      style: "currency",
+                    })
+                    .replace("R$", "")
+                    .trim() || 0
+                }`,
+              },
             ],
           },
           {
             data: [
               { propertyName: "label", value: "Previsão Inicial Líquida" },
-              { propertyName: "valor", value: `${previsao.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}` },
+              {
+                propertyName: "valor",
+                value: `${
+                  previsao
+                    .toLocaleString("pt-BR", {
+                      currency: "BRL",
+                      style: "currency",
+                    })
+                    .replace("R$", "")
+                    .trim() || 0
+                }`,
+              },
             ],
           },
           {
@@ -199,19 +235,24 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
 
     const filtered = this.responseData.filter(
       (item: IReceitaTotalOrcamentariaResponse) => {
-
         const ano = item.ano?.toString() || "";
         const receitaLiquida =
-          item.vlr_receita_liquida?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || "0";
+          item.vlr_receita_liquida
+            ?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+            .replace("R$", "")
+            .trim() || "0";
         const receitaPrevista =
-          item.vlr_receita_prevista?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || "0";
+          item.vlr_receita_prevista
+            ?.toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+            .replace("R$", "")
+            .trim() || "0";
 
         const percentual =
           item.vlr_receita_prevista > 0
             ? (
-              (item.vlr_receita_liquida / item.vlr_receita_prevista) *
-              100
-            ).toFixed(2)
+                (item.vlr_receita_liquida / item.vlr_receita_prevista) *
+                100
+              ).toFixed(2)
             : "0";
 
         return (
@@ -239,7 +280,6 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   }
 
   handleTableDownload(): void {
-
     const columns: Array<{ key: string; label: string }> = [
       { key: "label", label: this.tableContent.customColumn.displayName },
       ...this.tableContent.defaultColumns.map((col) => ({
@@ -253,7 +293,10 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
 
       node.data.forEach((item) => {
         if (item.propertyName != "Exercício") {
-          row[item.propertyName] = item.value.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim();
+          row[item.propertyName] = item.value
+            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+            .replace("R$", "")
+            .trim();
         }
         row[item.propertyName] = item.value;
       });

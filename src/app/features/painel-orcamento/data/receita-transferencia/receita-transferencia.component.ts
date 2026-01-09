@@ -24,7 +24,11 @@ import { ExportDataService } from "../../../../core/service/export-data";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
-import { OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import {
+  ChartDataConfig,
+  OrgChartHorizontalComponent,
+} from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 
 @Component({
   selector: "ngx-receita-transferencia",
@@ -35,28 +39,30 @@ import { OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horiz
 })
 export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
   @Input() filter: IExecucaoOrcamentariaRequest;
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
+  chartDataConfig: ChartDataConfig = {
+    grid: {
+      top: "10%",
+      left: "2%",
+      right: "3%",
+      bottom: "0%",
+      containLabel: true,
+    },
+  };
 
   readonly title: string = "Transferências Correntes";
 
   private receitaTransferenciaCorrente: IReceitaTransfereciaCorrenteOrcamentariaResponse[];
 
-  private readonly _painelService: PainelOrcamentoService = inject(
-    PainelOrcamentoService
-  );
-  private readonly _chartProcessor: ChartDataProcessorService = inject(
-    ChartDataProcessorService
-  );
-  private readonly _exportDataService: ExportDataService =
-    inject(ExportDataService);
-  private readonly _chartMaximizeService: ChartMaximizeService =
-    inject(ChartMaximizeService);
+  private readonly _painelService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
+  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
   chartData: IChartOptions;
 
   tableContent: FlipTableContent | null = null;
-
-  loadingStatus: "loading" | "loaded" | "error" = "loading";
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
@@ -82,18 +88,19 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
   }
 
   private loadData() {
-    this.loadingStatus = "loading";
     this.getTransferenciaCorrente();
   }
 
   private getTransferenciaCorrente(): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this._painelService
       .getRceitaPorTransferenciaCorrente(this.filter)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
-          this.loadingStatus =
-            this.receitaTransferenciaCorrente.length > 0 ? "loading" : "error";
+          this.requestStatus =
+            this.receitaTransferenciaCorrente.length > 0 ? RequestStatus.SUCCESS : RequestStatus.ERROR;
         })
       )
       .subscribe({
@@ -103,7 +110,7 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
         },
         error: (err) => {
           console.error("Erro ao carregar receita categoria:", err);
-          this.loadingStatus = "error";
+          this.requestStatus = RequestStatus.ERROR;
           this.receitaTransferenciaCorrente = [];
         },
       });
@@ -166,11 +173,12 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Arrecadação LI - ${ano.toString()}`,
-          value: `${valor
+          value: `${
+            valor
               .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
               .replace("R$", "")
               .trim() || 0
-            }`,
+          }`,
         });
       });
 
@@ -287,11 +295,12 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
         const item = this.receitaTransferenciaCorrente.find(
           (d) => d.nome_item_patrimonial === categoria && d.ano === ano
         );
-        row[`ano_${ano}`] = `${item?.receitaLiquida
+        row[`ano_${ano}`] = `${
+          item?.receitaLiquida
             .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
             .replace("R$", "")
             .trim() || 0
-          }`;
+        }`;
       });
 
       if (anos.length >= 2) {

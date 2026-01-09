@@ -18,6 +18,7 @@ import { ChartDataProcessorService } from "../../../../core/service/painel-orcam
 import { ExportDataService } from "../../../../core/service/export-data";
 import { FlipTableAlignment, FlipTableColumn, FlipTableContent, TreeNode } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
+import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 
 @Component({
   selector: "ngx-receita-icms",
@@ -40,7 +41,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
 
   chartData!: PieChartData[];
   tableContent: FlipTableContent | null = null
-  loadingStatus: "loading" | "loaded" | "error" = "loading";
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
   chartConfig = {
     showTitle: true,
     isDonut: true,
@@ -76,28 +77,25 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   }
 
   private loadData(): void {
-    this.loadingStatus = "loading";
     this.getReceitaICMS();
   }
 
   private getReceitaICMS(): void {
-    this._painelService
+    this.requestStatus = RequestStatus.LOADING;
+      this._painelService
       .getRceitaPorICMS(this.filter)
       .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus =
-            this.receitaICMSCharData.length > 0 ? "loaded" : "error";
-        })
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (response: IReceitaICMSOrcamentariaResponse[]) => {
           this.receitaICMSCharData = response
           this.processData();
+          this.requestStatus = this.receitaICMSCharData.length > 0 ? RequestStatus.SUCCESS : RequestStatus.ERROR;
         },
         error: (err) => {
           console.error("Erro ao carregar receita ICMS:", err);
-          this.loadingStatus = "error";
+          this.requestStatus = RequestStatus.ERROR;
         },
       });
   }

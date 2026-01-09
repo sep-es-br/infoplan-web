@@ -107,9 +107,6 @@ export class OrgChartLineComponent implements OnInit, OnChanges, OnDestroy {
           margin: 8,
           overflow: "break",
           width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
-          formatter: (value: string) => {
-            return this.quebrarTexto(value, this.charactersPerLine);
-          },
         },
       },
       xAxis: {
@@ -201,8 +198,6 @@ export class OrgChartLineComponent implements OnInit, OnChanges, OnDestroy {
           margin: 8,
           overflow: "break",
           width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
-          formatter: (value: string) =>
-            this.quebrarTexto(value, this.charactersPerLine),
         },
       },
 
@@ -259,46 +254,46 @@ export class OrgChartLineComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private quebrarTexto(texto: string, maxCaracteres: number): string {
-    if (!texto) return "";
+  // private quebrarTexto(texto: string, maxCaracteres: number): string {
+  //   if (!texto) return "";
 
-    if (!this.showMaximizeButton) {
-      if (texto.includes("de Melhoria")) {
-        texto = texto.replace("de Melhoria", "...");
-      }
-    }
+  //   if (!this.showMaximizeButton) {
+  //     if (texto.includes("de Melhoria")) {
+  //       texto = texto.replace("de Melhoria", "...");
+  //     }
+  //   }
 
-    const words = texto.split(" ");
-    let lines: string[] = [];
-    let currentLine = "";
+  //   const words = texto.split(" ");
+  //   let lines: string[] = [];
+  //   let currentLine = "";
 
-    for (const word of words) {
-      if (
-        (currentLine + (currentLine ? " " : "") + word).length > maxCaracteres
-      ) {
-        if (currentLine) {
-          lines.push(currentLine);
-          currentLine = "";
-        }
+  //   for (const word of words) {
+  //     if (
+  //       (currentLine + (currentLine ? " " : "") + word).length > maxCaracteres
+  //     ) {
+  //       if (currentLine) {
+  //         lines.push(currentLine);
+  //         currentLine = "";
+  //       }
 
-        if (word.length > maxCaracteres) {
-          const chunks = word.match(new RegExp(`.{1,${maxCaracteres}}`, "g"));
-          if (chunks) lines.push(...chunks);
-        } else {
-          currentLine = word;
-        }
-      } else {
-        currentLine += (currentLine ? " " : "") + word;
-      }
-    }
-    if (currentLine) lines.push(currentLine);
+  //       if (word.length > maxCaracteres) {
+  //         const chunks = word.match(new RegExp(`.{1,${maxCaracteres}}`, "g"));
+  //         if (chunks) lines.push(...chunks);
+  //       } else {
+  //         currentLine = word;
+  //       }
+  //     } else {
+  //       currentLine += (currentLine ? " " : "") + word;
+  //     }
+  //   }
+  //   if (currentLine) lines.push(currentLine);
 
-    return lines.join("\n");
-  }
+  //   return lines.join("\n");
+  // }
 
   private formatValue(value: number): string {
-    if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1) + " B";
-    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + " M";
+    if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(2) + " B";
+    if (value >= 1_000_000) return (value / 1_000_000).toFixed(2) + " M";
     return value.toString();
   }
 

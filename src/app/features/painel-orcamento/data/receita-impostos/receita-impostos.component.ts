@@ -1,3 +1,4 @@
+import { RequestStatus } from './../../../strategic-projects/strategicProjects.component';
 import {
   Component,
   inject,
@@ -24,7 +25,7 @@ import {
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ExportDataService } from "../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
-import { OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { ChartDataConfig, OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-receita-impostos",
@@ -43,14 +44,23 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
 
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
-  loadingStatus: "loading" | "loaded" | "error" = "loading";
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
+  chartDataConfig: ChartDataConfig = {
+    grid: {
+      top: "10%",
+      left: "2%",
+      right: "3%",
+      bottom: "0%",
+      containLabel: true,
+    }
+  }
 
   private receitaImpostoCharData: IReceitaImpostoOrcamentariaResponse[] = [];
 
-  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
-  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
-  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+  private readonly _painelService = inject(PainelOrcamentoService);
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
+  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -78,7 +88,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
   }
 
   private loadData() {
-    this.loadingStatus = "loading";
+    this.requestStatus = RequestStatus.LOADING;
     this.getReceitaImposto();
   }
 
@@ -88,8 +98,8 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
-          this.loadingStatus =
-            this.receitaImpostoCharData.length > 0 ? "loading" : "error";
+          this.requestStatus =
+            this.receitaImpostoCharData.length > 0 ? RequestStatus.SUCCESS : RequestStatus.ERROR;
         })
       )
       .subscribe({

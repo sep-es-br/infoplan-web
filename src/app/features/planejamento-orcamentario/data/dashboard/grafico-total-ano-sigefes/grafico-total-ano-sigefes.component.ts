@@ -167,13 +167,13 @@ export class GraficoTotalAnoSigefesComponent
         datasets: [
           {
             // Primeira coluna de cada ano
-            label: 'Pago Sem RAP',
+            label: 'Pago sem RAP',
             data: dados.map((d) => d.vlr_pago_sem_rap || 0),
             backgroundColor: this._chartProcessor.colors[20],
           },
           {
             // Segunda coluna de cada ano
-            label: 'Pago Com RAP',
+            label: 'Pago com RAP',
             data: dados.map((d) => d.vlr_pago_com_rap || 0),
             backgroundColor: this._chartProcessor.colors[19],
           },

@@ -22,6 +22,8 @@ import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ComunicationCardsService } from "../../../../core/service/comunication-cards/comunication-cards.service";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
+import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
+import { ChartDataConfig } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-receita-despesa-gnd-total",
@@ -35,7 +37,16 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
 
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
-  loadingStatus: "loading" | "loaded" | "error" = "loading";
+   requestStatus: RequestStatus = RequestStatus.EMPTY;
+    chartDataConfig: ChartDataConfig = {
+      grid: {
+        top: "10%",
+        left: "0%",
+        right: "0%",
+        bottom: "0%",
+        containLabel: true,
+      },
+    };
 
   private receitaDespesaGNDTotal: IReceitaDespesaGNDTotalOrcamentariaResponse[] =
     [];
@@ -44,10 +55,10 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
     PainelOrcamentoService
   );
 
-  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
-  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
-  private readonly _comunicationCardsService: ComunicationCardsService = inject(ComunicationCardsService);
-  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
+  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _comunicationCardsService = inject(ComunicationCardsService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -74,18 +85,19 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
   }
 
   private loadData(): void {
-    this.loadingStatus = "loading";
     this.getReceitaDespesaGNDTotal();
   }
 
   private getReceitaDespesaGNDTotal(): void {
+    this.requestStatus = RequestStatus.LOADING;
+
     this._execucaoOrcamentariaService
       .getRceitaPorDespesaGNDTotal(this.filter)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
-          this.loadingStatus =
-            this.receitaDespesaGNDTotal.length > 0 ? "loading" : "error";
+          this.requestStatus =
+            this.receitaDespesaGNDTotal.length > 0 ? RequestStatus.SUCCESS : RequestStatus.ERROR;
         })
       )
       .subscribe({
@@ -93,6 +105,11 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
           this.receitaDespesaGNDTotal = res;
           this._comunicationCardsService.sendReceitaDespesaGNDOrcamentaria(res);
           this.processData();
+        },
+        error: (err) => {
+          console.error("Erro ao carregar receita despesa GND total:", err);
+          this.requestStatus = RequestStatus.ERROR;
+          this.receitaDespesaGNDTotal = [];
         },
       });
   }

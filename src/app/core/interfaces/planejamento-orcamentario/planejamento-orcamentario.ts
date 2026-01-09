@@ -51,19 +51,53 @@ export interface ISPOFiltroPos {
 
 export interface ISPODashboardUo {
   uo: string;
-  nome: string;
   sigla: number;
+  nome_uo: string;
+  po: string;
+  nome: string;
+  vlr_previsto: number;
+  vlr_contratado: number;
+  vlr_autorizado: number;
+}
+export interface ISPODashboardPo {
+  uo: string;
+  po: string;
+  sigla: string;
+  nome: string;
   vlr_previsto: number;
   vlr_contratado: number;
   vlr_autorizado: number;
 }
 
-// export interface ISPOTotals {
-//   totalAutorizado: number;
-//   totalContratado: number;
-//   totalEmpenhado: number;
-//   totalLiquidado: number;
-//   totalPago: number;
-//   totalPlanejado: number;
-//   totalRestosAPagar: number;
-// }
+export interface ISPOTotalAutorizadoProgressUo {
+  cod: string;
+  sigla: string;
+  nome_uo: string;
+  porcentagem_empenhado: number;
+  porcentagem_liquidado: number;
+  porcentagem_pago: number;
+}
+
+export interface ISPOTotalAutorizadoProgressPo {
+  nome_uo: string;
+  cod_uo: string;
+  sigla_uo: string;
+  cod_po: string;
+  nome_po: string;
+  porcentagem_empenhado: number;
+  porcentagem_liquidado: number;
+  porcentagem_pago: number;
+}
+export interface ISPOTotalAno {
+  ano: number;
+  vlr_previsto: number;
+  vlr_contratado: number;
+  vlr_autorizado: number;
+  vlr_empenhado: number;
+  vlr_pago: number;
+}
+export interface ISPOTotalAnoSigefes {
+  ano: number;
+  vlr_pago_sem_rap: number;
+  vlr_pago_com_rap: number;
+}

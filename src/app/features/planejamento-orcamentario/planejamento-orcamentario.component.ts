@@ -28,7 +28,8 @@ import {
 import { Subject, Subscription } from "rxjs";
 import { ComunicationCardsService } from "../../core/service/comunication-cards/comunication-cards.service";
 import { PlanejamentoOrcamentarioService } from "../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
-import { finalize, takeUntil } from "rxjs/operators";
+import { debounceTime, distinctUntilChanged, finalize, takeUntil } from "rxjs/operators";
+import { clear } from "console";
 
 const DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS: IPlanejamentoOrcamentarioFilter =
   {
@@ -143,13 +144,17 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   UOList: ISPOFiltroUos[];
   POList: ISPOFiltroPos[];
 
+  private uoSearchSubject = new Subject<string>();
+  private poSearchSubject = new Subject<string>();
+
   // Propriedades para autocomplete e chips
-  uoSearchTerm: string = "";
-  poSearchTerm: string = "";
   filteredUOList: ISPOFiltroUos[] = [];
   filteredPOList: ISPOFiltroPos[] = [];
   selectedUOs: ISPOFiltroUos[] = [];
   selectedPOs: ISPOFiltroPos[] = [];
+
+  uoSearchTerm: string = "";
+  poSearchTerm: string = "";
 
   loadingStatus: "loading" | "loaded" | "error" = "loading";
 
@@ -210,6 +215,21 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
           this.maximizeState = state;
         }
       );
+
+      // Configuração do Debounce para UO
+    this.uoSearchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(term => this.executarBuscaUO(term));
+
+    // Configuração do Debounce para PO
+    this.poSearchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(term => this.executarBuscaPO(term));
+
     this.getTotais();
     this.updateActiveFilters();
     this.loadInitialData();
@@ -219,12 +239,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     this._planejamentoOrcamentarioService
       .getFiltroPos(ano, codUosList)
       .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus = this.totalAutorizadoResponse
-            ? "loaded"
-            : "error";
-        })
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (response: ISPOFiltroPos[]) => {
@@ -254,12 +269,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     this._planejamentoOrcamentarioService
       .getFiltroUos()
       .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus = this.totalAutorizadoResponse
-            ? "loaded"
-            : "error";
-        })
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (response: ISPOFiltroUos[]) => {
@@ -276,137 +286,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
         },
       });
   }
-
-  // removeUO(uoId: string): void {
-  //   this.filter.uo = this.filter.uo.filter((id) => id !== uoId);
-
-  //   const removedUO = this.selectedUOs.find((uo) => uo.cod_uo === uoId);
-  //   this.selectedUOs = this.selectedUOs.filter((uo) => uo.cod_uo !== uoId);
-
-  //   if (removedUO) {
-  //     this.filteredUOList.push(removedUO);
-  //     this.filteredUOList.sort((a, b) => a.nome_uo.localeCompare(b.nome_uo));
-  //   }
-
-  //   if (this.filter.uo.length === 0) {
-  //     this.POList = [];
-  //     this.filteredPOList = [];
-  //     this.selectedPOs = [];
-  //     this.handleFilterChange("uo", this.filter.uo);
-  //   } else {
-  //     this.getListPos(this.filter.ano, this.filter.uo);
-  //     this.handleFilterChange("uo", this.filter.uo);
-  //   }
-  // }
-
-  // onPOSearch(event: any): void {
-  //   const searchTerm = event.target.value.toLowerCase();
-  //   this.poSearchTerm = searchTerm;
-
-  //   if (searchTerm.trim() === "") {
-  //     this.filteredPOList =
-  //       this.POList?.filter(
-  //         (po) => !this.selectedPOs.some((s) => s.cod_po === po.cod_po)
-  //       ) || [];
-  //     return;
-  //   }
-
-  //   this.filteredPOList = (this.POList || []).filter(
-  //     (po) =>
-  //       (po.nome_po.toLowerCase().includes(searchTerm) ||
-  //         po.cod_po.toString().toLowerCase().includes(searchTerm)) &&
-  //       !this.selectedPOs.some((s) => s.cod_po === po.cod_po)
-  //   );
-  // }
-
-  // onPOSelected(selectedValue: any): void {
-  //   setTimeout(() => {
-  //     this.poSearchTerm = "";
-  //   }, 0);
-
-  //   if (selectedValue && selectedValue.cod_po) {
-  //     this.selectPO(selectedValue);
-  //   }
-  // }
-
-  // selectPO(po: ISPOFiltroPos): void {
-  //   if (!po || !po.cod_po) {
-  //     console.error("PO inválida:", po);
-  //     return;
-  //   }
-
-  //   if (!this.filter.po) {
-  //     this.filter.po = [];
-  //   }
-
-  //   // Remove o valor -1 (todos) se existir
-  //   if (this.filter.po.includes(-1)) {
-  //     this.filter.po = this.filter.po.filter((id) => id !== -1);
-  //   }
-
-  //   // Verifica se já foi selecionado
-  //   if (!this.filter.po.includes(po.cod_po)) {
-  //     this.filter.po = [...this.filter.po, po.cod_po]; // Cria novo array para reatividade
-  //     this.selectedPOs = [...this.selectedPOs, po]; // Cria novo array para reatividade
-
-  //     // Atualiza lista filtrada removendo o item selecionado
-  //     this.filteredPOList = this.filteredPOList.filter(
-  //       (item) => item.cod_po !== po.cod_po
-  //     );
-  //   }
-
-  //   this.poSearchTerm = "";
-  // }
-
-  // removePO(poId: string): void {
-  //   // Remove do filtro
-  //   this.filter.po = this.filter.po.filter((id) => id !== poId);
-
-  //   // Remove da lista de selecionados
-  //   const removedPO = this.selectedPOs.find((po) => po.cod_po === poId);
-  //   this.selectedPOs = this.selectedPOs.filter((po) => po.cod_po !== poId);
-
-  //   // Adiciona de volta à lista filtrada se existir
-  //   if (removedPO && this.POList) {
-  //     this.filteredPOList = [...this.filteredPOList, removedPO];
-  //     this.filteredPOList.sort((a, b) => a.nome_po.localeCompare(b.nome_po));
-  //   }
-
-  //   if (this.filter.po.length === 0) {
-  //     this.filter.po = [-1];
-  //   }
-
-  // }
-
-  // private updateSelectedUOs(): void {
-  //   if (!this.filter.uo || this.filter.uo.includes(-1)) {
-  //     this.selectedUOs = [];
-  //     return;
-  //   }
-
-  //   this.selectedUOs = this.UOList.filter((uo) =>
-  //     this.filter.uo.includes(uo.cod_uo)
-  //   );
-
-  //   this.filteredUOList = this.UOList.filter(
-  //     (uo) => !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
-  //   );
-  // }
-
-  // private updateSelectedPOs(): void {
-  //   if (!this.filter.po || this.filter.po.includes(-1) || !this.POList) {
-  //     this.selectedPOs = [];
-  //     return;
-  //   }
-
-  //   this.selectedPOs = this.filter.po
-  //     .map((poId) => this.POList.find((po) => po.cod_po === poId))
-  //     .filter((po): po is ISPOFiltroPos => po !== undefined);
-
-  //   this.filteredPOList = this.POList.filter(
-  //     (po) => !this.selectedPOs.some((s) => s.cod_po === po.cod_po)
-  //   );
-  // }
 
   private dataCards() {
     this.totals.totalAutorizado =
@@ -719,6 +598,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   }
 
   private getAutorizadoMes() {
+    this.requestStatus.totals = RequestStatus.LOADING;
     const filterAutorizado: ISPOTotalAutorizadoFilter = {
       ano: this.currentRequestParams.ano,
       gnd: this.currentRequestParams.gnd,
@@ -731,21 +611,17 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     this._planejamentoOrcamentarioService
       .getTotalAutorizado(filterAutorizado)
       .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus = this.totalAutorizadoResponse
-            ? "loaded"
-            : "error";
-        })
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (response) => {
           this.totalAutorizadoResponse = response;
           this.dataCards();
+          this.requestStatus.totals = RequestStatus.SUCCESS;
         },
         error: (err) => {
           console.error("Erro ao carregar receita total:", err);
-          this.loadingStatus = "error";
+          this.requestStatus.totals = RequestStatus.ERROR;
           this.totalAutorizadoResponse = null;
         },
       });
@@ -763,10 +639,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     this._planejamentoOrcamentarioService
       .getTotalPrevisto(filterPrevisto)
       .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.loadingStatus = this.totalPrevistoResponse ? "loaded" : "error";
-        })
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (response) => {
@@ -800,31 +673,57 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   }
 
   // Métodos para autocomplete UO
-  onUOSearch(event: any): void {
-    const searchTerm = event.target.value.toLowerCase();
-    this.uoSearchTerm = searchTerm;
+  // onUOSearch(event: any): void {
+  //   const searchTerm = event.target.value.toLowerCase();
+  //   console.log("Search Term:", searchTerm);
+  //   this.uoSearchTerm = searchTerm;
 
-    // Sempre filtra da lista ORIGINAL completa
-    if (searchTerm.trim() === "") {
-      // Mostra todas as UOs que NÃO estão selecionadas
-      this.filteredUOList = this.UOList.filter(
-        (uo) => !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
-      );
-    } else {
-      // Filtra por termo de busca E remove as selecionadas
-      this.filteredUOList = this.UOList.filter(
-        (uo) =>
-          (uo.nome_uo.toLowerCase().includes(searchTerm) ||
-            uo.cod_uo.toString().toLowerCase().includes(searchTerm)) &&
-          !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
-      );
-    }
+  //   // Sempre filtra da lista ORIGINAL completa
+  //   if (searchTerm.trim() === "") {
+  //     // Mostra todas as UOs que NÃO estão selecionadas
+  //     this.filteredUOList = this.UOList.filter(
+  //       (uo) => !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
+  //     );
+  //   } else {
+  //     // Filtra por termo de busca E remove as selecionadas
+  //     this.filteredUOList = this.UOList.filter(
+  //       (uo) =>
+  //         (uo.nome_uo.toLowerCase().includes(searchTerm) ||
+  //           uo.cod_uo.toString().toLowerCase().includes(searchTerm)) &&
+  //         !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
+  //     );
+  //   }
+  // }
+
+  onUOSearch(event: any): void {
+    const valor = event.target.value;
+    this.uoSearchTerm = valor;
+    this.uoSearchSubject.next(valor);
   }
+
+    private executarBuscaUO(term: any): void {
+      const termoValido = (typeof term === 'string') ? term : '';
+      const termo = termoValido.toLowerCase().trim();
+
+      if (!this.UOList) return;
+
+      const selectedIds = new Set(this.selectedUOs.map(s => s.cod_uo));
+
+      if (termo === "") {
+        this.filteredUOList = this.UOList.filter(uo => !selectedIds.has(uo.cod_uo));
+      } else {
+        this.filteredUOList = this.UOList.filter(uo =>
+          (uo.nome_uo.toLowerCase().includes(termo) || uo.cod_uo.toString().includes(termo)) &&
+          !selectedIds.has(uo.cod_uo)
+        );
+      }
+}
 
   onUOSelected(selectedValue: any): void {
     // Previne que o objeto seja exibido no input
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       this.uoSearchTerm = "";
+      clearTimeout(timer);
     }, 0);
 
     // Chama o método de seleção
@@ -833,36 +732,19 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectUO(uo: ISPOFiltroUos): void {
-    // Validação do objeto
-    if (!uo || !uo.cod_uo) {
-      console.error("❌ UO inválida:", uo);
-      return;
-    }
+selectUO(uo: ISPOFiltroUos): void {
+  if (!uo?.cod_uo) return;
 
-    if (!this.filter.uo) {
-      this.filter.uo = [];
-    }
+  if (!this.filter.uo.includes(uo.cod_uo)) {
+    this.filter.uo = [...this.filter.uo.filter(id => id !== -1), uo.cod_uo];
+    this.selectedUOs = [...this.selectedUOs, uo];
 
-    // Remove o valor -1 (todos) se existir
-    if (this.filter.uo.includes(-1)) {
-      this.filter.uo = this.filter.uo.filter((id) => id !== -1);
-    }
-
-    if (!this.filter.uo.includes(uo.cod_uo)) {
-      this.filter.uo.push(uo.cod_uo);
-      this.selectedUOs.push(uo);
-
-      this.filteredUOList = this.filteredUOList.filter(
-        (item) => item.cod_uo !== uo.cod_uo
-      );
-
-      this.handleFilterChange("uo", this.filter.uo);
-    }
-    // Limpa o campo de busca
     this.uoSearchTerm = "";
-  }
+    this.executarBuscaUO("");
 
+    this.handleFilterChange("uo", this.filter.uo);
+  }
+}
   formatUOName(uo: any): string {
     const fullText = `${uo.cod_uo} - ${uo.nome_uo}`;
 
@@ -876,23 +758,37 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     return fullText;
   }
 
-  removeUO(uoId: string): void {
-    const uoRemovida = this.removerDaSelecao(
-      uoId,
-      this.selectedUOs,
-      this.filter.uo,
-      "cod_uo"
-    );
+  // removeUO(uoId: string): void {
+  //   const uoRemovida = this.removerDaSelecao(
+  //     uoId,
+  //     this.selectedUOs,
+  //     this.filter.uo,
+  //     "cod_uo"
+  //   );
 
-    if (uoRemovida) {
-      this.adicionarDeVoltaAListaFiltrada(
-        uoRemovida,
-        this.filteredUOList,
-        "nome_uo"
-      );
+  //   if (uoRemovida) {
+  //     this.adicionarDeVoltaAListaFiltrada(
+  //       uoRemovida,
+  //       this.filteredUOList,
+  //       "nome_uo"
+  //     );
+  //   }
+
+  //   this.gerenciarMudancaFiltroUO();
+  // }
+
+  removeUO(uoId: string): void {
+    this.filter.uo = this.filter.uo.filter(id => id !== uoId);
+    this.selectedUOs = this.selectedUOs.filter(uo => uo.cod_uo !== uoId);
+
+    if (this.filter.uo.length === 0) {
+      this.resetarSelecaoPO();
+    } else {
+      this.getListPos(this.filter.ano, this.filter.uo);
     }
 
-    this.gerenciarMudancaFiltroUO();
+    this.executarBuscaUO(this.uoSearchTerm);
+    this.handleFilterChange("uo", this.filter.uo);
   }
 
   private gerenciarMudancaFiltroUO(): void {
@@ -929,15 +825,39 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
   // ==================== Métodos de PO ====================
 
+  // onPOSearch(event: any): void {
+  //   this.realizarBusca(
+  //     event.target.value,
+  //     "poSearchTerm",
+  //     this.POList,
+  //     this.selectedPOs,
+  //     "filteredPOList",
+  //     ["nome_po", "cod_po"]
+  //   );
+  // }
+
+
   onPOSearch(event: any): void {
-    this.realizarBusca(
-      event.target.value,
-      "poSearchTerm",
-      this.POList,
-      this.selectedPOs,
-      "filteredPOList",
-      ["nome_po", "cod_po"]
-    );
+      const valor = event.target.value;
+      this.poSearchTerm = valor;
+      this.poSearchSubject.next(valor);
+    }
+
+
+    private executarBuscaPO(term: string): void {
+    const termo = term.toLowerCase().trim();
+    if (!this.POList) return;
+
+    const selectedIds = new Set(this.selectedPOs.map(s => s.cod_po));
+
+    if (termo === "") {
+      this.filteredPOList = this.POList.filter(po => !selectedIds.has(po.cod_po));
+    } else {
+      this.filteredPOList = this.POList.filter(po =>
+        (po.nome_po.toLowerCase().includes(termo) || po.cod_po.toString().includes(termo)) &&
+        !selectedIds.has(po.cod_po)
+      );
+    }
   }
 
   onPOSelected(selectedValue: any): void {
@@ -1125,8 +1045,9 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   }
 
   private limparTermoBuscaAposSelecao(propriedadeTermoBusca: string): void {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       (this as any)[propriedadeTermoBusca] = "";
+      clearTimeout(timer);
     }, 0);
   }
 

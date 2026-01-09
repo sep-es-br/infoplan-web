@@ -1,46 +1,31 @@
+import { CommonModule } from "@angular/common";
 import {
   Component,
   HostListener,
   Input,
   OnChanges,
-  OnInit,
   OnDestroy,
+  OnInit,
   SimpleChanges,
 } from "@angular/core";
-import { NbThemeService } from "@nebular/theme";
-import { ECharts, EChartsOption } from "echarts";
+import { NgxEchartsModule } from "ngx-echarts";
 import {
   AvailableThemes,
   getAvailableThemesStyles,
-} from "../../../../@theme/theme.module";
-import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
-import { CommonModule } from "@angular/common";
-import { NgxEchartsModule } from "ngx-echarts";
-export interface ChartDataConfig {
-  legend?: {
-    fontSize?: number | string;
-    itemWidth?: number;
-    itemHeight?: number;
-    itemGap?: number;
-  };
-  grid?: {
-    top?: string;
-    left?: string;
-    right?: string;
-    bottom?: string;
-    containLabel?: boolean;
-  };
-}
+} from "../../../../../@theme/theme.module";
+import { NbThemeService } from "@nebular/theme";
+import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
+import { ECharts, EChartsOption } from "echarts";
+import { ChartDataConfig } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+
 @Component({
-  selector: "ngx-org-chart-horizontal",
-  templateUrl: "./org-chart-horizontal.component.html",
+  selector: "ngx-org-chart-line",
+  templateUrl: "./org-chart-line.component.html",
   styles: [".echarts { width: 100%; height: 100%; }"],
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
-export class OrgChartHorizontalComponent
-  implements OnInit, OnChanges, OnDestroy
-{
+export class OrgChartLineComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chart!: IChartOptions;
   @Input() height: number;
   @Input() charactersPerLine: number;
@@ -166,7 +151,8 @@ export class OrgChartHorizontalComponent
     this.chartOptions = {
       tooltip: {
         trigger: "axis",
-        axisPointer: { type: "shadow" },
+        // Para linha, 'line' ou 'cross' fica muito melhor
+        axisPointer: { type: "line" },
         backgroundColor: theme.themePrimaryColor,
         borderColor: theme.themePrimaryColor,
         textStyle: { color: theme.textPrimaryColor },
@@ -174,7 +160,10 @@ export class OrgChartHorizontalComponent
         formatter: (params: any) => {
           let tooltip = `${params[0].name}<br>`;
           params.forEach((p: any) => {
-            tooltip += `${p.seriesName}: ${this.formatNumber(p.value)}<br>`;
+            // Adiciona a bolinha colorida da série antes do nome
+            tooltip += `${p.marker} ${p.seriesName}: ${this.formatNumber(
+              p.value
+            )}<br>`;
           });
           return tooltip;
         },
@@ -196,70 +185,65 @@ export class OrgChartHorizontalComponent
 
       grid: {
         top: this.ChartDataConfig?.grid?.top || "20%",
-        left: this.ChartDataConfig?.grid?.left || "10%",
-        right: this.ChartDataConfig?.grid?.right || "4%",
-        bottom: this.ChartDataConfig?.grid?.bottom || "3%",
-        containLabel: this.ChartDataConfig?.grid?.containLabel || true,
+        left: this.ChartDataConfig?.grid?.left || "8%",
+        right: this.ChartDataConfig?.grid?.right || "5%",
+        bottom: this.ChartDataConfig?.grid?.bottom || "10%",
+        containLabel: true,
       },
 
       xAxis: {
-        type: "value",
-        axisLabel: {
-          color: theme.textPrimaryColor,
-          fontSize: isMobile ? 8 : 10,
-          formatter: (v: number) => this.formatValue(v),
-        },
-      },
-
-      yAxis: {
         type: "category",
-        inverse: false,
         data: data.map((d) => d.category),
+        boundaryGap: false,
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isTablet ? 9 : isMobile ? 10 : 11,
           margin: 8,
           overflow: "break",
           width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
-          formatter: (value: string) => {
-            return this.quebrarTexto(value, this.charactersPerLine);
-          },
+          formatter: (value: string) =>
+            this.quebrarTexto(value, this.charactersPerLine),
         },
+      },
+
+      yAxis: {
+        type: "value",
+        axisLine: {
+          show: true,
+          lineStyle: { color: theme.textPrimaryColor, width: 2 },
+        },
+        axisLabel:{
+          formatter: (v: number) => `R$ ${this.formatValue(v)}`,
+          color: theme.textPrimaryColor,
+          fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+        },
+        splitLine: { lineStyle: { type: "solid", opacity: 0.3 } },
       },
 
       series: chart.data.datasets.map((dataset, index) => ({
         name: dataset.label,
-        type: "bar",
+        type: "line",
         data: data.map((d) => d.valores[index]),
         itemStyle: { color: colors[index] },
-        barCategoryGap: "30%",
-        barGap: "20%",
-        barMaxWidth: isMobile ? 15 : 20,
-        barMinHeight: 20,
+        symbolSize: 7,
+        showSymbol: true,
+        smooth: true,
+        stack: "total",
       })),
 
       dataZoom: [
         {
           type: "slider",
-          yAxisIndex: 0,
+          xAxisIndex: 0,
           start: 0,
           end: (9 / data.length) * 100,
-          zoomLock: true,
-          orient: "vertical",
-          handleSize: "50%",
-          width: 0,
-          left: "97%",
-          showDetail: false,
-          showDataShadow: false,
-          textStyle: {
-            fontSize: 0,
-          },
+          show: data.length > 9, // Só mostra se tiver muitos dados
+          bottom: 10,
+          handleSize: "80%",
         },
         {
           type: "inside",
-          yAxisIndex: 0,
-          start: 0,
-          end: (9 / data.length) * 100,
+          xAxisIndex: 0,
           zoomLock: true,
         },
       ],
@@ -313,8 +297,8 @@ export class OrgChartHorizontalComponent
   }
 
   private formatValue(value: number): string {
-    if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1) + "B";
-    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
+    if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1) + " B";
+    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + " M";
     return value.toString();
   }
 

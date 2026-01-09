@@ -14,10 +14,14 @@ import {
   getAvailableThemesStyles,
 } from "../../../../@theme/theme.module";
 import { IChartOptions } from "./../../../../shared/models/painel-orcamento/IChartOptions";
+import { NgxEchartsModule } from "ngx-echarts";
+import { CommonModule } from "@angular/common";
 
 @Component({
   selector: "ngx-org-chart-vertical",
   templateUrl: "./org-chart-vertical.component.html",
+  standalone: true,
+  imports: [NgxEchartsModule, CommonModule],
   styles: [`
     :host {
       display: block;
@@ -146,11 +150,12 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
 
   private resizeChart(): void {
     if (this.echartsInstance) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         this.echartsInstance?.resize({
           width: 'auto',
           height: this.height
         });
+        clearTimeout(timer);
       }, 100);
     }
   }

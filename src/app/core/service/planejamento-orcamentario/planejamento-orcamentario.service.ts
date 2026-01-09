@@ -9,11 +9,16 @@ import {
 import { Router } from "@angular/router";
 import { Observable, throwError } from "rxjs";
 import {
+  ISPODashboardPo,
   ISPODashboardUo,
   ISPOFiltroPos,
   ISPOFiltroUos,
+  ISPOTotalAno,
+  ISPOTotalAnoSigefes,
   ISPOTotalAutorizadoDTO,
   ISPOTotalAutorizadoFilter,
+  ISPOTotalAutorizadoProgressPo,
+  ISPOTotalAutorizadoProgressUo,
   ISPOTotalPrevistoDTO,
   ISPOTotalPrevistoFilter,
 } from "../../interfaces/planejamento-orcamentario/planejamento-orcamentario";
@@ -67,6 +72,41 @@ export class PlanejamentoOrcamentarioService {
   getFiltroPos(ano: number,codUosList: string[]) : Observable<ISPOFiltroPos[]> {
     return this._http
       .get<ISPOFiltroPos[]>(`${this.API_URL}/filtroPos/${ano}/${codUosList}`)
+      .pipe(catchError((err) => this.handleError(err, this._router)));
+  }
+
+  getDashboardPoList(filtro: ISPOTotalAutorizadoFilter) : Observable<ISPODashboardPo[]> {
+    const params: HttpParams = this.returnParamsAutorizado(filtro);
+    return this._http
+      .get<ISPODashboardPo[]>(`${this.API_URL}/dashboardPo`, { params })
+      .pipe(catchError((err) => this.handleError(err, this._router)));
+  }
+
+  getTotalAutorizadoUoList(filtro: ISPOTotalAutorizadoFilter) : Observable<ISPOTotalAutorizadoProgressUo[]> {
+    const params: HttpParams = this.returnParamsAutorizado(filtro);
+    return this._http
+      .get<ISPOTotalAutorizadoProgressUo[]>(`${this.API_URL}/totalAutorizadoUo`, { params })
+      .pipe(catchError((err) => this.handleError(err, this._router)));
+  }
+
+  getTotalAutorizadoPoList(filtro: ISPOTotalAutorizadoFilter) : Observable<ISPOTotalAutorizadoProgressPo[]> {
+    const params: HttpParams = this.returnParamsAutorizado(filtro);
+    return this._http
+      .get<ISPOTotalAutorizadoProgressPo[]>(`${this.API_URL}/totalAutorizadoPo`, { params })
+      .pipe(catchError((err) => this.handleError(err, this._router)));
+  }
+
+  getTotalAnos(filtro: ISPOTotalAutorizadoFilter): Observable<ISPOTotalAno[]> {
+    const params: HttpParams = this.returnParamsAutorizado(filtro);
+    return this._http
+      .get<ISPOTotalAno[]>(`${this.API_URL}/totalAno`, { params })
+      .pipe(catchError((err) => this.handleError(err, this._router)));
+  }
+
+  getTotalAnoSigefes(filtro: ISPOTotalAutorizadoFilter): Observable<ISPOTotalAnoSigefes[]> {
+    const params: HttpParams = this.returnParamsAutorizado(filtro);
+    return this._http
+      .get<ISPOTotalAnoSigefes[]>(`${this.API_URL}/totalAnoSigefes`, { params })
       .pipe(catchError((err) => this.handleError(err, this._router)));
   }
 

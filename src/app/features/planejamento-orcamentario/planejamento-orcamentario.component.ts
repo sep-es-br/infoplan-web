@@ -672,29 +672,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     this.filterChanged.emit(this.currentRequestParams);
   }
 
-  // Métodos para autocomplete UO
-  // onUOSearch(event: any): void {
-  //   const searchTerm = event.target.value.toLowerCase();
-  //   console.log("Search Term:", searchTerm);
-  //   this.uoSearchTerm = searchTerm;
-
-  //   // Sempre filtra da lista ORIGINAL completa
-  //   if (searchTerm.trim() === "") {
-  //     // Mostra todas as UOs que NÃO estão selecionadas
-  //     this.filteredUOList = this.UOList.filter(
-  //       (uo) => !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
-  //     );
-  //   } else {
-  //     // Filtra por termo de busca E remove as selecionadas
-  //     this.filteredUOList = this.UOList.filter(
-  //       (uo) =>
-  //         (uo.nome_uo.toLowerCase().includes(searchTerm) ||
-  //           uo.cod_uo.toString().toLowerCase().includes(searchTerm)) &&
-  //         !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
-  //     );
-  //   }
-  // }
-
   onUOSearch(event: any): void {
     const valor = event.target.value;
     this.uoSearchTerm = valor;

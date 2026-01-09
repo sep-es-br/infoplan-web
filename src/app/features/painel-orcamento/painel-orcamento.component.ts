@@ -180,15 +180,18 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
           this.maximizeState = state;
         }
       );
+    this.requestStatus.totals = RequestStatus.LOADING;
     this.subscription = this._comunicationCardsService.data$.subscribe(
       (data) => {
         if (data.receitaTotal != null) {
           this.receitaTotal = data.receitaTotal;
           this.dataReceitaCards();
+          this.requestStatus.totals = RequestStatus.SUCCESS;
         } else if (data.receitaDespesaGNDOrcamentaria != null) {
           this.receitaDespesaGNDTotalOrcamento =
             data.receitaDespesaGNDOrcamentaria;
           this.dataReceitaCards();
+          this.requestStatus.totals = RequestStatus.SUCCESS;
         }
       }
     );

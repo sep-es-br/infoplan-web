@@ -101,7 +101,8 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    throw new Error("Method not implemented.");
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnChanges(changes: SimpleChanges): void {

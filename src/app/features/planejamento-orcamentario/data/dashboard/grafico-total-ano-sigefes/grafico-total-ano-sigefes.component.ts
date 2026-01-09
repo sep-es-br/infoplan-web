@@ -104,7 +104,8 @@ export class GraficoTotalAnoSigefesComponent
   }
 
   ngOnDestroy(): void {
-    throw new Error("Method not implemented.");
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -158,7 +159,6 @@ export class GraficoTotalAnoSigefesComponent
 
   private processarDados(dados: ISPOTotalAnoSigefes[]): void {
     this._zone.runOutsideAngular(() => {
-      console.log("Dados para o gráfico Total Ano Sigefes:", dados);
     const chartConfig: IChartOptions = {
       data: {
         // O eixo X deve mostrar os anos: ["2024", "2025"]

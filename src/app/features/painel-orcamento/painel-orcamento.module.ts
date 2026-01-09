@@ -29,14 +29,11 @@ import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
 @NgModule({
   declarations: [
     PainelOrcamentoComponent,
-    OrgChartVerticalComponent,
     ReceitaTotalComponent,
     ReceitaDespesaGndTotalComponent,
     ReceitaDespesaGndComponent,
     ReceitaICMSComponent,
     ReceitaParticipacaoComponent,
-
-
   ],
   imports: [
     CommonModule,
@@ -62,8 +59,7 @@ import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
     ReceitaCategoriaComponent,
     ReceitaOrigemComponent,
     ReceitaTransferenciaComponent,
-
-
+    OrgChartVerticalComponent,
   ],
   providers: [
     ShortNumberPipe,

@@ -85,12 +85,14 @@
 
       &:hover {
         .map-icon {
-          filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
         }
       }
 
       &.map-btn-clicked {
-        filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+          saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
       }
     }
 
@@ -194,18 +196,41 @@
       height: 3rem;
       border-width: 0.35em;
 
-      &.qt-programas,
-      &.qt-projetos,
-      &.total-entregas {
-        color: #005c99 !important;
+      &.total-planejado {
+        color: #a970b6 !important;
       }
 
-      &.total-previsto {
-        color: #487d7a !important;
+      &.total-contratado {
+        color: #9089e7 !important;
       }
 
-      &.total-realizado {
-        color: #00b26a !important;
+      &.total-autorizado {
+        color: #5e9fcc !important;
+      }
+
+      &.total-empenhado {
+        color: #1bbc9c !important;
+      }
+
+      &.total-liquidado {
+        color: #d9ac21 !important;
+      }
+
+      &.total-pago {
+        color: #f77d00 !important;
+      }
+
+      .sr-only,
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
     }
 
@@ -235,15 +260,15 @@
       }
 
       &.planejado {
-        background-color: #A970B6 !important;
+        background-color: #a970b6 !important;
       }
 
       &.contratado {
-        background-color: #9089E7 !important;
+        background-color: #9089e7 !important;
       }
 
       &.autorizado {
-        background-color: #5E9FCC !important;
+        background-color: #5e9fcc !important;
       }
 
       &.empenhado {
@@ -251,7 +276,7 @@
       }
 
       &.liquidado {
-        background-color: #D9AC21 !important;
+        background-color: #d9ac21 !important;
       }
 
       &.pago {
@@ -281,15 +306,15 @@
     }
 
     &.planejado {
-      color: #A970B6 !important;
+      color: #a970b6 !important;
     }
 
     &.contratado {
-      color: #9089E7 !important;
+      color: #9089e7 !important;
     }
 
     &.autorizado {
-      color: #5E9FCC !important;
+      color: #5e9fcc !important;
     }
 
     &.empenhado {
@@ -297,7 +322,7 @@
     }
 
     &.liquidado {
-      color: #D9AC21 !important;
+      color: #d9ac21 !important;
     }
 
     &.pago {
@@ -309,15 +334,15 @@
     color: #005c99 !important;
 
     &.planejado {
-      color: #A970B6 !important;
+      color: #a970b6 !important;
     }
 
     &.contratado {
-      color: #9089E7 !important;
+      color: #9089e7 !important;
     }
 
     &.autorizado {
-      color: #5E9FCC !important;
+      color: #5e9fcc !important;
     }
 
     &.empenhado {
@@ -325,7 +350,7 @@
     }
 
     &.liquidado {
-      color: #D9AC21 !important;
+      color: #d9ac21 !important;
     }
 
     &.pago {
@@ -414,10 +439,9 @@ chart-container.maximized::before:hover {
   border-radius: 6px !important;
 }
 
-
 // // Aplica esses estilos sob o tema "dark" e "cosmic"
 :host-context(.nb-theme-dark, .nb-theme-cosmic) {
-
+  .sub-title-po,
   .icon-top-right,
   .text-section {
     &.logo {
@@ -426,6 +450,28 @@ chart-container.maximized::before:hover {
 
     color: #ffffff !important;
   }
+
+  .autocomplete-input-uo {
+    background-color: #2B2B4F !important;
+    border: 1px solid #222241 !important;
+    color: #ffffff !important;
+  }
+
+  .autocomplete-input-uo::placeholder {
+    color: #73739A !important;
+  }
+}
+
+:host-context(.nb-theme-default) {
+  .autocomplete-input-uo {
+    border: 1px solid #F1F4F8 !important;
+  }
+}
+:host-context(.nb-theme-dark) {
+  .autocomplete-input-uo {
+    border: 1px solid #191F35 !important;
+    background-color: #1D253E !important;
+  }
 }
 
 @media (min-width: 1440px) {
@@ -433,7 +479,6 @@ chart-container.maximized::before:hover {
     max-width: 1800px;
   }
 }
-
 
 .chips-container {
   display: flex;

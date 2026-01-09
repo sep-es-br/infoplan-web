@@ -28,7 +28,11 @@ const CHART_COLORS = [
   "#a4d1b8ff",  // verde acinzentado (conecta verde com cinza)
   "#A970B6", // PREVISTO
   "#9089E7", // CONTRATADO
-  "#5E9FCC" // AUTORIZADO
+  "#5E9FCC", // AUTORIZADO
+  "#1BBC9C", // EMPENHADO
+  "#D9AC22", // LIQUIDADO
+  "#F77D00", // PAGO
+  "#ffaa56"  // PAGO COM RAP
 ];
 
 // const CHART_COLORS = [
@@ -175,82 +179,6 @@ export class ChartDataProcessorService {
     }
   }
 
-  // criarChartLiquidadoEPago(
-  //   dados: any[],
-  //   campoLabel: string,
-  //   tituloChart?: string
-  // ): IChartOptions | null {
-
-  //   // Extrair anos únicos dos dados automaticamente
-  //   const anos = [...new Set(dados.map((d) => d.ano))].sort();
-
-  //   // Extrair categorias únicas automaticamente
-  //   const categorias = [...new Set(dados.map((d) => d[campoLabel]))].filter(
-  //     Boolean
-  //   );
-
-  //   if (anos.length === 0 || categorias.length === 0) {
-  //     console.warn(`Dados insuficientes para gerar o gráfico`);
-  //     return null;
-  //   }
-
-
-  //   const datasets = [
-  //     {
-  //       label: `Liquidado ${anos[1] || anos[0]}`, // 2025 ou último ano
-  //       data: categorias.map((categoria) => {
-  //         const item = dados.find(
-  //           (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
-  //         );
-  //         return this.extrairValor(item, ["vlr_liquidado"]);
-  //       }),
-  //       backgroundColor: this.colors[0],
-  //     },
-  //     {
-  //       label: `Liquidado ${anos[0]}`, // 2024 ou primeiro ano
-  //       data: categorias.map((categoria) => {
-  //         const item = dados.find(
-  //           (d) => d[campoLabel] === categoria && d.ano === anos[0]
-  //         );
-  //         return this.extrairValor(item, ["vlr_liquidado"]);
-  //       }),
-  //       backgroundColor: this.colors[1],
-  //     },
-  //     {
-  //       label: `Pago com RAP ${anos[1] || anos[0]}`, // 2025 ou último ano
-  //       data: categorias.map((categoria) => {
-  //         const item = dados.find(
-  //           (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
-  //         );
-  //         return this.extrairValor(item, ["vlr_pago_com_rap"]);
-  //       }),
-  //       backgroundColor: CHART_COLORS[2],
-  //     },
-  //     {
-  //       label: `Pago com RAP ${anos[0]}`, // 2024 ou primeiro ano
-  //       data: categorias.map((categoria) => {
-  //         const item = dados.find(
-  //           (d) => d[campoLabel] === categoria && d.ano === anos[0]
-  //         );
-  //         return this.extrairValor(item, ["vlr_pago_com_rap"]);
-  //       }),
-  //       backgroundColor: CHART_COLORS[0],
-  //     },
-  //   ];
-
-  //   if (!this.temDadosValidos(datasets.map((d) => d.data))) {
-  //     console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
-  //     return null;
-  //   }
-
-  //   return {
-  //     data: {
-  //       labels: categorias,
-  //       datasets: datasets,
-  //     },
-  //   };
-  // }
-
   criarChartLiquidadoEPago(
     dados: any[],
     campoLabel: string,
@@ -347,25 +275,25 @@ export class ChartDataProcessorService {
     const categorias = this.extrairCategorias(dados, campoLabel);
     const anos = this.extrairAnos(dados);
 
-    if (anos.length === 1) {
-      const ano = anos[0];
+    // if (anos.length === 1) {
+    //   const ano = anos[0];
 
-      const dataForecast = this.extrairDadosPorCategoria(
-        dados,
-        categorias,
-        ano,
-        campoLabel,
-        "vlr_receita_prevista"
-      );
+    //   const dataForecast = this.extrairDadosPorCategoria(
+    //     dados,
+    //     categorias,
+    //     ano,
+    //     campoLabel,
+    //     "vlr_receita_prevista"
+    //   );
 
-      const dataCollected = this.extrairDadosPorCategoria(
-        dados,
-        categorias,
-        ano,
-        campoLabel,
-        "receitaLiquida"
-      );
-    }
+    //   const dataCollected = this.extrairDadosPorCategoria(
+    //     dados,
+    //     categorias,
+    //     ano,
+    //     campoLabel,
+    //     "receitaLiquida"
+    //   );
+    // }
 
     return anos.length === 1
       ? this.criarChartAnoUnico(dados, categorias, anos[0], campoLabel)
@@ -675,16 +603,4 @@ export class ChartDataProcessorService {
 
     return 0;
   }
-  // private extrairValor(item: any, camposValor: string[]): any {
-  //   if (!item) return null;
-
-  //   for (const campo of camposValor) {
-  //     if (item.hasOwnProperty(campo)) {
-  //       return item[campo];
-  //     }
-  //   }
-
-  //   // Fallback para campo 'value'
-  //   return item.value || null;
-  // }
 }

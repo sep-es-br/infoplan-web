@@ -3,49 +3,32 @@ import {
   HostListener,
   Input,
   OnChanges,
-  OnInit,
   OnDestroy,
+  OnInit,
   SimpleChanges,
 } from "@angular/core";
-import { NbThemeService } from "@nebular/theme";
+import { ChartDataConfig } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { ECharts, EChartsOption } from "echarts";
-import {
-  AvailableThemes,
-  getAvailableThemesStyles,
-} from "../../../../@theme/theme.module";
-import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
+import { AvailableThemes } from "../../../planejamento-orcamentario.component";
+import { NbThemeService } from "@nebular/theme";
+import { getAvailableThemesStyles } from "../../../../../@theme/theme.module";
 import { CommonModule } from "@angular/common";
 import { NgxEchartsModule } from "ngx-echarts";
-export interface ChartDataConfig {
-  legend?: {
-    fontSize?: number | string;
-    itemWidth?: number;
-    itemHeight?: number;
-    itemGap?: number;
-  };
-  grid?: {
-    top?: string;
-    left?: string;
-    right?: string;
-    bottom?: string;
-    containLabel?: boolean;
-  };
-}
+import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
+
 @Component({
-  selector: "ngx-org-chart-horizontal",
-  templateUrl: "./org-chart-horizontal.component.html",
-  styles: [".echarts { width: 100%; height: 100%; }"],
+  selector: "ngx-chart-progress-bar",
+  templateUrl: "./chart-progress-bar.component.html",
+  styleUrls: ["./chart-progress-bar.component.scss"],
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
-export class OrgChartHorizontalComponent
-  implements OnInit, OnChanges, OnDestroy
-{
+export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chart!: IChartOptions;
   @Input() height: number;
   @Input() charactersPerLine: number;
   @Input() showMaximizeButton!: boolean;
-  @Input() ChartDataConfig!: ChartDataConfig;
+  @Input() chartDataConfig!: ChartDataConfig;
 
   chartOptions: EChartsOption;
   echartsInstance: ECharts | null = null;
@@ -67,6 +50,11 @@ export class OrgChartHorizontalComponent
         const newStyles = getAvailableThemesStyles(newTheme.name);
 
         this.echartsInstance.setOption({
+          series: {
+            label: {
+              color: newStyles.textSecondaryColor,
+            },
+          },
           tooltip: {
             textStyle: { color: newStyles.textPrimaryColor },
             backgroundColor: newStyles.themePrimaryColor,
@@ -174,7 +162,7 @@ export class OrgChartHorizontalComponent
         formatter: (params: any) => {
           let tooltip = `${params[0].name}<br>`;
           params.forEach((p: any) => {
-            tooltip += `${p.seriesName}: ${this.formatNumber(p.value)}<br>`;
+            tooltip += `${p.seriesName}: ${p.value}%<br>`;
           });
           return tooltip;
         },
@@ -185,21 +173,21 @@ export class OrgChartHorizontalComponent
         top: "top",
         left: "center",
         data: datasetLabels,
-        itemWidth: this.ChartDataConfig?.legend?.itemWidth || 10,
-        itemHeight: this.ChartDataConfig?.legend?.itemHeight || 10,
-        itemGap: this.ChartDataConfig?.legend?.itemGap || 20,
+        itemWidth: this.chartDataConfig?.legend?.itemWidth || 10,
+        itemHeight: this.chartDataConfig?.legend?.itemHeight || 10,
+        itemGap: this.chartDataConfig?.legend?.itemGap || 20,
         textStyle: {
           color: theme.textPrimaryColor,
-          fontSize: this.ChartDataConfig?.legend?.fontSize || 9,
+          fontSize: this.chartDataConfig?.legend?.fontSize || 12,
         },
       },
 
       grid: {
-        top: this.ChartDataConfig?.grid?.top || "20%",
-        left: this.ChartDataConfig?.grid?.left || "10%",
-        right: this.ChartDataConfig?.grid?.right || "4%",
-        bottom: this.ChartDataConfig?.grid?.bottom || "3%",
-        containLabel: this.ChartDataConfig?.grid?.containLabel || true,
+        top: this.chartDataConfig?.grid?.top || "10%",
+        left: this.chartDataConfig?.grid?.left || "0%",
+        right: this.chartDataConfig?.grid?.right || "10%",
+        bottom: this.chartDataConfig?.grid?.bottom || "10%",
+        containLabel: true,
       },
 
       xAxis: {
@@ -207,7 +195,7 @@ export class OrgChartHorizontalComponent
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,
-          formatter: (v: number) => this.formatValue(v),
+          formatter: (v: number) => `${v}%`,
         },
       },
 
@@ -215,10 +203,23 @@ export class OrgChartHorizontalComponent
         type: "category",
         inverse: false,
         data: data.map((d) => d.category),
+        axisLine: {
+          show: true,
+          lineStyle: {
+            width: 1,
+          },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: {
+            width: 1,
+          },
+        },
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isTablet ? 9 : isMobile ? 10 : 11,
-          margin: 8,
+          margin: 7,
+          lineHeight: 10,
           overflow: "break",
           width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
           formatter: (value: string) => {
@@ -229,40 +230,56 @@ export class OrgChartHorizontalComponent
 
       series: chart.data.datasets.map((dataset, index) => ({
         name: dataset.label,
+        label: {
+          position: "insideRight",
+          show: true,
+          formatter: function (params) {
+            return params.value + "%";
+          },
+          textBorderWidth: 0,
+          textShadowBlur: 0,
+          fontSize: 10,
+          color: theme.textSecondaryColor,
+        },
         type: "bar",
         data: data.map((d) => d.valores[index]),
-        itemStyle: { color: colors[index] },
-        barCategoryGap: "30%",
-        barGap: "20%",
+        showBackground: true,
+        itemStyle: {
+          color: colors[index],
+          borderRadius: 10,
+        },
+        barCategoryGap: "35%",
+        barGap: "35%",
         barMaxWidth: isMobile ? 15 : 20,
         barMinHeight: 20,
+        barWidth: "20%",
       })),
 
-      dataZoom: [
-        {
-          type: "slider",
-          yAxisIndex: 0,
-          start: 0,
-          end: (9 / data.length) * 100,
-          zoomLock: true,
-          orient: "vertical",
-          handleSize: "50%",
-          width: 0,
-          left: "97%",
-          showDetail: false,
-          showDataShadow: false,
-          textStyle: {
-            fontSize: 0,
-          },
-        },
-        {
-          type: "inside",
-          yAxisIndex: 0,
-          start: 0,
-          end: (9 / data.length) * 100,
-          zoomLock: true,
-        },
-      ],
+      // dataZoom: [
+      //   {
+      //     type: "slider",
+      //     yAxisIndex: 0,
+      //     start: 0,
+      //     end: (9 / data.length) * 100,
+      //     zoomLock: true,
+      //     orient: "vertical",
+      //     handleSize: "50%",
+      //     width: 0,
+      //     left: "97%",
+      //     showDetail: false,
+      //     showDataShadow: false,
+      //     textStyle: {
+      //       fontSize: 0,
+      //     },
+      //   },
+      //   {
+      //     type: "inside",
+      //     yAxisIndex: 0,
+      //     start: 0,
+      //     end: (9 / data.length) * 100,
+      //     zoomLock: true,
+      //   },
+      // ],
     };
   }
 

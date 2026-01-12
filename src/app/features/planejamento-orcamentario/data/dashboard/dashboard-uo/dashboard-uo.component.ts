@@ -55,7 +55,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  readonly title: string = "UO - Unidade Orçamentária";
+  title: string;
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
   dasboardResponse: ISPODashboardUo[] = [];
@@ -112,6 +112,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
         JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
+      this.title = `UO - Unidade Orçamentária • Filtro anual ${this.filter?.ano}`;
     }
   }
 

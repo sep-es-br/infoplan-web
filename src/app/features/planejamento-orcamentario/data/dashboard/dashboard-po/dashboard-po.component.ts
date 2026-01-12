@@ -54,12 +54,12 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  readonly title: string = "PO - Programa Orçamentário";
+  title: string;
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   dasboardResponse: ISPODashboardPo[] = [];
-
+// this.subTitulo = `Filtro anual • ${this.filter?.ano}`
   private searchSubject = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
   private readonly _zone = inject(NgZone);
@@ -104,6 +104,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
         JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
+      this.title = `PO - Unidade Orçamentária • Filtro anual ${this.filter?.ano}`;
     }
   }
 

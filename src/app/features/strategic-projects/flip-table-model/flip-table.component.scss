@@ -55,6 +55,12 @@
       font-weight: var(--layout-text-font-weight);
     }
 
+    .sub-card-title {
+      color: var(--card-text-color);
+      font-size: 0.75rem;
+      font-weight: var(--layout-text-font-weight);
+    }
+
     .search-form-field {
       width: 0;
       opacity: 0;

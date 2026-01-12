@@ -54,6 +54,7 @@ export class GraficoTotalAnoSigefesComponent
   }
 
   readonly title: string = "Evolução dos Valores por Ano";
+  subTitulo: string;
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
@@ -167,7 +168,7 @@ export class GraficoTotalAnoSigefesComponent
         datasets: [
           {
             // Primeira coluna de cada ano
-            label: 'Pago sem RAP',
+            label: 'Pago',
             data: dados.map((d) => d.vlr_pago_sem_rap || 0),
             backgroundColor: this._chartProcessor.colors[20],
           },

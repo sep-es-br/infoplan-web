@@ -4,6 +4,11 @@
       <span class="card-title m-0">{{ cardTitle }}</span>
     </ng-container>
 
+    <ng-container *ngIf="subCardTitle">
+      <!-- <span class="sub-card-title mt-1">{{ subCardTitle }}</span> -->
+      <nb-badge class="sub-card-title mt-1" style="position: relative;" status="success" position="top start" dotMode="false" [text]="subCardTitle"></nb-badge>
+    </ng-container>
+
     <ng-template #customHeader>
       <ng-content select="[custom-header]"></ng-content>
     </ng-template>

@@ -76,6 +76,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["chart"] && this.chart) {
       this.initChartOptions(this.chart);
+      console.log("params:", this.chart);
     }
     if (changes["height"]) {
       this.resizeChart();
@@ -160,10 +161,41 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         textStyle: { color: theme.textPrimaryColor },
         confine: true,
         formatter: (params: any) => {
-          let tooltip = `${params[0].name}<br>`;
+          if (!params || params.length === 0) return "";
+
+          const index = params[0].dataIndex;
+          const dataRef = this.chart?.data;
+
+          if (!dataRef) return "";
+
+          let tituloTooltip = "";
+
+          if (dataRef.tipoTooltip === "PO") {
+            const po =
+              (dataRef.nomePO && dataRef.nomePO[index]) ||
+              "PO não identificado";
+            const uo =
+              (dataRef.nomeUO && dataRef.nomeUO[index]) ||
+              "UO não identificada";
+
+            tituloTooltip = `<span>${uo}</span> - <small>${po}</small>`;
+          } else {
+            const labelOriginal = params[0].name || "";
+            const codigo = labelOriginal.includes(" - ")
+              ? labelOriginal.split(" - ")[0]
+              : labelOriginal;
+            const uo = (dataRef.nomeUO && dataRef.nomeUO[index]) || "";
+
+            tituloTooltip = `<span>${codigo}</span> - <small>${uo}</small>`;
+          }
+
+          let tooltip = `${tituloTooltip}<br>`;
           params.forEach((p: any) => {
-            tooltip += `${p.seriesName}: ${p.value}%<br>`;
+            const valor =
+              p.value !== undefined && p.value !== null ? p.value : 0;
+            tooltip += `<span>${p.seriesName}: <span>${valor}%</span></span><br>`;
           });
+
           return tooltip;
         },
       },

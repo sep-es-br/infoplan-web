@@ -91,7 +91,9 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void {
     // Inicializa o ouvinte de busca com debounce
     this.searchSubject
-      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
+      .pipe(debounceTime(400),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$))
       .subscribe((query) => {
         this.executarFiltroTabela(query);
       });
@@ -176,7 +178,9 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
 
       const chartConfig: IChartOptions = {
         data: {
-          labels: top5.map((d) => `${d.uo} - ${d.nome}`),
+          labels: top5.map((d) => `${d.uo} - ${d.sigla}`),
+          tipoTooltip: "UO",
+          nomeUO: top5.map((d) => d.nome),
           datasets: [
             {
               label: "Planejado",

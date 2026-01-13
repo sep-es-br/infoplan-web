@@ -172,12 +172,53 @@ export class OrgChartHorizontalComponent
         textStyle: { color: theme.textPrimaryColor },
         confine: true,
         formatter: (params: any) => {
-          let tooltip = `${params[0].name}<br>`;
+          if (!params || params.length === 0) return "";
+
+          const index = params[0].dataIndex;
+          const dataRef = this.chart?.data;
+
+          if (!dataRef) return "";
+
+          let tituloTooltip = "";
+
+          // Define o Título baseado no tipo de Tooltip
+          if (dataRef.tipoTooltip === "PO") {
+            const po =
+              (dataRef.nomePO && dataRef.nomePO[index]) ||
+              "PO não identificado";
+            const uo =
+              (dataRef.nomeUO && dataRef.nomeUO[index]) ||
+              "UO não identificada";
+            tituloTooltip = `<span>${uo}</span> - <small>${po}</small>`;
+          } else {
+            const labelOriginal = params[0].name || "";
+            const codigo = labelOriginal.includes(" - ")
+              ? labelOriginal.split(" - ")[0]
+              : labelOriginal;
+            const uo = (dataRef.nomeUO && dataRef.nomeUO[index]) || "";
+            tituloTooltip = `<span>${codigo}</span> - <small>${uo}</small>`;
+          }
+
+          // Constrói o corpo da Tooltip com os valores formatados
+          let tooltip = `${tituloTooltip}<br>`;
+
           params.forEach((p: any) => {
-            tooltip += `${p.seriesName}: ${this.formatNumber(p.value)}<br>`;
+            const valorRaw =
+              p.value !== undefined && p.value !== null ? p.value : 0;
+            // Aqui integramos a sua função comentada de formatação
+            const valorFormatado = this.formatNumber(valorRaw);
+            tooltip += `<span>${p.seriesName}: <span>${valorFormatado}</span></span><br>`;
           });
+
           return tooltip;
         },
+        // formatter: (params: any) => {
+        //   let tooltip = `${params[0].name}<br>`;
+        //   params.forEach((p: any) => {
+        //     tooltip += `${p.seriesName}: ${this.formatNumber(p.value)}<br>`;
+        //   });
+        //   return tooltip;
+        // },
       },
 
       legend: {

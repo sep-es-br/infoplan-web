@@ -79,8 +79,8 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   readonly cards = CARDS_DATA;
 
   readonly tipoFonteList = [
-    { id: 1, name: "Caixas Tesouros" },
-    { id: 2, name: "Demais Fontes" },
+    { id: 1, name: "1 - Caixas do Tesouro" },
+    { id: 2, name: "2 - Demais Fontes" },
   ];
 
   private readonly destroy$ = new Subject<void>();

@@ -110,6 +110,8 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
     this.chartData = {
       data: {
         labels: top5Uo.map((d) => d.cod || d.sigla != null ? `${d.cod} - ${d.sigla}` : "Valor indefinido"),
+        nomeUO: top5Uo.map((d) => d.nome_uo || "Nome não disponível"),
+        tipoTooltip: 'UO',
         datasets: [
           {
             label: "Empenhado (% Autorizado)",
@@ -127,7 +129,7 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
             backgroundColor: "#F77D00",
           },
         ],
-      },
+      }
     };
     this.processarTabela(dados);
   }

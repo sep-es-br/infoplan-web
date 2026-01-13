@@ -6,6 +6,9 @@ interface IData {
   labels?: string[];
   datasets: IDataset[];
   colors?: string[];
+  nomeUO?:string[];
+  nomePO?:string[];
+  tipoTooltip?: 'UO' | 'PO';
 }
 
 interface IDataset {

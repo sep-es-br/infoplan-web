@@ -164,6 +164,8 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       this.chartData = {
         data: {
           labels: labels,
+          tipoTooltip: "PO",
+          nomePO: top5.map((d) => d.nome),
           datasets: [
             {
               label: "Planejado",

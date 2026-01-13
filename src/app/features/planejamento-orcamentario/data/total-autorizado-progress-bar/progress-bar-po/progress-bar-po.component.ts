@@ -119,7 +119,9 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
       .reverse();
     this.chartData = {
       data: {
-        labels: top5Uo.map((d) => d.sigla_uo || d.nome_po != null ? `${d.sigla_uo} - ${d.nome_po}` : "Valor indefinido"),
+        labels: top5Uo.map((d) => d.sigla_uo || d.nome_po != null ? `${d.sigla_uo} - ${d.nome_po}` : "PO não identificado"),
+        nomePO: top5Uo.map((d) => d.nome_po || "Nome não disponível"),
+        tipoTooltip: 'PO',
         datasets: [
           {
             label: "Empenhado (% Autorizado)",

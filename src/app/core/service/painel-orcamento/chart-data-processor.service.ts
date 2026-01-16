@@ -25,14 +25,14 @@ const CHART_COLORS = [
   "#8EFFFD", // azul esverdeado (ponte entre azul e verde)
   "#849299ff", // azul acinzentado (conecta azul com cinza)
   "#B67DAD", // roxo rosado (ponte entre roxo e rosa)
-  "#a4d1b8ff",  // verde acinzentado (conecta verde com cinza)
+  "#a4d1b8ff", // verde acinzentado (conecta verde com cinza)
   "#A970B6", // PREVISTO
   "#9089E7", // CONTRATADO
   "#5E9FCC", // AUTORIZADO
   "#1BBC9C", // EMPENHADO
   "#D9AC22", // LIQUIDADO
   "#F77D00", // PAGO
-  "#ffaa56"  // PAGO COM RAP
+  "#ffaa56", // PAGO COM RAP
 ];
 
 // const CHART_COLORS = [
@@ -64,20 +64,22 @@ export class ChartDataProcessorService {
     try {
       // Validação inicial dos parâmetros
       if (!data || !Array.isArray(data) || data.length === 0) {
-        console.warn('Dados de entrada vazios ou inválidos');
+        console.warn("Dados de entrada vazios ou inválidos");
         return null;
       }
 
-      if (!fieldLabel || typeof fieldLabel !== 'string') {
-        console.warn('FieldLabel é obrigatório e deve ser uma string');
+      if (!fieldLabel || typeof fieldLabel !== "string") {
+        console.warn("FieldLabel é obrigatório e deve ser uma string");
         return null;
       }
 
       // Encontrar o ano mais recente nos dados (ano atual da consulta)
-      const anosDisponiveis = [...new Set(data.map(d => d.ano))].filter(ano => ano).sort((a, b) => b - a);
+      const anosDisponiveis = [...new Set(data.map((d) => d.ano))]
+        .filter((ano) => ano)
+        .sort((a, b) => b - a);
 
       if (anosDisponiveis.length === 0) {
-        console.warn('Nenhum ano válido encontrado nos dados');
+        console.warn("Nenhum ano válido encontrado nos dados");
         return null;
       }
 
@@ -99,11 +101,15 @@ export class ChartDataProcessorService {
       }
 
       const categorys = [
-        ...new Set(dadosAnoAtual.map((d) => d[fieldLabel]?.toString() || '').filter(Boolean)),
+        ...new Set(
+          dadosAnoAtual
+            .map((d) => d[fieldLabel]?.toString() || "")
+            .filter(Boolean)
+        ),
       ];
 
       if (categorys.length === 0) {
-        console.warn('Nenhuma categoria encontrada para gerar o gráfico');
+        console.warn("Nenhuma categoria encontrada para gerar o gráfico");
         return null;
       }
 
@@ -116,9 +122,8 @@ export class ChartDataProcessorService {
       );
 
       return chartOptions;
-
     } catch (error) {
-      console.error('Erro ao criar gráfico de despesa GND total:', error);
+      console.error("Erro ao criar gráfico de despesa GND total:", error);
       return null;
     }
   }
@@ -132,9 +137,21 @@ export class ChartDataProcessorService {
   ): IChartOptions | null {
     try {
       // Definir cores para os datasets #71C273
-      const colors = ['#76c6d8', '#F58B9B', '#8FCCA2', '#A671C4', '#FFA948'];
-      const datasetLabels = ['Orçado', 'Autorizado', 'Empenhado', 'Liquidado', 'Pago com RAP'];
-      const valueFields = ['vlr_orcado', 'vlr_autorizado', 'vlr_empenhado', 'vlr_liquidado', 'vlr_pago_com_rap'];
+      const colors = ["#76c6d8", "#F58B9B", "#8FCCA2", "#A671C4", "#FFA948"];
+      const datasetLabels = [
+        "Orçado",
+        "Autorizado",
+        "Empenhado",
+        "Liquidado",
+        "Pago com RAP",
+      ];
+      const valueFields = [
+        "vlr_orcado",
+        "vlr_autorizado",
+        "vlr_empenhado",
+        "vlr_liquidado",
+        "vlr_pago_com_rap",
+      ];
 
       const datasets = datasetLabels.map((label, index) => {
         const dataValues = categorys.map((categoria) => {
@@ -151,14 +168,14 @@ export class ChartDataProcessorService {
           data: dataValues,
           backgroundColor: colors[index],
           borderColor: colors[index],
-          borderWidth: 1
+          borderWidth: 1,
         };
       });
 
       // Verificar se há dados válidos
-      const todosDados = datasets.flatMap(d => d.data);
-      const temDadosValidos = todosDados.some(valor =>
-        valor !== null && valor !== undefined && valor !== 0
+      const todosDados = datasets.flatMap((d) => d.data);
+      const temDadosValidos = todosDados.some(
+        (valor) => valor !== null && valor !== undefined && valor !== 0
       );
 
       if (!temDadosValidos) {
@@ -172,9 +189,8 @@ export class ChartDataProcessorService {
           datasets: datasets,
         },
       };
-
     } catch (error) {
-      console.error('Erro ao construir datasets:', error);
+      console.error("Erro ao construir datasets:", error);
       return null;
     }
   }
@@ -184,7 +200,6 @@ export class ChartDataProcessorService {
     campoLabel: string,
     tituloChart?: string
   ): IChartOptions | null {
-
     // Extrair anos únicos dos dados automaticamente
     const anos = [...new Set(dados.map((d) => d.ano))].sort();
 
@@ -213,7 +228,10 @@ export class ChartDataProcessorService {
           const items = dados.filter(
             (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
           );
-          return items.reduce((acc, item) => acc + this.extrairValor(item, ["vlr_liquidado"]), 0);
+          return items.reduce(
+            (acc, item) => acc + this.extrairValor(item, ["vlr_liquidado"]),
+            0
+          );
         }),
         backgroundColor: cores[0],
       },
@@ -223,7 +241,10 @@ export class ChartDataProcessorService {
           const items = dados.filter(
             (d) => d[campoLabel] === categoria && d.ano === anos[0]
           );
-          return items.reduce((acc, item) => acc + this.extrairValor(item, ["vlr_liquidado"]), 0);
+          return items.reduce(
+            (acc, item) => acc + this.extrairValor(item, ["vlr_liquidado"]),
+            0
+          );
         }),
         backgroundColor: cores[1],
       },
@@ -233,7 +254,10 @@ export class ChartDataProcessorService {
           const items = dados.filter(
             (d) => d[campoLabel] === categoria && d.ano === (anos[1] || anos[0])
           );
-          return items.reduce((acc, item) => acc + this.extrairValor(item, ["vlr_pago_com_rap"]), 0);
+          return items.reduce(
+            (acc, item) => acc + this.extrairValor(item, ["vlr_pago_com_rap"]),
+            0
+          );
         }),
         backgroundColor: cores[2],
       },
@@ -243,7 +267,10 @@ export class ChartDataProcessorService {
           const items = dados.filter(
             (d) => d[campoLabel] === categoria && d.ano === anos[0]
           );
-          return items.reduce((acc, item) => acc + this.extrairValor(item, ["vlr_pago_com_rap"]), 0);
+          return items.reduce(
+            (acc, item) => acc + this.extrairValor(item, ["vlr_pago_com_rap"]),
+            0
+          );
         }),
         backgroundColor: cores[3],
       },
@@ -274,61 +301,9 @@ export class ChartDataProcessorService {
 
     const categorias = this.extrairCategorias(dados, campoLabel);
     const anos = this.extrairAnos(dados);
-
-    // if (anos.length === 1) {
-    //   const ano = anos[0];
-
-    //   const dataForecast = this.extrairDadosPorCategoria(
-    //     dados,
-    //     categorias,
-    //     ano,
-    //     campoLabel,
-    //     "vlr_receita_prevista"
-    //   );
-
-    //   const dataCollected = this.extrairDadosPorCategoria(
-    //     dados,
-    //     categorias,
-    //     ano,
-    //     campoLabel,
-    //     "receitaLiquida"
-    //   );
-    // }
-
     return anos.length === 1
       ? this.criarChartAnoUnico(dados, categorias, anos[0], campoLabel)
       : this.criarChartMultiploAnos(dados, categorias, anos, campoLabel);
-  }
-
-  processarDadosPieChart(
-    dados: any[],
-    campoNome: string,
-    camposValor: string[]
-  ): PieChartData[] {
-    if (!dados?.length) {
-      return [];
-    }
-
-    const dadosAgrupados = this.agruparDadosPieChart(
-      dados,
-      campoNome,
-      camposValor
-    );
-    return this.gerarPieChartData(dadosAgrupados);
-  }
-
-  criarTabelaPieChart(
-    dados: PieChartData[]
-  ): Array<{ categoria: string; valor: number; percentual: number }> {
-    if (!dados?.length) return [];
-
-    const total = dados.reduce((sum, item) => sum + item.value, 0);
-
-    return dados.map((item) => ({
-      categoria: item.name,
-      valor: item.value,
-      percentual: total > 0 ? (item.value / total) * 100 : 0,
-    }));
   }
 
   private criarChartAnoUnico(
@@ -353,7 +328,6 @@ export class ChartDataProcessorService {
       "receitaLiquida",
       "vlr_receita_liquida"
     );
-
 
     if (!this.temDadosValidos([dadosPrevisao, dadosArrecadacao])) {
       console.warn(`Nenhum dado financeiro encontrado para ${campoLabel}`);
@@ -385,9 +359,10 @@ export class ChartDataProcessorService {
     anos: number[],
     campoLabel: string
   ): IChartOptions | null {
+    const dadosArray = [...dados].sort((a,b) => (b.receitaLiquida || 0) - (a.receitaLiquida || 0))
     const datasets = anos.map((ano, index) => {
       const dadosAno = this.extrairDadosPorCategoria(
-        dados,
+        dadosArray,
         categorias,
         ano,
         campoLabel,
@@ -422,12 +397,44 @@ export class ChartDataProcessorService {
     campoLabel: string,
     ...campos: string[]
   ): number[] {
+    console.log("extraindo por categoria: ", dados)
     return categorias.map((categoria) => {
       const item = dados.find(
         (item) => item[campoLabel] === categoria && item.ano === ano
       );
       return this.extrairValor(item, campos);
     });
+  }
+
+  processarDadosPieChart(
+    dados: any[],
+    campoNome: string,
+    camposValor: string[]
+  ): PieChartData[] {
+    if (!dados?.length) {
+      return [];
+    }
+
+    const dadosAgrupados = this.agruparDadosPieChart(
+      dados,
+      campoNome,
+      camposValor
+    );
+    return this.gerarPieChartData(dadosAgrupados);
+  }
+
+  criarTabelaPieChart(
+    dados: PieChartData[]
+  ): Array<{ categoria: string; valor: number; percentual: number }> {
+    if (!dados?.length) return [];
+
+    const total = dados.reduce((sum, item) => sum + item.value, 0);
+
+    return dados.map((item) => ({
+      categoria: item.name,
+      valor: item.value,
+      percentual: total > 0 ? (item.value / total) * 100 : 0,
+    }));
   }
 
   private agruparDadosPieChart(
@@ -597,7 +604,7 @@ export class ChartDataProcessorService {
 
     for (const campo of campos) {
       const valor = item[campo];
-      if (valor !== undefined && valor !== null && valor !== '') {
+      if (valor !== undefined && valor !== null && valor !== "") {
         return Number(valor) || 0;
       }
     }

@@ -51,7 +51,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   chartDataConfig: ChartDataConfig = {
     grid: {
-      top: "10%",
+      top: "20%",
       left: "0%",
       right: "0%",
       bottom: "0%",

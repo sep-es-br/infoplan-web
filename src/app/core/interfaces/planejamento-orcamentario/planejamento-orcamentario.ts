@@ -75,7 +75,7 @@ export interface ISPOTotalAutorizadoProgressUo {
   nome_uo: string;
   porcentagem_empenhado: number;
   porcentagem_liquidado: number;
-  porcentagem_pago: number;
+  porcentagem_pago_sem_rap: number;
   vlr_previsto: number;
 }
 
@@ -87,7 +87,7 @@ export interface ISPOTotalAutorizadoProgressPo {
   nome_po: string;
   porcentagem_empenhado: number;
   porcentagem_liquidado: number;
-  porcentagem_pago: number;
+  porcentagem_pago_sem_rap: number;
   vlr_previsto: number;
 }
 export interface ISPOTotalAno {

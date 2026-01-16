@@ -54,7 +54,6 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
       .subscribe((newTheme: { name: AvailableThemes; previous: string; }) => {
         if (this.echartsInstance) {
           this.currentTheme = newTheme.name;
-
           const newStyles = getAvailableThemesStyles(newTheme.name);
           const newTextColor = newStyles.textPrimaryColor;
           const newBackgroundColor = newStyles.themePrimaryColor;
@@ -114,8 +113,6 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
 
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
-
-    // https://apache.github.io/echarts-handbook/en/concepts/event/
     this.echartsInstance.off('click');
     this.echartsInstance.on('click', (event) => {
       if (event.componentType === 'yAxis' || event.componentType === 'xAxis') {

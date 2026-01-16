@@ -59,7 +59,7 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
         fontSize: 12,
       },
       grid: {
-        top: "10%",
+        top: "20%",
         left: "5%",
         right: "5%",
         bottom: "0%",
@@ -104,7 +104,7 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
 
   processarDados(dados: ISPOTotalAutorizadoProgressUo[]): void {
     const top5Uo = dados
-      .sort((a, b) => b.porcentagem_empenhado - a.porcentagem_empenhado)
+      .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
       .slice(0, 5)
       .reverse();
     this.chartData = {

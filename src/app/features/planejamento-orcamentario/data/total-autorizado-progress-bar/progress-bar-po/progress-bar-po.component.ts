@@ -114,13 +114,13 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
 
   processarDados(dados: ISPOTotalAutorizadoProgressPo[]): void {
     const top5Uo = dados
-      .sort((a, b) => b.porcentagem_empenhado - a.porcentagem_empenhado)
+      .sort((a, b) => b.vlr_previsto - a.vlr_previsto)
       .slice(0, 5)
       .reverse();
     this.chartData = {
       data: {
         labels: top5Uo.map((d) => d.sigla_uo || d.nome_po != null ? `${d.sigla_uo} - ${d.nome_po}` : "PO não identificado"),
-        nomePO: top5Uo.map((d) => d.nome_po || "Nome não disponível"),
+        nomePO: top5Uo.map((d) => d.nome_po || "PO não identificado"),
         tipoTooltip: 'PO',
         datasets: [
           {
@@ -221,5 +221,7 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
     return this._chartMaximizeService.calcMaximizedHeight();
   }
 
-  handleTableDownload(): void {}
+  handleTableDownload(): void {
+
+  }
 }

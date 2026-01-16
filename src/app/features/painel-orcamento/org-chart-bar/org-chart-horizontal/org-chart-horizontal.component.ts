@@ -236,10 +236,10 @@ export class OrgChartHorizontalComponent
       },
 
       grid: {
-        top: this.ChartDataConfig?.grid?.top || "20%",
-        left: this.ChartDataConfig?.grid?.left || "10%",
-        right: this.ChartDataConfig?.grid?.right || "4%",
-        bottom: this.ChartDataConfig?.grid?.bottom || "3%",
+        top: this.ChartDataConfig?.grid?.top || "5%",
+        left: this.ChartDataConfig?.grid?.left || "5%",
+        right: this.ChartDataConfig?.grid?.right || "10%",
+        bottom: this.ChartDataConfig?.grid?.bottom || "5%",
         containLabel: this.ChartDataConfig?.grid?.containLabel || true,
       },
 
@@ -252,22 +252,43 @@ export class OrgChartHorizontalComponent
         },
       },
 
+      // yAxis: {
+      //   type: "category",
+      //   inverse: false,
+      //   data: data.map((d) => d.category),
+      //   axisLabel: {
+      //     color: theme.textPrimaryColor,
+      //     fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+      //     margin: 8,
+      //     overflow: "break",
+      //     width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
+      //     formatter: (value: string) => {
+      //       return this.quebrarTexto(value, this.charactersPerLine);
+      //     },
+      //   },
+      // },
       yAxis: {
         type: "category",
-        inverse: false,
+        inverse: true, // Começa do topo, facilitando a leitura da lista
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: isTablet ? 9 : isMobile ? 10 : 11,
-          margin: 8,
-          overflow: "break",
-          width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
+          fontSize: isMobile ? 9 : 11,
+          margin: 15,
+          // Alinha o bloco de texto à direita para que ele "encoste" na linha do eixo
+          align: "right",
+          verticalAlign: "middle",
+          lineHeight: 12,
+          // O width aqui ajuda o ECharts a reservar o espaço lateral
+          width: isMobile ? 90 : 160,
+          overflow: "breakAll", // Deixamos a quebra apenas para sua função
           formatter: (value: string) => {
-            return this.quebrarTexto(value, this.charactersPerLine);
+            // Passamos o limite dinâmico. 20-25 caracteres costuma ser o ideal.
+            const limite = isMobile ? 15 : 18;
+            return this.quebrarTexto(value, limite);
           },
         },
       },
-
       series: chart.data.datasets.map((dataset, index) => ({
         name: dataset.label,
         type: "bar",
@@ -316,41 +337,70 @@ export class OrgChartHorizontalComponent
     }
   }
 
+  // private quebrarTexto(texto: string, maxCaracteres: number): string {
+  //   if (!texto) return "";
+
+  //   if (!this.showMaximizeButton) {
+  //     if (texto.includes("de Melhoria")) {
+  //       texto = texto.replace("de Melhoria", "...");
+  //     }
+  //   }
+
+  //   const words = texto.split(" ");
+  //   let lines: string[] = [];
+  //   let currentLine = "";
+
+  //   for (const word of words) {
+  //     if (
+  //       (currentLine + (currentLine ? " " : "") + word).length > maxCaracteres
+  //     ) {
+  //       if (currentLine) {
+  //         lines.push(currentLine);
+  //         currentLine = "";
+  //       }
+
+  //       if (word.length > maxCaracteres) {
+  //         const chunks = word.match(new RegExp(`.{1,${maxCaracteres}}`, "g"));
+  //         if (chunks) lines.push(...chunks);
+  //       } else {
+  //         currentLine = word;
+  //       }
+  //     } else {
+  //       currentLine += (currentLine ? " " : "") + word;
+  //     }
+  //   }
+  //   if (currentLine) lines.push(currentLine);
+
+  //   return lines.join("\n");
+  // }
+
   private quebrarTexto(texto: string, maxCaracteres: number): string {
     if (!texto) return "";
-
-    if (!this.showMaximizeButton) {
-      if (texto.includes("de Melhoria")) {
-        texto = texto.replace("de Melhoria", "...");
-      }
-    }
 
     const words = texto.split(" ");
     let lines: string[] = [];
     let currentLine = "";
 
-    for (const word of words) {
-      if (
-        (currentLine + (currentLine ? " " : "") + word).length > maxCaracteres
-      ) {
-        if (currentLine) {
-          lines.push(currentLine);
-          currentLine = "";
-        }
-
-        if (word.length > maxCaracteres) {
-          const chunks = word.match(new RegExp(`.{1,${maxCaracteres}}`, "g"));
-          if (chunks) lines.push(...chunks);
+    words.forEach((word) => {
+      // Verifica se a palavra sozinha é maior que o limite (evita quebra no meio da palavra se possível)
+      if ((currentLine + word).length > maxCaracteres) {
+        if (currentLine.length > 0) {
+          lines.push(currentLine.trim());
+          currentLine = word + " ";
         } else {
-          currentLine = word;
+          // Se uma única palavra for maior que o limite, forçamos a quebra dela
+          lines.push(word.substring(0, maxCaracteres));
+          currentLine = word.substring(maxCaracteres) + " ";
         }
       } else {
-        currentLine += (currentLine ? " " : "") + word;
+        currentLine += word + " ";
       }
-    }
-    if (currentLine) lines.push(currentLine);
+    });
 
-    return lines.join("\n");
+    if (currentLine) lines.push(currentLine.trim());
+
+    // Retorna no máximo 3 linhas para manter a altura da barra consistente
+    return lines.slice(0, 3).join("\n");
   }
 
   private formatValue(value: number): string {

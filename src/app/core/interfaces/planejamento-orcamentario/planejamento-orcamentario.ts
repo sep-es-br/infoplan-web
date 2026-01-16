@@ -1,18 +1,18 @@
 export interface ISPOTotalPrevistoFilter {
   ano: number;
-  tipoFonte: number[];
-  uo: number[];
-  po: number[];
-  gnd: number[];
+  tipoFonte: string[] |  number[];
+  uo: string[] |  number[];
+  po: string[] |  number[];
+  gnd: string[] |  number[];
 }
 
 export interface ISPOTotalAutorizadoFilter {
   ano: number;
-  tipoFonte: number[];
-  mes: number[];
-  uo: number[] | string;
-  po: number[] | string;
-  gnd: number[];
+  tipoFonte: string[] |  number[];
+  mes: string[] | number[];
+  uo: string[] | string | number[];
+  po: string[] | string|  number[];
+  gnd: string[] |  number[];
 }
 
 export interface ISPOTotals {
@@ -76,6 +76,7 @@ export interface ISPOTotalAutorizadoProgressUo {
   porcentagem_empenhado: number;
   porcentagem_liquidado: number;
   porcentagem_pago: number;
+  vlr_previsto: number;
 }
 
 export interface ISPOTotalAutorizadoProgressPo {
@@ -87,6 +88,7 @@ export interface ISPOTotalAutorizadoProgressPo {
   porcentagem_empenhado: number;
   porcentagem_liquidado: number;
   porcentagem_pago: number;
+  vlr_previsto: number;
 }
 export interface ISPOTotalAno {
   ano: number;

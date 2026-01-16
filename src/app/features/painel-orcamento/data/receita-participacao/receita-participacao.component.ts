@@ -17,7 +17,12 @@ import { PainelOrcamentoService } from "../../../../core/service/painel-orcament
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
 import { Subject } from "rxjs";
-import { FlipTableAlignment, FlipTableColumn, FlipTableContent, TreeNode } from "../../../strategic-projects/flip-table-model/flip-table.component";
+import {
+  FlipTableAlignment,
+  FlipTableColumn,
+  FlipTableContent,
+  TreeNode,
+} from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 
@@ -42,12 +47,13 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
     legendPosition: "left",
     labelThreshold: 5,
     showLabels: false,
-    radius: ['30%', '60%'],
+    radius: ["30%", "60%"],
     centerPosition: ["70%", "50%"],
   };
 
-  private receitaICMSCharData: IReceitaParticipacaoOrcamentariaResponse[] | null =
-    [];
+  private receitaICMSCharData:
+    | IReceitaParticipacaoOrcamentariaResponse[]
+    | null = [];
 
   private readonly _painelService = inject(PainelOrcamentoService);
   private readonly _chartProcessor = inject(ChartDataProcessorService);
@@ -87,17 +93,19 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
     this.requestStatus = RequestStatus.LOADING;
     this._painelService
       .getReceitaPorParticipacao(this.filter)
-      .pipe(
-        takeUntil(this.destroy$)
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: IReceitaParticipacaoOrcamentariaResponse[]) => {
           this.receitaICMSCharData = response;
+          console.log("Dados referente a Participação ICMS | ", response);
           this.processData();
           this.requestStatus = RequestStatus.SUCCESS;
         },
         error: (err) => {
-          console.error("Erro ao carregar receita Participação ICMS - Receita Total:", err);
+          console.error(
+            "Erro ao carregar receita Participação ICMS - Receita Total:",
+            err
+          );
           this.requestStatus = RequestStatus.ERROR;
         },
       });
@@ -119,6 +127,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       this.tableContent = null;
     }
   }
+
   private processTableData(dados: IReceitaParticipacaoOrcamentariaResponse[]) {
     if (!dados?.length) {
       this.tableContent = null;
@@ -138,23 +147,25 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       return;
     }
 
+    const mapaValores = new Map(
+      dados.map((d) => [
+        `${d.nome_item_patrimonial}_${d.ano}`,
+        d.receitaLiquida,
+      ])
+    );
+
     const treeNodes: TreeNode[] = categorias.map((categoria) => {
-      const nodeData: any[] = [
-        {
-          propertyName: "categoria",
-          value: categoria,
-        },
-      ];
+      const nodeData: any[] = [{ propertyName: "categoria", value: categoria }];
 
       anos.forEach((ano) => {
-        const item = dados.find(
-          (d) => d.nome_item_patrimonial === categoria && d.ano === ano
-        );
-        const valor = item?.receitaLiquida || 0;
+        const valor = mapaValores.get(`${categoria}_${ano}`) || 0;
 
         nodeData.push({
           propertyName: `ano_${ano}`,
-          value: ` ${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+          value: valor.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
         });
       });
 
@@ -165,29 +176,84 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       };
     });
 
-    const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
-      propertyName: `ano_${ano}`,
-      displayName: ano.toString(),
-      alignment: {
-        header: FlipTableAlignment.RIGHT,
-        data: FlipTableAlignment.RIGHT,
-      },
-    }));
-
-    const customColumn: FlipTableColumn = {
-      propertyName: "categoria",
-      displayName: "ICMS",
-      alignment: {
-        header: FlipTableAlignment.LEFT,
-        data: FlipTableAlignment.LEFT,
-      },
-    };
-
+    // Estrutura da tabela consolidada
     this.tableContent = {
-      customColumn,
-      defaultColumns,
+      customColumn: {
+        propertyName: "categoria",
+        displayName: "ICMS", // Sugestão: tornar este nome dinâmico depois
+        alignment: {
+          header: FlipTableAlignment.LEFT,
+          data: FlipTableAlignment.LEFT,
+        },
+      },
+      defaultColumns: anos.map((ano) => ({
+        propertyName: `ano_${ano}`,
+        displayName: ano.toString(),
+        alignment: {
+          header: FlipTableAlignment.RIGHT,
+          data: FlipTableAlignment.RIGHT,
+        },
+      })),
       data: treeNodes,
     };
+
+    // const treeNodes: TreeNode[] = categorias.map((categoria) => {
+    //   const nodeData: any[] = [
+    //     {
+    //       propertyName: "categoria",
+    //       value: categoria,
+    //     },
+    //   ];
+    //   // dados.map((res) => {
+    //   //   console.log("Categoria: ", res);
+    //   // });
+    //   anos.forEach((ano) => {
+    //     const item = dados.find(
+    //       (d) => d.nome_item_patrimonial === categoria && d.ano === ano
+    //     );
+    //     const valor = item?.receitaLiquida || 0;
+
+    //     nodeData.push({
+    //       propertyName: `ano_${ano}`,
+    //       value: ` ${
+    //         valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0
+    //       }`,
+    //     });
+    //     // dados.map((res) => {
+    //     //   console.log("Categoria: APOS ", nodeData);
+    //     // });
+    //   });
+
+    //   return {
+    //     data: nodeData,
+    //     children: [],
+    //     expanded: false,
+    //   };
+    // });
+
+    // const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
+    //   propertyName: `ano_${ano}`,
+    //   displayName: ano.toString(),
+    //   alignment: {
+    //     header: FlipTableAlignment.RIGHT,
+    //     data: FlipTableAlignment.RIGHT,
+    //   },
+    // }));
+
+    // const customColumn: FlipTableColumn = {
+    //   propertyName: "categoria",
+    //   displayName: "ICMS",
+    //   alignment: {
+    //     header: FlipTableAlignment.LEFT,
+    //     data: FlipTableAlignment.LEFT,
+    //   },
+    // };
+
+    // this.tableContent = {
+    //   customColumn,
+    //   defaultColumns,
+    //   data: treeNodes,
+    // };
   }
 
   private processCharData(): PieChartData[] {
@@ -225,7 +291,9 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
     );
   }
 
-  private filterYears(data: IReceitaParticipacaoOrcamentariaResponse[]): number[] {
+  private filterYears(
+    data: IReceitaParticipacaoOrcamentariaResponse[]
+  ): number[] {
     return [...new Set(data.map((item) => item.ano))]
       .filter((ano) => ano != null)
       .sort();

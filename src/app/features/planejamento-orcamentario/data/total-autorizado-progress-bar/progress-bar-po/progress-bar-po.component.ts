@@ -119,9 +119,14 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
       .reverse();
     this.chartData = {
       data: {
-        labels: top5Uo.map((d) => d.sigla_uo || d.nome_po != null ? `${d.sigla_uo} - ${d.nome_po}` : "PO não identificado"),
+        labels: top5Uo.map((d) =>
+          d.sigla_uo || d.nome_po != null
+            ? `${d.sigla_uo} - ${d.nome_po}`
+            : "PO não identificado"
+        ),
         nomePO: top5Uo.map((d) => d.nome_po || "PO não identificado"),
-        tipoTooltip: 'PO',
+        nomeUO: top5Uo.map((d) => d.nome_uo || "UO não identificado"),
+        tipoTooltip: "PO",
         datasets: [
           {
             label: "Empenhado (% Autorizado)",
@@ -221,7 +226,5 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
     return this._chartMaximizeService.calcMaximizedHeight();
   }
 
-  handleTableDownload(): void {
-
-  }
+  handleTableDownload(): void {}
 }

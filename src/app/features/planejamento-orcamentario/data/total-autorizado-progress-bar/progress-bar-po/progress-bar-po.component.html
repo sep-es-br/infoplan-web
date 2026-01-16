@@ -7,7 +7,11 @@
   [backCardHeight]="500"
   [showMaximizeButton]="true"
   (showMaximizeButtonClick)="onMaximizeButtonClick('progress-bar-po',$event)">
-  <ngx-chart-progress-bar [chart]="chartData" [chartDataConfig]="chartDataConfig"
-    [height]="isChartMaximized('progress-bar-po') ? maximizedHeight : 500" card-front>
+  <ngx-chart-progress-bar
+    [chart]="chartData"
+    [chartDataConfig]="chartDataConfig"
+    [height]="isChartMaximized('progress-bar-po') ? maximizedHeight : 500"
+    [showMaximizeButton]="true"
+    card-front>
   </ngx-chart-progress-bar>
 </ngx-flip-table>

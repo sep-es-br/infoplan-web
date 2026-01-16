@@ -1,4 +1,4 @@
-import { RequestStatus } from './../../../../strategic-projects/strategicProjects.component';
+import { RequestStatus } from "./../../../../strategic-projects/strategicProjects.component";
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import {
   ChangeDetectorRef,
@@ -30,11 +30,7 @@ import { ChartDataProcessorService } from "../../../../../core/service/painel-or
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { Subject } from "rxjs";
-import {
-  debounceTime,
-  distinctUntilChanged,
-  takeUntil,
-} from "rxjs/operators";
+import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 
 @Component({
   selector: "ngx-dashboard-uo",
@@ -91,9 +87,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void {
     // Inicializa o ouvinte de busca com debounce
     this.searchSubject
-      .pipe(debounceTime(400),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$))
+      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe((query) => {
         this.executarFiltroTabela(query);
       });
@@ -132,9 +126,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
 
     this._planejamentoService
       .getDashboardUo(this.filter)
-      .pipe(
-        takeUntil(this.destroy$)
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: ISPODashboardUo[]) => {
           this.dasboardResponse = res || [];
@@ -160,9 +152,8 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     const search = query.toLowerCase().trim();
-    const filtered = this.dasboardResponse.filter(
-      (item) =>
-        this.buscarEmTexto(search, item)
+    const filtered = this.dasboardResponse.filter((item) =>
+      this.buscarEmTexto(search, item)
     );
 
     this.processarDados(filtered);
@@ -171,6 +162,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
   private processarDados(dados: ISPODashboardUo[]): void {
     this._zone.runOutsideAngular(() => {
       // Ordenação e processamento pesado fora da zona
+      console.log(dados);
       const top5 = [...dados]
         .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
         .slice(0, 5)
@@ -211,9 +203,13 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private processarTabela(dados: ISPODashboardUo | ISPODashboardUo[]): void {
-    const dadosArray = Array.isArray(dados) ? dados : [dados];
+    const dadosArray = Array.isArray(dados) ? [...dados] : [dados];
 
-    const linhasTabela = dadosArray.map((item) => ({
+    const dadosOrdenados = dadosArray.sort(
+      (a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0)
+    );
+
+    const linhasTabela = dadosOrdenados.map((item) => ({
       data: [
         {
           propertyName: "nome",

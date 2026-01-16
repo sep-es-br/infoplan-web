@@ -466,6 +466,7 @@ export class ChartDataProcessorService {
       }))
       .filter((item) => item.value > 0);
 
+    console.log("Pie Chart Data:", pieData);
     return pieData.sort((a, b) => b.value - a.value);
   }
 

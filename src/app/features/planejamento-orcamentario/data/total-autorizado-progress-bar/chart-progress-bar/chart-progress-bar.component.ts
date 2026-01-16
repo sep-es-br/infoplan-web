@@ -110,9 +110,10 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
           fontSize: isTablet ? 9 : isMobile ? 10 : 11,
           margin: 8,
           overflow: "break",
-          width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
+          // width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
           formatter: (value: string) => {
-            return this.quebrarTexto(value, this.charactersPerLine);
+            const limite = this.showMaximizeButton ? 20 : 40;
+            return this.quebrarTexto(value, limite);
           },
         },
       },
@@ -158,7 +159,10 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         axisPointer: { type: "shadow" },
         backgroundColor: theme.themePrimaryColor,
         borderColor: theme.themePrimaryColor,
-        textStyle: { color: theme.textPrimaryColor },
+        textStyle: {
+          color: theme.textPrimaryColor,
+          lineHeight: 20,
+        },
         confine: true,
         formatter: (params: any) => {
           if (!params || params.length === 0) return "";
@@ -224,6 +228,8 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
 
       xAxis: {
         type: "value",
+        min: 0,
+        max: 100,
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,
@@ -231,61 +237,119 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         },
       },
 
+      // yAxis: {
+      //   type: "category",
+      //   inverse: false,
+      //   data: data.map((d) => d.category),
+      //   axisLine: {
+      //     show: true,
+      //     lineStyle: {
+      //       width: 1,
+      //     },
+      //   },
+      //   axisTick: {
+      //     show: true,
+      //     lineStyle: {
+      //       width: 1,
+      //     },
+      //   },
+
+      //   axisLabel: {
+      //     color: theme.textPrimaryColor,
+      //     fontSize: isTablet ? 9 : isMobile ? 7 : 11,
+      //     margin: 7,
+      //     lineHeight: 15,
+      //     overflow: "breakAll",
+      //     // width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
+      //     formatter: (value: string) => {
+      //       const limite = this.showMaximizeButton ? 20 : 40;
+      //       return this.quebrarTexto(value, limite);
+      //     },
+      //   },
+      // },
+
       yAxis: {
         type: "category",
-        inverse: false,
+        inverse: true, // Geralmente melhor para leitura de rankings/listas
         data: data.map((d) => d.category),
-        axisLine: {
-          show: true,
-          lineStyle: {
-            width: 1,
-          },
-        },
-        axisTick: {
-          show: true,
-          lineStyle: {
-            width: 1,
-          },
-        },
+        axisLine: { show: true },
+        axisTick: { show: false }, // Remover os tracinhos limpa o visual
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: isTablet ? 9 : isMobile ? 10 : 11,
-          margin: 7,
-          lineHeight: 10,
-          overflow: "break",
-          width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
+          fontSize: isMobile ? 8 : 10,
+          margin: 15, // Aumenta o espaço entre o texto e a barra
+          lineHeight: 14, // Controla o espaço entre as linhas do mesmo texto
+          width: 120, // Define um limite horizontal para o texto
+          overflow: "breakAll", // Quebra o texto se passar da largura
+          align: "right", // Alinha o texto à direita para encostar na linha do eixo
           formatter: (value: string) => {
-            return this.quebrarTexto(value, this.charactersPerLine);
+            // Ajuste o limite de caracteres para algo menor, como 20 ou 25
+            const limite = isMobile ? 15 : 18;
+            return this.quebrarTexto(value, limite);
           },
         },
       },
 
       series: chart.data.datasets.map((dataset, index) => ({
         name: dataset.label,
-        label: {
-          position: "insideRight",
-          show: true,
-          formatter: function (params) {
-            return params.value + "%";
-          },
-          textBorderWidth: 0,
-          textShadowBlur: 0,
-          fontSize: 10,
-          color: theme.textSecondaryColor,
-        },
         type: "bar",
         data: data.map((d) => d.valores[index]),
+
+        // 1. Controle de largura (espessura da barra)
+        barWidth: "40%",
+        barMaxWidth: 15,
+
+        // 2. IMPORTANTE: Remova ou reduza drasticamente o barMinHeight
+        // barMinHeight: 40, <-- Remova esta linha
+
         showBackground: true,
+        backgroundStyle: {
+          borderRadius: 10,
+          color: "rgba(180, 180, 180, 0.1)", // Um fundo sutil para mostrar o total (100%)
+        },
+
         itemStyle: {
           color: colors[index],
           borderRadius: 10,
         },
-        barCategoryGap: "35%",
-        barGap: "35%",
-        barMaxWidth: isMobile ? 15 : 20,
-        barMinHeight: 20,
-        barWidth: "20%",
+
+        label: {
+          show: true,
+          position: "right",
+          distance: 8,
+          formatter: (params) => params.value + "%",
+          color: theme.textPrimaryColor,
+          fontSize: 10,
+        },
       })),
+
+      // series: chart.data.datasets.map((dataset, index) => ({
+      //   name: dataset.label,
+      //   label: {
+      //     position: "insideRight",
+      //     show: true,
+      //     formatter: function (params) {
+      //       return params.value + "%";
+      //     },
+      //     textBorderWidth: 0,
+      //     textShadowBlur: 0,
+      //     fontSize: 10,
+      //     offset: [3, 0],
+      //     color: theme.textSecondaryColor,
+      //   },
+      //   type: "bar",
+      //   data: data.map((d) => d.valores[index]),
+      //   showBackground: true,
+      //   itemStyle: {
+      //     color: colors[index],
+      //     borderRadius: 10,
+      //   },
+      //   barCategoryGap: "35%",
+      //   barGap: "35%",
+      //   barWidth: "40%",
+      //   barMaxWidth: 15,
+      //   barMinHeight: 40,
+      // })),
 
       // dataZoom: [
       //   {
@@ -327,38 +391,60 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
   private quebrarTexto(texto: string, maxCaracteres: number): string {
     if (!texto) return "";
 
-    if (!this.showMaximizeButton) {
-      if (texto.includes("DAS UNIDADES ESCOLARES")) {
-        texto = texto.replace("DAS UNIDADES ESCOLARES", "...");
-      }
-    }
+    // 1. Processa abreviações e limites
+    const textoProcessado = this.tratarTextoEspecifico(
+      texto,
+      maxCaracteres * 3
+    );
 
-    const words = texto.split(" ");
+    const words = textoProcessado.split(" ");
     let lines: string[] = [];
     let currentLine = "";
 
-    for (const word of words) {
-      if (
-        (currentLine + (currentLine ? " " : "") + word).length > maxCaracteres
-      ) {
-        if (currentLine) {
-          lines.push(currentLine);
-          currentLine = "";
-        }
-
-        if (word.length > maxCaracteres) {
-          const chunks = word.match(new RegExp(`.{1,${maxCaracteres}}`, "g"));
-          if (chunks) lines.push(...chunks);
-        } else {
-          currentLine = word;
-        }
+    words.forEach((word) => {
+      // Se a palavra sozinha for maior que o limite, não cortamos no meio,
+      // a menos que seja estritamente necessário para não quebrar o layout
+      if ((currentLine + word).length > maxCaracteres) {
+        if (currentLine) lines.push(currentLine.trim());
+        currentLine = word + " ";
       } else {
-        currentLine += (currentLine ? " " : "") + word;
+        currentLine += word + " ";
       }
-    }
-    if (currentLine) lines.push(currentLine);
+    });
 
-    return lines.join("\n");
+    if (currentLine) lines.push(currentLine.trim());
+
+    // Limita a exibição a no máximo 3 ou 4 linhas para não "esticar" demais o gráfico verticalmente
+    return lines.slice(0, 4).join("\n");
+  }
+
+  private tratarTextoEspecifico(texto: string, limite: number): string {
+    if (!texto) return "";
+    if (this.showMaximizeButton) return texto;
+
+    let textoTratado = texto.toUpperCase();
+
+    // 1. Abreviações mais agressivas para órgãos públicos
+    const termosParaEncurtar = {
+      "SECRETARIA ESTADUAL DE": "SEC.",
+      "SECRETARIA MUNICIPAL DE": "SEC.",
+      "CONSERVAÇÃO RODOVIÁRIA": "CONS. ROD.",
+      ESTADUAIS: "EST.",
+      MANUTENÇÕES: "MANUT.",
+      RODOVIAS: "ROD.",
+      DISTRIBUIÇÃO: "DISTRIB.",
+      "DESEMPENHO E DEMANDA": "DESEMP./DEMANDA",
+    };
+
+    Object.entries(termosParaEncurtar).forEach(([termo, substituto]) => {
+      textoTratado = textoTratado.replace(new RegExp(termo, "g"), substituto);
+    });
+
+    if (textoTratado.length > limite) {
+      textoTratado = textoTratado.substring(0, limite) + "...";
+    }
+
+    return textoTratado;
   }
 
   private formatValue(value: number): string {

@@ -22,11 +22,7 @@ import {
   ISPODashboardPo,
   ISPOTotalAutorizadoFilter,
 } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
-import {
-  takeUntil,
-  debounceTime,
-  distinctUntilChanged,
-} from "rxjs/operators";
+import { takeUntil, debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
@@ -59,7 +55,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   dasboardResponse: ISPODashboardPo[] = [];
-// this.subTitulo = `Filtro anual • ${this.filter?.ano}`
+  // this.subTitulo = `Filtro anual • ${this.filter?.ano}`
   private searchSubject = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
   private readonly _zone = inject(NgZone);
@@ -124,7 +120,6 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe({
         next: (res: ISPODashboardPo[]) => {
           this.dasboardResponse = res || [];
-
           // Executa o processamento pesado fora da zona do Angular
           this._zone.runOutsideAngular(() => {
             if (this.dasboardResponse.length > 0) {
@@ -191,9 +186,13 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  private processarTabela(dadosArray: ISPODashboardPo[]): void {
-    // Otimização: Mapeamento de linhas
-    const linhasTabela = dadosArray.map((item) => ({
+  private processarTabela(dados: ISPODashboardPo[]): void {
+    const dadosArray = Array.isArray(dados) ? [...dados] : [dados];
+
+    const dadosOrdenados = dadosArray.sort(
+      (a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0)
+    );
+    const linhasTabela = dadosOrdenados.map((item) => ({
       data: [
         { propertyName: "nome", value: `${item.uo} - ${item.nome}` },
         {

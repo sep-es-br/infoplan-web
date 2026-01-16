@@ -97,7 +97,6 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       .subscribe({
         next: (response: IReceitaParticipacaoOrcamentariaResponse[]) => {
           this.receitaICMSCharData = response;
-          console.log("Dados referente a Participação ICMS | ", response);
           this.processData();
           this.requestStatus = RequestStatus.SUCCESS;
         },

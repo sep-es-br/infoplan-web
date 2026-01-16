@@ -76,7 +76,6 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["chart"] && this.chart) {
       this.initChartOptions(this.chart);
-      console.log("params:", this.chart);
     }
     if (changes["height"]) {
       this.resizeChart();

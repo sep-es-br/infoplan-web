@@ -164,6 +164,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
           lineHeight: 20,
         },
         confine: true,
+        extraCssText: 'white-space: normal; word-break: break-all; max-width: 610px;',
         formatter: (params: any) => {
           if (!params || params.length === 0) return "";
 

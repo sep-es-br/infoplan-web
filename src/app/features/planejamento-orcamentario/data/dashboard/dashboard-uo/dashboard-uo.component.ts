@@ -162,7 +162,6 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
   private processarDados(dados: ISPODashboardUo[]): void {
     this._zone.runOutsideAngular(() => {
       // Ordenação e processamento pesado fora da zona
-      console.log(dados);
       const top5 = [...dados]
         .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
         .slice(0, 5)

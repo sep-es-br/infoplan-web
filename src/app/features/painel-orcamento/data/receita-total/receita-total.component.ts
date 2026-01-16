@@ -94,9 +94,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
     this.requestStatus = RequestStatus.LOADING;
     this._painelService
       .getReceitaTotal(this.filter)
-      .pipe(
-        takeUntil(this.destroy$)
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.responseData = [response];
@@ -113,6 +111,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   }
 
   private processData(dados: IReceitaTotalOrcamentariaResponse): void {
+    const dadosOrdenados = dados;
     this.chartData = {
       data: {
         labels: dados.ano ? [dados.ano.toString()] : [],
@@ -140,67 +139,47 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
       | IReceitaTotalOrcamentariaResponse[]
   ): void {
     const dadosArray = Array.isArray(dados) ? dados : [dados];
-    const ano = dadosArray[0]?.ano || new Date().getFullYear();
-    const treeNodes = dadosArray
-      .map((item) => {
-        const previsao = item.vlr_receita_prevista || 0;
-        const arrecadacao = item.vlr_receita_liquida || 0;
-        const percentual =
-          previsao > 0 ? ((arrecadacao / previsao) * 100).toFixed(2) : "0";
+    const ano = dadosArray[0]?.ano || 2025;
 
-        return [
-          {
-            data: [
-              {
-                propertyName: "label",
-                value: "Receita Realizada/Prevista",
-              },
-              { propertyName: "valor", value: `${percentual} %` },
-            ],
-          },
-          {
-            data: [
-              { propertyName: "label", value: "Arrecadação Líquida" },
-              {
-                propertyName: "valor",
-                value: `${
-                  arrecadacao
-                    .toLocaleString("pt-BR", {
-                      currency: "BRL",
-                      style: "currency",
-                    })
-                    .replace("R$", "")
-                    .trim() || 0
-                }`,
-              },
-            ],
-          },
-          {
-            data: [
-              { propertyName: "label", value: "Previsão Inicial Líquida" },
-              {
-                propertyName: "valor",
-                value: `${
-                  previsao
-                    .toLocaleString("pt-BR", {
-                      currency: "BRL",
-                      style: "currency",
-                    })
-                    .replace("R$", "")
-                    .trim() || 0
-                }`,
-              },
-            ],
-          },
-          {
-            data: [
-              { propertyName: "label", value: "Exercício" },
-              { propertyName: "valor", value: item.ano || 2025 },
-            ],
-          },
-        ];
-      })
-      .flat();
+    const treeNodes = dadosArray.flatMap((item) => {
+      const previsao = item.vlr_receita_prevista || 0;
+      const arrecadacao = item.vlr_receita_liquida || 0;
+      const percentual = previsao > 0 ? (arrecadacao / previsao) * 100 : 0;
+
+      const itensPrincipais = [
+        {
+          label: "Arrecadação Líquida",
+          valorNumerico: arrecadacao,
+          valorFormatado: this.formatCurrency(arrecadacao),
+        },
+        {
+          label: "Previsão Inicial Líquida",
+          valorNumerico: previsao,
+          valorFormatado: this.formatCurrency(previsao),
+        },
+      ];
+
+      itensPrincipais.sort((a, b) => b.valorNumerico - a.valorNumerico);
+
+      const listaOrdenada = [
+        {
+          label: "Receita Realizada/Prevista",
+          valor: `${percentual.toFixed(2)} %`,
+        },
+        ...itensPrincipais.map((i) => ({
+          label: i.label,
+          valor: i.valorFormatado,
+        })),
+        { label: "Exercício", valor: item.ano || 2025 },
+      ];
+
+      return listaOrdenada.map((linha) => ({
+        data: [
+          { propertyName: "label", value: linha.label },
+          { propertyName: "valor", value: linha.valor },
+        ],
+      }));
+    });
 
     this.tableContent = {
       customColumn: {
@@ -223,6 +202,14 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
       ],
       data: treeNodes,
     };
+  }
+
+  // Função auxiliar para não repetir código de formatação
+  private formatCurrency(valor: number): string {
+    return valor
+      .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+      .replace("R$", "")
+      .trim();
   }
 
   handleTableSearch(query: string): void {

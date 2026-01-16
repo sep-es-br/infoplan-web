@@ -123,7 +123,8 @@ export class OrgChartHorizontalComponent
           overflow: "break",
           width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
           formatter: (value: string) => {
-            return this.quebrarTexto(value, this.charactersPerLine);
+            const limite = isMobile ? 15 :20;
+            return this.quebrarTexto(value, limite);
           },
         },
       },
@@ -193,10 +194,18 @@ export class OrgChartHorizontalComponent
           } else {
             const labelOriginal = params[0].name || "";
             const codigo = labelOriginal.includes(" - ")
-              ? labelOriginal.split(" - ")[0]
-              : labelOriginal;
-            const uo = (dataRef.nomeUO && dataRef.nomeUO[index]) || "";
-            tituloTooltip = `<span>${codigo}</span> - <small>${uo}</small>`;
+              ? labelOriginal.split(" - ")[0].trim()
+              : labelOriginal.trim();
+
+            const uo =
+              dataRef.nomeUO && dataRef.nomeUO[index]
+                ? String(dataRef.nomeUO[index]).trim()
+                : "";
+            let partes = [];
+            if (codigo) partes.push(`<span>${codigo}</span>`);
+            if (uo) partes.push(`<small>${uo}</small>`);
+
+            tituloTooltip = partes.join(" ");
           }
 
           // Constrói o corpo da Tooltip com os valores formatados
@@ -277,14 +286,13 @@ export class OrgChartHorizontalComponent
           margin: 15,
           // Alinha o bloco de texto à direita para que ele "encoste" na linha do eixo
           align: "right",
+          lineHeight: 11,
           verticalAlign: "middle",
-          lineHeight: 12,
-          // O width aqui ajuda o ECharts a reservar o espaço lateral
           width: isMobile ? 90 : 160,
           overflow: "breakAll", // Deixamos a quebra apenas para sua função
           formatter: (value: string) => {
             // Passamos o limite dinâmico. 20-25 caracteres costuma ser o ideal.
-            const limite = isMobile ? 15 : 18;
+            const limite = isMobile ? 15 :20;
             return this.quebrarTexto(value, limite);
           },
         },
@@ -294,10 +302,10 @@ export class OrgChartHorizontalComponent
         type: "bar",
         data: data.map((d) => d.valores[index]),
         itemStyle: { color: colors[index] },
-        barCategoryGap: "30%",
+        barCategoryGap: "20%",
         barGap: "20%",
-        barMaxWidth: isMobile ? 15 : 20,
-        barMinHeight: 20,
+        barMaxWidth: isMobile ? 15 : 25,
+        barMinHeight: 15,
       })),
 
       dataZoom: [
@@ -337,43 +345,6 @@ export class OrgChartHorizontalComponent
     }
   }
 
-  // private quebrarTexto(texto: string, maxCaracteres: number): string {
-  //   if (!texto) return "";
-
-  //   if (!this.showMaximizeButton) {
-  //     if (texto.includes("de Melhoria")) {
-  //       texto = texto.replace("de Melhoria", "...");
-  //     }
-  //   }
-
-  //   const words = texto.split(" ");
-  //   let lines: string[] = [];
-  //   let currentLine = "";
-
-  //   for (const word of words) {
-  //     if (
-  //       (currentLine + (currentLine ? " " : "") + word).length > maxCaracteres
-  //     ) {
-  //       if (currentLine) {
-  //         lines.push(currentLine);
-  //         currentLine = "";
-  //       }
-
-  //       if (word.length > maxCaracteres) {
-  //         const chunks = word.match(new RegExp(`.{1,${maxCaracteres}}`, "g"));
-  //         if (chunks) lines.push(...chunks);
-  //       } else {
-  //         currentLine = word;
-  //       }
-  //     } else {
-  //       currentLine += (currentLine ? " " : "") + word;
-  //     }
-  //   }
-  //   if (currentLine) lines.push(currentLine);
-
-  //   return lines.join("\n");
-  // }
-
   private quebrarTexto(texto: string, maxCaracteres: number): string {
     if (!texto) return "";
 
@@ -398,7 +369,6 @@ export class OrgChartHorizontalComponent
     });
 
     if (currentLine) lines.push(currentLine.trim());
-
     // Retorna no máximo 3 linhas para manter a altura da barra consistente
     return lines.slice(0, 3).join("\n");
   }

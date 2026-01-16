@@ -140,7 +140,7 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
           },
           {
             label: "Pago (% Autorizado)",
-            data: top5Uo.map((d) => d.porcentagem_pago),
+            data: top5Uo.map((d) => d.porcentagem_pago_sem_rap),
             backgroundColor: "#F77D00",
           },
         ],
@@ -170,7 +170,7 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "Pago",
-          value: item.porcentagem_pago,
+          value: item.porcentagem_pago_sem_rap,
         },
       ],
     }));

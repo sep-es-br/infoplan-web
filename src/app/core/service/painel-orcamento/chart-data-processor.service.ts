@@ -397,7 +397,6 @@ export class ChartDataProcessorService {
     campoLabel: string,
     ...campos: string[]
   ): number[] {
-    console.log("extraindo por categoria: ", dados)
     return categorias.map((categoria) => {
       const item = dados.find(
         (item) => item[campoLabel] === categoria && item.ano === ano
@@ -472,8 +471,6 @@ export class ChartDataProcessorService {
         },
       }))
       .filter((item) => item.value > 0);
-
-    console.log("Pie Chart Data:", pieData);
     return pieData.sort((a, b) => b.value - a.value);
   }
 

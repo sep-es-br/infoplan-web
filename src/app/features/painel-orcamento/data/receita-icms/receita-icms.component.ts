@@ -16,7 +16,12 @@ import { PieChartData } from "../../org-chart-pie/org-chart-pie.component";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
-import { FlipTableAlignment, FlipTableColumn, FlipTableContent, TreeNode } from "../../../strategic-projects/flip-table-model/flip-table.component";
+import {
+  FlipTableAlignment,
+  FlipTableColumn,
+  FlipTableContent,
+  TreeNode,
+} from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 
@@ -32,15 +37,20 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   readonly showTableIcon: Boolean = true;
   private receitaICMSCharData: IReceitaICMSOrcamentariaResponse[] | null = [];
 
-  private readonly _painelService: PainelOrcamentoService = inject(PainelOrcamentoService);
-  private readonly _chartProcessor: ChartDataProcessorService = inject(ChartDataProcessorService);
-  private readonly _exportDataService: ExportDataService = inject(ExportDataService);
-  private readonly _chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+  private readonly _painelService: PainelOrcamentoService = inject(
+    PainelOrcamentoService
+  );
+  private readonly _chartProcessor: ChartDataProcessorService = inject(
+    ChartDataProcessorService
+  );
+  private readonly _exportDataService: ExportDataService =
+    inject(ExportDataService);
+  private readonly _chartMaximizeService: ChartMaximizeService =
+    inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
-
   chartData!: PieChartData[];
-  tableContent: FlipTableContent | null = null
+  tableContent: FlipTableContent | null = null;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   chartConfig = {
     showTitle: true,
@@ -48,10 +58,9 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     legendPosition: "left",
     labelThreshold: 5,
     showLabels: false,
-    radius: ['30%', '60%'],
+    radius: ["30%", "60%"],
     centerPosition: ["70%", "50%"],
   };
-
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
@@ -82,16 +91,17 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
 
   private getReceitaICMS(): void {
     this.requestStatus = RequestStatus.LOADING;
-      this._painelService
+    this._painelService
       .getRceitaPorICMS(this.filter)
-      .pipe(
-        takeUntil(this.destroy$)
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: IReceitaICMSOrcamentariaResponse[]) => {
-          this.receitaICMSCharData = response
+          this.receitaICMSCharData = response;
           this.processData();
-          this.requestStatus = this.receitaICMSCharData.length > 0 ? RequestStatus.SUCCESS : RequestStatus.ERROR;
+          this.requestStatus =
+            this.receitaICMSCharData.length > 0
+              ? RequestStatus.SUCCESS
+              : RequestStatus.ERROR;
         },
         error: (err) => {
           console.error("Erro ao carregar receita ICMS:", err);
@@ -101,7 +111,6 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   }
 
   private processData(): void {
-    // Processa dados para o gráfico de pizza
     const chartData = this.processCharData();
 
     if (chartData) {
@@ -124,20 +133,40 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
       return;
     }
 
-    const categorias = [
+    const anos = [...new Set(dados.map((item) => item.ano))]
+      .filter((ano) => ano != null)
+      .sort((a, b) => a - b); // Ordem crescente de anos para as colunas
+
+    const mapaBusca = new Map(
+      dados.map((d) => [
+        `${d.nome_item_patrimonial}_${d.ano}`,
+        d.receitaLiquida || 0,
+      ])
+    );
+
+    const categoriasUnicas = [
       ...new Set(dados.map((item) => item.nome_item_patrimonial)),
     ].filter(Boolean);
 
-    const anos = [...new Set(dados.map((item) => item.ano))]
-      .filter((ano) => ano != null)
-      .sort();
+    const categoriasOrdenadas = categoriasUnicas.sort((a, b) => {
+      const totalA = anos.reduce(
+        (acc, ano) => acc + (mapaBusca.get(`${a}_${ano}`) || 0),
+        0
+      );
+      const totalB = anos.reduce(
+        (acc, ano) => acc + (mapaBusca.get(`${b}_${ano}`) || 0),
+        0
+      );
 
-    if (categorias.length === 0 || anos.length === 0) {
+      return totalB - totalA;
+    });
+
+    if (categoriasOrdenadas.length === 0 || anos.length === 0) {
       this.tableContent = null;
       return;
     }
 
-    const treeNodes: TreeNode[] = categorias.map((categoria) => {
+    const treeNodes: TreeNode[] = categoriasOrdenadas.map((categoria) => {
       const nodeData: any[] = [
         {
           propertyName: "categoria",
@@ -146,15 +175,14 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
       ];
 
       anos.forEach((ano) => {
-        const item = dados.find(
-          (d) => d.nome_item_patrimonial === categoria && d.ano === ano
-        );
-        const valor = item?.receitaLiquida || 0;
+        const valor = mapaBusca.get(`${categoria}_${ano}`) || 0;
 
-        // Nome único para cada coluna de ano
         nodeData.push({
-          propertyName: `ano_${ano}`, // Nome único para cada ano
-          value: ` ${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+          propertyName: `ano_${ano}`,
+          value: valor.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
         });
       });
 
@@ -164,7 +192,6 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
         expanded: false,
       };
     });
-
     // Colunas com propertyNames únicos
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
       propertyName: `ano_${ano}`, // Mesmo nome usado nos nodeData
@@ -211,7 +238,6 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     // );
   }
 
-
   handleTableDownload(): void {
     const data = this.receitaICMSCharData;
 
@@ -234,32 +260,38 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   }
 
   private category(data: IReceitaICMSOrcamentariaResponse[]): string[] {
-    return [...new Set(data.map(item => item.nome_item_patrimonial))].filter(Boolean);
+    return [...new Set(data.map((item) => item.nome_item_patrimonial))].filter(
+      Boolean
+    );
   }
 
   private filterYears(data: IReceitaICMSOrcamentariaResponse[]): number[] {
-    return [...new Set(data.map(item => item.ano))]
-      .filter(ano => ano != null)
+    return [...new Set(data.map((item) => item.ano))]
+      .filter((ano) => ano != null)
       .sort();
   }
 
-  private columns(years: number[]): { key: string, label: string }[] {
+  private columns(years: number[]): { key: string; label: string }[] {
     return [
       { key: "categoria", label: "Participação ICMS - Receita Total" },
-      ...years.map(ano => ({
+      ...years.map((ano) => ({
         key: `ano_${ano}`,
         label: `Arrecadação Líquida - ${ano}`,
       })),
     ];
   }
 
-  private dataForDownload(categories: string[], years: number[], columns: { key: string, label: string }[]): any[] {
-    return categories.map(categoria => {
+  private dataForDownload(
+    categories: string[],
+    years: number[],
+    columns: { key: string; label: string }[]
+  ): any[] {
+    return categories.map((categoria) => {
       const row: any = { categoria };
 
-      years.forEach(year => {
+      years.forEach((year) => {
         const item = this.receitaICMSCharData.find(
-          d => d.nome_item_patrimonial === categoria && d.ano === year
+          (d) => d.nome_item_patrimonial === categoria && d.ano === year
         );
         row[`ano_${year}`] = item?.receitaLiquida
           ? `${item.receitaLiquida.toLocaleString("pt-BR")}`
@@ -269,6 +301,4 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
       return row;
     });
   }
-
-
 }

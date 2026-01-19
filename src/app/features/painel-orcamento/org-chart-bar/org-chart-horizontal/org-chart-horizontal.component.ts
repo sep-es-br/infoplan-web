@@ -254,7 +254,7 @@ export class OrgChartHorizontalComponent
 
       xAxis: {
         type: "log",
-        min: 4,
+        min: 1000,
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,
@@ -279,7 +279,7 @@ export class OrgChartHorizontalComponent
       // },
       yAxis: {
         type: "category",
-        inverse: true, // Começa do topo, facilitando a leitura da lista
+        inverse: true,
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
@@ -375,12 +375,16 @@ export class OrgChartHorizontalComponent
     return lines.slice(0, 3).join("\n");
   }
 
-  private formatValue(value: number): string {
-    if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1) + "B";
-    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
-    return value.toString();
-  }
+private formatValue(value: number): string {
+  const absValue = Math.abs(value);
 
+  if (absValue >= 1_000_000_000_000) return (value / 1_000_000_000_000).toFixed(1).replace('.0', '') + "T"; // Trilhões
+  if (absValue >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1).replace('.0', '') + "B";     // Bilhões
+  if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.0', '') + "M";           // Milhões
+  if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.0', '') + "K";               // Milhares
+
+  return value.toString(); // Valores abaixo de 1000 (1, 10, 100...)
+}
   private formatNumber(value: number): string {
     return `R$ ${value.toLocaleString("pt-BR", {
       minimumFractionDigits: 2,

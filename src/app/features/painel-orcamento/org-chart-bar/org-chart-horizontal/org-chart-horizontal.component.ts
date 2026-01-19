@@ -253,7 +253,8 @@ export class OrgChartHorizontalComponent
       },
 
       xAxis: {
-        type: "value",
+        type: "log",
+        min: 4,
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,
@@ -305,6 +306,7 @@ export class OrgChartHorizontalComponent
         barCategoryGap: "20%",
         barGap: "20%",
         barMaxWidth: isMobile ? 15 : 25,
+        barMinWidth: 5,
         barMinHeight: 15,
       })),
 

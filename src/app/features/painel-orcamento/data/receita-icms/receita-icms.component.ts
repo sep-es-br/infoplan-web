@@ -135,7 +135,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
 
     const anos = [...new Set(dados.map((item) => item.ano))]
       .filter((ano) => ano != null)
-      .sort((a, b) => a - b); // Ordem crescente de anos para as colunas
+      .sort((a, b) => a - b);
 
     const mapaBusca = new Map(
       dados.map((d) => [

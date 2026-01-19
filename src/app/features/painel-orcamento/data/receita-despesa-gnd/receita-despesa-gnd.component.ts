@@ -93,9 +93,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
 
     this._painelService
       .getRceitaPorDespesaGND(this.filter)
-      .pipe(
-        takeUntil(this.destroy$)
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: IReceitaDespesaGNDOrcamentariaResponse[]) => {
           this.receitaDespesaOrcamento = res;
@@ -138,92 +136,87 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
       return;
     }
 
-    const categorias = [...new Set(dados.map((item) => item.nome_gnd))].filter(
-      Boolean
-    );
-
+    const categoriasBase = [
+      ...new Set(dados.map((item) => item.nome_gnd)),
+    ].filter(Boolean);
     const anos = [...new Set(dados.map((item) => item.ano))]
-      .filter((ano) => ano != null)
+      .filter((a) => a != null)
       .sort();
 
-    if (categorias.length === 0 || anos.length === 0) {
+    if (categoriasBase.length === 0 || anos.length === 0) {
       this.tableContent = null;
       return;
     }
 
-    const treeNodes: TreeNode[] = categorias.map((categoria) => {
-      const nodeData = [
-        {
-          propertyName: "categoria",
-          value: categoria,
-        },
-      ];
+    const mapaValores = new Map();
+    const totaisPorCategoria = new Map<string, number>();
+
+    dados.forEach((item) => {
+      const chave = `${item.nome_gnd}_${item.ano}`;
+      const liq = item.vlr_liquidado || 0;
+      const pago = item.vlr_pago_com_rap || 0;
+
+      const atual = mapaValores.get(chave) || { liq: 0, pago: 0 };
+      mapaValores.set(chave, { liq: atual.liq + liq, pago: atual.pago + pago });
+
+      const totalLiq = totaisPorCategoria.get(item.nome_gnd) || 0;
+      totaisPorCategoria.set(item.nome_gnd, totalLiq + liq);
+    });
+
+    const categoriasOrdenadas = categoriasBase.sort((a, b) => {
+      return (
+        (totaisPorCategoria.get(b) || 0) - (totaisPorCategoria.get(a) || 0)
+      );
+    });
+
+    const treeNodes: TreeNode[] = categoriasOrdenadas.map((categoria) => {
+      const nodeData = [{ propertyName: "categoria", value: categoria }];
 
       anos.forEach((ano) => {
-        // Agrupa por ano e categoria, somando valores de diferentes tipo_fonte
-        const itens = dados.filter(
-          (d) => d.nome_gnd === categoria && d.ano === ano
-        );
-
-        const valorLiquidado = itens.reduce(
-          (acc, item) => acc + (item.vlr_liquidado || 0),
-          0
-        );
-        const valorPagoComRAP = itens.reduce(
-          (acc, item) => acc + (item.vlr_pago_com_rap || 0),
-          0
-        );
+        const valores = mapaValores.get(`${categoria}_${ano}`) || {
+          liq: 0,
+          pago: 0,
+        };
 
         nodeData.push({
-          propertyName: `Despesa Liquidada - ${ano.toString()}`,
-          value: `${
-            valorLiquidado
-              .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-              .replace("R$", "")
-              .trim() || 0
-          }`,
+          propertyName: `Despesa Liquidada - ${ano}`,
+          value: valores.liq.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
         });
 
         nodeData.push({
-          propertyName: `Pago com RAP - ${ano.toString()}`,
-          value: `${
-            valorPagoComRAP
-              .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-              .replace("R$", "")
-              .trim() || 0
-          }`,
+          propertyName: `Pago com RAP - ${ano}`,
+          value: valores.pago.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
         });
       });
 
       if (anos.length >= 2) {
-        const variacaoLiquidado = this.calcularVariacao(
-          categoria,
-          anos,
-          dados,
-          "liquidado"
-        );
         nodeData.push({
           propertyName: "Variação Liquidado",
-          value: `${variacaoLiquidado} %`,
+          value: `${this.calcularVariacao(
+            categoria,
+            anos,
+            dados,
+            "liquidado"
+          )} %`,
         });
-
-        const variacaoPagoRAP = this.calcularVariacao(
-          categoria,
-          anos,
-          dados,
-          "pago_rap"
-        );
         nodeData.push({
           propertyName: "Variação Pago RAP",
-          value: `${variacaoPagoRAP} %`,
+          value: `${this.calcularVariacao(
+            categoria,
+            anos,
+            dados,
+            "pago_rap"
+          )} %`,
         });
       }
 
-      return {
-        data: nodeData,
-        children: [],
-        expanded: false,
-      };
+      return { data: nodeData, children: [], expanded: false };
     });
 
     const defaultColumns: FlipTableColumn[] = [];

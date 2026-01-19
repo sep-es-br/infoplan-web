@@ -244,12 +244,12 @@ export class GraficoTotalAnoSigefesComponent
   }
 
   private formatarMoeda(valor: number | null | undefined): string {
-    if (!valor && valor !== 0) return "R$ 0,00";
+    if (!valor && valor !== 0) return "0,00";
 
     return valor.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
-    });
+    }).replace("R$", "");
   }
 
   handleTableSearch(query: string): void {

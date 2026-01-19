@@ -123,7 +123,7 @@ export class OrgChartHorizontalComponent
           overflow: "break",
           width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
           formatter: (value: string) => {
-            const limite = isMobile ? 15 :20;
+            const limite = isMobile ? 15 : 20;
             return this.quebrarTexto(value, limite);
           },
         },
@@ -157,7 +157,7 @@ export class OrgChartHorizontalComponent
     }));
 
     const colors = chart.data.datasets.map(
-      (dataset) => dataset.backgroundColor || "#4DB6D2"
+      (dataset) => dataset.backgroundColor || "#4DB6D2",
     );
 
     const isMobile = window.innerWidth <= 1000;
@@ -293,7 +293,7 @@ export class OrgChartHorizontalComponent
           overflow: "breakAll", // Deixamos a quebra apenas para sua função
           formatter: (value: string) => {
             // Passamos o limite dinâmico. 20-25 caracteres costuma ser o ideal.
-            const limite = isMobile ? 15 :20;
+            const limite = isMobile ? 15 : 20;
             return this.quebrarTexto(value, limite);
           },
         },
@@ -375,16 +375,20 @@ export class OrgChartHorizontalComponent
     return lines.slice(0, 3).join("\n");
   }
 
-private formatValue(value: number): string {
-  const absValue = Math.abs(value);
+  private formatValue(value: number): string {
+    const absValue = Math.abs(value);
 
-  if (absValue >= 1_000_000_000_000) return (value / 1_000_000_000_000).toFixed(1).replace('.0', '') + "T"; // Trilhões
-  if (absValue >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1).replace('.0', '') + "B";     // Bilhões
-  if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.0', '') + "M";           // Milhões
-  if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.0', '') + "K";               // Milhares
+    if (absValue >= 1_000_000_000_000)
+      return (value / 1_000_000_000_000).toFixed(1).replace(".0", "") + "T"; // Trilhões
+    if (absValue >= 1_000_000_000)
+      return (value / 1_000_000_000).toFixed(1).replace(".0", "") + "B"; // Bilhões
+    if (absValue >= 1_000_000)
+      return (value / 1_000_000).toFixed(1).replace(".0", "") + "M"; // Milhões
+    if (absValue >= 1_000)
+      return (value / 1_000).toFixed(1).replace(".0", "") + "K"; // Milhares
 
-  return value.toString(); // Valores abaixo de 1000 (1, 10, 100...)
-}
+    return value.toString(); // Valores abaixo de 1000 (1, 10, 100...)
+  }
   private formatNumber(value: number): string {
     return `R$ ${value.toLocaleString("pt-BR", {
       minimumFractionDigits: 2,

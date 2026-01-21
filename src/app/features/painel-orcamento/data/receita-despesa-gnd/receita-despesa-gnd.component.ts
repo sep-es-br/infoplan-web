@@ -4,6 +4,7 @@ import {
   Input,
   OnChanges,
   OnDestroy,
+  OnInit,
   SimpleChanges,
 } from "@angular/core";
 import {
@@ -31,7 +32,9 @@ import { RequestStatus } from "../../../strategic-projects/strategicProjects.com
   templateUrl: "./receita-despesa-gnd.component.html",
   styleUrls: ["./receita-despesa-gnd.component.scss"],
 })
-export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
+export class ReceitaDespesaGndComponent
+  implements OnChanges, OnDestroy, OnInit
+{
   @Input() filter: IExecucaoOrcamentariaRequest;
 
   readonly title: string = "Despesa por GND";
@@ -45,6 +48,9 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
+
+  public toggleExecutivo = true;
+  public toggleDemaisPoderes = true;
 
   chartData: IChartOptions;
   tableContent: FlipTableContent | null = null;
@@ -63,13 +69,22 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
     | IReceitaDespesaGNDOrcamentariaResponse[]
     | null = [];
 
+  ngOnInit(): void {
+    if (!this.filter.codPoder) {
+      this.filter.codPoder = "-1";
+    }
+    this.getReceitaDespesaGND();
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["filter"] && this.filter) this.loadData();
+    if (changes["filter"] && this.filter) {
+      this.loadData();
+    }
   }
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {
@@ -108,8 +123,40 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
       });
   }
 
+  public onToggleChange(toggle: "executivo" | "demaisPoderes"): void {
+    if (!this.toggleExecutivo && !this.toggleDemaisPoderes) {
+      if (toggle === "executivo") {
+        this.toggleExecutivo = true;
+      } else {
+        this.toggleDemaisPoderes = true;
+      }
+      return;
+    }
+
+    this.updateFilterPoderes();
+  }
+
+  private updateFilterPoderes(): void {
+    const poderes: string[] = [];
+    if (this.toggleExecutivo) {
+      poderes.push("1");
+    }
+
+    if (this.toggleDemaisPoderes) {
+      poderes.push("2");
+    }
+
+    this.filter.codPoder = poderes.join(",");
+    this.getReceitaDespesaGND();
+  }
+
+  public isAtLeastOneToggleActive(): boolean {
+    return this.toggleExecutivo || this.toggleDemaisPoderes;
+  }
+
   private processData(): void {
     const chartData: IChartOptions = this.processChartData();
+    let dadosFiltrados = [...this.receitaDespesaOrcamento];
 
     if (chartData) {
       this.chartData = chartData;
@@ -124,12 +171,12 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
     return this._chartProcessor.criarChartLiquidadoEPago(
       this.receitaDespesaOrcamento,
       "nome_gnd",
-      "Despesas por GND"
+      "Despesas por GND",
     );
   }
 
   private processTableData(
-    dados: IReceitaDespesaGNDOrcamentariaResponse[]
+    dados: IReceitaDespesaGNDOrcamentariaResponse[],
   ): void {
     if (!dados?.length) {
       this.tableContent = null;
@@ -202,7 +249,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
             categoria,
             anos,
             dados,
-            "liquidado"
+            "liquidado",
           )} %`,
         });
         nodeData.push({
@@ -211,12 +258,106 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
             categoria,
             anos,
             dados,
-            "pago_rap"
+            "pago_rap",
           )} %`,
         });
       }
 
       return { data: nodeData, children: [], expanded: false };
+    });
+
+    // Criar linha de totais
+    const totalNodeData = [
+      {
+        propertyName: "categoria",
+        value: "Total",
+      },
+    ];
+
+    anos.forEach((ano) => {
+      const totaisAno = dados
+        .filter((d) => d.ano === ano)
+        .reduce(
+          (acc, d) => ({
+            liq: acc.liq + (d.vlr_liquidado || 0),
+            pago: acc.pago + (d.vlr_pago_com_rap || 0),
+          }),
+          { liq: 0, pago: 0 },
+        );
+
+      totalNodeData.push({
+        propertyName: `Despesa Liquidada - ${ano}`,
+        value: totaisAno.liq.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      });
+
+      totalNodeData.push({
+        propertyName: `Pago com RAP - ${ano}`,
+        value: totaisAno.pago.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      });
+    });
+
+    // Adicionar variações totais
+    if (anos.length >= 2) {
+      const totaisAnoAnterior = dados
+        .filter((d) => d.ano === anos[0])
+        .reduce(
+          (acc, d) => ({
+            liq: acc.liq + (d.vlr_liquidado || 0),
+            pago: acc.pago + (d.vlr_pago_com_rap || 0),
+          }),
+          { liq: 0, pago: 0 },
+        );
+
+      const totaisAnoAtual = dados
+        .filter((d) => d.ano === anos[anos.length - 1])
+        .reduce(
+          (acc, d) => ({
+            liq: acc.liq + (d.vlr_liquidado || 0),
+            pago: acc.pago + (d.vlr_pago_com_rap || 0),
+          }),
+          { liq: 0, pago: 0 },
+        );
+
+      const variacaoLiquidado =
+        totaisAnoAnterior.liq !== 0
+          ? (
+              ((totaisAnoAtual.liq - totaisAnoAnterior.liq) /
+                totaisAnoAnterior.liq) *
+              100
+            ).toFixed(2)
+          : "0.00";
+
+      const variacaoPago =
+        totaisAnoAnterior.pago !== 0
+          ? (
+              ((totaisAnoAtual.pago - totaisAnoAnterior.pago) /
+                totaisAnoAnterior.pago) *
+              100
+            ).toFixed(2)
+          : "0.00";
+
+      totalNodeData.push({
+        propertyName: "Variação Liquidado",
+        value: `${variacaoLiquidado} %`,
+      });
+
+      totalNodeData.push({
+        propertyName: "Variação Pago RAP",
+        value: `${variacaoPago} %`,
+      });
+    }
+
+    // Adicionar linha de total aos dados
+    treeNodes.push({
+      data: totalNodeData,
+      children: [],
+      expanded: false,
     });
 
     const defaultColumns: FlipTableColumn[] = [];
@@ -281,7 +422,7 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
     categoria: string,
     anos: number[],
     dados: IReceitaDespesaGNDOrcamentariaResponse[],
-    tipo: "liquidado" | "pago_rap"
+    tipo: "liquidado" | "pago_rap",
   ): number {
     if (anos.length < 2) return 0;
 
@@ -306,120 +447,73 @@ export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
   }
 
   handleTableDownload(): void {
-    if (!this.receitaDespesaOrcamento?.length) return;
+    if (!this.tableContent) return;
 
-    const anos = [
-      ...new Set(this.receitaDespesaOrcamento.map((item) => item.ano)),
-    ]
-      .filter((ano) => ano != null)
-      .sort();
+    const anos = this.tableContent.defaultColumns
+      .filter((col) => col.propertyName.startsWith("Despesa Liquidada -"))
+      .map((col) =>
+        parseInt(col.propertyName.replace("Despesa Liquidada -", "").trim()),
+      )
+      .sort((a, b) => a - b);
 
-    const categorias = [
-      ...new Set(this.receitaDespesaOrcamento.map((item) => item.nome_gnd)),
-    ].filter(Boolean);
+    const temVariacao = this.tableContent.defaultColumns.some(
+      (col) => col.propertyName === "Variação Liquidado (%)",
+    );
 
     const columns = [
-      { key: "categoria", label: "Grupo de Natureza da Despesa" },
+      {
+        key: "categoria",
+        label:
+          this.tableContent.customColumn.displayName ||
+          "Grupo de Natureza da Despesa",
+      },
     ];
 
-    // Adiciona colunas para cada ano (Liquidado e Pago RAP)
     anos.forEach((ano) => {
       columns.push(
         { key: `liquidado_${ano}`, label: `Despesa Liquidada - ${ano}` },
-        { key: `pago_rap_${ano}`, label: `Pago com RAP - ${ano}` }
+        { key: `pago_rap_${ano}`, label: `Pago com RAP - ${ano}` },
       );
     });
 
-    // Adiciona colunas de variação se tiver mais de 1 ano
-    if (anos.length >= 2) {
+    if (temVariacao) {
       columns.push(
         { key: "variacao_liquidado", label: "Variação Liquidado" },
-        { key: "variacao_pago_rap", label: "Variação Pago RAP" }
+        { key: "variacao_pago_rap", label: "Variação Pago RAP" },
       );
     }
 
-    const dataForDownload = categorias.map((categoria) => {
-      const row: any = { categoria };
+    const dataForDownload = this.tableContent.data.map((node) => {
+      const row: any = {};
 
-      // Preenche valores por ano
-      anos.forEach((ano) => {
-        const itens = this.receitaDespesaOrcamento.filter(
-          (d) => d.nome_gnd === categoria && d.ano === ano
-        );
-
-        const valorLiquidado = itens.reduce(
-          (acc, item) => acc + (item.vlr_liquidado || 0),
-          0
-        );
-        const valorPagoRAP = itens.reduce(
-          (acc, item) => acc + (item.vlr_pago_com_rap || 0),
-          0
-        );
-
-        row[`liquidado_${ano}`] = valorLiquidado
-          .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-          .replace("R$", "");
-        row[`pago_rap_${ano}`] = valorPagoRAP
-          .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-          .replace("R$", "");
+      node.data.forEach((prop) => {
+        if (prop.propertyName === "categoria") {
+          row["categoria"] = prop.value;
+        } else if (prop.propertyName.startsWith("Despesa Liquidada -")) {
+          const ano = prop.propertyName
+            .replace("Despesa Liquidada -", "")
+            .trim();
+          row[`liquidado_${ano}`] = prop.value;
+        } else if (prop.propertyName.startsWith("Pago com RAP -")) {
+          const ano = prop.propertyName.replace("Pago com RAP -", "").trim();
+          row[`pago_rap_${ano}`] = prop.value;
+        } else if (prop.propertyName === "Variação Liquidado (%)") {
+          row["variacao_liquidado"] = prop.value;
+        } else if (prop.propertyName === "Variação Pago RAP (%)") {
+          row["variacao_pago_rap"] = prop.value;
+        }
       });
-
-      // Calcula variações
-      if (anos.length >= 2) {
-        const primeiroAno = anos[0];
-        const ultimoAno = anos[anos.length - 1];
-
-        // Variação Liquidado
-        const itensIniciaisLiq = this.receitaDespesaOrcamento.filter(
-          (d) => d.nome_gnd === categoria && d.ano === primeiroAno
-        );
-        const itensFinaisLiq = this.receitaDespesaOrcamento.filter(
-          (d) => d.nome_gnd === categoria && d.ano === ultimoAno
-        );
-
-        const valorInicialLiq = itensIniciaisLiq.reduce(
-          (acc, item) => acc + (item.vlr_liquidado || 0),
-          0
-        );
-        const valorFinalLiq = itensFinaisLiq.reduce(
-          (acc, item) => acc + (item.vlr_liquidado || 0),
-          0
-        );
-
-        const variacaoLiq =
-          valorInicialLiq !== 0
-            ? ((valorFinalLiq - valorInicialLiq) / valorInicialLiq) * 100
-            : 0;
-
-        // Variação Pago RAP
-        const valorInicialRAP = itensIniciaisLiq.reduce(
-          (acc, item) => acc + (item.vlr_pago_com_rap || 0),
-          0
-        );
-        const valorFinalRAP = itensFinaisLiq.reduce(
-          (acc, item) => acc + (item.vlr_pago_com_rap || 0),
-          0
-        );
-
-        const variacaoRAP =
-          valorInicialRAP !== 0
-            ? ((valorFinalRAP - valorInicialRAP) / valorInicialRAP) * 100
-            : 0;
-
-        row["variacao_liquidado"] = `${variacaoLiq.toFixed(2)} %`;
-        row["variacao_pago_rap"] = `${variacaoRAP.toFixed(2)} %`;
-      }
 
       return row;
     });
 
-    const anoAtual = new Date().getFullYear();
-    const fileName = `Despesa_GND_${anoAtual}.xlsx`;
+    const anoInicial = anos[1];
+    const fileName = `Despesa_GND_${anoInicial}.xlsx`;
 
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      fileName
+      fileName,
     );
   }
 }

@@ -100,8 +100,10 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
         takeUntil(this.destroy$),
         finalize(() => {
           this.requestStatus =
-            this.receitaTransferenciaCorrente.length > 0 ? RequestStatus.SUCCESS : RequestStatus.ERROR;
-        })
+            this.receitaTransferenciaCorrente.length > 0
+              ? RequestStatus.SUCCESS
+              : RequestStatus.ERROR;
+        }),
       )
       .subscribe({
         next: (res: IReceitaTransfereciaCorrenteOrcamentariaResponse[]) => {
@@ -132,12 +134,12 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
     return this._chartProcessor.processarDadosComparativo(
       this.receitaTransferenciaCorrente,
       "nome_item_patrimonial",
-      "Receita Líquida"
+      "Receita Líquida",
     );
   }
 
   private processTableData(
-    dados: IReceitaTransfereciaCorrenteOrcamentariaResponse[]
+    dados: IReceitaTransfereciaCorrenteOrcamentariaResponse[],
   ): void {
     if (!dados?.length) {
       this.tableContent = null;
@@ -167,18 +169,16 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
       anos.forEach((ano) => {
         const item = dados.find(
-          (d) => d.nome_item_patrimonial === categoria && d.ano === ano
+          (d) => d.nome_item_patrimonial === categoria && d.ano === ano,
         );
         const valor = item?.receitaLiquida || 0;
 
         nodeData.push({
           propertyName: `Arrecadação LI - ${ano.toString()}`,
-          value: `${
-            valor
-              .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-              .replace("R$", "")
-              .trim() || 0
-          }`,
+          value: `${valor
+            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+            .replace("R$", "")
+            .trim()}`,
         });
       });
 
@@ -197,6 +197,59 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
       };
     });
 
+    // Criar linha de totais
+    const totalNodeData = [
+      {
+        propertyName: "categoria",
+        value: "Total",
+      },
+    ];
+
+    anos.forEach((ano) => {
+      const totalAno = dados
+        .filter((d) => d.ano === ano)
+        .reduce((sum, d) => sum + (d.receitaLiquida || 0), 0);
+
+      totalNodeData.push({
+        propertyName: `Arrecadação LI - ${ano.toString()}`,
+        value: `${totalAno
+          .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+          .replace("R$", "")
+          .trim()}`,
+      });
+    });
+
+    // Adicionar variação total
+    if (anos.length >= 2) {
+      const totalAnoAnterior = dados
+        .filter((d) => d.ano === anos[0])
+        .reduce((sum, d) => sum + (d.receitaLiquida || 0), 0);
+
+      const totalAnoAtual = dados
+        .filter((d) => d.ano === anos[anos.length - 1])
+        .reduce((sum, d) => sum + (d.receitaLiquida || 0), 0);
+
+      const variacaoTotal =
+        totalAnoAnterior !== 0
+          ? (
+              ((totalAnoAtual - totalAnoAnterior) / totalAnoAnterior) *
+              100
+            ).toFixed(2)
+          : "0.00";
+
+      totalNodeData.push({
+        propertyName: "variação (%)",
+        value: `${variacaoTotal} %`,
+      });
+    }
+
+    // Adicionar linha de total aos dados
+    treeNodes.push({
+      data: totalNodeData,
+      children: [],
+      expanded: false,
+    });
+
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
       propertyName: `Arrecadação LI - ${ano.toString()}`,
       displayName: `Arrecadação Líquida - ${ano.toString()}`,
@@ -209,7 +262,7 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
     if (anos.length >= 2) {
       defaultColumns.push({
         propertyName: "variação (%)",
-        displayName: "Variação ",
+        displayName: "Variação",
         alignment: {
           header: FlipTableAlignment.CENTER,
           data: FlipTableAlignment.CENTER,
@@ -232,11 +285,10 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
       data: treeNodes,
     };
   }
-
   private calcularVariacao(
     categoria: string,
     anos: number[],
-    dados: IReceitaTransfereciaCorrenteOrcamentariaResponse[]
+    dados: IReceitaTransfereciaCorrenteOrcamentariaResponse[],
   ): number {
     if (anos.length < 2) return 0;
 
@@ -245,12 +297,12 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
 
     const valorInicial =
       dados.find(
-        (d) => d.nome_item_patrimonial === categoria && d.ano === primeiroAno
+        (d) => d.nome_item_patrimonial === categoria && d.ano === primeiroAno,
       )?.receitaLiquida ?? 0;
 
     const valorFinal =
       dados.find(
-        (d) => d.nome_item_patrimonial === categoria && d.ano === ultimoAno
+        (d) => d.nome_item_patrimonial === categoria && d.ano === ultimoAno,
       )?.receitaLiquida ?? 0;
 
     if (valorInicial === 0) return 0;
@@ -260,82 +312,72 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
   }
 
   handleTableDownload(): void {
-    if (!this.receitaTransferenciaCorrente?.length) return;
+    if (!this.tableContent) {
+      console.warn("Nenhum conteúdo de tabela disponível para download");
+      return;
+    }
 
-    const anos = [
-      ...new Set(this.receitaTransferenciaCorrente.map((item) => item.ano)),
-    ]
-      .filter((ano) => ano != null)
-      .sort();
+    // Extrair anos das colunas padrão
+    const anos = this.tableContent.defaultColumns
+      .filter((col) => col.propertyName.startsWith("Arrecadação LI -"))
+      .map((col) => parseInt(col.propertyName.replace("Arrecadação LI -", "")))
+      .sort((a, b) => a - b);
 
-    const categorias = [
-      ...new Set(
-        this.receitaTransferenciaCorrente.map(
-          (item) => item.nome_item_patrimonial
-        )
-      ),
-    ].filter(Boolean);
+    // Verificar se existe coluna de variação
+    const temVariacao = this.tableContent.defaultColumns.some(
+      (col) => col.propertyName === "variação (%)",
+    );
 
+    // Criar colunas para o Excel
     const columns = [
-      { key: "categoria", label: "Transfrências Correntes" },
+      {
+        key: "categoria",
+        label:
+          this.tableContent.customColumn.displayName ||
+          "Transfrências Correntes",
+      },
       ...anos.map((ano) => ({
         key: `ano_${ano}`,
-        label: `Arrecadação LI - ${ano}`,
+        label: `Arrecadação Líquida - ${ano}`,
       })),
     ];
 
-    if (anos.length >= 2) {
-      columns.push({ key: "variacao", label: "Variação" });
+    if (temVariacao) {
+      const ultimoAno = anos[anos.length - 1];
+      columns.push({
+        key: "variacao",
+        label: `Variação`,
+      });
     }
 
-    const dataForDownload = categorias.map((categoria) => {
-      const row: any = { categoria };
+    // Criar dados para download a partir de tableContent.data
+    const dataForDownload = this.tableContent.data.map((node) => {
+      const row: any = {};
 
-      anos.forEach((ano) => {
-        const item = this.receitaTransferenciaCorrente.find(
-          (d) => d.nome_item_patrimonial === categoria && d.ano === ano
-        );
-        row[`ano_${ano}`] = `${
-          item?.receitaLiquida
-            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-            .replace("R$", "")
-            .trim() || 0
-        }`;
+      // Processar cada propriedade do nó
+      node.data.forEach((prop) => {
+        if (prop.propertyName === "categoria") {
+          row["categoria"] = prop.value;
+        } else if (prop.propertyName.startsWith("Arrecadação LI -")) {
+          const ano = prop.propertyName.replace("Arrecadação LI -", "").trim();
+          row[`ano_${ano}`] = prop.value;
+        } else if (prop.propertyName === "variação (%)") {
+          row["variacao"] = prop.value;
+        }
       });
-
-      if (anos.length >= 2) {
-        const primeiroAno = anos[0];
-        const ultimoAno = anos[anos.length - 1];
-
-        const valorInicial =
-          this.receitaTransferenciaCorrente.find(
-            (d) =>
-              d.nome_item_patrimonial === categoria && d.ano === primeiroAno
-          )?.receitaLiquida ?? 0;
-
-        const valorFinal =
-          this.receitaTransferenciaCorrente.find(
-            (d) => d.nome_item_patrimonial === categoria && d.ano === ultimoAno
-          )?.receitaLiquida ?? 0;
-
-        const variacao =
-          valorInicial !== 0
-            ? ((valorFinal - valorInicial) / valorInicial) * 100
-            : 0;
-
-        row["variacao"] = `${variacao.toFixed(2)} %`;
-      }
 
       return row;
     });
 
-    const anoAtual = new Date().getFullYear();
-    const fileName = `Receita_Transferências_Correntes${anoAtual}.xlsx`;
+    // Gerar nome do arquivo
+    const anoAtual = anos[1];
+    const fileName = `Receita_Por_Categoria_${anoAtual}.xlsx`;
 
+    // Exportar
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      fileName
+      fileName,
     );
   }
 }

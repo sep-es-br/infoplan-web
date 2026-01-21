@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { NbCardModule, NbSelectModule, NbIconModule, NbButtonModule, NbDatepickerModule, NbInputModule, NbTooltipModule, NbLayoutModule } from "@nebular/theme"; // <-- ESSENCIAL
+import { NbCardModule, NbSelectModule, NbIconModule, NbButtonModule, NbDatepickerModule, NbInputModule, NbTooltipModule, NbLayoutModule, NbToggleModule } from "@nebular/theme"; // <-- ESSENCIAL
 
 import { NgxChartsModule } from "@swimlane/ngx-charts";
 import { NgxEchartsModule } from "ngx-echarts";
@@ -60,6 +60,7 @@ import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
     ReceitaOrigemComponent,
     ReceitaTransferenciaComponent,
     OrgChartVerticalComponent,
+    NbToggleModule
   ],
   providers: [
     ShortNumberPipe,

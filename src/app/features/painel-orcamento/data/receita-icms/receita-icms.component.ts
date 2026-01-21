@@ -38,10 +38,10 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   private receitaICMSCharData: IReceitaICMSOrcamentariaResponse[] | null = [];
 
   private readonly _painelService: PainelOrcamentoService = inject(
-    PainelOrcamentoService
+    PainelOrcamentoService,
   );
   private readonly _chartProcessor: ChartDataProcessorService = inject(
-    ChartDataProcessorService
+    ChartDataProcessorService,
   );
   private readonly _exportDataService: ExportDataService =
     inject(ExportDataService);
@@ -141,7 +141,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
       dados.map((d) => [
         `${d.nome_item_patrimonial}_${d.ano}`,
         d.receitaLiquida || 0,
-      ])
+      ]),
     );
 
     const categoriasUnicas = [
@@ -151,13 +151,12 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     const categoriasOrdenadas = categoriasUnicas.sort((a, b) => {
       const totalA = anos.reduce(
         (acc, ano) => acc + (mapaBusca.get(`${a}_${ano}`) || 0),
-        0
+        0,
       );
       const totalB = anos.reduce(
         (acc, ano) => acc + (mapaBusca.get(`${b}_${ano}`) || 0),
-        0
+        0,
       );
-
       return totalB - totalA;
     });
 
@@ -176,7 +175,6 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
 
       anos.forEach((ano) => {
         const valor = mapaBusca.get(`${categoria}_${ano}`) || 0;
-
         nodeData.push({
           propertyName: `ano_${ano}`,
           value: valor.toLocaleString("pt-BR", {
@@ -192,10 +190,37 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
         expanded: false,
       };
     });
-    // Colunas com propertyNames únicos
+
+    const totalNodeData: any[] = [
+      {
+        propertyName: "categoria",
+        value: "Total",
+      },
+    ];
+
+    anos.forEach((ano) => {
+      const totalAno = dados
+        .filter((d) => d.ano === ano)
+        .reduce((sum, d) => sum + (d.receitaLiquida || 0), 0);
+
+      totalNodeData.push({
+        propertyName: `ano_${ano}`,
+        value: totalAno.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      });
+    });
+
+    treeNodes.push({
+      data: totalNodeData,
+      children: [],
+      expanded: false,
+    });
+
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
-      propertyName: `ano_${ano}`, // Mesmo nome usado nos nodeData
-      displayName: ano.toString(), // Mostra o ano como nome da coluna
+      propertyName: `ano_${ano}`,
+      displayName: ano.toString(),
       alignment: {
         header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
@@ -222,7 +247,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     return this._chartProcessor.processarDadosPieChart(
       this.receitaICMSCharData,
       "nome_item_patrimonial",
-      ["receitaLiquida", "vlr_receita_liquida"]
+      ["receitaLiquida", "vlr_receita_liquida"],
     );
   }
 
@@ -239,63 +264,60 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   }
 
   handleTableDownload(): void {
-    const data = this.receitaICMSCharData;
+    const data = this.tableContent;
 
-    if (!data.length) return;
+    if (!data) return;
 
-    const categories = this.category(data);
     const years = this.filterYears(data);
-    const columns = this.columns(years);
+    const columns = this.columns(years, data);
 
-    const dataForDownload = this.dataForDownload(categories, years, columns);
+    const dataForDownload = this.dataForDownload(years, columns);
 
-    const anoAtual = new Date().getFullYear();
-    const fileName = `Receita_Realizada_ICMS_${anoAtual}.xlsx`;
+    const anoInicial = years[1];
+    const fileName = `Receita_Realizada_ICMS_${anoInicial}.xlsx`;
 
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      fileName
+      fileName,
     );
   }
 
-  private category(data: IReceitaICMSOrcamentariaResponse[]): string[] {
-    return [...new Set(data.map((item) => item.nome_item_patrimonial))].filter(
-      Boolean
-    );
+  private filterYears(data: FlipTableContent): number[] {
+    return this.tableContent.defaultColumns
+      .filter((col) => col.propertyName.startsWith("ano_"))
+      .map((col) => parseInt(col.propertyName.replace("ano_", "").trim()))
+      .sort((a, b) => a - b);
   }
 
-  private filterYears(data: IReceitaICMSOrcamentariaResponse[]): number[] {
-    return [...new Set(data.map((item) => item.ano))]
-      .filter((ano) => ano != null)
-      .sort();
-  }
-
-  private columns(years: number[]): { key: string; label: string }[] {
+  private columns(
+    years: number[],
+    content: FlipTableContent,
+  ): { key: string; label: string }[] {
     return [
       { key: "categoria", label: "Participação ICMS - Receita Total" },
       ...years.map((ano) => ({
         key: `ano_${ano}`,
-        label: `Arrecadação Líquida - ${ano}`,
+        label:
+          content.customColumn.displayName || `Arrecadação Líquida - ${ano}`,
       })),
     ];
   }
 
   private dataForDownload(
-    categories: string[],
     years: number[],
-    columns: { key: string; label: string }[]
+    columns: { key: string; label: string }[],
   ): any[] {
-    return categories.map((categoria) => {
-      const row: any = { categoria };
+    return this.tableContent.data.map((node) => {
+      const row: any = {};
 
-      years.forEach((year) => {
-        const item = this.receitaICMSCharData.find(
-          (d) => d.nome_item_patrimonial === categoria && d.ano === year
-        );
-        row[`ano_${year}`] = item?.receitaLiquida
-          ? `${item.receitaLiquida.toLocaleString("pt-BR")}`
-          : "0";
+      node.data.forEach((prop) => {
+        console.log("result: ", prop);
+        if (prop.propertyName === "categoria") {
+          row["categoria"] = prop.value;
+        } else if (prop.propertyName.startsWith("ano_")) {
+          row[prop.propertyName] = prop.value;
+        }
       });
 
       return row;

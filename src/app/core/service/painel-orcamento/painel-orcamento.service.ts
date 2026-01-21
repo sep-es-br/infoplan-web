@@ -85,7 +85,7 @@ export class PainelOrcamentoService {
   public getRceitaPorDespesaGND(
     request: IExecucaoOrcamentariaRequest
   ): Observable<IReceitaDespesaGNDOrcamentariaResponse[]> {
-    const params: HttpParams = this.returnParams(request);
+    const params: HttpParams = this.returnParamsPoderExecutivo(request);
     return this._http
       .get<IReceitaDespesaGNDOrcamentariaResponse[]>(
         `${this._URI}/receita-despesas-gnd`,
@@ -97,7 +97,7 @@ export class PainelOrcamentoService {
   public getRceitaPorDespesaGNDTotal(
     request: IExecucaoOrcamentariaRequest
   ): Observable<IReceitaDespesaGNDTotalOrcamentariaResponse[]> {
-    const params: HttpParams = this.returnParams(request);
+    const params: HttpParams = this.returnParamsPoderExecutivo(request);
     return this._http
       .get<IReceitaDespesaGNDTotalOrcamentariaResponse[]>(
         `${this._URI}/receita-despesas-gnd-total`,
@@ -161,6 +161,31 @@ export class PainelOrcamentoService {
     if (execucaoOrcamentaria.po) {
       params = params.set("po", execucaoOrcamentaria.po);
     }
+    return params;
+  }
+
+  returnParamsPoderExecutivo(
+    execucaoOrcamentaria: IExecucaoOrcamentariaRequest
+  ) : HttpParams {
+    let params = new HttpParams()
+      .set("ano", String(execucaoOrcamentaria.ano))
+      .set(
+        "mes",
+        Array.isArray(execucaoOrcamentaria.mes)
+          ? execucaoOrcamentaria.mes.join(",")
+          : String(execucaoOrcamentaria.mes)
+      )
+      .set("codPoder", execucaoOrcamentaria.codPoder)
+      .set("tipoFonte", String(execucaoOrcamentaria.tipoFonte));
+
+    if (execucaoOrcamentaria.uo) {
+      params = params.set("uo", execucaoOrcamentaria.uo);
+    }
+
+    if (execucaoOrcamentaria.po) {
+      params = params.set("po", execucaoOrcamentaria.po);
+    }
+
     return params;
   }
 

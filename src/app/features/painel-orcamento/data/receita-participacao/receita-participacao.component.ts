@@ -12,7 +12,7 @@ import {
   IExecucaoOrcamentariaRequest,
   IReceitaParticipacaoOrcamentariaResponse,
 } from "../../../../core/interfaces/painel-orcamento/painel-orcamento";
-import { finalize, takeUntil } from "rxjs/operators";
+import { takeUntil } from "rxjs/operators";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../core/service/export-data";
@@ -25,6 +25,7 @@ import {
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
+import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
 
 @Component({
   selector: "ngx-receita-participacao",
@@ -103,7 +104,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
         error: (err) => {
           console.error(
             "Erro ao carregar receita Participação ICMS - Receita Total:",
-            err
+            err,
           );
           this.requestStatus = RequestStatus.ERROR;
         },
@@ -150,7 +151,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       dados.map((d) => [
         `${d.nome_item_patrimonial}_${d.ano}`,
         d.receitaLiquida,
-      ])
+      ]),
     );
 
     const treeNodes: TreeNode[] = categorias.map((categoria) => {
@@ -158,7 +159,6 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
 
       anos.forEach((ano) => {
         const valor = mapaValores.get(`${categoria}_${ano}`) || 0;
-
         nodeData.push({
           propertyName: `ano_${ano}`,
           value: valor.toLocaleString("pt-BR", {
@@ -173,6 +173,35 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
         children: [],
         expanded: false,
       };
+    });
+
+    // Criar linha de totais
+    const totalNodeData: any[] = [
+      {
+        propertyName: "categoria",
+        value: "Total",
+      },
+    ];
+
+    anos.forEach((ano) => {
+      const totalAno = dados
+        .filter((d) => d.ano === ano)
+        .reduce((sum, d) => sum + (d.receitaLiquida || 0), 0);
+
+      totalNodeData.push({
+        propertyName: `ano_${ano}`,
+        value: totalAno.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      });
+    });
+
+    // Adicionar linha de total aos dados
+    treeNodes.push({
+      data: totalNodeData,
+      children: [],
+      expanded: false,
     });
 
     // Estrutura da tabela consolidada
@@ -195,134 +224,76 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       })),
       data: treeNodes,
     };
-
-    // const treeNodes: TreeNode[] = categorias.map((categoria) => {
-    //   const nodeData: any[] = [
-    //     {
-    //       propertyName: "categoria",
-    //       value: categoria,
-    //     },
-    //   ];
-    //   // dados.map((res) => {
-    //   //   console.log("Categoria: ", res);
-    //   // });
-    //   anos.forEach((ano) => {
-    //     const item = dados.find(
-    //       (d) => d.nome_item_patrimonial === categoria && d.ano === ano
-    //     );
-    //     const valor = item?.receitaLiquida || 0;
-
-    //     nodeData.push({
-    //       propertyName: `ano_${ano}`,
-    //       value: ` ${
-    //         valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0
-    //       }`,
-    //     });
-    //     // dados.map((res) => {
-    //     //   console.log("Categoria: APOS ", nodeData);
-    //     // });
-    //   });
-
-    //   return {
-    //     data: nodeData,
-    //     children: [],
-    //     expanded: false,
-    //   };
-    // });
-
-    // const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
-    //   propertyName: `ano_${ano}`,
-    //   displayName: ano.toString(),
-    //   alignment: {
-    //     header: FlipTableAlignment.RIGHT,
-    //     data: FlipTableAlignment.RIGHT,
-    //   },
-    // }));
-
-    // const customColumn: FlipTableColumn = {
-    //   propertyName: "categoria",
-    //   displayName: "ICMS",
-    //   alignment: {
-    //     header: FlipTableAlignment.LEFT,
-    //     data: FlipTableAlignment.LEFT,
-    //   },
-    // };
-
-    // this.tableContent = {
-    //   customColumn,
-    //   defaultColumns,
-    //   data: treeNodes,
-    // };
   }
 
   private processCharData(): PieChartData[] {
     return this._chartProcessor.processarDadosPieChart(
       this.receitaICMSCharData,
       "nome_item_patrimonial",
-      ["receitaLiquida", "vlr_receita_liquida"]
+      ["receitaLiquida", "vlr_receita_liquida"],
     );
   }
 
   handleTableDownload(): void {
-    const data = this.receitaICMSCharData;
+    const data = this.tableContent;
 
-    if (!data.length) return;
+    if (!data) return;
 
-    const categories = this.category(data);
     const years = this.filterYears(data);
-    const columns = this.columns(years);
+    const columns = this.columns(years, data);
 
-    const dataForDownload = this.dataForDownload(categories, years, columns);
+    const dataForDownload = this.dataForDownload(years, columns);
 
-    const anoAtual = new Date().getFullYear();
-    const fileName = `Receita_Realizada_ICMS_${anoAtual}.xlsx`;
+    // Gerar nome do arquivo usando os anos buscados
+    const anoInicial = years[1];
+    const fileName = `Receita_Realizada_ICMS_${anoInicial}.xlsx`;
 
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      fileName
+      fileName,
     );
   }
 
-  private category(data: IReceitaParticipacaoOrcamentariaResponse[]): string[] {
-    return [...new Set(data.map((item) => item.nome_item_patrimonial))].filter(
-      Boolean
-    );
+  private filterYears(data: FlipTableContent): number[] {
+    return this.tableContent.defaultColumns
+      .filter((col) => col.propertyName.startsWith("ano_"))
+      .map((col) => parseInt(col.propertyName.replace("ano_", "").trim()))
+      .sort((a, b) => a - b);
   }
 
-  private filterYears(
-    data: IReceitaParticipacaoOrcamentariaResponse[]
-  ): number[] {
-    return [...new Set(data.map((item) => item.ano))]
-      .filter((ano) => ano != null)
-      .sort();
-  }
-
-  private columns(years: number[]): { key: string; label: string }[] {
+  private columns(
+    years: number[],
+    content: FlipTableContent,
+  ): { key: string; label: string }[] {
     return [
-      { key: "categoria", label: "Participação ICMS - Receita Total" },
+      {
+        key: "categoria",
+        label:
+          content.customColumn.displayName ||
+          "Participação ICMS - Receita Total",
+      },
       ...years.map((ano) => ({
         key: `ano_${ano}`,
-        label: `Arrecadação LI - ${ano}`,
+        label: `Arrecadação Líquida - ${ano}`,
       })),
     ];
   }
 
   private dataForDownload(
-    categories: string[],
     years: number[],
-    columns: { key: string; label: string }[]
+    columns: { key: string; label: string }[],
   ): any[] {
-    return categories.map((categoria) => {
-      const row: any = { categoria };
+    return this.tableContent.data.map((node) => {
+      const row: any = {};
 
-      years.forEach((year) => {
-        const item = this.receitaICMSCharData.find(
-          (d) => d.nome_item_patrimonial === categoria && d.ano === year
-        );
-        row[`ano_${year}`] = item?.receitaLiquida
-          ? `${item.receitaLiquida.toLocaleString("pt-BR")}`
-          : "0";
+      node.data.forEach((prop) => {
+        console.log("result: ", prop);
+        if (prop.propertyName === "categoria") {
+          row["categoria"] = prop.value;
+        } else if (prop.propertyName.startsWith("ano_")) {
+          row[prop.propertyName] = prop.value;
+        }
       });
 
       return row;

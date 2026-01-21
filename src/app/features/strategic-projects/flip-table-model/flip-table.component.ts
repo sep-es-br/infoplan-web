@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf } from "@angular/common";
-import { ChangeDetectorRef, Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, ContentChild, ElementRef, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges, ViewChild } from "@angular/core";
 import { NbBadgeModule, NbCardModule, NbColumnsService, NbFormFieldModule, NbIconModule, NbInputModule, NbSortDirection, NbSortRequest, NbSpinnerModule, NbTooltipModule, NbTreeGridModule } from "@nebular/theme";
 import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
 import { RequestStatus } from "../strategicProjects.component";
@@ -102,6 +102,11 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() outerCardHeight: number;
 
+  @ContentChild('cardToggles', { read: ElementRef }) cardTogglesRef: ElementRef;
+  
+  get hasToggleContent(): boolean {
+    return !!this.cardTogglesRef;
+  }
 
   @HostBinding('class.maximized') get maximizedClass() {
     return this.isMaximized;

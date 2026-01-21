@@ -4,6 +4,7 @@ import {
   Input,
   OnChanges,
   OnDestroy,
+  OnInit,
   SimpleChanges,
 } from "@angular/core";
 import {
@@ -30,29 +31,31 @@ import { ChartDataConfig } from "../../org-chart-bar/org-chart-horizontal/org-ch
   templateUrl: "./receita-despesa-gnd-total.component.html",
   styleUrls: ["./receita-despesa-gnd-total.component.scss"],
 })
-export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
+export class ReceitaDespesaGndTotalComponent
+  implements OnChanges, OnDestroy, OnInit
+{
   @Input() filter: IExecucaoOrcamentariaRequest;
 
   readonly title: string = "Despesa Prevista x Executada";
 
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
-   requestStatus: RequestStatus = RequestStatus.EMPTY;
-    chartDataConfig: ChartDataConfig = {
-      grid: {
-        top: "20%",
-        left: "0%",
-        right: "0%",
-        bottom: "0%",
-        containLabel: true,
-      },
-    };
+  requestStatus: RequestStatus = RequestStatus.EMPTY;
+  chartDataConfig: ChartDataConfig = {
+    grid: {
+      top: "20%",
+      left: "0%",
+      right: "0%",
+      bottom: "0%",
+      containLabel: true,
+    },
+  };
 
   private receitaDespesaGNDTotal: IReceitaDespesaGNDTotalOrcamentariaResponse[] =
     [];
 
   private readonly _execucaoOrcamentariaService = inject(
-    PainelOrcamentoService
+    PainelOrcamentoService,
   );
 
   private readonly _chartProcessor = inject(ChartDataProcessorService);
@@ -61,15 +64,56 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
 
+  public toggleExecutivo = true;
+  public toggleDemaisPoderes = true;
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
       this.loadData();
     }
   }
 
+  ngOnInit(): void {
+    if (!this.filter.codPoder) {
+      this.filter.codPoder = "-1";
+    }
+    this.getReceitaDespesaGNDTotal();
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  public onToggleChange(toggle: "executivo" | "demaisPoderes"): void {
+    if (!this.toggleExecutivo && !this.toggleDemaisPoderes) {
+      if (toggle === "executivo") {
+        this.toggleExecutivo = true;
+      } else {
+        this.toggleDemaisPoderes = true;
+      }
+      return;
+    }
+
+    this.updateFilterPoderes();
+  }
+
+  private updateFilterPoderes(): void {
+    const poderes: string[] = [];
+    if (this.toggleExecutivo) {
+      poderes.push("1");
+    }
+
+    if (this.toggleDemaisPoderes) {
+      poderes.push("2");
+    }
+
+    this.filter.codPoder = poderes.join(",");
+    this.getReceitaDespesaGNDTotal();
+  }
+
+  public isAtLeastOneToggleActive(): boolean {
+    return this.toggleExecutivo || this.toggleDemaisPoderes;
   }
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {
@@ -97,8 +141,10 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
         takeUntil(this.destroy$),
         finalize(() => {
           this.requestStatus =
-            this.receitaDespesaGNDTotal.length > 0 ? RequestStatus.SUCCESS : RequestStatus.ERROR;
-        })
+            this.receitaDespesaGNDTotal.length > 0
+              ? RequestStatus.SUCCESS
+              : RequestStatus.ERROR;
+        }),
       )
       .subscribe({
         next: (res: IReceitaDespesaGNDTotalOrcamentariaResponse[]) => {
@@ -136,20 +182,35 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
   private processTableData(
     dados:
       | IReceitaDespesaGNDTotalOrcamentariaResponse
-      | IReceitaDespesaGNDTotalOrcamentariaResponse[]
+      | IReceitaDespesaGNDTotalOrcamentariaResponse[],
   ): void {
     const currentYear = new Date().getFullYear();
     const dadosArray = (Array.isArray(dados) ? dados : [dados]).filter(
-      (item) => item.ano === currentYear
+      (item) => item.ano === currentYear,
     );
     const ano = currentYear;
+
+    let totalOrcado = 0;
+    let totalAutorizado = 0;
+    let totalEmpenhado = 0;
+    let totalLiquidado = 0;
+    let totalPagoComRap = 0;
+
+    dadosArray.forEach((item) => {
+      totalOrcado += Number(item.vlr_orcado) || 0;
+      totalAutorizado += Number(item.vlr_autorizado) || 0;
+      totalEmpenhado += Number(item.vlr_empenhado) || 0;
+      totalLiquidado += Number(item.vlr_liquidado) || 0;
+      totalPagoComRap += Number(item.vlr_pago_com_rap) || 0;
+    });
+
     const treeNodes = dadosArray
       .map((item) => {
-        const orcado = item.vlr_orcado || 0;
-        const autorizado = item.vlr_autorizado || 0;
-        const empenhado = item.vlr_empenhado || 0;
-        const liquidado = item.vlr_liquidado || 0;
-        const pagoComRap = item.vlr_pago_com_rap || 0;
+        const orcado = Number(item.vlr_orcado) || 0;
+        const autorizado = Number(item.vlr_autorizado) || 0;
+        const empenhado = Number(item.vlr_empenhado) || 0;
+        const liquidado = Number(item.vlr_liquidado) || 0;
+        const pagoComRap = Number(item.vlr_pago_com_rap) || 0;
 
         return [
           {
@@ -160,7 +221,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
               },
               {
                 propertyName: "valor",
-                value: `${orcado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+                value: `${orcado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim()}`,
               },
             ],
           },
@@ -169,7 +230,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
               { propertyName: "label", value: "Autorizado" },
               {
                 propertyName: "valor",
-                value: `${autorizado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+                value: `${autorizado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim()}`,
               },
             ],
           },
@@ -196,13 +257,36 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
               { propertyName: "label", value: "Pago com RAP" },
               {
                 propertyName: "valor",
-                value: `${pagoComRap.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0}`,
+                value: `${pagoComRap.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim()}`,
               },
             ],
           },
         ];
       })
       .flat();
+
+    // Adicionar linha de TOTAL
+    treeNodes.push({
+      data: [
+        {
+          propertyName: "label",
+          value: "Total",
+        },
+        {
+          propertyName: "valor",
+          value: `${(
+            totalOrcado +
+            totalAutorizado +
+            totalEmpenhado +
+            totalLiquidado +
+            totalPagoComRap
+          )
+            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+            .replace("R$", "")
+            .trim()}`,
+        },
+      ],
+    });
 
     this.tableContent = {
       customColumn: {
@@ -244,8 +328,15 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
       node.data.forEach((item) => {
         // Para a coluna de valor, remove "R$ " e converte para número
         if (item.propertyName === "valor") {
-          const valorLimpo = item.value.replace('R$ ', '').replace(/\./g, '').replace(',', '.');
-          row[item.propertyName] = parseFloat(valorLimpo).toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim() || 0;
+          const valorLimpo = item.value
+            .replace("R$ ", "")
+            .replace(/\./g, "")
+            .replace(",", ".");
+          row[item.propertyName] =
+            parseFloat(valorLimpo)
+              .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+              .replace("R$", "")
+              .trim() || 0;
         } else {
           row[item.propertyName] = item.value;
         }
@@ -259,7 +350,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      `Receita_Realizada_X_Executada_${anoAtual}.xlsx`
+      `Receita_Realizada_X_Executada_${anoAtual}.xlsx`,
     );
   }
 }

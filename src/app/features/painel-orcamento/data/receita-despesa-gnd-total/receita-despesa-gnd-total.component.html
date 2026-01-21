@@ -4,12 +4,55 @@
   [tableContent]="tableContent"
   [loadingStatus]="requestStatus"
   (executeDownload)="handleTableDownload()"
-  [backCardHeight]="308"
+  [backCardHeight]="350"
   [showMaximizeButton]="true"
-  (showMaximizeButtonClick)="onMaximizeButtonClick('receita-despesa-gnd-total',$event)">
+  (showMaximizeButtonClick)="
+    onMaximizeButtonClick('receita-despesa-gnd-total', $event)
+  "
+>
+  <div
+    class="toggles-container small-toggle"
+    [attr.card-toggles]="true"
+    card-toggles
+    #cardToggles
+  >
+    <div class="form-check form-switch">
+      <input
+        class="form-check-input"
+        [(ngModel)]="toggleExecutivo"
+        (ngModelChange)="onToggleChange('executivo')"
+        type="checkbox"
+        role="switch"
+        id="flexSwitchCheckDefault"
+      />
+      <label class="form-check-label" for="flexSwitchCheckDefault">
+        Executivo
+      </label>
+    </div>
+
+    <div class="form-check form-switch">
+      <input
+        class="form-check-input"
+        [(ngModel)]="toggleDemaisPoderes"
+        (ngModelChange)="onToggleChange('demaisPoderes')"
+        [disabled]="!toggleExecutivo"
+        type="checkbox"
+        role="switch"
+        id="flexSwitchCheckChecked"
+      />
+      <label class="form-check-label" for="flexSwitchCheckChecked">
+        Demais Poderes
+      </label>
+    </div>
+  </div>
   <ngx-org-chart-vertical
     [chart]="chartData"
     [chartDataConfig]="chartDataConfig"
-    [height]="isChartMaximized('receita-despesa-gnd-total') ? calcMaximizedHeight() : 300"
-    card-front></ngx-org-chart-vertical>
+    [height]="
+      isChartMaximized('receita-despesa-gnd-total')
+        ? calcMaximizedHeight()
+        : 300
+    "
+    card-front
+  ></ngx-org-chart-vertical>
 </ngx-flip-table>

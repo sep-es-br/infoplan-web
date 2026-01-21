@@ -123,7 +123,7 @@ export class OrgChartHorizontalComponent
           overflow: "break",
           width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
           formatter: (value: string) => {
-            const limite = isMobile ? 15 :20;
+            const limite = isMobile ? 15 : 20;
             return this.quebrarTexto(value, limite);
           },
         },
@@ -157,7 +157,7 @@ export class OrgChartHorizontalComponent
     }));
 
     const colors = chart.data.datasets.map(
-      (dataset) => dataset.backgroundColor || "#4DB6D2"
+      (dataset) => dataset.backgroundColor || "#4DB6D2",
     );
 
     const isMobile = window.innerWidth <= 1000;
@@ -182,7 +182,6 @@ export class OrgChartHorizontalComponent
 
           let tituloTooltip = "";
 
-          // Define o Título baseado no tipo de Tooltip
           if (dataRef.tipoTooltip === "PO") {
             const po =
               (dataRef.nomePO && dataRef.nomePO[index]) ||
@@ -208,26 +207,17 @@ export class OrgChartHorizontalComponent
             tituloTooltip = partes.join(" ");
           }
 
-          // Constrói o corpo da Tooltip com os valores formatados
           let tooltip = `${tituloTooltip}<br>`;
 
           params.forEach((p: any) => {
             const valorRaw =
               p.value !== undefined && p.value !== null ? p.value : 0;
-            // Aqui integramos a sua função comentada de formatação
             const valorFormatado = this.formatNumber(valorRaw);
             tooltip += `<span>${p.seriesName}: <span>${valorFormatado}</span></span><br>`;
           });
 
           return tooltip;
         },
-        // formatter: (params: any) => {
-        //   let tooltip = `${params[0].name}<br>`;
-        //   params.forEach((p: any) => {
-        //     tooltip += `${p.seriesName}: ${this.formatNumber(p.value)}<br>`;
-        //   });
-        //   return tooltip;
-        // },
       },
 
       legend: {
@@ -253,8 +243,9 @@ export class OrgChartHorizontalComponent
       },
 
       xAxis: {
-        type: "log",
-        min: 1000,
+        type: "value",
+        scale: true,
+        min: 0,
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,
@@ -262,21 +253,6 @@ export class OrgChartHorizontalComponent
         },
       },
 
-      // yAxis: {
-      //   type: "category",
-      //   inverse: false,
-      //   data: data.map((d) => d.category),
-      //   axisLabel: {
-      //     color: theme.textPrimaryColor,
-      //     fontSize: isTablet ? 9 : isMobile ? 10 : 11,
-      //     margin: 8,
-      //     overflow: "break",
-      //     width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
-      //     formatter: (value: string) => {
-      //       return this.quebrarTexto(value, this.charactersPerLine);
-      //     },
-      //   },
-      // },
       yAxis: {
         type: "category",
         inverse: true,
@@ -293,11 +269,12 @@ export class OrgChartHorizontalComponent
           overflow: "breakAll", // Deixamos a quebra apenas para sua função
           formatter: (value: string) => {
             // Passamos o limite dinâmico. 20-25 caracteres costuma ser o ideal.
-            const limite = isMobile ? 15 :20;
+            const limite = isMobile ? 15 : 20;
             return this.quebrarTexto(value, limite);
           },
         },
       },
+
       series: chart.data.datasets.map((dataset, index) => ({
         name: dataset.label,
         type: "bar",
@@ -355,13 +332,11 @@ export class OrgChartHorizontalComponent
     let currentLine = "";
 
     words.forEach((word) => {
-      // Verifica se a palavra sozinha é maior que o limite (evita quebra no meio da palavra se possível)
       if ((currentLine + word).length > maxCaracteres) {
         if (currentLine.length > 0) {
           lines.push(currentLine.trim());
           currentLine = word + " ";
         } else {
-          // Se uma única palavra for maior que o limite, forçamos a quebra dela
           lines.push(word.substring(0, maxCaracteres));
           currentLine = word.substring(maxCaracteres) + " ";
         }
@@ -371,20 +346,23 @@ export class OrgChartHorizontalComponent
     });
 
     if (currentLine) lines.push(currentLine.trim());
-    // Retorna no máximo 3 linhas para manter a altura da barra consistente
     return lines.slice(0, 3).join("\n");
   }
 
-private formatValue(value: number): string {
-  const absValue = Math.abs(value);
+  private formatValue(value: number): string {
+    const absValue = Math.abs(value);
 
-  if (absValue >= 1_000_000_000_000) return (value / 1_000_000_000_000).toFixed(1).replace('.0', '') + "T"; // Trilhões
-  if (absValue >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1).replace('.0', '') + "B";     // Bilhões
-  if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.0', '') + "M";           // Milhões
-  if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.0', '') + "K";               // Milhares
+    if (absValue >= 1_000_000_000_000)
+      return (value / 1_000_000_000_000).toFixed(1).replace(".0", "") + "T";
+    if (absValue >= 1_000_000_000)
+      return (value / 1_000_000_000).toFixed(1).replace(".0", "") + "B";
+    if (absValue >= 1_000_000)
+      return (value / 1_000_000).toFixed(1).replace(".0", "") + "M";
+    if (absValue >= 1_000)
+      return (value / 1_000).toFixed(1).replace(".0", "") + "K";
 
-  return value.toString(); // Valores abaixo de 1000 (1, 10, 100...)
-}
+    return value.toString();
+  }
   private formatNumber(value: number): string {
     return `R$ ${value.toLocaleString("pt-BR", {
       minimumFractionDigits: 2,

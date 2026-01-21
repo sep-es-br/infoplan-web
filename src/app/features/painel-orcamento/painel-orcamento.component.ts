@@ -48,6 +48,7 @@ interface IExecucaoOrcamentariaFilters {
   ano: number;
   mes?: number[];
   tipoFonte?: number[];
+  codPoder?: number[];
 }
 
 enum AvailableFilters {
@@ -58,7 +59,7 @@ enum AvailableFilters {
 
 const DEFAULT_EXECUCAO_ORCAMENTARIA_REQUEST_PARAMS: IExecucaoOrcamentariaRequest =
 {
-  ano: 2023,
+  ano: 2026,
   mes: [-1],
   tipoFonte: [-1],
 };

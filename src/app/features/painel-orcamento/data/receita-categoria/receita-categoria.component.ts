@@ -91,16 +91,14 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
     this._painelService
       .getReceitaPorCategoria(this.filter)
-      .pipe(
-        takeUntil(this.destroy$)
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           // Backend já retorna array, não precisa de normalização
           this.receitaData = response;
           this.processarDados();
 
-         this.requestStatus = RequestStatus.SUCCESS;
+          this.requestStatus = RequestStatus.SUCCESS;
         },
         error: (err) => {
           console.error("Erro ao carregar receita categoria:", err);
@@ -124,7 +122,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       this.charData = this._chartProcessor.processarDadosComparativo(
         this.receitaData,
         "categoria",
-        "Receita Líquida"
+        "Receita Líquida",
       );
 
       // Processar tabela
@@ -139,7 +137,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
   private processTable(): void {
     const anos = [...new Set(this.receitaData.map((item) => item.ano))].sort(
-      (a, b) => a - b
+      (a, b) => a - b,
     );
     const categorias = [
       ...new Set(this.receitaData.map((item) => item.categoria)),
@@ -151,17 +149,16 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       // Adicionar colunas de anos
       anos.forEach((ano) => {
         const dado = this.receitaData.find(
-          (d) => d.categoria === categoria && d.ano === ano
+          (d) => d.categoria === categoria && d.ano === ano,
         );
+        const valorReceitaLiquida = dado?.receitaLiquida || 0;
 
         nodeData.push({
           propertyName: `ano_${ano}`,
-          value: `${
-            dado?.receitaLiquida
-              .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-              .replace("R$", "")
-              .trim() || 0
-          }`,
+          value: `${valorReceitaLiquida
+            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+            .replace("R$", "")
+            .trim()}`,
         });
       });
 
@@ -177,6 +174,50 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       return { data: nodeData };
     });
 
+    // Criar linha de totais
+    const totalNodeData = [{ propertyName: "label", value: "Total" }];
+
+    anos.forEach((ano) => {
+      const totalAno = this.receitaData
+        .filter((d) => d.ano === ano)
+        .reduce((sum, d) => sum + d.receitaLiquida, 0);
+
+      totalNodeData.push({
+        propertyName: `ano_${ano}`,
+        value: `${totalAno
+          .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
+          .replace("R$", "")
+          .trim()}`,
+      });
+    });
+
+    // Adicionar variação total
+    if (anos.length >= 2) {
+      const totalAnoAnterior = this.receitaData
+        .filter((d) => d.ano === anos[0])
+        .reduce((sum, d) => sum + d.receitaLiquida, 0);
+
+      const totalAnoAtual = this.receitaData
+        .filter((d) => d.ano === anos[anos.length - 1])
+        .reduce((sum, d) => sum + d.receitaLiquida, 0);
+
+      const variacaoTotal =
+        totalAnoAnterior !== 0
+          ? (
+              ((totalAnoAtual - totalAnoAnterior) / totalAnoAnterior) *
+              100
+            ).toFixed(2)
+          : "0.00";
+
+      totalNodeData.push({
+        propertyName: "variação",
+        value: `${variacaoTotal} %`,
+      });
+    }
+
+    // Adicionar linha de total aos dados
+    treeNodes.push({ data: totalNodeData });
+
     // Configurar colunas
     const defaultColumns = anos.map((ano) => ({
       propertyName: `ano_${ano}`,
@@ -190,14 +231,13 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     if (anos.length >= 2) {
       defaultColumns.push({
         propertyName: "variação",
-        displayName: `Variação - ${anos[anos.length - 1]}`,
+        displayName: `Variação`,
         alignment: {
           header: FlipTableAlignment.CENTER,
           data: FlipTableAlignment.CENTER,
         },
       });
     }
-
     this.tableContent = {
       customColumn: {
         propertyName: "label",
@@ -219,12 +259,12 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
     const valorInicial =
       this.receitaData.find(
-        (d) => d.categoria === categoria && d.ano === primeiroAno
+        (d) => d.categoria === categoria && d.ano === primeiroAno,
       )?.receitaLiquida ?? 0;
 
     const valorFinal =
       this.receitaData.find(
-        (d) => d.categoria === categoria && d.ano === ultimoAno
+        (d) => d.categoria === categoria && d.ano === ultimoAno,
       )?.receitaLiquida ?? 0;
 
     if (valorInicial === 0) return 0;
@@ -235,78 +275,70 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
   }
 
   handleTableDownload(): void {
-    if (!this.receitaData?.length) return;
+    if (!this.tableContent) {
+      console.warn("Nenhum conteúdo de tabela disponível para download");
+      return;
+    }
 
-    // Extrair anos únicos e ordenar (igual no processTableData)
-    const anos = [...new Set(this.receitaData.map((item) => item.ano))]
-      .filter((ano) => ano != null)
-      .sort();
+    // Extrair anos das colunas padrão
+    const anos = this.tableContent.defaultColumns
+      .filter((col) => col.propertyName.startsWith("ano_"))
+      .map((col) => parseInt(col.propertyName.replace("ano_", "")))
+      .sort((a, b) => a - b);
 
-    // Extrair categorias únicas
-    const categorias = [
-      ...new Set(this.receitaData.map((item) => item.categoria)),
-    ].filter(Boolean);
+    // Verificar se existe coluna de variação
+    const temVariacao = this.tableContent.defaultColumns.some(
+      (col) => col.propertyName === "variação",
+    );
 
-    // Criar colunas
+    // Criar colunas para o Excel
     const columns = [
-      { key: "categoria", label: "Principais Origens de Receita" },
+      {
+        key: "categoria",
+        label:
+          this.tableContent.customColumn.displayName || "Categoria Econômica",
+      },
       ...anos.map((ano) => ({
         key: `ano_${ano}`,
-        label: `Arrecadação LI - ${ano}`,
+        label: `Arrecadação Líquida - ${ano}`,
       })),
     ];
 
-    if (anos.length >= 2) {
-      columns.push({ key: "variacao", label: "Variação" });
+    if (temVariacao) {
+      const ultimoAno = anos[anos.length - 1];
+      columns.push({
+        key: "variacao",
+        label: `Variação - ${ultimoAno}`,
+      });
     }
 
-    // Criar dados para download usando os valores brutos
-    const dataForDownload = categorias.map((categoria) => {
-      const row: any = { categoria };
+    // Criar dados para download a partir de tableContent.data
+    const dataForDownload = this.tableContent.data.map((node) => {
+      const row: any = {};
 
-      anos.forEach((ano) => {
-        const item = this.receitaData.find(
-          (d) => d.categoria === categoria && d.ano === ano
-        );
-        row[`ano_${ano}`] = `${
-          item?.receitaLiquida
-            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-            .replace("R$", "")
-            .trim() || 0
-        }`;
+      // Processar cada propriedade do nó
+      node.data.forEach((prop) => {
+        if (prop.propertyName === "label") {
+          row["categoria"] = prop.value;
+        } else if (prop.propertyName.startsWith("ano_")) {
+          row[prop.propertyName] = prop.value;
+        } else if (prop.propertyName === "variação") {
+          row["variacao"] = prop.value;
+        }
       });
-
-      if (anos.length >= 2) {
-        const primeiroAno = anos[0];
-        const ultimoAno = anos[anos.length - 1];
-
-        const valorInicial =
-          this.receitaData.find(
-            (d) => d.categoria === categoria && d.ano === primeiroAno
-          )?.receitaLiquida ?? 0;
-
-        const valorFinal =
-          this.receitaData.find(
-            (d) => d.categoria === categoria && d.ano === ultimoAno
-          )?.receitaLiquida ?? 0;
-
-        const variacao =
-          valorInicial !== 0
-            ? ((valorFinal - valorInicial) / valorInicial) * 100
-            : 0;
-
-        row["variacao"] = `${variacao.toFixed(2)} %`;
-      }
 
       return row;
     });
 
-    const anoAtual = new Date().getFullYear();
-    const fileName = `Receita_Realizada_Origem_${anoAtual}.xlsx`;
+    // Gerar nome do arquivo
+    const anoAtual = anos[1];
+    const fileName = `Receita_Por_Categoria_${anoAtual}.xlsx`;
+
+    // Exportar
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      `Receita_Categoria_${anoAtual}.xlsx`
+      fileName,
     );
   }
 }

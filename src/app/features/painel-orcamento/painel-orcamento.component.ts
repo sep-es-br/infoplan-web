@@ -48,7 +48,6 @@ interface IExecucaoOrcamentariaFilters {
   ano: number;
   mes?: number[];
   tipoFonte?: number[];
-  codPoder?: number[];
 }
 
 enum AvailableFilters {

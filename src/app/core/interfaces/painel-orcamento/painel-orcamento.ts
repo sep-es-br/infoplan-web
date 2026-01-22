@@ -4,7 +4,7 @@ export interface IExecucaoOrcamentariaRequest {
   tipoFonte: number[];
   uo?: string;
   po?: string;
-  codPoder?: any
+  codPoder?: string
 }
 
 export interface IReceitaTotalOrcamentariaResponse {

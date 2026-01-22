@@ -32,7 +32,7 @@ import { ChartDataConfig } from "../../org-chart-bar/org-chart-horizontal/org-ch
   styleUrls: ["./receita-despesa-gnd-total.component.scss"],
 })
 export class ReceitaDespesaGndTotalComponent
-  implements OnChanges, OnDestroy, OnInit
+  implements OnChanges, OnDestroy
 {
   @Input() filter: IExecucaoOrcamentariaRequest;
 
@@ -67,23 +67,18 @@ export class ReceitaDespesaGndTotalComponent
   public toggleExecutivo = true;
   public toggleDemaisPoderes = true;
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
       this.loadData();
     }
   }
 
-  ngOnInit(): void {
-    if (!this.filter.codPoder) {
-      this.filter.codPoder = "-1";
-    }
-    this.getReceitaDespesaGNDTotal();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
 
   public onToggleChange(toggle: "executivo" | "demaisPoderes"): void {
     if (!this.toggleExecutivo && !this.toggleDemaisPoderes) {
@@ -96,6 +91,7 @@ export class ReceitaDespesaGndTotalComponent
     }
 
     this.updateFilterPoderes();
+    this.getReceitaDespesaGNDTotal();
   }
 
   private updateFilterPoderes(): void {

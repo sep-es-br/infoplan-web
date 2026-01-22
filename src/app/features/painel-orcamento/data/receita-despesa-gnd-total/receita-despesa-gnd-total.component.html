@@ -20,6 +20,7 @@
       <input
         class="form-check-input"
         [(ngModel)]="toggleExecutivo"
+        [disabled]="toggleExecutivo && !toggleDemaisPoderes"
         (ngModelChange)="onToggleChange('executivo')"
         type="checkbox"
         role="switch"
@@ -35,7 +36,7 @@
         class="form-check-input"
         [(ngModel)]="toggleDemaisPoderes"
         (ngModelChange)="onToggleChange('demaisPoderes')"
-        [disabled]="!toggleExecutivo"
+        [disabled]="toggleExecutivo && !toggleExecutivo"
         type="checkbox"
         role="switch"
         id="flexSwitchCheckChecked"

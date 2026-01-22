@@ -175,7 +175,8 @@ export class PainelOrcamentoService {
           ? execucaoOrcamentaria.mes.join(",")
           : String(execucaoOrcamentaria.mes)
       )
-      .set("codPoder", execucaoOrcamentaria.codPoder)
+      .set("codPoder", execucaoOrcamentaria.codPoder !== undefined 
+        ? execucaoOrcamentaria.codPoder : "-1")
       .set("tipoFonte", String(execucaoOrcamentaria.tipoFonte));
 
     if (execucaoOrcamentaria.uo) {

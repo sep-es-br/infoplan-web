@@ -33,7 +33,7 @@ import { RequestStatus } from "../../../strategic-projects/strategicProjects.com
   styleUrls: ["./receita-despesa-gnd.component.scss"],
 })
 export class ReceitaDespesaGndComponent
-  implements OnChanges, OnDestroy, OnInit
+  implements OnChanges, OnDestroy
 {
   @Input() filter: IExecucaoOrcamentariaRequest;
 
@@ -68,13 +68,6 @@ export class ReceitaDespesaGndComponent
   dataReceitaDespesaGNDOrcamentariaCards:
     | IReceitaDespesaGNDOrcamentariaResponse[]
     | null = [];
-
-  ngOnInit(): void {
-    if (!this.filter.codPoder) {
-      this.filter.codPoder = "-1";
-    }
-    this.getReceitaDespesaGND();
-  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -112,7 +105,7 @@ export class ReceitaDespesaGndComponent
       .subscribe({
         next: (res: IReceitaDespesaGNDOrcamentariaResponse[]) => {
           this.receitaDespesaOrcamento = res;
-          this.processData();
+          this.processData(this.receitaDespesaOrcamento);
           this.requestStatus = RequestStatus.SUCCESS;
         },
         error: (err) => {
@@ -134,6 +127,7 @@ export class ReceitaDespesaGndComponent
     }
 
     this.updateFilterPoderes();
+    this.getReceitaDespesaGND();
   }
 
   private updateFilterPoderes(): void {
@@ -154,8 +148,8 @@ export class ReceitaDespesaGndComponent
     return this.toggleExecutivo || this.toggleDemaisPoderes;
   }
 
-  private processData(): void {
-    const chartData: IChartOptions = this.processChartData();
+  private processData(data: IReceitaDespesaGNDOrcamentariaResponse[]): void {
+    const chartData: IChartOptions = this.processChartData(data);
     let dadosFiltrados = [...this.receitaDespesaOrcamento];
 
     if (chartData) {
@@ -167,9 +161,9 @@ export class ReceitaDespesaGndComponent
     }
   }
 
-  private processChartData(): IChartOptions {
+  private processChartData(data: IReceitaDespesaGNDOrcamentariaResponse[]): IChartOptions {
     return this._chartProcessor.criarChartLiquidadoEPago(
-      this.receitaDespesaOrcamento,
+      data,
       "nome_gnd",
       "Despesas por GND",
     );

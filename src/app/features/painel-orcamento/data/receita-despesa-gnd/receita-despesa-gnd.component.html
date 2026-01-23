@@ -1,7 +1,7 @@
 <ngx-flip-table
   [cardTitle]="title"
   [tableContent]="tableContent"
-  [showSearchField]="true"
+  [showSearchField]="false"
   (executeDownload)="handleTableDownload()"
   [loadingStatus]="requestStatus"
   [subCardTitle]=""
@@ -11,32 +11,6 @@
     onMaximizeButtonClick('receita-despesa-gnd', $event)
   "
 >
-  <!-- <div card-toggles #cardToggles>
-    <div class="toggles-container small-toggle">
-      <nb-toggle
-        [(checked)]="toggleExecutivo"
-        (checkedChange)="onToggleChange('executivo')"
-        [disabled]="toggleExecutivo && !toggleDemaisPoderes"
-        status="basic"
-        labelPosition="start"
-        size="small"
-      >
-        Executivo
-      </nb-toggle>
-
-      <nb-toggle
-        [(checked)]="toggleDemaisPoderes"
-        (checkedChange)="onToggleChange('demaisPoderes')"
-        [disabled]="toggleDemaisPoderes && !toggleExecutivo"
-        status="basic"
-        labelPosition="start"
-        size="small"
-      >
-        Demais Poderes
-      </nb-toggle>
-    </div>
-  </div> -->
-
   <div
     class="toggles-container small-toggle"
     card-toggles #cardToggles

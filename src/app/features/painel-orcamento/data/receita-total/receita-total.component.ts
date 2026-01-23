@@ -6,10 +6,8 @@ import {
   SimpleChanges,
   OnDestroy,
   inject,
-  Inject,
   Output,
   EventEmitter,
-  OnInit,
 } from "@angular/core";
 import { Subject, Subscription } from "rxjs";
 import { takeUntil, finalize } from "rxjs/operators";
@@ -23,12 +21,15 @@ import { ChartDataProcessorService } from "../../../../core/service/painel-orcam
 import {
   FlipTableAlignment,
   FlipTableContent,
+  TreeNode,
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ShortNumberPipe } from "../../../../shared/components/pipe/shortNumber-pipe";
 import { ComunicationCardsService } from "../../../../core/service/comunication-cards/comunication-cards.service";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 import { ChartDataConfig } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { converterToNumber, formatCurrency } from "../../../../@core/utils/functionts/functionts";
+import { UtilitiesService } from "../../../../core/service/utilities.service";
 
 interface ITableRow {
   label: string;
@@ -56,6 +57,8 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _comunicationCardsService = inject(ComunicationCardsService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly _utilitiesService = inject(UtilitiesService);
+
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   private responseData: IReceitaTotalOrcamentariaResponse[] | null = null;
@@ -136,7 +139,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
   private processTableData(
     dados:
       | IReceitaTotalOrcamentariaResponse
-      | IReceitaTotalOrcamentariaResponse[]
+      | IReceitaTotalOrcamentariaResponse[],
   ): void {
     const dadosArray = Array.isArray(dados) ? dados : [dados];
     const ano = dadosArray[0]?.ano || 2025;
@@ -150,27 +153,22 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
         {
           label: "Arrecadação Líquida",
           valorNumerico: arrecadacao,
-          valorFormatado: this.formatCurrency(arrecadacao),
+          valorFormatado: this._utilitiesService.formatCurrencyUsingBrazilianStandards(arrecadacao, "R$"),
         },
         {
           label: "Previsão Inicial Líquida",
           valorNumerico: previsao,
-          valorFormatado: this.formatCurrency(previsao),
+          valorFormatado: this._utilitiesService.formatCurrencyUsingBrazilianStandards(previsao, "R$"),
         },
       ];
 
       itensPrincipais.sort((a, b) => b.valorNumerico - a.valorNumerico);
 
       const listaOrdenada = [
-        {
-          label: "Receita Realizada/Prevista",
-          valor: `${percentual.toFixed(2)} %`,
-        },
         ...itensPrincipais.map((i) => ({
           label: i.label,
           valor: i.valorFormatado,
-        })),
-        { label: "Exercício", valor: item.ano || 2025 },
+        }))
       ];
 
       return listaOrdenada.map((linha) => ({
@@ -202,14 +200,6 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
       ],
       data: treeNodes,
     };
-  }
-
-  // Função auxiliar para não repetir código de formatação
-  private formatCurrency(valor: number): string {
-    return valor
-      .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-      .replace("R$", "")
-      .trim();
   }
 
   handleTableSearch(query: string): void {
@@ -248,7 +238,7 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
           receitaPrevista.toLowerCase().includes(search) ||
           percentual.includes(search)
         );
-      }
+      },
     );
 
     this.processTableData(filtered);
@@ -275,17 +265,22 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
       })),
     ];
 
-    const dataForDownload = this.tableContent.data.map((node) => {
+    const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};
 
       node.data.forEach((item) => {
-        if (item.propertyName != "Exercício") {
-          row[item.propertyName] = item.value
-            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-            .replace("R$", "")
-            .trim();
+        const { propertyName, value } = item;
+
+        row[propertyName] = value;
+
+        if (propertyName === "Exercício" || typeof value !== "string") {
+          return;
         }
-        row[item.propertyName] = item.value;
+
+        const numeroConvertido = converterToNumber(value);
+        if (numeroConvertido !== null) {
+          row[propertyName] = numeroConvertido;
+        }
       });
 
       return row;
@@ -293,13 +288,13 @@ export class ReceitaTotalComponent implements OnChanges, OnDestroy {
 
     const anoAtual =
       dataForDownload.find(
-        (item: { label: string; valor: any }) => item.label === "Exercício"
+        (item: { label: string; valor: any }) => item.label === "Exercício",
       )?.valor || new Date().getFullYear();
 
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      `Receita_Realizada_Prevista_${anoAtual}.xlsx`
+      `Receita_Realizada_Prevista_${anoAtual}.xlsx`,
     );
   }
 }

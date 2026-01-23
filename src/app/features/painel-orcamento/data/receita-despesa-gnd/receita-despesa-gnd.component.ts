@@ -26,6 +26,8 @@ import { finalize, takeUntil } from "rxjs/operators";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 import { ChartDataConfig } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
+import { UtilitiesService } from "../../../../core/service/utilities.service";
+import { converterToNumber, replacePorcentage } from "../../../../@core/utils/functionts/functionts";
 
 @Component({
   selector: "ngx-receita-despesa-gnd",
@@ -47,6 +49,7 @@ export class ReceitaDespesaGndComponent
   private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly _utilitiesService = inject(UtilitiesService);
   private readonly destroy$ = new Subject<void>();
 
   public toggleExecutivo = true;
@@ -180,6 +183,7 @@ export class ReceitaDespesaGndComponent
     const categoriasBase = [
       ...new Set(dados.map((item) => item.nome_gnd)),
     ].filter(Boolean);
+
     const anos = [...new Set(dados.map((item) => item.ano))]
       .filter((a) => a != null)
       .sort();
@@ -221,18 +225,14 @@ export class ReceitaDespesaGndComponent
 
         nodeData.push({
           propertyName: `Despesa Liquidada - ${ano}`,
-          value: valores.liq.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }),
+          value: this._utilitiesService
+            .formatCurrencyUsingBrazilianStandards(valores.liq, "R$")
         });
 
         nodeData.push({
           propertyName: `Pago com RAP - ${ano}`,
-          value: valores.pago.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }),
+          value: this._utilitiesService
+            .formatCurrencyUsingBrazilianStandards( valores.pago, "R$")
         });
       });
 
@@ -253,7 +253,7 @@ export class ReceitaDespesaGndComponent
             anos,
             dados,
             "pago_rap",
-          )} %`,
+          )}%`,
         });
       }
 
@@ -281,18 +281,12 @@ export class ReceitaDespesaGndComponent
 
       totalNodeData.push({
         propertyName: `Despesa Liquidada - ${ano}`,
-        value: totaisAno.liq.toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }),
+        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totaisAno.liq, "R$"),
       });
 
       totalNodeData.push({
         propertyName: `Pago com RAP - ${ano}`,
-        value: totaisAno.pago.toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }),
+        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totaisAno.pago, "R$")
       });
     });
 
@@ -338,12 +332,12 @@ export class ReceitaDespesaGndComponent
 
       totalNodeData.push({
         propertyName: "Variação Liquidado",
-        value: `${variacaoLiquidado} %`,
+        value: `${variacaoLiquidado}%`,
       });
 
       totalNodeData.push({
         propertyName: "Variação Pago RAP",
-        value: `${variacaoPago} %`,
+        value: `${variacaoPago}%`,
       });
     }
 
@@ -451,7 +445,7 @@ export class ReceitaDespesaGndComponent
       .sort((a, b) => a - b);
 
     const temVariacao = this.tableContent.defaultColumns.some(
-      (col) => col.propertyName === "Variação Liquidado (%)",
+      (col) => col.propertyName === "Variação Liquidado",
     );
 
     const columns = [
@@ -477,24 +471,27 @@ export class ReceitaDespesaGndComponent
       );
     }
 
-    const dataForDownload = this.tableContent.data.map((node) => {
+    const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};
 
-      node.data.forEach((prop) => {
-        if (prop.propertyName === "categoria") {
-          row["categoria"] = prop.value;
-        } else if (prop.propertyName.startsWith("Despesa Liquidada -")) {
-          const ano = prop.propertyName
+      node.data.forEach((prop: { propertyName: string, value: string | "" }) => {
+
+        const  { propertyName, value } =  prop;
+
+        if (propertyName === "categoria") {
+          row["categoria"] = value;
+        } else if (propertyName.startsWith("Despesa Liquidada -")) {
+          const ano = propertyName
             .replace("Despesa Liquidada -", "")
             .trim();
-          row[`liquidado_${ano}`] = prop.value;
-        } else if (prop.propertyName.startsWith("Pago com RAP -")) {
-          const ano = prop.propertyName.replace("Pago com RAP -", "").trim();
-          row[`pago_rap_${ano}`] = prop.value;
-        } else if (prop.propertyName === "Variação Liquidado (%)") {
-          row["variacao_liquidado"] = prop.value;
-        } else if (prop.propertyName === "Variação Pago RAP (%)") {
-          row["variacao_pago_rap"] = prop.value;
+          row[`liquidado_${ano}`] = converterToNumber(value);
+        } else if (propertyName.startsWith("Pago com RAP -")) {
+          const ano = propertyName.replace("Pago com RAP -", "").trim();
+          row[`pago_rap_${ano}`] = converterToNumber(value);;
+        } else if (propertyName === "Variação Liquidado") {
+          row["variacao_liquidado"] = replacePorcentage(value);;
+        } else if (propertyName === "Variação Pago RAP") {
+          row["variacao_pago_rap"] = replacePorcentage(value);;
         }
       });
 

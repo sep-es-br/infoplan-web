@@ -15,6 +15,7 @@ import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChart
 import {
   FlipTableAlignment,
   FlipTableContent,
+  TreeNode,
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { PainelOrcamentoService } from "../../../../core/service/painel-orcamento/painel-orcamento.service";
 import { ChartDataProcessorService } from "../../../../core/service/painel-orcamento/chart-data-processor.service";
@@ -25,15 +26,16 @@ import { ComunicationCardsService } from "../../../../core/service/comunication-
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 import { ChartDataConfig } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { UtilitiesService } from "../../../../core/service/utilities.service";
+import { Value } from "sass";
+import { converterToNumber } from "../../../../@core/utils/functionts/functionts";
 
 @Component({
   selector: "ngx-receita-despesa-gnd-total",
   templateUrl: "./receita-despesa-gnd-total.component.html",
   styleUrls: ["./receita-despesa-gnd-total.component.scss"],
 })
-export class ReceitaDespesaGndTotalComponent
-  implements OnChanges, OnDestroy
-{
+export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
   @Input() filter: IExecucaoOrcamentariaRequest;
 
   readonly title: string = "Despesa Prevista x Executada";
@@ -62,23 +64,22 @@ export class ReceitaDespesaGndTotalComponent
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _comunicationCardsService = inject(ComunicationCardsService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly _utilitiesService = inject(UtilitiesService);
   private readonly destroy$ = new Subject<void>();
 
   public toggleExecutivo = true;
   public toggleDemaisPoderes = true;
-
+  recentYear: number = 0;
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
       this.loadData();
     }
   }
-
 
   public onToggleChange(toggle: "executivo" | "demaisPoderes"): void {
     if (!this.toggleExecutivo && !this.toggleDemaisPoderes) {
@@ -106,6 +107,8 @@ export class ReceitaDespesaGndTotalComponent
 
     this.filter.codPoder = poderes.join(",");
     this.getReceitaDespesaGNDTotal();
+    console.log("UPDATE FOI ACIONADO ", this.getReceitaDespesaGNDTotal());
+    this.processTableData(this.receitaDespesaGNDTotal);
   }
 
   public isAtLeastOneToggleActive(): boolean {
@@ -146,7 +149,7 @@ export class ReceitaDespesaGndTotalComponent
         next: (res: IReceitaDespesaGNDTotalOrcamentariaResponse[]) => {
           this.receitaDespesaGNDTotal = res;
           this._comunicationCardsService.sendReceitaDespesaGNDOrcamentaria(res);
-          this.processData();
+          this.processData(res);
         },
         error: (err) => {
           console.error("Erro ao carregar receita despesa GND total:", err);
@@ -156,11 +159,13 @@ export class ReceitaDespesaGndTotalComponent
       });
   }
 
-  private processData(): void {
+  private processData(
+    response: IReceitaDespesaGNDTotalOrcamentariaResponse[],
+  ): void {
     const chartData: IChartOptions | null = this.processChartData();
     if (chartData) {
       this.chartData = chartData;
-      this.processTableData(this.receitaDespesaGNDTotal);
+      this.processTableData(response);
     } else {
       this.chartData = { data: { labels: [], datasets: [] } };
       this.tableContent = null;
@@ -176,15 +181,18 @@ export class ReceitaDespesaGndTotalComponent
   }
 
   private processTableData(
-    dados:
-      | IReceitaDespesaGNDTotalOrcamentariaResponse
-      | IReceitaDespesaGNDTotalOrcamentariaResponse[],
+    dados: IReceitaDespesaGNDTotalOrcamentariaResponse[],
   ): void {
-    const currentYear = new Date().getFullYear();
-    const dadosArray = (Array.isArray(dados) ? dados : [dados]).filter(
-      (item) => item.ano === currentYear,
-    );
-    const ano = currentYear;
+    const anosArray = dados
+      .map((item) => item.ano)
+      .filter((a) => a != null)
+      .sort((a, b) => b - a);
+
+    const anoMaisRecente = anosArray.length > 0 ? anosArray[0] : "Período";
+
+    const dadosAnoAtual = dados
+      .filter((item) => item.ano === anoMaisRecente)
+      .sort((a, b) => b.vlr_liquidado - a.vlr_liquidado);
 
     let totalOrcado = 0;
     let totalAutorizado = 0;
@@ -192,7 +200,7 @@ export class ReceitaDespesaGndTotalComponent
     let totalLiquidado = 0;
     let totalPagoComRap = 0;
 
-    dadosArray.forEach((item) => {
+    dadosAnoAtual.forEach((item) => {
       totalOrcado += Number(item.vlr_orcado) || 0;
       totalAutorizado += Number(item.vlr_autorizado) || 0;
       totalEmpenhado += Number(item.vlr_empenhado) || 0;
@@ -200,8 +208,9 @@ export class ReceitaDespesaGndTotalComponent
       totalPagoComRap += Number(item.vlr_pago_com_rap) || 0;
     });
 
-    const treeNodes = dadosArray
+    const treeNodes = dadosAnoAtual
       .map((item) => {
+        this.recentYear = item.ano;
         const orcado = Number(item.vlr_orcado) || 0;
         const autorizado = Number(item.vlr_autorizado) || 0;
         const empenhado = Number(item.vlr_empenhado) || 0;
@@ -217,7 +226,11 @@ export class ReceitaDespesaGndTotalComponent
               },
               {
                 propertyName: "valor",
-                value: `${orcado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim()}`,
+                value:
+                  this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+                    orcado,
+                    "R$",
+                  ),
               },
             ],
           },
@@ -226,7 +239,11 @@ export class ReceitaDespesaGndTotalComponent
               { propertyName: "label", value: "Autorizado" },
               {
                 propertyName: "valor",
-                value: `${autorizado.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim()}`,
+                value:
+                  this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+                    autorizado,
+                    "R$",
+                  ),
               },
             ],
           },
@@ -235,7 +252,11 @@ export class ReceitaDespesaGndTotalComponent
               { propertyName: "label", value: "Empenhado" },
               {
                 propertyName: "valor",
-                value: `${empenhado.toLocaleString("pt-BR")}`,
+                value:
+                  this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+                    empenhado,
+                    "R$",
+                  ),
               },
             ],
           },
@@ -244,7 +265,11 @@ export class ReceitaDespesaGndTotalComponent
               { propertyName: "label", value: "Liquidado" },
               {
                 propertyName: "valor",
-                value: `${liquidado.toLocaleString("pt-BR")}`,
+                value:
+                  this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+                    liquidado,
+                    "R$",
+                  ),
               },
             ],
           },
@@ -253,7 +278,11 @@ export class ReceitaDespesaGndTotalComponent
               { propertyName: "label", value: "Pago com RAP" },
               {
                 propertyName: "valor",
-                value: `${pagoComRap.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim()}`,
+                value:
+                  this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+                    pagoComRap,
+                    "R$",
+                  ),
               },
             ],
           },
@@ -261,33 +290,30 @@ export class ReceitaDespesaGndTotalComponent
       })
       .flat();
 
-    // Adicionar linha de TOTAL
-    treeNodes.push({
-      data: [
-        {
-          propertyName: "label",
-          value: "Total",
-        },
-        {
-          propertyName: "valor",
-          value: `${(
-            totalOrcado +
-            totalAutorizado +
-            totalEmpenhado +
-            totalLiquidado +
-            totalPagoComRap
-          )
-            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-            .replace("R$", "")
-            .trim()}`,
-        },
-      ],
-    });
+    // treeNodes.push({
+    //   data: [
+    //     {
+    //       propertyName: "label",
+    //       value: "Total",
+    //     },
+    //     {
+    //       propertyName: "valor",
+    //       value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+    //           totalOrcado +
+    //           totalAutorizado +
+    //           totalEmpenhado +
+    //           totalLiquidado +
+    //           totalPagoComRap,
+    //         "R$",
+    //       ),
+    //     },
+    //   ],
+    // });
 
     this.tableContent = {
       customColumn: {
         propertyName: "label",
-        displayName: `Despesa Prevista x Executada - ${ano}`,
+        displayName: `Despesa Prevista x Executada ${anoMaisRecente} `,
         alignment: {
           header: FlipTableAlignment.LEFT,
           data: FlipTableAlignment.LEFT,
@@ -318,30 +344,33 @@ export class ReceitaDespesaGndTotalComponent
       })),
     ];
 
-    const dataForDownload = this.tableContent.data.map((node) => {
+    const anos = this.tableContent.defaultColumns
+      .filter((col) =>
+        col.propertyName.startsWith("Despesa Prevista x Executada "),
+      )
+      .map((col) =>
+        parseInt(
+          col.propertyName.replace("Despesa Prevista x Executada ", "").trim(),
+        ),
+      )
+      .sort((a, b) => a - b);
+    const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};
 
-      node.data.forEach((item) => {
-        // Para a coluna de valor, remove "R$ " e converte para número
-        if (item.propertyName === "valor") {
-          const valorLimpo = item.value
-            .replace("R$ ", "")
-            .replace(/\./g, "")
-            .replace(",", ".");
-          row[item.propertyName] =
-            parseFloat(valorLimpo)
-              .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-              .replace("R$", "")
-              .trim() || 0;
+      node.data.forEach((item: { propertyName: string; value: string }) => {
+        const { propertyName, value } = item;
+
+        if (propertyName === "valor") {
+          row[propertyName] = converterToNumber(value);
         } else {
-          row[item.propertyName] = item.value;
+          row[propertyName] = value;
         }
       });
 
       return row;
     });
 
-    const anoAtual = new Date().getFullYear();
+    const anoAtual = this.recentYear;
 
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,

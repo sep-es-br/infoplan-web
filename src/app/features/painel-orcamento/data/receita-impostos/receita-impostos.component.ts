@@ -26,6 +26,8 @@ import {
 import { ExportDataService } from "../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 import { ChartDataConfig, OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { UtilitiesService } from '../../../../core/service/utilities.service';
+import { converterToNumber, replacePorcentage } from '../../../../@core/utils/functionts/functionts';
 
 @Component({
   selector: "ngx-receita-impostos",
@@ -61,6 +63,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
   private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly _utilitiesService = inject(UtilitiesService);
   private readonly destroy$ = new Subject<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -164,7 +167,7 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
         const valor = item?.receitaLiquida || 0;
         nodeData.push({
           propertyName: `Arrecadação Líquida - ${ano.toString()}`,
-          value: `${valor.toLocaleString("pt-BR", { currency: "BRL", style: "currency" }).replace("R$", "").trim()}`,
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(valor, "R$")
         });
       });
 
@@ -172,7 +175,7 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
         const variacao = this.calcularVariacao(categoria, anos, dados);
         nodeData.push({
           propertyName: "variação",
-          value: `${variacao} %`,
+          value: `${variacao}%`,
         });
       }
 
@@ -198,10 +201,7 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
 
       totalNodeData.push({
         propertyName: `Arrecadação Líquida - ${ano.toString()}`,
-        value: `${totalAno
-          .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-          .replace("R$", "")
-          .trim()}`,
+        value:this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalAno, "R$"),
       });
     });
 
@@ -221,7 +221,7 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
 
       totalNodeData.push({
         propertyName: "variação",
-        value: `${variacaoTotal} %`,
+        value: `${variacaoTotal}%`,
       });
     }
 
@@ -328,19 +328,19 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
       columns.push({ key: "variacao", label: "Variação" });
     }
 
-    const dataForDownload = this.tableContent.data.map((node) => {
+    const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};
 
-      // Processar cada propriedade do nó
-      node.data.forEach((prop) => {
-        // CORREÇÃO: Usar "categoria" ao invés de "label"
-        if (prop.propertyName === "categoria") {
-          row["categoria"] = prop.value;
-        } else if (prop.propertyName.startsWith("Arrecadação Líquida -")) {
-          const ano = prop.propertyName.replace("Arrecadação Líquida -", "").trim();
-          row[`ano_${ano}`] = prop.value;
-        } else if (prop.propertyName === "variação") {
-          row["variacao"] = prop.value;
+      node.data.forEach((prop: {propertyName: string, value: any}) => {
+        const {propertyName, value} = prop;
+
+        if (propertyName === "categoria") {
+          row["categoria"] = value;
+        } else if (propertyName.startsWith("Arrecadação Líquida -")) {
+          const ano = propertyName.replace("Arrecadação Líquida -", "").trim();
+          row[`ano_${ano}`] = converterToNumber(value);
+        } else if (propertyName === "variação") {
+          row["variacao"] = replacePorcentage(value);
         }
       });
 

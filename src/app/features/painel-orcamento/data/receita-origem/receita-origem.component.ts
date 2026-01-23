@@ -30,6 +30,8 @@ import {
 } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 import { table } from "console";
+import { UtilitiesService } from "../../../../core/service/utilities.service";
+import { converterToNumber, replacePorcentage } from "../../../../@core/utils/functionts/functionts";
 
 @Component({
   selector: "ngx-receita-origem",
@@ -45,6 +47,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
   private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly _utilitiesService = inject(UtilitiesService);
 
   private readonly destroy$ = new Subject<void>();
 
@@ -159,10 +162,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `Arrecadação LI - ${ano.toString()}`,
-          value: `${valor
-            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-            .replace("R$", "")
-            .trim()}`,
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(valor, "R$"),
         });
       });
 
@@ -171,7 +171,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
         const variacao = this.calcularVariacao(categoria, anos, dados);
         nodeData.push({
           propertyName: "variação (%)",
-          value: `${variacao} %`,
+          value: `${variacao}%`,
         });
       }
 
@@ -197,10 +197,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
 
       totalNodeData.push({
         propertyName: `Arrecadação LI - ${ano.toString()}`,
-        value: `${totalAno
-          .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-          .replace("R$", "")
-          .trim()}`,
+        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalAno, "R$"),
       });
     });
 
@@ -338,19 +335,18 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
       });
     }
 
-    // Criar dados para download a partir de tableContent.data
-    const dataForDownload = this.tableContent.data.map((node) => {
+    const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};
 
-      // Processar cada propriedade do nó
-      node.data.forEach((prop) => {
-        if (prop.propertyName === "categoria") {
-          row["categoria"] = prop.value;
-        } else if (prop.propertyName.startsWith("Arrecadação LI -")) {
-          const ano = prop.propertyName.replace("Arrecadação LI -", "").trim();
-          row[`ano_${ano}`] = prop.value;
-        } else if (prop.propertyName === "variação (%)") {
-          row["variacao"] = prop.value;
+      node.data.forEach((prop: {propertyName: string, value: any}) => {
+        const {propertyName, value} = prop;
+        if (propertyName === "categoria") {
+          row["categoria"] = value;
+        } else if (propertyName.startsWith("Arrecadação LI -")) {
+          const ano = propertyName.replace("Arrecadação LI -", "").trim();
+          row[`ano_${ano}`] = converterToNumber(value);
+        } else if (propertyName === "variação (%)") {
+          row["variacao"] = replacePorcentage(value);
         }
       });
 

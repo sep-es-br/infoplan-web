@@ -6,89 +6,10 @@
   width: 100%;
   flex-wrap: wrap;
 
-  // ::ng-deep {
-  //   nb-toggle {
-  //     width: auto !important; // Impede que o toggle ocupe a largura total
-  //     display: inline-flex; // Alinha o botão e o texto de forma compacta
-
-  //     .toggle {
-  //       width: 40px !important;
-  //       height: 20px !important;
-  //       // margin-right: 12px !important; // Espaço entre o botão e o label
-  //     }
-
-  //     .toggle-switcher {
-  //       width: 20px;
-  //       height: 20px;
-  //     }
-
-  //     .toggle-switcher nb-icon,
-  //     nb-icon {
-  //       font-size: 9px !important;
-
-  //       width: 12px !important;
-
-  //       height: 12px !important;
-
-  //       svg {
-  //         display: flex;
-  //         justify-items: center;
-  //         width: 12px !important;
-
-  //         height: 12px !important;
-  //       }
-  //     }
-
-  //     .toggle-label {
-  //       margin-left: 0 !important; // Remove margens que podem causar deslocamento
-  //       white-space: nowrap; // Evita que o texto quebre e mude a altura do container
-  //     }
-  //   }
-  // }
-
-  ::ng-deep nb-toggle {
-    white-space: nowrap;
-    flex-shrink: 0;
-    .toggle {
-      width: 30px;
-      height: 10px;
-    }
-
-    .toggle-switcher {
-      width: 10px;
-    }
-
-    &.checked .toggle-switcher {
-      transform: translateX(20px);
-    }
-
-    .toggle-switcher nb-icon,
-    nb-icon {
-      font-size: 9px !important;
-
-      width: 12px !important;
-
-      height: 12px !important;
-
-      svg {
-        display: flex;
-        justify-items: center;
-        width: 12px !important;
-
-        height: 12px !important;
-      }
-    }
+    label {
+    font-size: 12px;
   }
 }
 
-@media (max-width: 768px) {
-  .toggles-container {
-    // justify-content: space-between;
-          .toggle-label {
-        margin-left: 0 !important; // Remove margens que podem causar deslocamento
-        white-space: nowrap; // Evita que o texto quebre e mude a altura do container
-        font-size: 7px;
-      }
-  }
-}
+
 

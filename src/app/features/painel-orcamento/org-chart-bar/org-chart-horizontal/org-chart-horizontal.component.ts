@@ -131,6 +131,9 @@ export class OrgChartHorizontalComponent
       xAxis: {
         axisLabel: {
           fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+          formatter: (value: number) => {
+            return this.formatValue(value);
+          },
         },
       },
       series: this.chart.data.datasets.map(() => ({
@@ -245,11 +248,12 @@ export class OrgChartHorizontalComponent
       xAxis: {
         type: "value",
         scale: true,
-        min:0,
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,
-          formatter: (v: number) => this.formatValue(v),
+          formatter: (value: number) => {
+            return this.formatValue(value);
+          },
         },
       },
 
@@ -261,14 +265,10 @@ export class OrgChartHorizontalComponent
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 9 : 11,
           margin: 15,
-          // Alinha o bloco de texto à direita para que ele "encoste" na linha do eixo
-          align: "right",
           lineHeight: 11,
-          verticalAlign: "middle",
-          width: isMobile ? 90 : 160,
+          width: 100,
           overflow: "breakAll", // Deixamos a quebra apenas para sua função
           formatter: (value: string) => {
-            // Passamos o limite dinâmico. 20-25 caracteres costuma ser o ideal.
             const limite = isMobile ? 15 : 20;
             return this.quebrarTexto(value, limite);
           },
@@ -283,8 +283,7 @@ export class OrgChartHorizontalComponent
         barCategoryGap: "20%",
         barGap: "20%",
         barMaxWidth: isMobile ? 15 : 25,
-        barMinWidth: 5,
-        barMinHeight: 15,
+        // barMinWidth: 5,
       })),
 
       dataZoom: [
@@ -349,17 +348,15 @@ export class OrgChartHorizontalComponent
     return lines.slice(0, 3).join("\n");
   }
 
-  private formatValue(value: number): string {
+  formatValue(value: number): string {
     const absValue = Math.abs(value);
 
     if (absValue >= 1_000_000_000_000)
-      return (value / 1_000_000_000_000).toFixed(1).replace(".0", "") + "T";
+      return (value / 1_000_000_000_000).toFixed(1) + "T";
     if (absValue >= 1_000_000_000)
-      return (value / 1_000_000_000).toFixed(1).replace(".0", "") + "B";
-    if (absValue >= 1_000_000)
-      return (value / 1_000_000).toFixed(1).replace(".0", "") + "M";
-    if (absValue >= 1_000)
-      return (value / 1_000).toFixed(1).replace(".0", "") + "K";
+      return (value / 1_000_000_000).toFixed(1) + "B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(1) + "K";
 
     return value.toString();
   }

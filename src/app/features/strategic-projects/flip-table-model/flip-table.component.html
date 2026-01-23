@@ -96,8 +96,8 @@
     </div>
   </nb-card-header>
 
-  <div class="card-header d-flex justify-content-between align-items-start p-2 px-3">
-      <ng-container *ngIf="hasToggleContent">
+  <div *ngIf="hasToggleContent" class="card-header d-flex justify-content-between align-items-start p-0 px-3">
+      <ng-container >
     <!-- <div class="card-toggle-section"> -->
       <ng-content select="[card-toggles]"></ng-content>
     <!-- </div> -->
@@ -227,8 +227,9 @@
                     ? column.alignment.data
                     : 'left',
                 }"
+                title="{{ getCellValue(row.data, column.propertyName) }}"
               >
-                {{ getCellValue(row.data, column.propertyName) }}
+                {{ getCellValueShort(row.data, column.propertyName) }}
               </td>
             </ng-container>
           </table>

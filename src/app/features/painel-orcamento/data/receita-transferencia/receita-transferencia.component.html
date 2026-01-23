@@ -1,5 +1,10 @@
-<ngx-flip-table [cardTitle]="title" [showSearchField]="true" [tableContent]="tableContent"
-  [loadingStatus]="requestStatus" (executeDownload)="handleTableDownload()" [backCardHeight]="350"
+<ngx-flip-table 
+  [cardTitle]="title" 
+  [showSearchField]="false" 
+  [tableContent]="tableContent"
+  [loadingStatus]="requestStatus" 
+  (executeDownload)="handleTableDownload()" 
+  [backCardHeight]="397"
   [showMaximizeButton]="true" (showMaximizeButtonClick)="onMaximizeButtonClick('receita-transferencia',$event)">
   <ngx-org-chart-horizontal
     [chart]="chartData"

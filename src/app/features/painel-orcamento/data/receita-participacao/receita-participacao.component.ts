@@ -26,6 +26,8 @@ import {
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
 import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 import { IChartOptions } from "../../../../shared/models/painel-orcamento/IChartOptions";
+import { UtilitiesService } from "../../../../core/service/utilities.service";
+import { converterToNumber } from "../../../../@core/utils/functionts/functionts";
 
 @Component({
   selector: "ngx-receita-participacao",
@@ -60,6 +62,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly _utilitiesService = inject(UtilitiesService);
 
   private readonly destroy$ = new Subject<void>();
 
@@ -161,10 +164,8 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
         const valor = mapaValores.get(`${categoria}_${ano}`) || 0;
         nodeData.push({
           propertyName: `ano_${ano}`,
-          value: valor.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }),
+          value: this._utilitiesService
+          .formatCurrencyUsingBrazilianStandards(valor, "R$"),
         });
       });
 
@@ -190,10 +191,8 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
 
       totalNodeData.push({
         propertyName: `ano_${ano}`,
-        value: totalAno.toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }),
+        value: this._utilitiesService
+          .formatCurrencyUsingBrazilianStandards(totalAno, "R$"),
       });
     });
 
@@ -242,9 +241,8 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
     const years = this.filterYears(data);
     const columns = this.columns(years, data);
 
-    const dataForDownload = this.dataForDownload(years, columns);
+    const dataForDownload = this.dataForDownload(data);
 
-    // Gerar nome do arquivo usando os anos buscados
     const anoInicial = years[1];
     const fileName = `Receita_Realizada_ICMS_${anoInicial}.xlsx`;
 
@@ -255,8 +253,8 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
     );
   }
 
-  private filterYears(data: FlipTableContent): number[] {
-    return this.tableContent.defaultColumns
+  private filterYears(tableContent: FlipTableContent): number[] {
+    return tableContent.defaultColumns
       .filter((col) => col.propertyName.startsWith("ano_"))
       .map((col) => parseInt(col.propertyName.replace("ano_", "").trim()))
       .sort((a, b) => a - b);
@@ -281,18 +279,19 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
   }
 
   private dataForDownload(
-    years: number[],
-    columns: { key: string; label: string }[],
-  ): any[] {
-    return this.tableContent.data.map((node) => {
+    tableContent: FlipTableContent
+  ): FlipTableContent[] {
+    return tableContent.data.map((node: TreeNode) => {
       const row: any = {};
 
-      node.data.forEach((prop) => {
+      node.data.forEach((prop: {propertyName: string, value: any}) => {
+        const {propertyName, value} = prop;
+
         console.log("result: ", prop);
-        if (prop.propertyName === "categoria") {
-          row["categoria"] = prop.value;
-        } else if (prop.propertyName.startsWith("ano_")) {
-          row[prop.propertyName] = prop.value;
+        if (propertyName === "categoria") {
+          row["categoria"] = value;
+        } else if (propertyName.startsWith("ano_")) {
+          row[propertyName] = converterToNumber(value);
         }
       });
 

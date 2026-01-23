@@ -19,6 +19,7 @@ import {
   FlipTableAlignment,
   FlipTableComponent,
   FlipTableContent,
+  TreeNode,
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
@@ -27,6 +28,8 @@ import {
   OrgChartHorizontalComponent,
 } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
+import { UtilitiesService } from "../../../../core/service/utilities.service";
+import { converterToNumber, replacePorcentage } from "../../../../@core/utils/functionts/functionts";
 
 @Component({
   selector: "ngx-receita-categoria",
@@ -44,6 +47,8 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
   private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly _utilitiesService = inject(UtilitiesService);
+
   private readonly destroy$ = new Subject<void>();
 
   charData: IChartOptions;
@@ -155,10 +160,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `ano_${ano}`,
-          value: `${valorReceitaLiquida
-            .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-            .replace("R$", "")
-            .trim()}`,
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(valorReceitaLiquida, "R$"),
         });
       });
 
@@ -167,7 +169,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
         const variacao = this.calcularVariacao(categoria, anos);
         nodeData.push({
           propertyName: "variação",
-          value: `${variacao} %`,
+          value: `${variacao}%`,
         });
       }
 
@@ -184,10 +186,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
       totalNodeData.push({
         propertyName: `ano_${ano}`,
-        value: `${totalAno
-          .toLocaleString("pt-BR", { currency: "BRL", style: "currency" })
-          .replace("R$", "")
-          .trim()}`,
+        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalAno, "R$"),
       });
     });
 
@@ -211,7 +210,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
       totalNodeData.push({
         propertyName: "variação",
-        value: `${variacaoTotal} %`,
+        value: `${variacaoTotal}%`,
       });
     }
 
@@ -312,18 +311,19 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       });
     }
 
-    // Criar dados para download a partir de tableContent.data
-    const dataForDownload = this.tableContent.data.map((node) => {
+    const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};
-
+      console.log("nodes ", node)
       // Processar cada propriedade do nó
-      node.data.forEach((prop) => {
-        if (prop.propertyName === "label") {
-          row["categoria"] = prop.value;
-        } else if (prop.propertyName.startsWith("ano_")) {
-          row[prop.propertyName] = prop.value;
-        } else if (prop.propertyName === "variação") {
-          row["variacao"] = prop.value;
+      node.data.forEach((prop: {propertyName: string, value: any}) => {
+        const { propertyName, value} = prop;
+
+        if (propertyName === "label") {
+          row["categoria"] = value;
+        } else if (propertyName.startsWith("ano_")) {
+          row[propertyName] = converterToNumber(value);
+        } else if (propertyName === "variação") {
+          row["variacao"] = replacePorcentage(value);
         }
       });
 

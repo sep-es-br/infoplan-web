@@ -1,8 +1,34 @@
 import { NgClass, NgFor, NgIf } from "@angular/common";
-import { ChangeDetectorRef, Component, ContentChild, ElementRef, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges, ViewChild } from "@angular/core";
-import { NbBadgeModule, NbCardModule, NbColumnsService, NbFormFieldModule, NbIconModule, NbInputModule, NbSortDirection, NbSortRequest, NbSpinnerModule, NbTooltipModule, NbTreeGridModule } from "@nebular/theme";
+import {
+  ChangeDetectorRef,
+  Component,
+  ContentChild,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  inject,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from "@angular/core";
+import {
+  NbBadgeModule,
+  NbCardModule,
+  NbColumnsService,
+  NbFormFieldModule,
+  NbIconModule,
+  NbInputModule,
+  NbSortDirection,
+  NbSortRequest,
+  NbSpinnerModule,
+  NbTooltipModule,
+  NbTreeGridModule,
+} from "@nebular/theme";
 import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
 import { RequestStatus } from "../strategicProjects.component";
+import { ShortNumberPipe } from "../../../shared/components/pipe/shortNumber-pipe";
 
 export interface TreeNode {
   data: Array<{
@@ -12,12 +38,12 @@ export interface TreeNode {
   }>;
   children?: Array<TreeNode>;
   expanded?: boolean;
-};
+}
 
 export enum FlipTableAlignment {
-  LEFT = 'left',
-  CENTER = 'center',
-  RIGHT = 'right',
+  LEFT = "left",
+  CENTER = "center",
+  RIGHT = "right",
 }
 
 export interface FlipTableColumn {
@@ -44,13 +70,11 @@ export interface FlipTableCustomStyles {
   };
 }
 @Component({
-  selector: 'ngx-flip-table',
-  templateUrl: './flip-table.component.html',
-  styleUrls: ['./flip-table.component.scss'],
+  selector: "ngx-flip-table",
+  templateUrl: "./flip-table.component.html",
+  styleUrls: ["./flip-table.component.scss"],
   standalone: true,
-  providers: [
-    NbColumnsService,
-  ],
+  providers: [NbColumnsService, ShortNumberPipe],
   imports: [
     NgFor,
     NgIf,
@@ -63,8 +87,8 @@ export interface FlipTableCustomStyles {
     NbTooltipModule,
     TextTruncatePipe,
     NbSpinnerModule,
-    NbBadgeModule
-  ]
+    NbBadgeModule,
+  ],
 })
 export class FlipTableComponent implements OnChanges {
   @Input() cardTitle: string;
@@ -78,7 +102,7 @@ export class FlipTableComponent implements OnChanges {
   @Input() customTableStyles: FlipTableCustomStyles = {
     cardBack: {
       verticalAlignTable: true,
-    }
+    },
   };
 
   @Input() showTableIcon: boolean = true;
@@ -102,21 +126,21 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() outerCardHeight: number;
 
-  @ContentChild('cardToggles', { read: ElementRef }) cardTogglesRef: ElementRef;
-  
+  @ContentChild("cardToggles", { read: ElementRef }) cardTogglesRef: ElementRef;
+
   get hasToggleContent(): boolean {
     return !!this.cardTogglesRef;
   }
 
-  @HostBinding('class.maximized') get maximizedClass() {
+  @HostBinding("class.maximized") get maximizedClass() {
     return this.isMaximized;
   }
 
-  @HostBinding('class.minimized') get minimizedClass() {
+  @HostBinding("class.minimized") get minimizedClass() {
     return !this.isMaximized;
   }
 
-  @HostBinding('style.height.px') get componentHeight(): number {
+  @HostBinding("style.height.px") get componentHeight(): number {
     if (this.isMaximized) {
       return window.innerHeight - 50;
     } else {
@@ -133,8 +157,10 @@ export class FlipTableComponent implements OnChanges {
     }
   }
 
-  @Output() showMaximizeButtonClick: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() showMaximizeButtonClick: EventEmitter<boolean> =
+    new EventEmitter<boolean>();
 
+  private readonly _shortNumber = inject(ShortNumberPipe);
 
   isMaximized = false;
   isFlipCardFlipped: boolean = false;
@@ -153,16 +179,15 @@ export class FlipTableComponent implements OnChanges {
 
   debounceTimer: any;
 
-  constructor(private cdr: ChangeDetectorRef) {
-  }
+  constructor(private cdr: ChangeDetectorRef) {}
 
   get allColumnsNames(): Array<string> {
     return this.allColumns.map((el) => el.propertyName);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['tableContent'] && this.tableContent) {
-      if (changes['tableContent'].previousValue) {
+    if (changes["tableContent"] && this.tableContent) {
+      if (changes["tableContent"].previousValue) {
         this.allColumns = [];
         this.defaultColumnsList = [];
         this.columnLabels = {};
@@ -174,13 +199,16 @@ export class FlipTableComponent implements OnChanges {
           propertyName: el.propertyName,
           displayName: el.displayName,
           alignment: {
-            header: el.alignment ? el.alignment.header : FlipTableAlignment.LEFT,
+            header: el.alignment
+              ? el.alignment.header
+              : FlipTableAlignment.LEFT,
             data: el.alignment ? el.alignment.data : FlipTableAlignment.LEFT,
           },
         });
       });
 
-      this.columnLabels[this.tableContent.customColumn.propertyName] = this.tableContent.customColumn.displayName;
+      this.columnLabels[this.tableContent.customColumn.propertyName] =
+        this.tableContent.customColumn.displayName;
 
       const customColumn = this.tableContent.customColumn;
       this.allColumns = [
@@ -188,8 +216,12 @@ export class FlipTableComponent implements OnChanges {
           propertyName: customColumn.propertyName,
           displayName: customColumn.displayName,
           alignment: {
-            header: customColumn.alignment ? customColumn.alignment.header : FlipTableAlignment.LEFT,
-            data: customColumn.alignment ? customColumn.alignment.data : FlipTableAlignment.LEFT,
+            header: customColumn.alignment
+              ? customColumn.alignment.header
+              : FlipTableAlignment.LEFT,
+            data: customColumn.alignment
+              ? customColumn.alignment.data
+              : FlipTableAlignment.LEFT,
           },
         },
         ...this.defaultColumnsList,
@@ -202,7 +234,7 @@ export class FlipTableComponent implements OnChanges {
   handleCloseSearchFieldClick() {
     this.isSearchFieldVisible = false;
     this.cdr.detectChanges();
-    this.executeSearch.emit('');
+    this.executeSearch.emit("");
   }
 
   handleDownloadButtonClick() {
@@ -210,7 +242,7 @@ export class FlipTableComponent implements OnChanges {
   }
 
   handleFlipButtonClick() {
-    this.isFlipCardFlipped = !this.isFlipCardFlipped
+    this.isFlipCardFlipped = !this.isFlipCardFlipped;
     if (!this.isFlipCardFlipped) {
       this.isSearchFieldVisible = false;
       this.cdr.detectChanges();
@@ -226,11 +258,101 @@ export class FlipTableComponent implements OnChanges {
     this.executeCustomFiltering.emit(value);
   }
 
-
-  getCellValue(dataObject: Array<{ propertyName: string; value: any; }>, column: string): string {
+  getCellValue(
+    dataObject: Array<{ propertyName: string; value: any }>,
+    column: string,
+  ): string {
     const object = dataObject.find((el) => el.propertyName === column);
 
-    return (object ? object.value : '');
+    return object ? object.value : "";
+  }
+
+  getCellValueShort(
+    dataObject: Array<{ propertyName: string; value: any }>,
+    column: string,
+  ): string {
+    const object = dataObject.find((el) => el.propertyName === column);
+
+    if (!object || !object.value) {
+      return "";
+    }
+
+    const value = object.value;
+
+    // ✅ Verifica se tem R$ - só processa se tiver
+    const isString = typeof value === "string";
+    const hasRealSymbol = isString && value.includes("R$");
+
+    // Se não tem R$, retorna o valor original
+    if (!hasRealSymbol) {
+      return value;
+    }
+
+    // Limpa o valor sem regex
+    let cleanedValue = value;
+    cleanedValue = cleanedValue.split("R$").join(""); // Remove R$
+    cleanedValue = cleanedValue.split(" ").join(""); // Remove espaços
+    cleanedValue = cleanedValue.split(".").join(""); // Remove pontos de milhar
+    cleanedValue = cleanedValue.split(",").join("."); // Converte vírgula em ponto
+
+    const numValue = Number(cleanedValue);
+
+    // Se não conseguiu converter, retorna original
+    if (isNaN(numValue)) {
+      return value;
+    }
+
+    // ========================================
+    // LÓGICA DE ABREVIAÇÃO
+    // ========================================
+    const absValue = Math.abs(numValue);
+
+    // Números menores que 1000 não precisam abreviação
+    if (absValue < 1000) {
+      const formatted = numValue.toFixed(2).split(".").join(",");
+      return `R$ ${formatted}`;
+    }
+
+    // Define unidade e divisor
+    let divisor = 1;
+    let suffix = "";
+
+    if (absValue >= 1e12) {
+      divisor = 1e12;
+      suffix = "T";
+    } else if (absValue >= 1e9) {
+      divisor = 1e9;
+      suffix = "B";
+    } else if (absValue >= 1e6) {
+      divisor = 1e6;
+      suffix = "M";
+    } else if (absValue >= 1e3) {
+      divisor = 1e3;
+      suffix = "K";
+    }
+
+    const scaled = numValue / divisor;
+
+    // Formata com 1 casa decimal
+    let formatted = scaled.toFixed(1);
+
+    // Remove zeros desnecessários: "1.0" vira "1"
+    while (
+      formatted.includes(".") &&
+      (formatted.endsWith("0") || formatted.endsWith("."))
+    ) {
+      if (formatted.endsWith("0")) {
+        formatted = formatted.slice(0, -1);
+      }
+      if (formatted.endsWith(".")) {
+        formatted = formatted.slice(0, -1);
+      }
+    }
+
+    // Converte ponto em vírgula
+    formatted = formatted.split(".").join(",");
+
+    return `R$ ${formatted}${suffix}`;
   }
 
   getSortDirection(column: string): NbSortDirection {
@@ -243,7 +365,7 @@ export class FlipTableComponent implements OnChanges {
   getShowOn(index: number) {
     const minWithForMultipleColumns = 400;
     const nextColumnStep = 100;
-    return minWithForMultipleColumns + (nextColumnStep * index);
+    return minWithForMultipleColumns + nextColumnStep * index;
   }
 
   /* Auxiliares */

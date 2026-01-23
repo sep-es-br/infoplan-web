@@ -245,7 +245,7 @@ export class OrgChartHorizontalComponent
       xAxis: {
         type: "value",
         scale: true,
-        min: 0,
+        min:0,
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,

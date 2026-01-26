@@ -263,7 +263,6 @@ export class FlipTableComponent implements OnChanges {
     column: string,
   ): string {
     const object = dataObject.find((el) => el.propertyName === column);
-
     return object ? object.value : "";
   }
 
@@ -300,6 +299,11 @@ export class FlipTableComponent implements OnChanges {
     // Se não conseguiu converter, retorna original
     if (isNaN(numValue)) {
       return value;
+    }
+
+    // ✅ Se for zero, retorna apenas "0,00"
+    if (numValue === 0) {
+      return "0,00";
     }
 
     // ========================================
@@ -349,10 +353,15 @@ export class FlipTableComponent implements OnChanges {
       }
     }
 
-    // Converte ponto em vírgula
     formatted = formatted.split(".").join(",");
 
-    return `R$ ${formatted}${suffix}`;
+    return `${formatted}${suffix}`;
+  }
+
+  isRowTotal(row: TreeNode): boolean {
+    return row.data.some(
+      (prop) => prop.propertyName === "categoria" && prop.value === "Total",
+    );
   }
 
   getSortDirection(column: string): NbSortDirection {

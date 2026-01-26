@@ -215,7 +215,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       },
       defaultColumns: anos.map((ano) => ({
         propertyName: `ano_${ano}`,
-        displayName: ano.toString(),
+        displayName: `${ano.toString()} (R$)`,
         alignment: {
           header: FlipTableAlignment.RIGHT,
           data: FlipTableAlignment.RIGHT,
@@ -273,7 +273,7 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       },
       ...years.map((ano) => ({
         key: `ano_${ano}`,
-        label: `Arrecadação Líquida - ${ano}`,
+        label: `Arrecadação Líquida - ${ano} (R$)`,
       })),
     ];
   }
@@ -287,7 +287,6 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       node.data.forEach((prop: {propertyName: string, value: any}) => {
         const {propertyName, value} = prop;
 
-        console.log("result: ", prop);
         if (propertyName === "categoria") {
           row["categoria"] = value;
         } else if (propertyName.startsWith("ano_")) {

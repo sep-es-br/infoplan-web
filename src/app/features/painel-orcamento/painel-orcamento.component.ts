@@ -396,7 +396,8 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     const receitaDespesa = this.receitaDespesaGNDTotalOrcamento || [];
     const primeiroItem = receitaDespesa[0];
     const segundoItem = receitaDespesa[1];
-
+    console.log("RECEITAS: ", receitaDespesa)
+    console.log("prevista ", this.receitaTotal)
     this.totals = {
       porcentagemReceitaRealizadaPrevista: this.receitaTotal?.porcentagem || 0,
       porcentagemReceitaEmpenhadaAutorizada:
@@ -412,32 +413,64 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     return item.id || index;
   }
 
+  // formatNumber(value: number): string {
+  //   if (!value) {
+  //     return "R$ 0";
+  //   }
+
+  //   if (value >= 1_000_000_000) {
+  //     return `${(value / 1_000_000_000).toLocaleString("pt-BR", {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0,
+  //     })} bi`;
+  //   }
+
+  //   if (value >= 1_000_000) {
+  //     return `${(value / 1_000_000).toLocaleString("pt-BR", {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 1,
+  //     })} mi`;
+  //   }
+
+  //   if (value >= 1_000) {
+  //     return `${(value / 1_000).toLocaleString("pt-BR", {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0,
+  //     })} mil`;
+  //   }
+
+  //   return `R$ ${value.toLocaleString("pt-BR")}`;
+  // }
+
   formatNumber(value: number): string {
-    if (!value) {
-      return "R$ 0";
-    }
-
-    if (value >= 1_000_000_000) {
-      return `${(value / 1_000_000_000).toLocaleString("pt-BR", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      })} bi`;
-    }
-
-    if (value >= 1_000_000) {
-      return `${(value / 1_000_000).toLocaleString("pt-BR", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 1,
-      })} mi`;
-    }
-
-    if (value >= 1_000) {
-      return `${(value / 1_000).toLocaleString("pt-BR", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      })} mil`;
-    }
-
-    return `R$ ${value.toLocaleString("pt-BR")}`;
+  if (!value) {
+    return "R$ 0";
   }
+
+  if (value >= 1_000_000_000) {
+    return `${(value / 1_000_000_000).toLocaleString("pt-BR", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 2,
+    })} bi`;
+  }
+
+  if (value >= 1_000_000) {
+    return `${(value / 1_000_000).toLocaleString("pt-BR", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 2,
+    })} mi`;
+  }
+
+  if (value >= 1_000) {
+    return `${(value / 1_000).toLocaleString("pt-BR", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    })} mil`;
+  }
+
+  return `${value.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
 }

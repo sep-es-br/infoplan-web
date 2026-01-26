@@ -96,12 +96,15 @@
     </div>
   </nb-card-header>
 
-  <div *ngIf="hasToggleContent" class="card-header d-flex justify-content-between align-items-start p-0 px-3">
-      <ng-container >
-    <!-- <div class="card-toggle-section"> -->
+  <div
+    *ngIf="hasToggleContent"
+    class="card-header d-flex justify-content-between align-items-start p-0 px-3"
+  >
+    <ng-container>
+      <!-- <div class="card-toggle-section"> -->
       <ng-content select="[card-toggles]"></ng-content>
-    <!-- </div> -->
-  </ng-container>
+      <!-- </div> -->
+    </ng-container>
   </div>
 
   <nb-flip-card
@@ -192,12 +195,29 @@
                     >
                     </nb-icon>
                   </ng-container>
-                  {{
+                  <!-- {{
                     getCellValue(
                       row.data,
                       tableContent.customColumn.propertyName
                     ) | TextTruncate: 50
-                  }}
+                  }} -->
+                  <span
+                    [style.fontWeight]="
+                      getCellValue(
+                        row.data,
+                        tableContent.customColumn.propertyName
+                      ) === 'Total'
+                        ? 'bold'
+                        : 'normal'
+                    "
+                  >
+                    {{
+                      getCellValue(
+                        row.data,
+                        tableContent.customColumn.propertyName
+                      ) | TextTruncate: 50
+                    }}
+                  </span>
                 </div>
               </td>
             </ng-container>
@@ -222,6 +242,7 @@
                 nbTreeGridCell
                 *nbTreeGridCellDef="let row"
                 class="px-1"
+                [ngClass]="{'font-weight-bold': isRowTotal(row)}"
                 [style]="{
                   'text-align': column.alignment
                     ? column.alignment.data

@@ -29,7 +29,10 @@ import {
 } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 import { UtilitiesService } from "../../../../core/service/utilities.service";
-import { converterToNumber, replacePorcentage } from "../../../../@core/utils/functionts/functionts";
+import {
+  converterToNumber,
+  replacePorcentage,
+} from "../../../../@core/utils/functionts/functionts";
 
 @Component({
   selector: "ngx-receita-categoria",
@@ -149,9 +152,8 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     ];
 
     const treeNodes = categorias.map((categoria) => {
-      const nodeData = [{ propertyName: "label", value: categoria }];
+      const nodeData = [{ propertyName: "categoria", value: categoria }];
 
-      // Adicionar colunas de anos
       anos.forEach((ano) => {
         const dado = this.receitaData.find(
           (d) => d.categoria === categoria && d.ano === ano,
@@ -160,11 +162,13 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
         nodeData.push({
           propertyName: `ano_${ano}`,
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(valorReceitaLiquida, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            valorReceitaLiquida,
+            "R$",
+          ),
         });
       });
 
-      // Adicionar coluna de variação
       if (anos.length >= 2) {
         const variacao = this.calcularVariacao(categoria, anos);
         nodeData.push({
@@ -176,8 +180,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       return { data: nodeData };
     });
 
-    // Criar linha de totais
-    const totalNodeData = [{ propertyName: "label", value: "Total" }];
+    const totalNodeData = [{ propertyName: "categoria", value: "Total" }];
 
     anos.forEach((ano) => {
       const totalAno = this.receitaData
@@ -186,11 +189,13 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
 
       totalNodeData.push({
         propertyName: `ano_${ano}`,
-        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalAno, "R$"),
+        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+          totalAno,
+          "R$",
+        ),
       });
     });
 
-    // Adicionar variação total
     if (anos.length >= 2) {
       const totalAnoAnterior = this.receitaData
         .filter((d) => d.ano === anos[0])
@@ -214,13 +219,11 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       });
     }
 
-    // Adicionar linha de total aos dados
     treeNodes.push({ data: totalNodeData });
 
-    // Configurar colunas
     const defaultColumns = anos.map((ano) => ({
       propertyName: `ano_${ano}`,
-      displayName: `Arrecadação Líquida - ${ano}`,
+      displayName: `Arrecadação Líquida - ${ano} (R$)`,
       alignment: {
         header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
@@ -239,7 +242,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     }
     this.tableContent = {
       customColumn: {
-        propertyName: "label",
+        propertyName: "categoria",
         displayName: "Categoria Econômica",
         alignment: {
           header: FlipTableAlignment.LEFT,
@@ -249,6 +252,71 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       defaultColumns,
       data: treeNodes,
     };
+  }
+
+  handleTableDownload(): void {
+    if (!this.tableContent) {
+      console.warn("Nenhum conteúdo de tabela disponível para download");
+      return;
+    }
+
+    const anos = this.tableContent.defaultColumns
+      .filter((col) => col.propertyName.startsWith("ano_"))
+      .map((col) => parseInt(col.propertyName.replace("ano_", "")))
+      .sort((a, b) => a - b);
+
+    const temVariacao = this.tableContent.defaultColumns.some(
+      (col) => col.propertyName === "variação",
+    );
+    console.log("eqweqeqw", this.tableContent);
+    const columns = [
+      {
+        key: "categoria",
+        label:
+          this.tableContent.customColumn.displayName || "Categoria Econômica",
+      },
+      ...anos.map((ano) => ({
+        key: `ano_${ano}`,
+        label: `Arrecadação Líquida - ${ano} (R$)`,
+      })),
+    ];
+
+    if (temVariacao) {
+      const ultimoAno = anos[anos.length - 1];
+      columns.push({
+        key: "variacao",
+        label: `Variação - ${ultimoAno}`,
+      });
+    }
+
+    const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
+      const row: any = {};
+      // Processar cada propriedade do nó
+      node.data.forEach((prop: { propertyName: string; value: any }) => {
+        const { propertyName, value } = prop;
+        console.log("dasda", prop, "  ", " value: ", value)
+        if (propertyName === "categoria") {
+          row["categoria"] = value;
+        } else if (propertyName.startsWith("ano_")) {
+          row[propertyName] = converterToNumber(value);
+        } else if (propertyName === "variação") {
+          row["variação"] = replacePorcentage(value);
+        }
+      });
+
+      return row;
+    });
+
+    // Gerar nome do arquivo
+    const anoAtual = anos[1];
+    const fileName = `Receita_Por_Categoria_${anoAtual}.xlsx`;
+
+    // Exportar
+    this._exportDataService.exportXLSXWithCustomHeaders(
+      dataForDownload,
+      columns,
+      fileName,
+    );
   }
 
   private calcularVariacao(categoria: string, anos: number[]): number {
@@ -271,74 +339,5 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     const variacao = ((valorFinal - valorInicial) / valorInicial) * 100;
 
     return Number(variacao.toFixed(2));
-  }
-
-  handleTableDownload(): void {
-    if (!this.tableContent) {
-      console.warn("Nenhum conteúdo de tabela disponível para download");
-      return;
-    }
-
-    // Extrair anos das colunas padrão
-    const anos = this.tableContent.defaultColumns
-      .filter((col) => col.propertyName.startsWith("ano_"))
-      .map((col) => parseInt(col.propertyName.replace("ano_", "")))
-      .sort((a, b) => a - b);
-
-    // Verificar se existe coluna de variação
-    const temVariacao = this.tableContent.defaultColumns.some(
-      (col) => col.propertyName === "variação",
-    );
-
-    // Criar colunas para o Excel
-    const columns = [
-      {
-        key: "categoria",
-        label:
-          this.tableContent.customColumn.displayName || "Categoria Econômica",
-      },
-      ...anos.map((ano) => ({
-        key: `ano_${ano}`,
-        label: `Arrecadação Líquida - ${ano}`,
-      })),
-    ];
-
-    if (temVariacao) {
-      const ultimoAno = anos[anos.length - 1];
-      columns.push({
-        key: "variacao",
-        label: `Variação - ${ultimoAno}`,
-      });
-    }
-
-    const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
-      const row: any = {};
-      console.log("nodes ", node)
-      // Processar cada propriedade do nó
-      node.data.forEach((prop: {propertyName: string, value: any}) => {
-        const { propertyName, value} = prop;
-
-        if (propertyName === "label") {
-          row["categoria"] = value;
-        } else if (propertyName.startsWith("ano_")) {
-          row[propertyName] = converterToNumber(value);
-        } else if (propertyName === "variação") {
-          row["variacao"] = replacePorcentage(value);
-        }
-      });
-
-      return row;
-    });
-
-    // Gerar nome do arquivo
-    const anoAtual = anos[1];
-    const fileName = `Receita_Por_Categoria_${anoAtual}.xlsx`;
-
-    // Exportar
-    this._exportDataService.exportXLSXWithCustomHeaders(
-      dataForDownload,
-      columns,
-      fileName,
-    );
   }
 }

@@ -232,7 +232,7 @@ export class ReceitaDespesaGndComponent
         nodeData.push({
           propertyName: `Pago com RAP - ${ano}`,
           value: this._utilitiesService
-            .formatCurrencyUsingBrazilianStandards( valores.pago, "R$")
+            .formatCurrencyUsingBrazilianStandards(valores.pago, "R$")
         });
       });
 
@@ -244,7 +244,7 @@ export class ReceitaDespesaGndComponent
             anos,
             dados,
             "liquidado",
-          )} %`,
+          )}%`,
         });
         nodeData.push({
           propertyName: "Variação Pago RAP",
@@ -353,7 +353,7 @@ export class ReceitaDespesaGndComponent
     anos.forEach((ano) => {
       defaultColumns.push({
         propertyName: `Despesa Liquidada - ${ano.toString()}`,
-        displayName: `Despesa Liquidada - ${ano.toString()}`,
+        displayName: `Despesa Liquidada - ${ano.toString()} (R$)`,
         alignment: {
           header: FlipTableAlignment.RIGHT,
           data: FlipTableAlignment.RIGHT,
@@ -362,7 +362,7 @@ export class ReceitaDespesaGndComponent
 
       defaultColumns.push({
         propertyName: `Pago com RAP - ${ano.toString()}`,
-        displayName: `Pago com RAP - ${ano.toString()}`,
+        displayName: `Pago com RAP - ${ano.toString()} (R$)`,
         alignment: {
           header: FlipTableAlignment.RIGHT,
           data: FlipTableAlignment.RIGHT,
@@ -459,8 +459,8 @@ export class ReceitaDespesaGndComponent
 
     anos.forEach((ano) => {
       columns.push(
-        { key: `liquidado_${ano}`, label: `Despesa Liquidada - ${ano}` },
-        { key: `pago_rap_${ano}`, label: `Pago com RAP - ${ano}` },
+        { key: `liquidado_${ano}`, label: `Despesa Liquidada - ${ano} (R$)` },
+        { key: `pago_rap_${ano}`, label: `Pago com RAP - ${ano} (R$)` },
       );
     });
 
@@ -486,9 +486,11 @@ export class ReceitaDespesaGndComponent
             .trim();
           row[`liquidado_${ano}`] = converterToNumber(value);
         } else if (propertyName.startsWith("Pago com RAP -")) {
+          console.log("propertyName: PAGO", propertyName)
           const ano = propertyName.replace("Pago com RAP -", "").trim();
           row[`pago_rap_${ano}`] = converterToNumber(value);;
         } else if (propertyName === "Variação Liquidado") {
+          console.log("propertyName: liquidado", propertyName)
           row["variacao_liquidado"] = replacePorcentage(value);;
         } else if (propertyName === "Variação Pago RAP") {
           row["variacao_pago_rap"] = replacePorcentage(value);;

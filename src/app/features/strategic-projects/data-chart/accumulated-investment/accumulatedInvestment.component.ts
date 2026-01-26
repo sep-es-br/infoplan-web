@@ -103,10 +103,10 @@ export class AccumulatedInvestmentComponent implements OnChanges {
     };
 
     const tableColumns = [
-      { propertyName: 'custoPrevisto', displayName: 'Previsto', alignment: standardMonetaryAlignment },
-      { propertyName: 'custoPrevistoAcumulado', displayName: 'Previsto Acumulado', alignment: standardMonetaryAlignment },
-      { propertyName: 'custoRealizado', displayName: 'Realizado', alignment: standardMonetaryAlignment },
-      { propertyName: 'custoRealizadoAcumulado', displayName: 'Realizado Acumulado', alignment: standardMonetaryAlignment },
+      { propertyName: 'custoPrevisto', displayName: 'Previsto (R$)', alignment: standardMonetaryAlignment },
+      { propertyName: 'custoPrevistoAcumulado', displayName: 'Previsto Acumulado (R$)', alignment: standardMonetaryAlignment },
+      { propertyName: 'custoRealizado', displayName: 'Realizado (R$)', alignment: standardMonetaryAlignment },
+      { propertyName: 'custoRealizadoAcumulado', displayName: 'Realizado Acumulado (R$)', alignment: standardMonetaryAlignment },
     ];
 
     const finalData: Array<TreeNode> = rawData.map((investimento) => ({
@@ -152,10 +152,10 @@ export class AccumulatedInvestmentComponent implements OnChanges {
   handleUserTableDownload() {
     const columns: Array<{ key: string; label: string; }> = [
       { key: 'anoMes', label: 'Ano / Mês' },
-      { key: 'custoPrevisto', label: 'Custo Previsto' },
-      { key: 'custoPrevistoAcumulado', label: 'Custo Previsto Acumulado' },
-      { key: 'custoRealizado', label: 'Custo Realizado' },
-      { key: 'custoRealizadoAcumulado', label: 'Custo Realizado Acumulado' },
+      { key: 'custoPrevisto', label: 'Custo Previsto (R$)' },
+      { key: 'custoPrevistoAcumulado', label: 'Custo Previsto Acumulado (R$)' },
+      { key: 'custoRealizado', label: 'Custo Realizado (R$)' },
+      { key: 'custoRealizadoAcumulado', label: 'Custo Realizado Acumulado (R$)' },
     ];
 
     this.exportDataService.exportXLSXWithCustomHeaders(

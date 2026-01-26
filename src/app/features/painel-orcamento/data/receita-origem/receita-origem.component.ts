@@ -235,7 +235,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
     // Criar colunas
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
       propertyName: `Arrecadação LI - ${ano.toString()}`,
-      displayName: `Arrecadação Líquida - ${ano.toString()}`,
+      displayName: `Arrecadação Líquida - ${ano.toString()} (R$)`,
       alignment: {
         header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
@@ -323,7 +323,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
       },
       ...anos.map((ano) => ({
         key: `ano_${ano}`,
-        label: `Arrecadação Líquida - ${ano}`,
+        label: `Arrecadação Líquida - ${ano} (R$)`,
       })),
     ];
 

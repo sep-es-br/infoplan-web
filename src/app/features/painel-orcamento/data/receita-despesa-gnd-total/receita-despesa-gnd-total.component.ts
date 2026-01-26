@@ -290,26 +290,6 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
       })
       .flat();
 
-    // treeNodes.push({
-    //   data: [
-    //     {
-    //       propertyName: "label",
-    //       value: "Total",
-    //     },
-    //     {
-    //       propertyName: "valor",
-    //       value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-    //           totalOrcado +
-    //           totalAutorizado +
-    //           totalEmpenhado +
-    //           totalLiquidado +
-    //           totalPagoComRap,
-    //         "R$",
-    //       ),
-    //     },
-    //   ],
-    // });
-
     this.tableContent = {
       customColumn: {
         propertyName: "label",
@@ -322,7 +302,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
       defaultColumns: [
         {
           propertyName: "valor",
-          displayName: "Valor",
+          displayName: "Valores (R$)",
           alignment: {
             header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,

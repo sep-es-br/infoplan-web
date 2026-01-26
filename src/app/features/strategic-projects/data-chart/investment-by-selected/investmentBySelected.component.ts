@@ -219,12 +219,12 @@ export class InvestmentBySelectedComponent implements OnChanges {
     const tableColumns = [
       {
         propertyName: 'custoPrevisto',
-        displayName: 'Previsto',
+        displayName: 'Previsto (R$)',
         alignment: { header: FlipTableAlignment.CENTER, data: FlipTableAlignment.RIGHT },
       },
       {
         propertyName: 'custoRealizado',
-        displayName: 'Realizado',
+        displayName: 'Realizado (R$)',
         alignment: { header: FlipTableAlignment.CENTER, data: FlipTableAlignment.RIGHT },
       },
     ];
@@ -273,8 +273,8 @@ export class InvestmentBySelectedComponent implements OnChanges {
   handleUserTableDownload() {
     const columns: Array<{ key: string; label: string; }> = [
       { key: 'nome', label: this.selectedInvestmentOption },
-      { key: 'custoPrevisto', label: 'Custo Previsto' },
-      { key: 'custoRealizado', label: 'Custo Realizado' },
+      { key: 'custoPrevisto', label: 'Custo Previsto (R$)' },
+      { key: 'custoRealizado', label: 'Custo Realizado (R$)' },
     ];
 
     this.exportDataService.exportXLSXWithCustomHeaders(

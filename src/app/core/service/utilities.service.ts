@@ -40,11 +40,11 @@ export class UtilitiesService {
       // Se tiver 13-15 dígitos, é na faixa dos trilhões
       suffix = 'tri';
     }
-    
-    if (originalInText.length > 2) {
-      return `R$ ${originalInText.slice(0, 2)},${originalInText.slice(2, 4)} ${suffix}`;
-    }
 
-    return `R$ ${originalInText}`;
+    if (originalInText.length > 2) {
+      console.log(`${originalInText.slice(0, 2)},${originalInText.slice(2, 4)} ${suffix}`)
+      return `${originalInText.slice(0, 2)},${originalInText.slice(2, 4)} ${suffix}`;
+    }
+    return originalInText;
   }
 }

@@ -234,7 +234,7 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
 
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
       propertyName: `Arrecadação Líquida - ${ano.toString()}`,
-      displayName: `Arrecadação Líquida - ${ano.toString()}`,
+      displayName: `Arrecadação Líquida - ${ano.toString()} (R$)`,
       alignment: {
         header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
@@ -320,7 +320,7 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
       { key: "categoria", label: "Principais Origens de Receita" },
       ...anos.map((ano) => ({
         key: `ano_${ano}`,
-        label: `Arrecadação Líquida - ${ano}`,
+        label: `Arrecadação Líquida - ${ano} (R$)`,
       })),
     ];
 

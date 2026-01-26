@@ -217,7 +217,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
 
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
       propertyName: `ano_${ano}`,
-      displayName: ano.toString(),
+      displayName: `${ano.toString()} (R$)`,
       alignment: {
         header: FlipTableAlignment.RIGHT,
         data: FlipTableAlignment.RIGHT,
@@ -281,14 +281,14 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     content: FlipTableContent,
   ): { key: string; label: string }[] {
     return [
-      { 
-        key: "categoria", 
-        label: content.customColumn.displayName || "Participação ICMS - Receita Total" 
+      {
+        key: "categoria",
+        label: content.customColumn.displayName || "Participação ICMS - Receita Total"
       },
       ...years.map((ano) => ({
         key: `ano_${ano}`,
         label:
-          `Arrecadação Líquida - ${ano}`,
+          `Arrecadação Líquida - ${ano} (R$)`,
       })),
     ];
   }
@@ -299,7 +299,7 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
     return tableContent.data.map((node: TreeNode) => {
       const row: any = {};
       node.data.forEach((prop: {
-        propertyName: string, value: string | null 
+        propertyName: string, value: string | null
       }) => {
         const { propertyName, value } = prop;
 

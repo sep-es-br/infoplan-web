@@ -26,14 +26,24 @@ import { ChartDataProcessorService } from "../../../../../core/service/painel-or
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { Subject } from "rxjs";
-import { ChartDataConfig, OrgChartHorizontalComponent } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import {
+  ChartDataConfig,
+  OrgChartHorizontalComponent,
+} from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
+import { OrgChartVerticalComponent } from "../../../../painel-orcamento/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
+import { UtilitiesService } from "../../../../../core/service/utilities.service";
+import { converterToNumber } from "../../../../../@core/utils/functionts/functionts";
 
 @Component({
   selector: "ngx-grafico-total-ano",
-  imports: [OrgChartLineComponent, FlipTableComponent],
+  imports: [
+    OrgChartVerticalComponent,
+    FlipTableComponent,
+    OrgChartVerticalComponent,
+  ],
   templateUrl: "./grafico-total-ano.component.html",
   styleUrls: ["./grafico-total-ano.component.scss"],
   standalone: true,
@@ -72,13 +82,13 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService: ExportDataService =
-    inject(ExportDataService);
-  private readonly _chartMaximizeService: ChartMaximizeService =
-    inject(ChartMaximizeService);
-      private readonly _planejamentoService = inject(
-        PlanejamentoOrcamentarioService
-      );
+  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly _planejamentoService = inject(
+    PlanejamentoOrcamentarioService
+  );
+
+  private readonly _utilitiesService = inject(UtilitiesService);
 
   private readonly destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
@@ -89,14 +99,12 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
   constructor() {}
 
   ngOnInit(): void {
-    // Inicializa o ouvinte de busca com debounce
     this.searchSubject
       .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe((query) => {
         this.executarFiltroTabela(query);
       });
 
-    // Calcula altura inicial
     this.maximizedHeight = this._chartMaximizeService.calcMaximizedHeight();
   }
 
@@ -115,32 +123,30 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-    private loadData(): void {
-      this.requestStatus = RequestStatus.LOADING;
-      this.cdr.markForCheck();
+  private loadData(): void {
+    this.requestStatus = RequestStatus.LOADING;
+    this.cdr.markForCheck();
 
-      this._planejamentoService
-        .getTotalAnos(this.filter)
-        .pipe(
-          takeUntil(this.destroy$)
-        )
-        .subscribe({
-          next: (res: ISPOTotalAno[]) => {
-            this.dasboardResponse = res || [];
-            if (this.dasboardResponse.length > 0) {
-              this.processarDados(this.dasboardResponse);
-            } else {
-              this.chartData = null;
-            }
-            this.requestStatus = RequestStatus.SUCCESS;
-          },
-          error: (err) => {
-            console.error("Erro ao carregar dados Total Ano:", err);
-            this.requestStatus = RequestStatus.ERROR;
-            this.dasboardResponse = [];
-          },
-        });
-    }
+    this._planejamentoService
+      .getTotalAnos(this.filter)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: ISPOTotalAno[]) => {
+          this.dasboardResponse = res || [];
+          if (this.dasboardResponse.length > 0) {
+            this.processarDados(this.dasboardResponse);
+          } else {
+            this.chartData = null;
+          }
+          this.requestStatus = RequestStatus.SUCCESS;
+        },
+        error: (err) => {
+          console.error("Erro ao carregar dados Total Ano:", err);
+          this.requestStatus = RequestStatus.ERROR;
+          this.dasboardResponse = [];
+        },
+      });
+  }
 
   private executarFiltroTabela(query: string): void {
     if (!query || query.length < 3) {
@@ -150,7 +156,7 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
 
     const search = query.toLowerCase().trim();
     const filtered = this.dasboardResponse.filter((item) =>
-      this.buscarEmTexto(search, item)
+      this.buscarEmTexto(search, item),
     );
 
     this.processarDados(filtered);
@@ -159,37 +165,27 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
   private processarDados(dados: ISPOTotalAno[]): void {
     this._zone.runOutsideAngular(() => {
       const chartConfig: IChartOptions = {
-      data: {
-        labels: dados.map((d) => `${d.ano}`),
-        datasets: [
-          {
-            label: "Planejado",
-            data: dados.map((d) => d.vlr_previsto || 0),
-            backgroundColor: this._chartProcessor.colors[14],
-          },
-          {
-            label: "Contratado",
-            data: dados.map((d) => d.vlr_contratado || 0),
-            backgroundColor: this._chartProcessor.colors[15],
-          },
-          {
-            label: "Autorizado",
-            data: dados.map((d) => d.vlr_autorizado || 0),
-            backgroundColor: this._chartProcessor.colors[16],
-          },
-          {
-            label: "Empenhado",
-            data: dados.map((d) => d.vlr_empenhado || 0),
-            backgroundColor: this._chartProcessor.colors[17],
-          },
-          {
-            label: "Pago",
-            data: dados.map((d) => d.vlr_pago || 0),
-            backgroundColor: this._chartProcessor.colors[19],
-          },
-        ],
-      },
-    };
+        data: {
+          labels: dados.map((d) => `${d.ano}`),
+          datasets: [
+            {
+              label: "Planejado",
+              data: dados.map((d) => d.vlr_previsto || 0),
+              backgroundColor: this._chartProcessor.colors[14],
+            },
+            {
+              label: "Autorizado",
+              data: dados.map((d) => d.vlr_autorizado || 0),
+              backgroundColor: this._chartProcessor.colors[16],
+            },
+            {
+              label: "Empenhado",
+              data: dados.map((d) => d.vlr_empenhado || 0),
+              backgroundColor: this._chartProcessor.colors[17],
+            },
+          ],
+        },
+      };
       // Volta para a zona apenas para atualizar a UI
       this._zone.run(() => {
         this.chartData = chartConfig;
@@ -210,31 +206,23 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "planejado",
-          value: this.formatarMoeda(item.vlr_previsto),
-        },
-        {
-          propertyName: "contratado",
-          value: this.formatarMoeda(item.vlr_contratado),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_previsto, "R$"),
         },
         {
           propertyName: "autorizado",
-          value: this.formatarMoeda(item.vlr_autorizado),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_autorizado, "R$"),
         },
         {
           propertyName: "empenhado",
-          value: this.formatarMoeda(item.vlr_empenhado),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_empenhado, "R$"),
         },
-        {
-          propertyName: "pago",
-          value: this.formatarMoeda(item.vlr_pago),
-        }
       ],
     }));
 
     this.tableContent = {
       customColumn: {
         propertyName: "ano",
-        displayName: "Evolução dos Valores por Ano",
+        displayName: "Ano",
         alignment: {
           header: FlipTableAlignment.LEFT,
           data: FlipTableAlignment.LEFT,
@@ -243,15 +231,7 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
       defaultColumns: [
         {
           propertyName: "planejado",
-          displayName: "Planejado",
-          alignment: {
-            header: FlipTableAlignment.RIGHT,
-            data: FlipTableAlignment.RIGHT,
-          },
-        },
-        {
-          propertyName: "contratado",
-          displayName: "Contratado",
+          displayName: "Planejado (R$)",
           alignment: {
             header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,
@@ -259,7 +239,7 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "autorizado",
-          displayName: "Autorizado",
+          displayName: "Autorizado (R$)",
           alignment: {
             header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,
@@ -267,32 +247,15 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "empenhado",
-          displayName: "Empenhado",
+          displayName: "Empenhado (R$)",
           alignment: {
             header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,
           },
         },
-        {
-          propertyName: "pago",
-          displayName: "Pago",
-          alignment: {
-            header: FlipTableAlignment.RIGHT,
-            data: FlipTableAlignment.RIGHT,
-          },
-        }
       ],
       data: linhasTabela,
     };
-  }
-
-  private formatarMoeda(valor: number | null | undefined): string {
-    if (!valor && valor !== 0) return "0,00";
-
-    return valor.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).replace("R$", "");
   }
 
   handleTableSearch(query: string): void {
@@ -301,7 +264,7 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
 
   private buscarEmTexto(search: string, item: ISPOTotalAno): boolean {
     return [item.ano?.toString()].some((campo) =>
-      campo?.toLowerCase().includes(search)
+      campo?.toLowerCase().includes(search),
     );
   }
 
@@ -318,16 +281,16 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
       const row: any = {};
 
       node.data.forEach((item) => {
-        // Formata valores monetários (previsto, contratado, autorizado)
         if (
-          ["planejado", "contratado", "autorizado", "empenhado", "pago"].includes(item.propertyName)
+          [
+            "planejado",
+            "contratado",
+            "autorizado",
+            "empenhado",
+            "pago",
+          ].includes(item.propertyName)
         ) {
-          // Remove "R$" e pega apenas o valor numérico
-          const valorNumerico = this.extrairValorNumerico(item.value);
-          row[item.propertyName] = valorNumerico.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
+          row[item.propertyName] = converterToNumber(item.value)
         } else {
           row[item.propertyName] = item.value;
         }
@@ -339,20 +302,8 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      `Evolução_dos_Valores_por_Ano.xlsx`
+      `Evolução_dos_Valores_por_Ano.xlsx`,
     );
-  }
-
-  private extrairValorNumerico(valorFormatado: string): number {
-    if (!valorFormatado) return 0;
-
-    const valorLimpo = valorFormatado
-      .replace("R$", "")
-      .replace(/\s/g, "")
-      .replace(/\./g, "")
-      .replace(",", ".");
-
-    return parseFloat(valorLimpo) || 0;
   }
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {

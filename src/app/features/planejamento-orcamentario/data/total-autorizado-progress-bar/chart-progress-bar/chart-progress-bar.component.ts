@@ -160,7 +160,8 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         borderColor: theme.themePrimaryColor,
         textStyle: {
           color: theme.textPrimaryColor,
-          lineHeight: 20,
+          // lineHeight: 20,
+          fontSize: 12
         },
         confine: true,
         extraCssText: 'white-space: normal; word-break: break-all; max-width: 610px;',
@@ -182,7 +183,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
               (dataRef.nomeUO && dataRef.nomeUO[index]) ||
               "UO não identificada";
 
-            tituloTooltip = `<span>${uo}</span> - <small>${po}</small>`;
+            tituloTooltip = `${uo} - ${po} &nbsp;&nbsp;`;
           } else {
             const labelOriginal = params[0].name || "";
             const codigo = labelOriginal.includes(" - ")
@@ -190,14 +191,14 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
               : labelOriginal;
             const uo = (dataRef.nomeUO && dataRef.nomeUO[index]) || "";
 
-            tituloTooltip = `<span>${codigo}</span> - <small>${uo}</small>`;
+            tituloTooltip = `${codigo} - ${uo} &nbsp;&nbsp;`;
           }
 
-          let tooltip = `${tituloTooltip}<br>`;
+          let tooltip = `${tituloTooltip} </br>`;
           params.forEach((p: any) => {
             const valor =
               p.value !== undefined && p.value !== null ? p.value : 0;
-            tooltip += `<span>${p.seriesName}: <span>${valor}%</span></span><br>`;
+            tooltip += `${p.seriesName}: ${valor}% </br>`;
           });
 
           return tooltip;
@@ -237,53 +238,21 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         },
       },
 
-      // yAxis: {
-      //   type: "category",
-      //   inverse: false,
-      //   data: data.map((d) => d.category),
-      //   axisLine: {
-      //     show: true,
-      //     lineStyle: {
-      //       width: 1,
-      //     },
-      //   },
-      //   axisTick: {
-      //     show: true,
-      //     lineStyle: {
-      //       width: 1,
-      //     },
-      //   },
-
-      //   axisLabel: {
-      //     color: theme.textPrimaryColor,
-      //     fontSize: isTablet ? 9 : isMobile ? 7 : 11,
-      //     margin: 7,
-      //     lineHeight: 15,
-      //     overflow: "breakAll",
-      //     // width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
-      //     formatter: (value: string) => {
-      //       const limite = this.showMaximizeButton ? 20 : 40;
-      //       return this.quebrarTexto(value, limite);
-      //     },
-      //   },
-      // },
-
       yAxis: {
         type: "category",
-        inverse: true, // Geralmente melhor para leitura de rankings/listas
+        inverse: true,
         data: data.map((d) => d.category),
         axisLine: { show: true },
-        axisTick: { show: false }, // Remover os tracinhos limpa o visual
+        axisTick: { show: false },
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,
-          margin: 15, // Aumenta o espaço entre o texto e a barra
-          lineHeight: 14, // Controla o espaço entre as linhas do mesmo texto
-          width: 120, // Define um limite horizontal para o texto
-          overflow: "breakAll", // Quebra o texto se passar da largura
-          align: "right", // Alinha o texto à direita para encostar na linha do eixo
+          margin: 15,
+          lineHeight: 14,
+          width: 120,
+          overflow: "breakAll",
+          align: "right",
           formatter: (value: string) => {
-            // Ajuste o limite de caracteres para algo menor, como 20 ou 25
             const limite = isMobile ? 15 : 18;
             return this.quebrarTexto(value, limite);
           },
@@ -294,14 +263,8 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         name: dataset.label,
         type: "bar",
         data: data.map((d) => d.valores[index]),
-
-        // 1. Controle de largura (espessura da barra)
         barWidth: "40%",
         barMaxWidth: 15,
-
-        // 2. IMPORTANTE: Remova ou reduza drasticamente o barMinHeight
-        // barMinHeight: 40, <-- Remova esta linha
-
         showBackground: true,
         backgroundStyle: {
           borderRadius: 10,
@@ -322,60 +285,6 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
           fontSize: 10,
         },
       })),
-
-      // series: chart.data.datasets.map((dataset, index) => ({
-      //   name: dataset.label,
-      //   label: {
-      //     position: "insideRight",
-      //     show: true,
-      //     formatter: function (params) {
-      //       return params.value + "%";
-      //     },
-      //     textBorderWidth: 0,
-      //     textShadowBlur: 0,
-      //     fontSize: 10,
-      //     offset: [3, 0],
-      //     color: theme.textSecondaryColor,
-      //   },
-      //   type: "bar",
-      //   data: data.map((d) => d.valores[index]),
-      //   showBackground: true,
-      //   itemStyle: {
-      //     color: colors[index],
-      //     borderRadius: 10,
-      //   },
-      //   barCategoryGap: "35%",
-      //   barGap: "35%",
-      //   barWidth: "40%",
-      //   barMaxWidth: 15,
-      //   barMinHeight: 40,
-      // })),
-
-      // dataZoom: [
-      //   {
-      //     type: "slider",
-      //     yAxisIndex: 0,
-      //     start: 0,
-      //     end: (9 / data.length) * 100,
-      //     zoomLock: true,
-      //     orient: "vertical",
-      //     handleSize: "50%",
-      //     width: 0,
-      //     left: "97%",
-      //     showDetail: false,
-      //     showDataShadow: false,
-      //     textStyle: {
-      //       fontSize: 0,
-      //     },
-      //   },
-      //   {
-      //     type: "inside",
-      //     yAxisIndex: 0,
-      //     start: 0,
-      //     end: (9 / data.length) * 100,
-      //     zoomLock: true,
-      //   },
-      // ],
     };
   }
 
@@ -445,18 +354,5 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return textoTratado;
-  }
-
-  private formatValue(value: number): string {
-    if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1) + "B";
-    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
-    return value.toString();
-  }
-
-  private formatNumber(value: number): string {
-    return `R$ ${value.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
   }
 }

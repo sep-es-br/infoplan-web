@@ -1,4 +1,4 @@
-<ngx-flip-table [showSearchField]="true"
+<ngx-flip-table
   [cardTitle]="title"
   [loadingStatus]="requestStatus"
   [tableContent]="tableContent"
@@ -6,7 +6,7 @@
   [backCardHeight]="500"
   (executeSearch)="handleTableSearch($event)"
   [showMaximizeButton]="true"
-  [showSearchField]="true"
+  [showSearchField]="false"
   (showMaximizeButtonClick)="onMaximizeButtonClick('grafico-total-ano-sigefes',$event)">
   <ngx-org-chart-vertical
     [chart]="chartData"

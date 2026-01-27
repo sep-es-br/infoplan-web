@@ -63,7 +63,8 @@ export interface ISPODashboardPo {
   uo: string;
   po: string;
   sigla: string;
-  nome: string;
+  nome_uo: string;
+  nome_po: string;
   vlr_previsto: number;
   vlr_contratado: number;
   vlr_autorizado: number;

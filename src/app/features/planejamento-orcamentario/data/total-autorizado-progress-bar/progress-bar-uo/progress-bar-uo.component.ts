@@ -12,6 +12,7 @@ import {
   FlipTableAlignment,
   FlipTableComponent,
   FlipTableContent,
+  TreeNode,
 } from "../../../../strategic-projects/flip-table-model/flip-table.component";
 import {
   ISPOTotalAutorizadoFilter,
@@ -25,6 +26,8 @@ import { IChartOptions } from "../../../../../shared/models/painel-orcamento/ICh
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import { ChartDataConfig } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
+import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
+import { replacePorcentage } from "../../../../../@core/utils/functionts/functionts";
 
 @Component({
   selector: "ngx-progress-bar-uo",
@@ -42,33 +45,37 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   responseTotalAutorizadoUo: ISPOTotalAutorizadoProgressUo[] = [];
-  private readonly _planejamentoOrcamentarioService =
-    inject(PlanejamentoOrcamentarioService);
-  private readonly _chartProcessor = inject(
-    ChartDataProcessorService
+  private readonly _planejamentoOrcamentarioService = inject(
+    PlanejamentoOrcamentarioService,
   );
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();
+  private searchSubject = new Subject<string>();
 
-    chartDataConfig: ChartDataConfig = {
-      legend: {
-        itemWidth: 13,
-        itemHeight: 13,
-        itemGap: 20,
-        fontSize: 12,
-      },
-      grid: {
-        top: "20%",
-        left: "5%",
-        right: "5%",
-        bottom: "0%",
-        containLabel: true,
-      },
-    };
+  chartDataConfig: ChartDataConfig = {
+    legend: {
+      itemWidth: 13,
+      itemHeight: 13,
+      itemGap: 20,
+      fontSize: 10,
+    },
+    grid: {
+      top: "10%",
+      left: "3%",
+      right: "3%",
+      bottom: "0%",
+      containLabel: true,
+    },
+  };
 
-  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
   ngOnInit() {
+    this.searchSubject
+      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((query) => {
+        this.executarFiltroTabela(query);
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -93,13 +100,39 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
             this.processarDados(data);
           }
           this.requestStatus = RequestStatus.SUCCESS;
-
         },
         error: (error) => {
           this.requestStatus = RequestStatus.ERROR;
           console.error("Error loading data:", error);
         },
       });
+  }
+
+  handleTableSearch(query: string): void {
+    this.searchSubject.next(query);
+  }
+
+  private buscarEmTexto(
+    search: string,
+    item: ISPOTotalAutorizadoProgressUo,
+  ): boolean {
+    return [item.nome_uo, item.cod, item.sigla?.toString()].some((campo) =>
+      campo?.toLowerCase().includes(search),
+    );
+  }
+
+  private executarFiltroTabela(query: string): void {
+    if (!query || query.length < 3) {
+      this.processarDados(this.responseTotalAutorizadoUo);
+      return;
+    }
+
+    const search = query.toLowerCase().trim();
+    const filtered = this.responseTotalAutorizadoUo.filter((item) =>
+      this.buscarEmTexto(search, item),
+    );
+
+    this.processarDados(filtered);
   }
 
   processarDados(dados: ISPOTotalAutorizadoProgressUo[]): void {
@@ -109,9 +142,13 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
       .reverse();
     this.chartData = {
       data: {
-        labels: top5Uo.map((d) => d.cod || d.sigla != null ? `${d.cod} - ${d.sigla}` : "Valor indefinido"),
+        labels: top5Uo.map((d) =>
+          d.cod || d.sigla != null
+            ? `${d.cod} - ${d.sigla}`
+            : "Valor indefinido",
+        ),
         nomeUO: top5Uo.map((d) => d.nome_uo || "Nome não disponível"),
-        tipoTooltip: 'UO',
+        tipoTooltip: "UO",
         datasets: [
           {
             label: "Empenhado (% Autorizado)",
@@ -129,13 +166,13 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
             backgroundColor: "#F77D00",
           },
         ],
-      }
+      },
     };
     this.processarTabela(dados);
   }
 
   private processarTabela(
-    dados: ISPOTotalAutorizadoProgressUo | ISPOTotalAutorizadoProgressUo[]
+    dados: ISPOTotalAutorizadoProgressUo | ISPOTotalAutorizadoProgressUo[],
   ): void {
     const dadosArray = Array.isArray(dados) ? dados : [dados];
 
@@ -147,15 +184,15 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "Empenhado",
-          value: item.porcentagem_empenhado,
+          value: `${item.porcentagem_empenhado}%`,
         },
         {
           propertyName: "Liquidado",
-          value: item.porcentagem_liquidado,
+          value: `${item.porcentagem_liquidado}%`,
         },
         {
           propertyName: "Pago",
-          value: item.porcentagem_pago_sem_rap,
+          value: `${item.porcentagem_pago_sem_rap}%`,
         },
       ],
     }));
@@ -163,7 +200,7 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
     this.tableContent = {
       customColumn: {
         propertyName: "nome",
-        displayName: "Empenhado, Liquidado e Pago sem RAP (% Autorizado)",
+        displayName: "UO - Unidade Orçamentária",
         alignment: {
           header: FlipTableAlignment.LEFT,
           data: FlipTableAlignment.LEFT,
@@ -199,6 +236,54 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
+  handleTableDownload(): void {
+    if (!this.tableContent) return;
+
+    const columns = [
+      {
+        key: this.tableContent.customColumn.propertyName,
+        label:
+          this.tableContent.customColumn.displayName ||
+          "UO - Unidade orçamentária",
+      },
+    ];
+
+    this.tableContent.defaultColumns.forEach((col) => {
+      columns.push({
+        key: col.propertyName,
+        label: col.displayName,
+      });
+    });
+
+
+    const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
+      const row: any = {};
+
+      node.data.forEach(
+        (prop: { propertyName: string; value: string | "" }) => {
+          const { propertyName, value } = prop;
+
+          const cleanValue =
+            typeof value === "string" && value.includes("%")
+              ? replacePorcentage(value)
+              : value;
+
+          row[propertyName] = cleanValue;
+        },
+      );
+
+      return row;
+    });
+
+    const fileName = `Empenhado_Liquidado_E_Pago_Sem_RAP_(% Autorizado)_OU.xlsx`;
+
+    this._exportDataService.exportXLSXWithCustomHeaders(
+      dataForDownload,
+      columns,
+      fileName,
+    );
+  }
+
   onMaximizeButtonClick(chartId: string, event: boolean): void {
     this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
   }
@@ -210,6 +295,4 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
   calcMaximizedHeight(): number {
     return this._chartMaximizeService.calcMaximizedHeight();
   }
-
-  handleTableDownload(): void {}
 }

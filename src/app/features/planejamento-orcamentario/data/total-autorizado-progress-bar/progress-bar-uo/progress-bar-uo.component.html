@@ -4,6 +4,7 @@
   [loadingStatus]="requestStatus"
   [tableContent]="tableContent"
   (executeDownload)="handleTableDownload()"
+  (executeSearch)="handleTableSearch($event)"
   [backCardHeight]="500"
   [showMaximizeButton]="true"
   (showMaximizeButtonClick)="onMaximizeButtonClick('progress-bar-uo',$event)">

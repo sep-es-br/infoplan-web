@@ -186,7 +186,6 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
       };
     });
 
-    // Criar linha de totais
     const totalNodeData = [
       {
         propertyName: "categoria",
@@ -205,7 +204,6 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
       });
     });
 
-    // Adicionar variação total
     if (anos.length >= 2) {
       const totalAnoAnterior = dados
         .filter((d) => d.ano === anos[0])
@@ -225,7 +223,6 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
       });
     }
 
-    // Adicionar linha de total aos dados
     treeNodes.push({
       data: totalNodeData,
       children: [],
@@ -267,6 +264,7 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
       data: treeNodes,
     };
   }
+
   private calcularVariacao(
     categoria: string,
     anos: number[],

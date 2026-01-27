@@ -30,6 +30,8 @@ import { PlanejamentoOrcamentarioService } from "../../../../../core/service/pla
 import { Subject } from "rxjs";
 import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
+import { converterToNumber } from "../../../../../@core/utils/functionts/functionts";
+import { UtilitiesService } from "../../../../../core/service/utilities.service";
 
 @Component({
   selector: "ngx-dashboard-po",
@@ -55,10 +57,10 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   dasboardResponse: ISPODashboardPo[] = [];
-  // this.subTitulo = `Filtro anual • ${this.filter?.ano}`
   private searchSubject = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
   private readonly _zone = inject(NgZone);
+   private readonly _utilitiesService = inject(UtilitiesService);
 
   chartDataConfig: ChartDataConfig = {
     legend: { fontSize: 12, itemHeight: 13, itemWidth: 13, itemGap: 20 },
@@ -143,24 +145,23 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private processarDados(dados: ISPODashboardPo[]): void {
-    // 1. Cálculos pesados (Sort, Map, Filter) ocorrem aqui (fora da zona)
     const top5 = [...dados]
       .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
       .slice(0, 5)
       .reverse();
 
-    const labels = top5.map((d) => `${d.sigla} - ${d.po}`);
+    const labels = top5.map((d) => `${d.sigla} - ${d.nome_po}`);
     const planejado = top5.map((d) => d.vlr_previsto || 0);
     const contratado = top5.map((d) => d.vlr_contratado || 0);
     const autorizado = top5.map((d) => d.vlr_autorizado || 0);
 
-    // 2. Só voltamos para a zona do Angular no momento de atualizar as variáveis de tela
     this._zone.run(() => {
       this.chartData = {
         data: {
           labels: labels,
           tipoTooltip: "PO",
-          nomePO: top5.map((d) => d.nome),
+          nomePO: top5.map((d) => d.nome_po),
+          nomeUO: top5.map((d) => d.nome_uo),
           datasets: [
             {
               label: "Planejado",
@@ -194,18 +195,18 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     );
     const linhasTabela = dadosOrdenados.map((item) => ({
       data: [
-        { propertyName: "nome", value: `${item.uo} - ${item.nome}` },
+        { propertyName: "nome", value: `${item.uo} - ${item.nome_po}` },
         {
           propertyName: "planejado",
-          value: this.formatarMoeda(item.vlr_previsto),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_previsto, "R$"),
         },
         {
           propertyName: "contratado",
-          value: this.formatarMoeda(item.vlr_contratado),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_contratado, "R$"),
         },
         {
           propertyName: "autorizado",
-          value: this.formatarMoeda(item.vlr_autorizado),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_autorizado, "R$"),
         },
       ],
     }));
@@ -222,7 +223,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       defaultColumns: [
         {
           propertyName: "planejado",
-          displayName: "Planejado",
+          displayName: "Planejado (R$)",
           alignment: {
             header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,
@@ -230,7 +231,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "contratado",
-          displayName: "Contratado",
+          displayName: "Contratado (R$)",
           alignment: {
             header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,
@@ -238,7 +239,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "autorizado",
-          displayName: "Autorizado",
+          displayName: "Autorizado (R$)",
           alignment: {
             header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,
@@ -247,14 +248,6 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       ],
       data: linhasTabela,
     };
-  }
-  private formatarMoeda(valor: number | null | undefined): string {
-    if (!valor && valor !== 0) return "0,00";
-
-    return valor.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).replace("R$", "");
   }
 
   handleTableSearch(query: string): void {
@@ -270,10 +263,9 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     const search = query.toLowerCase().trim();
     const filtered = this.dasboardResponse.filter(
       (item) =>
-        item.nome.toLowerCase().includes(search) ||
-        item.uo.toLowerCase().includes(search) ||
-        item.sigla.toLowerCase().includes(search) ||
-        item.po.toLowerCase().includes(search)
+        item.nome_po.toLowerCase().includes(search) ||
+        item.po.toLowerCase().includes(search) ||
+        item.sigla.toLowerCase().includes(search)
     );
 
     this.processarDados(filtered);
@@ -296,12 +288,8 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
         if (
           ["planejado", "contratado", "autorizado"].includes(item.propertyName)
         ) {
-          // Remove "R$" e pega apenas o valor numérico
-          const valorNumerico = this.extrairValorNumerico(item.value);
-          row[item.propertyName] = valorNumerico.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
+          const valorNumerico = converterToNumber(item.value);
+          row[item.propertyName] = valorNumerico;
         } else {
           row[item.propertyName] = item.value;
         }
@@ -317,15 +305,4 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  private extrairValorNumerico(valorFormatado: string): number {
-    if (!valorFormatado) return 0;
-
-    const valorLimpo = valorFormatado
-      .replace("R$", "")
-      .replace(/\s/g, "")
-      .replace(/\./g, "")
-      .replace(",", ".");
-
-    return parseFloat(valorLimpo) || 0;
-  }
 }

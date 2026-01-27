@@ -31,6 +31,8 @@ import {
 } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { OrgChartVerticalComponent } from "../../../../painel-orcamento/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
+import { UtilitiesService } from "../../../../../core/service/utilities.service";
+import { converterToNumber } from "../../../../../@core/utils/functionts/functionts";
 
 @Component({
   selector: "ngx-grafico-total-ano-sigefes",
@@ -76,13 +78,14 @@ export class GraficoTotalAnoSigefesComponent
   };
 
   private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService: ExportDataService =
+  private readonly _exportDataService =
     inject(ExportDataService);
-  private readonly _chartMaximizeService: ChartMaximizeService =
+  private readonly _chartMaximizeService =
     inject(ChartMaximizeService);
   private readonly _planejamentoService = inject(
     PlanejamentoOrcamentarioService
   );
+  private readonly _utilitiesService = inject(UtilitiesService);
 
   private readonly destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
@@ -93,14 +96,16 @@ export class GraficoTotalAnoSigefesComponent
   constructor() {}
 
   ngOnInit(): void {
-    // Inicializa o ouvinte de busca com debounce
     this.searchSubject
-      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
       .subscribe((query) => {
         this.executarFiltroTabela(query);
       });
 
-    // Calcula altura inicial
     this.maximizedHeight = this._chartMaximizeService.calcMaximizedHeight();
   }
 
@@ -162,18 +167,15 @@ export class GraficoTotalAnoSigefesComponent
     this._zone.runOutsideAngular(() => {
     const chartConfig: IChartOptions = {
       data: {
-        // O eixo X deve mostrar os anos: ["2024", "2025"]
         labels: dados.map((d) => d.ano.toString()),
 
         datasets: [
           {
-            // Primeira coluna de cada ano
             label: 'Pago',
             data: dados.map((d) => d.vlr_pago_sem_rap || 0),
             backgroundColor: this._chartProcessor.colors[20],
           },
           {
-            // Segunda coluna de cada ano
             label: 'Pago com RAP',
             data: dados.map((d) => d.vlr_pago_com_rap || 0),
             backgroundColor: this._chartProcessor.colors[19],
@@ -181,7 +183,6 @@ export class GraficoTotalAnoSigefesComponent
         ],
       },
     };
-      // Volta para a zona apenas para atualizar a UI
       this._zone.run(() => {
         this.chartData = chartConfig;
         this.processarTabela(dados);
@@ -203,11 +204,11 @@ export class GraficoTotalAnoSigefesComponent
         },
         {
           propertyName: "pago",
-          value: this.formatarMoeda(item.vlr_pago_sem_rap),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_pago_sem_rap, "R$"),
         },
         {
           propertyName: "pago_com_rap",
-          value: this.formatarMoeda(item.vlr_pago_com_rap),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_pago_com_rap, "R$"),
         },
       ],
     }));
@@ -215,7 +216,7 @@ export class GraficoTotalAnoSigefesComponent
     this.tableContent = {
       customColumn: {
         propertyName: "ano",
-        displayName: "Evolução dos Valores por Ano",
+        displayName: "Ano",
         alignment: {
           header: FlipTableAlignment.LEFT,
           data: FlipTableAlignment.LEFT,
@@ -224,7 +225,7 @@ export class GraficoTotalAnoSigefesComponent
       defaultColumns: [
         {
           propertyName: "pago_com_rap",
-          displayName: "Pago com RAP",
+          displayName: "Pago com RAP (R$)",
           alignment: {
             header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,
@@ -232,7 +233,7 @@ export class GraficoTotalAnoSigefesComponent
         },
         {
           propertyName: "pago",
-          displayName: "Pago",
+          displayName: "Pago (R$)",
           alignment: {
             header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,
@@ -241,15 +242,6 @@ export class GraficoTotalAnoSigefesComponent
       ],
       data: linhasTabela,
     };
-  }
-
-  private formatarMoeda(valor: number | null | undefined): string {
-    if (!valor && valor !== 0) return "0,00";
-
-    return valor.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).replace("R$", "");
   }
 
   handleTableSearch(query: string): void {
@@ -275,14 +267,8 @@ export class GraficoTotalAnoSigefesComponent
       const row: any = {};
 
       node.data.forEach((item) => {
-        // Formata valores monetários (previsto, contratado, autorizado)
         if (["pago", "pago_com_rap"].includes(item.propertyName)) {
-          // Remove "R$" e pega apenas o valor numérico
-          const valorNumerico = this.extrairValorNumerico(item.value);
-          row[item.propertyName] = valorNumerico.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
+          row[item.propertyName] = converterToNumber(item.value);
         } else {
           row[item.propertyName] = item.value;
         }
@@ -296,18 +282,6 @@ export class GraficoTotalAnoSigefesComponent
       columns,
       `Evolução_dos_Valores_por_Ano_Sigefes.xlsx`
     );
-  }
-
-  private extrairValorNumerico(valorFormatado: string): number {
-    if (!valorFormatado) return 0;
-
-    const valorLimpo = valorFormatado
-      .replace("R$", "")
-      .replace(/\s/g, "")
-      .replace(/\./g, "")
-      .replace(",", ".");
-
-    return parseFloat(valorLimpo) || 0;
   }
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {

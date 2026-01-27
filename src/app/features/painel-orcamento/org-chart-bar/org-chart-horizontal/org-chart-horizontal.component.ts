@@ -173,8 +173,12 @@ export class OrgChartHorizontalComponent
         axisPointer: { type: "shadow" },
         backgroundColor: theme.themePrimaryColor,
         borderColor: theme.themePrimaryColor,
-        textStyle: { color: theme.textPrimaryColor },
+        textStyle: {
+          color: theme.textPrimaryColor,
+          fontSize: 12
+        },
         confine: true,
+        extraCssText: 'white-space: normal; word-break: break-all; max-width: 610px;',
         formatter: (params: any) => {
           if (!params || params.length === 0) return "";
 
@@ -192,7 +196,7 @@ export class OrgChartHorizontalComponent
             const uo =
               (dataRef.nomeUO && dataRef.nomeUO[index]) ||
               "UO não identificada";
-            tituloTooltip = `<span>${uo}</span> - <small>${po}</small>`;
+            tituloTooltip = `${uo} - ${po} &nbsp;`;
           } else {
             const labelOriginal = params[0].name || "";
             const codigo = labelOriginal.includes(" - ")
@@ -204,19 +208,19 @@ export class OrgChartHorizontalComponent
                 ? String(dataRef.nomeUO[index]).trim()
                 : "";
             let partes = [];
-            if (codigo) partes.push(`<span>${codigo}</span>`);
-            if (uo) partes.push(`<small>${uo}</small>`);
+            if (codigo) partes.push(`${codigo} - `);
+            if (uo) partes.push(`${uo} &nbsp;`);
 
             tituloTooltip = partes.join(" ");
           }
 
-          let tooltip = `${tituloTooltip}<br>`;
+          let tooltip = `${tituloTooltip} </br>`;
 
           params.forEach((p: any) => {
             const valorRaw =
               p.value !== undefined && p.value !== null ? p.value : 0;
             const valorFormatado = this.formatNumber(valorRaw);
-            tooltip += `<span>${p.seriesName}: <span>${valorFormatado}</span></span><br>`;
+            tooltip += `${p.seriesName}: ${valorFormatado} &nbsp;`;
           });
 
           return tooltip;

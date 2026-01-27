@@ -196,7 +196,7 @@ export class OrgChartHorizontalComponent
             const uo =
               (dataRef.nomeUO && dataRef.nomeUO[index]) ||
               "UO não identificada";
-            tituloTooltip = `${uo} - ${po} &nbsp;`;
+            tituloTooltip = `${uo} - ${po} &nbsp;&nbsp;`;
           } else {
             const labelOriginal = params[0].name || "";
             const codigo = labelOriginal.includes(" - ")
@@ -209,7 +209,7 @@ export class OrgChartHorizontalComponent
                 : "";
             let partes = [];
             if (codigo) partes.push(`${codigo} - `);
-            if (uo) partes.push(`${uo} &nbsp;`);
+            if (uo) partes.push(`${uo} &nbsp;&nbsp;`);
 
             tituloTooltip = partes.join(" ");
           }
@@ -220,7 +220,7 @@ export class OrgChartHorizontalComponent
             const valorRaw =
               p.value !== undefined && p.value !== null ? p.value : 0;
             const valorFormatado = this.formatNumber(valorRaw);
-            tooltip += `${p.seriesName}: ${valorFormatado} &nbsp;`;
+            tooltip += `${p.seriesName}: ${valorFormatado} </br>`;
           });
 
           return tooltip;

@@ -86,3 +86,21 @@ $nb-themes: nb-register-theme((
   slide-out-shadow-color: 0 4px 14px 0 #8f9bb3,
   slide-out-shadow-color-rtl: 0 4px 14px 0 #8f9bb3,
 ), dark, dark);
+
+$nb-themes: nb-register-theme((
+  // Customização para o tema Light (Claro)
+  menu-text-color: #000000 ,
+  // menu-item-hover-text-color: #4EB6D2,
+  // menu-item-active-text-color: #4EB6D2,
+  menu-item-hover-cursor: pointer,
+), default, default);
+
+$nb-themes: nb-register-theme((
+  // Customização para o tema Cosmic
+  menu-text-color: #e1e2e4,
+  menu-item-hover-text-color: #a16eff,
+), cosmic, cosmic);
+
+$nb-themes: nb-register-theme((
+  menu-text-color: #e1e2e4,
+), dark, dark);

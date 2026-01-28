@@ -28,7 +28,6 @@ export class PagesComponent implements OnInit {
     private themeService: NbThemeService
   ) {
     let currentTheme = localStorage.getItem("infoPlanCurrentTheme");
-
     if (currentTheme) {
       this.themeService.changeTheme(currentTheme);
     } else {
@@ -92,7 +91,11 @@ export class PagesComponent implements OnInit {
     const mergedIcons = { ...customIcons, ...icones };
     this.iconsLibrary.registerSvgPack("custom-icons", mergedIcons, icones);
 
-    this.menu = MENU_ITEMS;
+    // this.menu = MENU_ITEMS;
+    this.menu = [...MENU_ITEMS].sort((a, b) => {
+      return Number(a.isExternalUrl) - Number(b.isExternalUrl);
+    });
+
     this.setIconStyles();
     this.setInitialActiveItem();
 

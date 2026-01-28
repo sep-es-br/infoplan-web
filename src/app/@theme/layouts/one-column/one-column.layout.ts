@@ -30,7 +30,7 @@ export class OneColumnLayoutComponent implements AfterViewInit {
   handleScreenClick(event: Event): void {
     const menuSidebarContainsClick = this.menuSidebar.element.nativeElement.contains(event.target);
     const headerContainsClick = this.pageHeader.getHeaderBoxReference().nativeElement.contains(event.target);
-    
+
     if (
       window.innerWidth < 576 &&
       this.menuSidebar &&

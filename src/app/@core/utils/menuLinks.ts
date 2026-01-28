@@ -23,13 +23,15 @@ export const menulinks = [
   {
     id: 1,
     status: checkRoles(environment.allowedRoles.indicadores),
-    name: "Indicadores",
+    name: "Indicadores Estratégicos",
     link: "",
     url: environment.urls.indicadores,
     icon: "menu-icone-indicadores.svg",
     src: "Indicadores Admin",
     menuIcon: "",
     color: "#5e759f",
+    isExternal: true,
+    subTitle: "Link externo para o Painel de Indicadores Estratégicos do Governo do Espírito Santo"
   },
   {
     id: 2,
@@ -41,6 +43,8 @@ export const menulinks = [
     src: "Siscap",
     menuIcon: "",
     color: "#F09BBE",
+    isExternal: false,
+    subTitle: "Siscap - Sistema de Captação de Recursos"
   },
   {
     id: 3,
@@ -52,6 +56,8 @@ export const menulinks = [
     src: "Sigefes/SAS Sefaz",
     menuIcon: "",
     color: "#0478ce",
+    isExternal: true,
+    subTitle: "Link externo para o Painéis SAS(Sigefes)"
   },
   {
     id: 4,
@@ -64,6 +70,7 @@ export const menulinks = [
     menuIcon: "",
     color: "#44B39B",
     subTitle: "Portfólio Realiza+",
+    isExternal: false
   },
   {
     id: 5,
@@ -75,6 +82,7 @@ export const menulinks = [
     src: "Sigefes/BI SEP",
     menuIcon: "",
     color: "red",
+    isExternal: false
   },
   {
     id: 6,
@@ -86,7 +94,8 @@ export const menulinks = [
     src: "Programa Estado Presente",
     menuIcon: "",
     color: "#f7a600ff",
-    subTitle: "Mapa das Principais Entregas",
+    subTitle: "Link externo para o mapa das principais entregas do Programa Estado Presente",
+    isExternal: true
   },
   {
     id: 7,
@@ -99,6 +108,7 @@ export const menulinks = [
     menuIcon: "",
     color: "#4DB6D2",
     subTitle: "Execução Orçamentária",
+    isExternal: false
   },
     {
     id: 8,
@@ -112,5 +122,6 @@ export const menulinks = [
     menuIcon: "",
     color: "#9780ad ",
     subTitle: "Sistema de Planejamento Orçamentário",
+    isExternal: false
   },
 ];

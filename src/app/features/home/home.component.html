@@ -1,10 +1,11 @@
 <div class="container">
-  <div class="align-content-center">
-    <div class="row justify-content-center card-outer-format">
+  <div class="align-content-start">
+    <div class="row justify-content-start card-outer-format">
       <ng-container *ngFor="let menuItem of menulinks">
-        <div class="col-10 col-md-6 col-xxl-4 mt-2">
+        <div class="col-12 col-md-6 col-xxl-4 mt-2">
           <nb-card
             class="d-flex flex-column p-4 rounded"
+            [ngClass]="{ 'card-external': menuItem.isExternal }"
             (click)="handleClick(menuItem.id)"
           >
             <div class="d-flex justify-content-end w-100 icon-box">
@@ -17,11 +18,11 @@
             </div>
             <div class="d-flex flex-column flex-md-row">
               <nb-card-header
-                class="d-flex align-items-center justify-content-center col-12 col-md-2 p-0 mb-2 mb-md-0 header"
+                class="d-flex align-items-start justify-content-start col-12 col-md-2 p-0 mb-2 mb-md-0 header"
               >
                 <div class="img-box">
                   <img
-                    class="p-2 rounded"
+                    class="img-box p-2 rounded"
                     [ngStyle]="{
                       'background-color': menuItem.status
                         ? menuItem.color
@@ -34,18 +35,20 @@
               </nb-card-header>
               <div class="d-flex flex-column col-12 col-md-10">
                 <nb-card-body
-                  class="body d-flex flex-column align-items-center align-items-md-start p-0 ps-md-4"
+                  class="body d-flex flex-column align-items-start align-items-md-start p-0 pe-4 ps-md-3"
                 >
                   <div
-                    class="d-flex w-100 justify-content-center justify-content-md-start"
+                    class="title d-flex w-100 justify-content-start justify-content-md-start"
                   >
                     <span class="title">{{ menuItem.name }}</span>
                   </div>
-                  <span *ngIf="menuItem.subTitle" class="subtitle">
+                  <div class="subtitle d-flex w-100 justify-content-start justify-content-md-start">
+                    <span *ngIf="menuItem.subTitle" class="subtitle">
                     {{ menuItem.subTitle }}
-                  </span>
+                    </span>
+                  </div>
                 </nb-card-body>
-                <nb-card-footer class="footer p-0 mt-2 text-end">
+                <nb-card-footer class="footer p-0 text-end">
                   <span class="italic">Fonte: {{ menuItem.src }}</span>
                 </nb-card-footer>
               </div>

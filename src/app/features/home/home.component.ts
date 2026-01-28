@@ -10,8 +10,10 @@ import { menulinks } from '../../@core/utils/menuLinks';
 export class HomeComponent  {
   menulinks = menulinks;
 
-  constructor(private router: Router) { 
-    this.menulinks = this.menulinks.filter(item => item.status);
+  constructor(private router: Router) {
+    this.menulinks = this.menulinks
+      .filter(item => item.status)
+      .sort((a,b) => Number(a.isExternal) - Number(b.isExternal));
   }
 
   handleClick(id: number) {

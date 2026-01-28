@@ -243,9 +243,9 @@ export class OrgChartHorizontalComponent
 
       grid: {
         top: this.ChartDataConfig?.grid?.top || "5%",
-        left: this.ChartDataConfig?.grid?.left || "5%",
+        left: this.ChartDataConfig?.grid?.left || "10%",
         right: this.ChartDataConfig?.grid?.right || "10%",
-        bottom: this.ChartDataConfig?.grid?.bottom || "5%",
+        bottom: this.ChartDataConfig?.grid?.bottom || "20%",
         containLabel: this.ChartDataConfig?.grid?.containLabel || true,
       },
 

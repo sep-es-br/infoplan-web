@@ -26,9 +26,7 @@ import {
   FlipTableComponent,
   FlipTableContent,
 } from "../../../../strategic-projects/flip-table-model/flip-table.component";
-import {
-  ChartDataConfig,
-} from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { ChartDataConfig } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { OrgChartVerticalComponent } from "../../../../painel-orcamento/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
 import { UtilitiesService } from "../../../../../core/service/utilities.service";
@@ -78,12 +76,10 @@ export class GraficoTotalAnoSigefesComponent
   };
 
   private readonly _chartProcessor = inject(ChartDataProcessorService);
-  private readonly _exportDataService =
-    inject(ExportDataService);
-  private readonly _chartMaximizeService =
-    inject(ChartMaximizeService);
+  private readonly _exportDataService = inject(ExportDataService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly _planejamentoService = inject(
-    PlanejamentoOrcamentarioService
+    PlanejamentoOrcamentarioService,
   );
   private readonly _utilitiesService = inject(UtilitiesService);
 
@@ -97,11 +93,7 @@ export class GraficoTotalAnoSigefesComponent
 
   ngOnInit(): void {
     this.searchSubject
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
+      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe((query) => {
         this.executarFiltroTabela(query);
       });
@@ -157,7 +149,7 @@ export class GraficoTotalAnoSigefesComponent
 
     const search = query.toLowerCase().trim();
     const filtered = this.dasboardResponse.filter((item) =>
-      this.buscarEmTexto(search, item)
+      this.buscarEmTexto(search, item),
     );
 
     this.processarDados(filtered);
@@ -165,24 +157,29 @@ export class GraficoTotalAnoSigefesComponent
 
   private processarDados(dados: ISPOTotalAnoSigefes[]): void {
     this._zone.runOutsideAngular(() => {
-    const chartConfig: IChartOptions = {
-      data: {
-        labels: dados.map((d) => d.ano.toString()),
+      console.log(
+        "qweqwe",
+        dados.map((d) => `${d.ano}`),
+      );
 
-        datasets: [
-          {
-            label: 'Pago',
-            data: dados.map((d) => d.vlr_pago_sem_rap || 0),
-            backgroundColor: this._chartProcessor.colors[20],
-          },
-          {
-            label: 'Pago com RAP',
-            data: dados.map((d) => d.vlr_pago_com_rap || 0),
-            backgroundColor: this._chartProcessor.colors[19],
-          },
-        ],
-      },
-    };
+      const chartConfig: IChartOptions = {
+        data: {
+          labels: dados.map((d) => `${d.ano}`),
+
+          datasets: [
+            {
+              label: "Pago",
+              data: dados.map((d) => d.vlr_pago_sem_rap || 0),
+              backgroundColor: this._chartProcessor.colors[20],
+            },
+            {
+              label: "Pago com RAP",
+              data: dados.map((d) => d.vlr_pago_com_rap || 0),
+              backgroundColor: this._chartProcessor.colors[19],
+            },
+          ],
+        },
+      };
       this._zone.run(() => {
         this.chartData = chartConfig;
         this.processarTabela(dados);
@@ -192,7 +189,7 @@ export class GraficoTotalAnoSigefesComponent
   }
 
   private processarTabela(
-    dados: ISPOTotalAnoSigefes | ISPOTotalAnoSigefes[]
+    dados: ISPOTotalAnoSigefes | ISPOTotalAnoSigefes[],
   ): void {
     const dadosArray = Array.isArray(dados) ? dados : [dados];
 
@@ -204,11 +201,17 @@ export class GraficoTotalAnoSigefesComponent
         },
         {
           propertyName: "pago",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_pago_sem_rap, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            item.vlr_pago_sem_rap,
+            "R$",
+          ),
         },
         {
           propertyName: "pago_com_rap",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_pago_com_rap, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            item.vlr_pago_com_rap,
+            "R$",
+          ),
         },
       ],
     }));
@@ -250,7 +253,7 @@ export class GraficoTotalAnoSigefesComponent
 
   private buscarEmTexto(search: string, item: ISPOTotalAnoSigefes): boolean {
     return [item.ano?.toString()].some((campo) =>
-      campo?.toLowerCase().includes(search)
+      campo?.toLowerCase().includes(search),
     );
   }
 
@@ -280,7 +283,7 @@ export class GraficoTotalAnoSigefesComponent
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      `Evolução_dos_Valores_por_Ano_Sigefes.xlsx`
+      `Evolução_dos_Valores_por_Ano_Sigefes.xlsx`,
     );
   }
 

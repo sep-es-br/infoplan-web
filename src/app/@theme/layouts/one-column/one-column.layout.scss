@@ -12,6 +12,10 @@
   height: 100%;
 }
 
+// ::ng-deep nb-sidebar {
+//   background-color: rgba(245, 245, 245, 0);
+// }
+
 ::ng-deep nb-layout-footer {
   box-shadow: none !important;
 }

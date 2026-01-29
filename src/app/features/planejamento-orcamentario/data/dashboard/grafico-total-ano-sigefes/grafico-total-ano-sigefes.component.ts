@@ -157,10 +157,6 @@ export class GraficoTotalAnoSigefesComponent
 
   private processarDados(dados: ISPOTotalAnoSigefes[]): void {
     this._zone.runOutsideAngular(() => {
-      console.log(
-        "qweqwe",
-        dados.map((d) => `${d.ano}`),
-      );
 
       const chartConfig: IChartOptions = {
         data: {

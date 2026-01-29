@@ -486,11 +486,9 @@ export class ReceitaDespesaGndComponent
             .trim();
           row[`liquidado_${ano}`] = converterToNumber(value);
         } else if (propertyName.startsWith("Pago com RAP -")) {
-          console.log("propertyName: PAGO", propertyName)
           const ano = propertyName.replace("Pago com RAP -", "").trim();
           row[`pago_rap_${ano}`] = converterToNumber(value);;
         } else if (propertyName === "Variação Liquidado") {
-          console.log("propertyName: liquidado", propertyName)
           row["variacao_liquidado"] = replacePorcentage(value);;
         } else if (propertyName === "Variação Pago RAP") {
           row["variacao_pago_rap"] = replacePorcentage(value);;

@@ -315,7 +315,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       ) || 0;
     this.totals.totalRestosAPagar =
       this.totalAutorizadoResponse?.reduce(
-        (total, item) => total + item.pago_sem_rap,
+        (total, item) => total + item.pago_com_rap,
         0
       ) || 0;
   }

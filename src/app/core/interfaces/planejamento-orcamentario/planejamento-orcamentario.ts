@@ -30,7 +30,7 @@ export interface ISPOTotalAutorizadoDTO {
   empenhado: number;
   liquidado: number;
   pago: number;
-  pago_sem_rap: number;
+  pago_com_rap: number;
 }
 
 export interface ISPOTotalPrevistoDTO {

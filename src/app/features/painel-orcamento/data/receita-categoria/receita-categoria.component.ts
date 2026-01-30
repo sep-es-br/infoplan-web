@@ -75,6 +75,8 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     if (changes["filter"] && this.filter) {
       this.loadData();
     }
+      this.chartDataConfig.showMaximizeButton = this.isChartMaximized('receita-categoria');
+
   }
 
   ngOnDestroy(): void {
@@ -268,7 +270,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     const temVariacao = this.tableContent.defaultColumns.some(
       (col) => col.propertyName === "variação",
     );
-    console.log("eqweqeqw", this.tableContent);
+
     const columns = [
       {
         key: "categoria",
@@ -294,7 +296,6 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       // Processar cada propriedade do nó
       node.data.forEach((prop: { propertyName: string; value: any }) => {
         const { propertyName, value } = prop;
-        console.log("dasda", prop, "  ", " value: ", value)
         if (propertyName === "categoria") {
           row["categoria"] = value;
         } else if (propertyName.startsWith("ano_")) {

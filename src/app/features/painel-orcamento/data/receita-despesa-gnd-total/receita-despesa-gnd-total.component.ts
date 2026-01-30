@@ -107,7 +107,6 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
 
     this.filter.codPoder = poderes.join(",");
     this.getReceitaDespesaGNDTotal();
-    console.log("UPDATE FOI ACIONADO ", this.getReceitaDespesaGNDTotal());
     this.processTableData(this.receitaDespesaGNDTotal);
   }
 

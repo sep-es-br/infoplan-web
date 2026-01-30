@@ -103,6 +103,8 @@
                     >
                       <nb-option
                         *ngFor="let ano of yearsList"
+                        [nbTooltip]="(ano.num >= 2014 && ano.num <= 2022) ? 'Apenas despesas' : 'Receitas e despesas'"
+                        tooltipPlacement="top"
                         [value]="ano.num"
                       >
                         {{ ano.num }}

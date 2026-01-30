@@ -396,8 +396,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     const receitaDespesa = this.receitaDespesaGNDTotalOrcamento || [];
     const primeiroItem = receitaDespesa[0];
     const segundoItem = receitaDespesa[1];
-    console.log("RECEITAS: ", receitaDespesa)
-    console.log("prevista ", this.receitaTotal)
+
     this.totals = {
       porcentagemReceitaRealizadaPrevista: this.receitaTotal?.porcentagem || 0,
       porcentagemReceitaEmpenhadaAutorizada:

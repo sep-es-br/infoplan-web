@@ -61,8 +61,8 @@
 
     .card-title {
       color: var(--card-text-color);
-      font-size: 0.9rem;
-      font-weight: var(--layout-text-font-weight);
+      font-size: 1rem;
+      font-weight: 600;
     }
 
     .sub-card-title {
@@ -140,7 +140,7 @@
           }
 
           th {
-            font-size: 12px !important;
+            font-size: 13px !important;
             // padding: 0;
             padding-left: .5em;
             padding-right: .5em;
@@ -166,7 +166,7 @@
           }
 
           td {
-            font-size: 10px !important;
+            font-size: 12px !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;
@@ -193,7 +193,7 @@
           }
 
           th {
-            font-size: 12px !important;
+            font-size: 18px !important;
             padding: 0;
             padding-left: .5em;
             padding-right: .5em;
@@ -220,7 +220,7 @@
           }
 
           td {
-            font-size: 10px !important;
+            font-size: 14px !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;

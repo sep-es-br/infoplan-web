@@ -42,7 +42,6 @@ export class UtilitiesService {
     }
 
     if (originalInText.length > 2) {
-      console.log(`${originalInText.slice(0, 2)},${originalInText.slice(2, 4)} ${suffix}`)
       return `${originalInText.slice(0, 2)},${originalInText.slice(2, 4)} ${suffix}`;
     }
     return originalInText;

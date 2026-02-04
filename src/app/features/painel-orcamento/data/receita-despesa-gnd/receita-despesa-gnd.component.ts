@@ -261,7 +261,6 @@ export class ReceitaDespesaGndComponent
       return { data: nodeData, children: [], expanded: false };
     });
 
-    // Criar linha de totais
     const totalNodeData = [
       {
         propertyName: "categoria",
@@ -291,7 +290,6 @@ export class ReceitaDespesaGndComponent
       });
     });
 
-    // Adicionar variações totais
     if (anos.length >= 2) {
       const totaisAnoAnterior = dados
         .filter((d) => d.ano === anos[0])
@@ -342,7 +340,6 @@ export class ReceitaDespesaGndComponent
       });
     }
 
-    // Adicionar linha de total aos dados
     treeNodes.push({
       data: totalNodeData,
       children: [],
@@ -471,6 +468,7 @@ export class ReceitaDespesaGndComponent
         { key: "variacao_pago_rap", label: "Variação Pago RAP" },
       );
     }
+
 
     const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};

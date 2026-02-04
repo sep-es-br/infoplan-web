@@ -28,6 +28,7 @@ import {
 } from "../../core/service/chart-maximize/chart-maximize.service";
 import { PainelOrcamentoService } from "../../core/service/painel-orcamento/painel-orcamento.service";
 import { RequestStatus } from "../strategic-projects/strategicProjects.component";
+import { FilterStateService } from "../../core/service/filter-state/filter-state.service";
 
 interface IDataCard {
   receitaTotal?: IReceitaTotalOrcamentariaResponse;
@@ -87,13 +88,15 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   private readonly _comunicationCardsService = inject(
     ComunicationCardsService
   );
-  private readonly _sufixShortNumberPipe: ShortNumberPipe =
+  private readonly _sufixShortNumberPipe =
     inject(ShortNumberPipe);
   private readonly _chartMaximizeService =
     inject(ChartMaximizeService);
   private readonly _execucaoOrcamentariaService = inject(
     PainelOrcamentoService
   );
+
+  readonly _filterStateService = inject(FilterStateService);
 
   private subscription!: Subscription;
 
@@ -210,6 +213,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     }
   }
 
+
   loadTimestamp() {
     this._execucaoOrcamentariaService
       .getReceitaTotal(this.currentRequestParams)
@@ -267,7 +271,12 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
       this.activeFilters.push({
         key: "ano",
         label: "Ano",
-        displayValue: [{ name: this.finalFilter.ano.toString() }],
+        displayValue: [
+          {
+            name: (this.finalFilter.ano >=  2014) && (this.finalFilter.ano <= 2022) ?
+            `${this.finalFilter.ano.toString()} - Despesas` : `${this.finalFilter.ano.toString()}`
+          },
+        ],
       });
     }
 
@@ -307,6 +316,17 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
         });
       }
     }
+  }
+
+  // No TypeScript, mude para uma propriedade ou garanta o retorno
+  get isVisiblePanelExpense(): boolean {
+    const isVisible = this.finalFilter.ano >= 2014 && this.finalFilter.ano <= 2022;
+    console.log("isVisiblePanelExpense:", isVisible);
+    if (isVisible) {
+      this._filterStateService.updateYear(this.finalFilter.ano);
+    }
+    console.log("FilterStateService showExpensePanel$:", this._filterStateService.showExpensePanel$);
+    return isVisible;
   }
 
   getFilterLabel(key: string): string {

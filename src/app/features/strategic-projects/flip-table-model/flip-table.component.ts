@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf } from "@angular/common";
+import { CommonModule, NgClass, NgFor, NgIf } from "@angular/common";
 import {
   ChangeDetectorRef,
   Component,
@@ -29,6 +29,7 @@ import {
 import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
 import { RequestStatus } from "../strategicProjects.component";
 import { ShortNumberPipe } from "../../../shared/components/pipe/shortNumber-pipe";
+import { FilterStateService } from "../../../core/service/filter-state/filter-state.service";
 
 export interface TreeNode {
   data: Array<{
@@ -88,6 +89,7 @@ export interface FlipTableCustomStyles {
     TextTruncatePipe,
     NbSpinnerModule,
     NbBadgeModule,
+    CommonModule
   ],
 })
 export class FlipTableComponent implements OnChanges {
@@ -163,6 +165,7 @@ export class FlipTableComponent implements OnChanges {
   private readonly _shortNumber = inject(ShortNumberPipe);
 
   isMaximized = false;
+
   isFlipCardFlipped: boolean = false;
 
   isSearchFieldVisible: boolean = false;
@@ -179,7 +182,16 @@ export class FlipTableComponent implements OnChanges {
 
   debounceTimer: any;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    public _filterStateService: FilterStateService,
+  ) {}
+
+
+  // get hasFilter(): boolean {
+  //   console.log("valor chegado ", this._filterStateService.showExpensePanel$);
+  //   return this._filterStateService.showExpensePanel$.subscribe((value) => value.valueOf());
+  // }
 
   get allColumnsNames(): Array<string> {
     return this.allColumns.map((el) => el.propertyName);
@@ -278,16 +290,13 @@ export class FlipTableComponent implements OnChanges {
 
     const value = object.value;
 
-    // ✅ Verifica se tem R$ - só processa se tiver
     const isString = typeof value === "string";
     const hasRealSymbol = isString && value.includes("R$");
 
-    // Se não tem R$, retorna o valor original
     if (!hasRealSymbol) {
       return value;
     }
 
-    // Limpa o valor sem regex
     let cleanedValue = value;
     cleanedValue = cleanedValue.split("R$").join(""); // Remove R$
     cleanedValue = cleanedValue.split(" ").join(""); // Remove espaços
@@ -296,28 +305,21 @@ export class FlipTableComponent implements OnChanges {
 
     const numValue = Number(cleanedValue);
 
-    // Se não conseguiu converter, retorna original
     if (isNaN(numValue)) {
       return value;
     }
 
-    // ✅ Se for zero, retorna apenas "0,00"
     if (numValue === 0) {
       return "0,00";
     }
 
-    // ========================================
-    // LÓGICA DE ABREVIAÇÃO
-    // ========================================
     const absValue = Math.abs(numValue);
 
-    // Números menores que 1000 não precisam abreviação
     if (absValue < 1000) {
       const formatted = numValue.toFixed(2).split(".").join(",");
       return `R$ ${formatted}`;
     }
 
-    // Define unidade e divisor
     let divisor = 1;
     let suffix = "";
 
@@ -337,10 +339,8 @@ export class FlipTableComponent implements OnChanges {
 
     const scaled = numValue / divisor;
 
-    // Formata com 1 casa decimal
     let formatted = scaled.toFixed(1);
 
-    // Remove zeros desnecessários: "1.0" vira "1"
     while (
       formatted.includes(".") &&
       (formatted.endsWith("0") || formatted.endsWith("."))
@@ -355,7 +355,7 @@ export class FlipTableComponent implements OnChanges {
 
     formatted = formatted.split(".").join(",");
 
-    return `${formatted}${suffix}`;
+    return `${formatted} ${suffix}`;
   }
 
   isRowTotal(row: TreeNode): boolean {

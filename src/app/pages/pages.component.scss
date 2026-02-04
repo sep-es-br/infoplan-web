@@ -1,35 +1,11 @@
-// @import '../@theme/styles/themes';
-
-// @include nb-install-component() {
-//   ::ng-deep router-outlet + * {
-//     display: block;
-//     animation: fade 1s;
-
-//     @keyframes fade {
-//       from {
-//         opacity: 0;
-//       }
-
-//       to {
-//         opacity: 1;
-//       }
-//     }
-//   }
-//   ::ng-deep{
-//     .menu-item a:hover, .menu-item a.active, .menu-item a.active .menu-icon, .menu-item a:hover .menu-icon{
-//       color: #DC3545;
-//     }
-//     .menu-item a.active::before{
-//       background: #DC3545 !important;
-//     }
-
-//     @media screen and (max-width: 767.98px) {
-//       nb-layout.window-mode .scrollable-container {
-//         overflow-x: hidden;
-//       }
-//     }
-//   }
-// }
+// Tema escuro
+:host-context(.dark) {
+  .menu-section-divider {
+    &::before {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
 
 @import "../@theme/styles/themes";
 
@@ -67,12 +43,32 @@
       }
     }
 
-    // .menu-item a.active::before {
-    //   background: #b18aff  !important;
-    // }
-
     // Estilos dos ícones - CORREÇÃO PARA O PROBLEMA
     nb-menu {
+      .menu-item {
+
+        a {
+          display: inline-flex;
+        }
+        // border: none !important;
+
+        .menu-icon {
+          margin: 0 !important;
+        }
+
+        .menu-title {
+          margin-left: 0.5rem !important;
+        }
+      }
+      .menu-item:first-child {
+        border: none !important;
+      }
+
+      // ADICIONE ISTO: Remove a borda do menu-item que vem antes do divisor
+      .menu-item:has(+ .menu-section-divider) {
+        border-bottom: none !important;
+      }
+
       nb-icon {
         display: flex !important;
         align-items: center !important;
@@ -176,6 +172,11 @@
       nb-layout.window-mode .scrollable-container {
         overflow-x: hidden;
       }
+    }
+
+    .menu-group,
+    nb-menu .menu-item a {
+      line-height: unset;
     }
   }
 }

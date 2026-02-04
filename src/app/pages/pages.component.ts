@@ -18,14 +18,13 @@ import { CustomNbMenuItem, MENU_ITEMS } from "./pages-menu";
 })
 export class PagesComponent implements OnInit {
   menu = [];
-
   private lastSelectedItem: CustomNbMenuItem;
 
   constructor(
     private iconsLibrary: NbIconLibraries,
     private nbMenuService: NbMenuService,
     private location: Location,
-    private themeService: NbThemeService
+    private themeService: NbThemeService,
   ) {
     let currentTheme = localStorage.getItem("infoPlanCurrentTheme");
     if (currentTheme) {
@@ -47,37 +46,20 @@ export class PagesComponent implements OnInit {
 
     await Promise.all(
       menulinks.map(async (item) => {
-        const iconName = item.icon.split(".")[0];
-        // Função antiga de carregamento de ícones
-        // if (item.icon.endsWith(".svg")) {
-        //   try {
-        //     const response = await fetch(`assets/images/app/${item.icon}`);
-        //     const svgContent = await response.text();
+        const iconName = item.icon.toString().split(".")[0];
 
-        //     customIcons[iconName] = svgContent;
-
-        //   } catch (error) {
-        //     console.error(`Erro ao carregar o ícone ${item.icon}:`, error);
-        //   }
-        // } else {
-        //   customIcons[
-        //     iconName
-        //   ] = `<img src="assets/images/app/${iconName}.png" width="20px" />`;
-        // }
-
-        if (item.icon.endsWith(".svg")) {
+        if (item.icon.toString().endsWith(".svg")) {
           try {
             const response = await fetch(`assets/images/app/${item.icon}`);
             let svgContent = await response.text();
 
-            // Adiciona currentColor dinamicamente
             svgContent = svgContent.replace(
               /fill="[^"]*"/g,
-              'fill="currentColor"'
+              'fill="currentColor"',
             );
             svgContent = svgContent.replace(
               /style="fill:[^;"]*/g,
-              'style="fill:currentColor'
+              'style="fill:currentColor',
             );
 
             customIcons[iconName] = svgContent;
@@ -85,19 +67,19 @@ export class PagesComponent implements OnInit {
             console.error(`Erro ao carregar o ícone ${item.icon}:`, error);
           }
         }
-      })
+      }),
     );
 
     const mergedIcons = { ...customIcons, ...icones };
     this.iconsLibrary.registerSvgPack("custom-icons", mergedIcons, icones);
 
-    // this.menu = MENU_ITEMS;
     this.menu = [...MENU_ITEMS].sort((a, b) => {
-      return Number(a.isExternalUrl) - Number(b.isExternalUrl);
+      return a.id - b.id;
     });
 
     this.setIconStyles();
     this.setInitialActiveItem();
+    this.applySectionDividers();
 
     this.nbMenuService
       .onItemSelect()
@@ -111,6 +93,43 @@ export class PagesComponent implements OnInit {
           this.resetMenuSelection();
         }
       });
+  }
+
+  private applySectionDividers() {
+    requestAnimationFrame(() => {
+      const oldDividers = document.querySelectorAll(".menu-section-divider");
+      oldDividers.forEach((el) => {
+        el.remove();
+      });
+
+      const menuItems = document.querySelectorAll("nb-menu .menu-item");
+
+      menuItems.forEach((element: HTMLElement, index) => {
+        const menuItem = this.menu[index];
+
+        if (menuItem?.separator && menuItem?.sectionTitle) {
+          const previousElement = element.previousElementSibling;
+
+          if (
+            !previousElement ||
+            !previousElement.classList.contains("menu-section-divider")
+          ) {
+            const divider = document.createElement("div");
+            divider.className = "menu-section-divider";
+            divider.style.opacity = "1";
+            divider.innerHTML = `
+              <div class="divisor">
+                <div class="section-title">
+                  <span class="span-section-title">${menuItem.sectionTitle}</span>
+                </div>
+              </div>
+            `;
+            element.parentNode.insertBefore(divider, element);
+          }
+        }
+        // <span class="section-title">${menuItem.sectionTitle}</span>
+      });
+    });
   }
 
   private setInitialActiveItem() {
@@ -136,6 +155,7 @@ export class PagesComponent implements OnInit {
 
     this.menu = [...this.menu];
     this.setIconStyles();
+    this.applySectionDividers(); // Reaplica os divisores
   }
 
   private resetMenuSelection() {
@@ -149,6 +169,7 @@ export class PagesComponent implements OnInit {
 
     this.menu = [...this.menu];
     this.setIconStyles();
+    this.applySectionDividers(); // Reaplica os divisores
   }
 
   private setIconStyles() {

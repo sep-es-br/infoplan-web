@@ -256,10 +256,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           rotate: 0,
           margin: 12,
           overflow: "truncate",
-          // ellipsis: '...',
-          // overflow: 'truncate',
           width: isPhone ? 40 : isTablet ? 60 : isMobile ? 60 : 130,
-          // formatter: (value: string) => this.quebrarTexto(value, this.charactersPerLine),
         },
         // axisLabel: {
         //   color: theme.textPrimaryColor,
@@ -284,7 +281,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           color: theme.textPrimaryColor,
           // fontSize: isMobile ? (this.isMaximized ? 12 : 8) : 10,
           fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
-          // overflow: "truncate",
           width: isMobile ? 20 : 100,
           formatter: (v: number) => `${this.formatValue(v)}`,
         },
@@ -300,12 +296,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         barMaxWidth: isMobile ? 20 : 40,
         barCategoryGap: "20%",
         barGap: `${this.barGap}%`,
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowColor: "rgba(0, 0, 0, 0.5)",
-          },
-        },
       })),
     };
 
@@ -315,13 +305,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         series: this.chartOptions.series,
       });
     }
-  }
-
-  private quebrarTexto(texto: string, maxCaracteres: number): string {
-    if (!texto) return "";
-    return (
-      texto.match(new RegExp(`.{1,${maxCaracteres}}`, "g"))?.join("\n") || texto
-    );
   }
 
   private getFallbackColor(index: number): string {

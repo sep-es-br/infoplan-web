@@ -124,7 +124,8 @@ export class OrgChartHorizontalComponent
       yAxis: {
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+          // fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+          fontSize: this.showMaximizeButton ? 14 : 11,
           margin: 8,
           overflow: "truncate",
           width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
@@ -133,7 +134,7 @@ export class OrgChartHorizontalComponent
       xAxis: {
         axisLabel: {
           // fontSize: isTablet ? 9 : isMobile ? 10 : 11,
-          fontSize: this.showMaximizeButton ? 14 : 10,
+          fontSize: this.showMaximizeButton ? 13 : 10,
           formatter: (value: number) => {
             return this.formatValue(value);
           },
@@ -264,7 +265,7 @@ export class OrgChartHorizontalComponent
         axisLabel: {
           color: theme.textPrimaryColor,
           // fontSize: isMobile ? 8 : 10,
-          fontSize: this.showMaximizeButton ? 20 : 10,
+          fontSize: this.showMaximizeButton ? 13 : 10,
           formatter: (value: number) => {
             return this.formatValue(value);
           },
@@ -277,9 +278,9 @@ export class OrgChartHorizontalComponent
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? (isMobile ? 9: 12 ): 11,
-          margin: 15,
-          lineHeight: 11,
+          fontSize: this.showMaximizeButton ?  14 : 11,
+          // margin: 15,
+          // lineHeight: 11,
           width: 100,
           overflow: "truncate"
         },

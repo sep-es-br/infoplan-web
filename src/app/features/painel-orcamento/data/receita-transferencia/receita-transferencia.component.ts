@@ -197,7 +197,6 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
       };
     });
 
-    // Criar linha de totais
     const totalNodeData = [
       {
         propertyName: "categoria",
@@ -217,7 +216,6 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
       });
     });
 
-    // Adicionar variação total
     if (anos.length >= 2) {
       const totalAnoAnterior = dados
         .filter((d) => d.ano === anos[0])
@@ -241,12 +239,13 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
       });
     }
 
-    // Adicionar linha de total aos dados
     treeNodes.push({
       data: totalNodeData,
       children: [],
       expanded: false,
     });
+
+    this._utilitiesService.sortTreeNodes(treeNodes, "top");
 
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
       propertyName: `Arrecadação LI - ${ano.toString()}`,
@@ -315,18 +314,15 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
       return;
     }
 
-    // Extrair anos das colunas padrão
     const anos = this.tableContent.defaultColumns
       .filter((col) => col.propertyName.startsWith("Arrecadação LI -"))
       .map((col) => parseInt(col.propertyName.replace("Arrecadação LI -", "")))
       .sort((a, b) => a - b);
 
-    // Verificar se existe coluna de variação
     const temVariacao = this.tableContent.defaultColumns.some(
       (col) => col.propertyName === "variação (%)",
     );
 
-    // Criar colunas para o Excel
     const columns = [
       {
         key: "categoria",
@@ -347,6 +343,8 @@ export class ReceitaTransferenciaComponent implements OnChanges, OnDestroy {
         label: `Variação`,
       });
     }
+
+    this._utilitiesService.sortTreeNodes(this.tableContent.data);
 
     const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};

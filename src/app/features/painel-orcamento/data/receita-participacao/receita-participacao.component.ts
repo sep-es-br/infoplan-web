@@ -164,8 +164,10 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
         const valor = mapaValores.get(`${categoria}_${ano}`) || 0;
         nodeData.push({
           propertyName: `ano_${ano}`,
-          value: this._utilitiesService
-          .formatCurrencyUsingBrazilianStandards(valor, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            valor,
+            "R$",
+          ),
         });
       });
 
@@ -176,7 +178,6 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
       };
     });
 
-    // Criar linha de totais
     const totalNodeData: any[] = [
       {
         propertyName: "categoria",
@@ -191,19 +192,21 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
 
       totalNodeData.push({
         propertyName: `ano_${ano}`,
-        value: this._utilitiesService
-          .formatCurrencyUsingBrazilianStandards(totalAno, "R$"),
+        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+          totalAno,
+          "R$",
+        ),
       });
     });
 
-    // Adicionar linha de total aos dados
     treeNodes.push({
       data: totalNodeData,
       children: [],
       expanded: false,
     });
 
-    // Estrutura da tabela consolidada
+    this._utilitiesService.sortTreeNodes(treeNodes, "top");
+
     this.tableContent = {
       customColumn: {
         propertyName: "categoria",
@@ -278,14 +281,14 @@ export class ReceitaParticipacaoComponent implements OnChanges, OnDestroy {
     ];
   }
 
-  private dataForDownload(
-    tableContent: FlipTableContent
-  ): FlipTableContent[] {
+  private dataForDownload(tableContent: FlipTableContent): FlipTableContent[] {
+    this._utilitiesService.sortTreeNodes(tableContent.data);
+
     return tableContent.data.map((node: TreeNode) => {
       const row: any = {};
 
-      node.data.forEach((prop: {propertyName: string, value: any}) => {
-        const {propertyName, value} = prop;
+      node.data.forEach((prop: { propertyName: string; value: any }) => {
+        const { propertyName, value } = prop;
 
         if (propertyName === "categoria") {
           row["categoria"] = value;

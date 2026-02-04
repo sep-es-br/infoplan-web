@@ -215,6 +215,8 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
       expanded: false,
     });
 
+    this._utilitiesService.sortTreeNodes(treeNodes, "top");
+
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
       propertyName: `ano_${ano}`,
       displayName: `${ano.toString()} (R$)`,
@@ -296,6 +298,8 @@ export class ReceitaICMSComponent implements OnChanges, OnDestroy {
   private dataForDownload(
     tableContent: FlipTableContent
   ): FlipTableContent[] {
+    this._utilitiesService.sortTreeNodes(tableContent.data);
+
     return tableContent.data.map((node: TreeNode) => {
       const row: any = {};
       node.data.forEach((prop: {

@@ -1,4 +1,4 @@
-import { RequestStatus } from './../../../strategic-projects/strategicProjects.component';
+import { RequestStatus } from "./../../../strategic-projects/strategicProjects.component";
 import {
   Component,
   inject,
@@ -25,19 +25,22 @@ import {
 } from "../../../strategic-projects/flip-table-model/flip-table.component";
 import { ExportDataService } from "../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../core/service/chart-maximize/chart-maximize.service";
-import { ChartDataConfig, OrgChartHorizontalComponent } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
-import { UtilitiesService } from '../../../../core/service/utilities.service';
-import { converterToNumber, replacePorcentage } from '../../../../@core/utils/functionts/functionts';
+import {
+  ChartDataConfig,
+  OrgChartHorizontalComponent,
+} from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { UtilitiesService } from "../../../../core/service/utilities.service";
+import {
+  converterToNumber,
+  replacePorcentage,
+} from "../../../../@core/utils/functionts/functionts";
 
 @Component({
   selector: "ngx-receita-impostos",
   templateUrl: "./receita-impostos.component.html",
   styleUrls: ["./receita-impostos.component.scss"],
   standalone: true,
-  imports: [
-    OrgChartHorizontalComponent,
-    FlipTableComponent
-  ]
+  imports: [OrgChartHorizontalComponent, FlipTableComponent],
 })
 export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
   @Input() filter: IExecucaoOrcamentariaRequest;
@@ -54,8 +57,8 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
       right: "3%",
       bottom: "0%",
       containLabel: true,
-    }
-  }
+    },
+  };
 
   private receitaImpostoCharData: IReceitaImpostoOrcamentariaResponse[] = [];
 
@@ -76,7 +79,6 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {
     this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
@@ -102,8 +104,10 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
         takeUntil(this.destroy$),
         finalize(() => {
           this.requestStatus =
-            this.receitaImpostoCharData.length > 0 ? RequestStatus.SUCCESS : RequestStatus.ERROR;
-        })
+            this.receitaImpostoCharData.length > 0
+              ? RequestStatus.SUCCESS
+              : RequestStatus.ERROR;
+        }),
       )
       .subscribe({
         next: (response) => {
@@ -129,11 +133,11 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
     return this._chartProcessor.processarDadosComparativo(
       this.receitaImpostoCharData,
       "nome_item_patrimonial",
-      "Receita Líquida"
+      "Receita Líquida",
     );
   }
 
-private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
+  private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
     if (!dados?.length) {
       this.tableContent = null;
       return;
@@ -162,12 +166,15 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
 
       anos.forEach((ano) => {
         const item = dados.find(
-          (d) => d.nome_item_patrimonial === categoria && d.ano === ano
+          (d) => d.nome_item_patrimonial === categoria && d.ano === ano,
         );
         const valor = item?.receitaLiquida || 0;
         nodeData.push({
           propertyName: `Arrecadação Líquida - ${ano.toString()}`,
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(valor, "R$")
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            valor,
+            "R$",
+          ),
         });
       });
 
@@ -200,7 +207,10 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
 
       totalNodeData.push({
         propertyName: `Arrecadação Líquida - ${ano.toString()}`,
-        value:this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalAno, "R$"),
+        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+          totalAno,
+          "R$",
+        ),
       });
     });
 
@@ -213,9 +223,13 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
         .filter((d) => d.ano === anos[anos.length - 1])
         .reduce((sum, d) => sum + (d.receitaLiquida || 0), 0);
 
-      const variacaoTotal = totalAnoAnterior !== 0
-        ? (((totalAnoAtual - totalAnoAnterior) / totalAnoAnterior) * 100).toFixed(2)
-        : "0.00";
+      const variacaoTotal =
+        totalAnoAnterior !== 0
+          ? (
+              ((totalAnoAtual - totalAnoAnterior) / totalAnoAnterior) *
+              100
+            ).toFixed(2)
+          : "0.00";
 
       totalNodeData.push({
         propertyName: "variação",
@@ -228,6 +242,8 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
       children: [],
       expanded: false,
     });
+
+    this._utilitiesService.sortTreeNodes(treeNodes, "top");
 
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
       propertyName: `Arrecadação Líquida - ${ano.toString()}`,
@@ -268,7 +284,7 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
   private calcularVariacao(
     categoria: string,
     anos: number[],
-    dados: IReceitaImpostoOrcamentariaResponse[]
+    dados: IReceitaImpostoOrcamentariaResponse[],
   ): number {
     if (anos.length < 2) return 0;
 
@@ -277,12 +293,12 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
 
     const valorInicial =
       dados.find(
-        (d) => d.nome_item_patrimonial === categoria && d.ano === primeiroAno
+        (d) => d.nome_item_patrimonial === categoria && d.ano === primeiroAno,
       )?.receitaLiquida ?? 0;
 
     const valorFinal =
       dados.find(
-        (d) => d.nome_item_patrimonial === categoria && d.ano === ultimoAno
+        (d) => d.nome_item_patrimonial === categoria && d.ano === ultimoAno,
       )?.receitaLiquida ?? 0;
 
     if (valorInicial === 0) return 0;
@@ -306,11 +322,11 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
 
     const categorias = [
       ...new Set(
-        this.receitaImpostoCharData.map((item) => item.nome_item_patrimonial)
+        this.receitaImpostoCharData.map((item) => item.nome_item_patrimonial),
       ),
     ].filter(Boolean);
 
-        const temVariacao = this.tableContent.defaultColumns.some(
+    const temVariacao = this.tableContent.defaultColumns.some(
       (col) => col.propertyName === "variação",
     );
 
@@ -326,11 +342,13 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
       columns.push({ key: "variacao", label: "Variação" });
     }
 
+    this._utilitiesService.sortTreeNodes(this.tableContent.data);
+
     const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};
 
-      node.data.forEach((prop: {propertyName: string, value: any}) => {
-        const {propertyName, value} = prop;
+      node.data.forEach((prop: { propertyName: string; value: any }) => {
+        const { propertyName, value } = prop;
 
         if (propertyName === "categoria") {
           row["categoria"] = value;
@@ -351,7 +369,7 @@ private processTableData(dados: IReceitaImpostoOrcamentariaResponse[]): void {
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      fileName
+      fileName,
     );
   }
 }

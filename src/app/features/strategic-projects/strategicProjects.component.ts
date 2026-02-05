@@ -507,15 +507,15 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
     }
 
     if (value >= 1_000_000_000) {
-      return `${(value / 1_000_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} bi`;
+      return `${(value / 1_000_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} B`;
     }
 
     if (value >= 1_000_000) {
-      return `${(value / 1_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} mi`;
+      return `${(value / 1_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} M`;
     }
 
     if (value >= 1_000) {
-      return `${(value / 1_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} mil`;
+      return `${(value / 1_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} K`;
     }
 
     return `R$ ${value.toLocaleString('pt-BR')}`;

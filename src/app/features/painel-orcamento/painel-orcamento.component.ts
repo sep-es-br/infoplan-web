@@ -430,35 +430,6 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     return item.id || index;
   }
 
-  // formatNumber(value: number): string {
-  //   if (!value) {
-  //     return "R$ 0";
-  //   }
-
-  //   if (value >= 1_000_000_000) {
-  //     return `${(value / 1_000_000_000).toLocaleString("pt-BR", {
-  //       minimumFractionDigits: 0,
-  //       maximumFractionDigits: 0,
-  //     })} bi`;
-  //   }
-
-  //   if (value >= 1_000_000) {
-  //     return `${(value / 1_000_000).toLocaleString("pt-BR", {
-  //       minimumFractionDigits: 0,
-  //       maximumFractionDigits: 1,
-  //     })} mi`;
-  //   }
-
-  //   if (value >= 1_000) {
-  //     return `${(value / 1_000).toLocaleString("pt-BR", {
-  //       minimumFractionDigits: 0,
-  //       maximumFractionDigits: 0,
-  //     })} mil`;
-  //   }
-
-  //   return `R$ ${value.toLocaleString("pt-BR")}`;
-  // }
-
   formatNumber(value: number): string {
   if (!value) {
     return "R$ 0";
@@ -468,21 +439,21 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     return `${(value / 1_000_000_000).toLocaleString("pt-BR", {
       minimumFractionDigits: 1,
       maximumFractionDigits: 2,
-    })} bi`;
+    })} B`;
   }
 
   if (value >= 1_000_000) {
     return `${(value / 1_000_000).toLocaleString("pt-BR", {
       minimumFractionDigits: 1,
       maximumFractionDigits: 2,
-    })} mi`;
+    })} M`;
   }
 
   if (value >= 1_000) {
     return `${(value / 1_000).toLocaleString("pt-BR", {
       minimumFractionDigits: 1,
       maximumFractionDigits: 1,
-    })} mil`;
+    })} K`;
   }
 
   return `${value.toLocaleString("pt-BR", {

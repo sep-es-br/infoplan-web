@@ -245,7 +245,7 @@ export class ReceitaDespesaGndComponent
             anos,
             dados,
             "liquidado",
-          )}%`,
+          )} %`,
         });
         nodeData.push({
           propertyName: "Variação Pago RAP",
@@ -254,7 +254,7 @@ export class ReceitaDespesaGndComponent
             anos,
             dados,
             "pago_rap",
-          )}%`,
+          )} %`,
         });
       }
 
@@ -331,12 +331,12 @@ export class ReceitaDespesaGndComponent
 
       totalNodeData.push({
         propertyName: "Variação Liquidado",
-        value: `${variacaoLiquidado}%`,
+        value: `${variacaoLiquidado} %`,
       });
 
       totalNodeData.push({
         propertyName: "Variação Pago RAP",
-        value: `${variacaoPago}%`,
+        value: `${variacaoPago} %`,
       });
     }
 

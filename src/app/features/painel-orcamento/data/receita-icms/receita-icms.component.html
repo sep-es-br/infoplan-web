@@ -1,17 +1,20 @@
-<ngx-flip-table 
-  [cardTitle]="title" 
-  [showSearchField]="false" 
+<ngx-flip-table
+  [cardTitle]="title"
+  [showSearchField]="false"
   [tableContent]="tableContent"
-  [showTableIcon]="showTableIcon" 
-  [loadingStatus]="requestStatus" 
+  [showTableIcon]="showTableIcon"
+  [loadingStatus]="requestStatus"
   (executeDownload)="handleTableDownload()"
-  [backCardHeight]="308" 
+  [backCardHeight]="308"
   [showMaximizeButton]="true"
   (showMaximizeButtonClick)="onMaximizeButtonClick('receita-icms', $event)">
-  <ngx-pie-chart 
-    [data]="chartData" 
+  <ngx-pie-chart
+    [data]="chartData"
     [colors]="['#F58B9B', '#4DB6D2']"
-    [height]="isChartMaximized('receita-icms') ? calcMaximizedHeight() : '300'" [width]="'400'" [config]="chartConfig"
+    [height]="isChartMaximized('receita-icms') ? calcMaximizedHeight() : '300'"
+    [showMaximizeButton]="isChartMaximized('receita-icms')"
+    [width]="'400'"
+    [config]="chartConfig"
     card-front>
   </ngx-pie-chart>
 </ngx-flip-table>

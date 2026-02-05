@@ -34,17 +34,17 @@ export class UtilitiesService {
 
     if (beforeDecimals.length >= 4 && beforeDecimals.length <= 6) {
       // Se tiver 4-6 dígitos, é na faixa dos milhares
-      suffix = "k";
+      suffix = "K";
     }
     if (beforeDecimals.length >= 7 && beforeDecimals.length <= 9) {
       // Se tiver 7-9 dígitos, é na faixa dos milhões
-      suffix = "mi";
+      suffix = "M";
     } else if (beforeDecimals.length >= 10 && beforeDecimals.length <= 12) {
       // Se tiver 10-12 dígitos, é na faixa dos bilhões
-      suffix = "bi";
+      suffix = "B";
     } else if (beforeDecimals.length >= 13 && beforeDecimals.length <= 15) {
       // Se tiver 13-15 dígitos, é na faixa dos trilhões
-      suffix = "tri";
+      suffix = "T";
     }
 
     if (originalInText.length > 2) {

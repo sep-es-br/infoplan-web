@@ -30,6 +30,7 @@ import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
 import { RequestStatus } from "../strategicProjects.component";
 import { ShortNumberPipe } from "../../../shared/components/pipe/shortNumber-pipe";
 import { FilterStateService } from "../../../core/service/filter-state/filter-state.service";
+import { converterToNumber } from "../../../@core/utils/functionts/functionts";
 
 export interface TreeNode {
   data: Array<{

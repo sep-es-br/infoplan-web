@@ -17,6 +17,7 @@ import {
   AvailableThemes,
   getAvailableThemesStyles,
 } from "../../../@theme/theme.module";
+import { ShortNumberPipe } from "../../../@theme/pipes";
 
 export interface PieChartData {
   value: number;
@@ -58,6 +59,7 @@ export interface PieChartConfig {
 export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: PieChartData[] = [];
   @Input() colors: string[] = [];
+  @Input() showMaximizeButton!: boolean;
   @Input() height: number;
   @Input() width: number;
   @Input() config: PieChartConfig = {};
@@ -66,7 +68,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
   echartsInstance: ECharts | null = null;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimer: any;
-  private readonly _utilitiesService = inject(UtilitiesService);
+  private readonly _shortNumber = inject(ShortNumberPipe);
 
   private readonly defaultConfig: PieChartConfig = {
     showTitle: false,
@@ -120,6 +122,11 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     ) {
       this.buildChart();
     }
+
+    if(changes["showMaximizeButton"]) {
+      this.showMaximizeButton = changes["showMaximizeButton"].currentValue;
+      this.updateChartOnResize();
+    }
   }
 
   ngOnDestroy(): void {
@@ -134,317 +141,320 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     this.echartsInstance = chartInstance;
   }
 
-  // private updateChartOnResize(): void {
-  //   if (!this.echartsInstance || !this.data || this.data.length === 0) return;
-
-  //   const config = { ...this.defaultConfig, ...this.config };
-  //   const themeStyles = getAvailableThemesStyles(this.currentTheme);
-  //   const isMobile = window.innerWidth <= 1000;
-  //   const isPhone = window.innerWidth <= 575;
-  //   const isTablet = window.innerWidth <= 768;
-
-  //   // Ajusta raio baseado no tamanho da tela
-  //   const radius = isMobile
-  //     ? isPhone
-  //       ? ["25%", "55%"]
-  //       : ["30%", "60%"]
-  //     : config.radius;
-
-  //   // Ajusta posição da legenda
-  //   const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 10;
-  //   const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 10;
-
-  //   this.echartsInstance.setOption({
-  //     legend: config.showLegend
-  //       ? {
-  //           textStyle: {
-  //             color: themeStyles.textPrimaryColor,
-  //             fontSize: legendFontSize,
-  //           },
-  //           itemWidth: isMobile ? 8 : 10,
-  //           itemHeight: isMobile ? 8 : 10,
-  //           itemGap: isMobile ? 8 : 10,
-  //         }
-  //       : undefined,
-
-  //     series: [
-  //       {
-  //         radius: radius,
-  //         label: {
-  //           show: true,
-  //           position: "inside",
-  //           formatter: function (params) {
-  //             return params.percent >= 4
-  //               ? Math.round(params.percent) + "%"
-  //               : "";
-  //           },
-  //           fontSize: labelFontSize,
-  //           color: "#FFFFFF",
-  //         },
-  //         labelLine: {
-  //           show: true,
-  //           length: isMobile ? 5 : 10,
-  //           length2: isMobile ? 3 : 5,
-  //         },
-  //       },
-  //     ],
-  //   });
-
-  //   this.resizeChart();
-  // }
-
-private updateChartOnResize(): void {
-  if (!this.echartsInstance || !this.data || this.data.length === 0) return;
-
-  const config = { ...this.defaultConfig, ...this.config };
-  const themeStyles = getAvailableThemesStyles(this.currentTheme);
-  const isMobile = window.innerWidth <= 1000;
-  const isPhone = window.innerWidth <= 575;
-  const isTablet = window.innerWidth <= 768;
-  const screenWidth = window.innerWidth;
-
-  const radius = isMobile
-    ? isPhone
-      ? ["25%", "55%"]
-      : ["30%", "60%"]
-    : config.radius;
-
-  const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 10;
-  const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 10;
-
-  // Usar o formatCurrencyStringWithLabels em vez de Intl.NumberFormat
-  const formattedTotal = this._utilitiesService.formatCurrencyStringWithLabels(this.totais);
-
-  // Calcular offset para posição do título (igual ao buildChart)
-  const centerX = config.centerPosition ? parseFloat(config.centerPosition[0]) : 50;
-  const centerY = config.centerPosition ? parseFloat(config.centerPosition[1]) : 50;
-
-  let offsetX = centerX;
-  if (screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)) {
-    offsetX = centerX - 1;
-  } else {
-    offsetX = centerX - 0.5;
+  private calculateTotalFontSize(isPhone: boolean, isTablet: boolean): number {
+    if (this.showMaximizeButton) {
+      return isPhone ? 12 : isTablet ? 15 : 20;
+    } else {
+      return isPhone ? 10 : isTablet ? 10 : 15;
+    }
   }
 
-  this.echartsInstance.setOption({
-    title: {
-      text: formattedTotal,
-      left: `${offsetX}%`,
-      top: `${centerY}%`,
-      textAlign: "center",
-      textVerticalAlign: "middle",
-      textStyle: {
-        fontSize: isPhone ? 14 : isTablet ? 16 : 18,
-        fontWeight: "bold",
-        color: themeStyles.textPrimaryColor,
-      },
-      subtextStyle: {
-        fontSize: isPhone ? 10 : isTablet ? 11 : 12,
-        color: themeStyles.textSecondaryColor,
-      },
-    },
-    legend: config.showLegend
-      ? {
-          textStyle: {
-            color: themeStyles.textPrimaryColor,
-            fontSize: legendFontSize,
-          },
-          itemWidth: isMobile ? 8 : 10,
-          itemHeight: isMobile ? 8 : 10,
-          itemGap: isMobile ? 8 : 10,
-        }
-      : undefined,
+  private calculateLegendFontSize(isPhone: boolean, isTablet: boolean, isMobile: boolean): number {
+    if (this.showMaximizeButton) {
+      return isPhone ? 10 : isTablet ? 12 : 16;
+    } else {
+      return isPhone ? 10 : isTablet ? 12 : isMobile ? 10 : 10;
+    }
+  }
 
-    series: [
-      {
-        radius: radius,
-        label: {
-          show: true,
-          position: "inside",
-          formatter: function (params) {
-            return params.percent >= 4
-              ? Math.round(params.percent) + "%"
-              : "";
-          },
-          fontSize: labelFontSize,
-          color: "#FFFFFF",
+
+  private calculateLegendItemSize(isMobile: boolean, isTablet: boolean): number {
+    if (this.showMaximizeButton) {
+      return isMobile ? 6 : isTablet ? 12 : 16;
+    } else {
+      return isMobile ? 8 : 10;
+    }
+  }
+
+  private calculateLegendItemGap(isMobile: boolean): number {
+    if (this.showMaximizeButton) {
+      return isMobile ? 14 : 16;
+    } else {
+      return isMobile ? 8 : 10;
+    }
+  }
+
+
+  private calculateRadius(isMobile: boolean, isPhone: boolean, isTablet: boolean): string | [string, string] {
+    if (this.showMaximizeButton) {
+      if (isPhone) {
+        return ["15%", "40%"]; // Muito menor em mobile
+      } else if (isTablet) {
+        return ["20%", "45%"]; // Menor em tablet
+      } else {
+        return ["25%", "50%"]; // Menor em desktop
+      }
+    } else {
+      if (isMobile) {
+        return isPhone
+          ? ["25%", "55%"]
+          : ["30%", "60%"];
+      } else {
+        return this.config.radius || ["35%", "65%"];
+      }
+    }
+  }
+
+  private calculateTitleOffsetX(
+    screenWidth: number,
+    centerX: number,
+  ): number {
+    const fontSize = this.calculateTotalFontSize(
+      screenWidth <= 575,
+      screenWidth <= 768,
+    );
+
+    if (this.showMaximizeButton) {
+      if (screenWidth >= 1600) {
+        return centerX - 0.2;
+      } else if (screenWidth >= 768 && screenWidth <= 1000) {
+        return centerX - 1.2;
+      } else {
+        return centerX - 0.8;
+      }
+    } else {
+      if (screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)) {
+        return centerX - 1;
+      } else {
+        return centerX - 0.5;
+      }
+    }
+  }
+
+  private updateChartOnResize(): void {
+    if (!this.echartsInstance || !this.data || this.data.length === 0) return;
+
+    const config = { ...this.defaultConfig, ...this.config };
+    const themeStyles = getAvailableThemesStyles(this.currentTheme);
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
+    const screenWidth = window.innerWidth;
+
+    const radius = this.calculateRadius(isMobile, isPhone, isTablet);
+
+    const legendFontSize = this.calculateLegendFontSize(isPhone, isTablet, isMobile);
+    const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 10;
+    const totalFontSize = this.calculateTotalFontSize(isPhone, isTablet);
+    const legendItemSize = this.calculateLegendItemSize(isMobile, isTablet);
+    const legendItemGap = this.calculateLegendItemGap(isMobile);
+
+    const formattedTotal = this._shortNumber.transform(this.totais, 1);
+    const centerX = config.centerPosition
+      ? parseFloat(config.centerPosition[0])
+      : 50;
+    const centerY = config.centerPosition
+      ? parseFloat(config.centerPosition[1])
+      : 50;
+
+    const offsetX = this.calculateTitleOffsetX(screenWidth, centerX);
+
+    this.echartsInstance.setOption({
+      title: {
+        text: formattedTotal,
+        left: `${offsetX}%`,
+        top: `${centerY}%`,
+        textAlign: "center",
+        textVerticalAlign: "middle",
+        textStyle: {
+          fontSize: totalFontSize,
+          fontWeight: "bold",
+          color: themeStyles.textPrimaryColor,
         },
-        labelLine: {
-          show: true,
-          length: isMobile ? 5 : 10,
-          length2: isMobile ? 3 : 5,
+        subtextStyle: {
+          fontSize: isPhone ? 10 : isTablet ? 11 : 12,
+          color: themeStyles.textSecondaryColor,
         },
       },
-    ],
-  });
+      legend: config.showLegend
+        ? {
+            textStyle: {
+              color: themeStyles.textPrimaryColor,
+              fontSize: legendFontSize,
+            },
+            itemWidth: legendItemSize,
+            itemHeight: legendItemSize,
+            itemGap: legendItemGap,
+          }
+        : undefined,
 
-  this.resizeChart();
-}
+      series: [
+        {
+          radius: radius,
+          label: {
+            show: true,
+            position: "inside",
+            formatter: function (params) {
+              return params.percent >= 4
+                ? Math.round(params.percent) + "%"
+                : "";
+            },
+            fontSize: labelFontSize,
+            color: "#FFFFFF",
+          },
+          labelLine: {
+            show: true,
+            length: isMobile ? 5 : 10,
+            length2: isMobile ? 3 : 5,
+          },
+        },
+      ],
+    });
+
+    this.resizeChart();
+  }
 
   private buildChart() {
-  if (!this.data || this.data.length === 0) {
-    console.warn("Nenhum dado disponível para o gráfico");
-    return;
-  }
+    if (!this.data || this.data.length === 0) {
+      console.warn("Nenhum dado disponível para o gráfico");
+      return;
+    }
 
-  const config = { ...this.defaultConfig, ...this.config };
-  const themeStyles = getAvailableThemesStyles(this.currentTheme);
-  const isMobile = window.innerWidth <= 1000;
-  const isPhone = window.innerWidth <= 575;
-  const isTablet = window.innerWidth <= 768;
-  const screenWidth = window.innerWidth;
+    const config = { ...this.defaultConfig, ...this.config };
+    const themeStyles = getAvailableThemesStyles(this.currentTheme);
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
+    const screenWidth = window.innerWidth;
 
-  // Responsividade inicial
-  const radius = isMobile
-    ? isPhone
-      ? ["25%", "55%"]
-      : ["30%", "60%"]
-    : config.radius;
-  const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 12;
-  const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 12;
+    const radius = this.calculateRadius(isMobile, isPhone, isTablet);
+    const legendFontSize = this.calculateLegendFontSize(isPhone, isTablet, isMobile);
+    const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 12;
+    const totalFontSize = this.calculateTotalFontSize(isPhone, isTablet);
+    const legendItemSize = this.calculateLegendItemSize(isMobile, isTablet);
+    const legendItemGap = this.calculateLegendItemGap(isMobile);
 
-  // IMPORTANTE: Chamar filterSmallSlices ANTES de formatar o total
-  const filteredData = this.filterSmallSlices(
-    this.data,
-    config.minAngle || 5,
-  );
+    const filteredData = this.filterSmallSlices(
+      this.data,
+      config.minAngle || 5,
+    );
 
-  // AGORA sim podemos formatar o total (depois do filterSmallSlices ter calculado this.totais)
-  const formattedTotal = this._utilitiesService.formatCurrencyStringWithLabels(this.totais);
+    const formattedTotal = this._shortNumber.transform(this.totais, 1);
 
-  // Calcular offset para posição do título (baseado no pieChartModel)
-  const centerX = config.centerPosition ? parseFloat(config.centerPosition[0]) : 50;
-  const centerY = config.centerPosition ? parseFloat(config.centerPosition[1]) : 50;
+    const centerX = config.centerPosition
+      ? parseFloat(config.centerPosition[0])
+      : 50;
+    const centerY = config.centerPosition
+      ? parseFloat(config.centerPosition[1])
+      : 50;
 
-  // Ajustar offset baseado na largura da tela
-  let offsetX = centerX;
-  if (screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)) {
-    offsetX = centerX - 1;
-  } else {
-    offsetX = centerX - 0.5;
-  }
+    const offsetX = this.calculateTitleOffsetX(screenWidth, centerX);
 
-  this.chartOptions = {
-    color: this.colors.length > 0 ? this.colors : undefined,
+    this.chartOptions = {
+      color: this.colors.length > 0 ? this.colors : undefined,
 
-    grid: {
-      top: config.gridTop,
-      bottom: config.gridBottom,
-      left: config.gridLeft,
-      right: config.gridRight,
-      containLabel: true,
-    },
-
-    // Usar title para mostrar o total no centro com offset
-    title: {
-      text: formattedTotal,
-      left: `${offsetX}%`,
-      top: `${centerY}%`,
-      textAlign: "center",
-      textVerticalAlign: "middle",
-      textStyle: {
-        fontSize: isPhone ? 14 : isTablet ? 16 : 18,
-        fontWeight: "bold",
-        color: themeStyles.textPrimaryColor,
+      grid: {
+        top: config.gridTop,
+        bottom: config.gridBottom,
+        left: config.gridLeft,
+        right: config.gridRight,
+        containLabel: true,
       },
-      subtext: "Total",
-      subtextStyle: {
-        fontSize: isPhone ? 10 : isTablet ? 11 : 12,
-        color: themeStyles.textSecondaryColor,
+
+      title: {
+        text: formattedTotal,
+        left: `${offsetX}%`,
+        top: `${centerY}%`,
+        textAlign: "center",
+        textVerticalAlign: "middle",
+        textStyle: {
+          fontSize: totalFontSize,
+          fontWeight: "bold",
+          color: themeStyles.textPrimaryColor,
+        },
       },
-    },
 
-    tooltip: config.showTooltip
-      ? {
-          trigger: "item",
-          formatter: (params: any) => {
-            const data = params;
-            const value =
-              typeof data.value === "number"
-                ? data.value
-                : parseFloat(data.value);
+      tooltip: config.showTooltip
+        ? {
+            trigger: "item",
+            formatter: (params: any) => {
+              const data = params;
+              const value =
+                typeof data.value === "number"
+                  ? data.value
+                  : parseFloat(data.value);
 
-            const formattedValue = new Intl.NumberFormat("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            }).format(value);
+              const formattedValue = new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(value);
 
-            return `${data.name}: ${formattedValue} (${data.percent}%)`;
+              return `${data.name}: ${formattedValue} (${data.percent}%)`;
+            },
+            backgroundColor: themeStyles.themePrimaryColor,
+            confine: true,
+            textStyle: { color: themeStyles.textPrimaryColor },
+          }
+        : undefined,
+
+      legend: config.showLegend
+        ? {
+            left: this.getLegendPosition(config.legendPosition).left,
+            top: this.getLegendPosition(config.legendPosition).top,
+            orient: config.legendOrient,
+            right: "5%",
+            textStyle: {
+              color: themeStyles.textPrimaryColor,
+              fontSize: legendFontSize,
+            },
+            type: "scroll",
+            pageTextStyle: { color: themeStyles.textPrimaryColor },
+            itemWidth: legendItemSize,
+            itemHeight: legendItemSize,
+            itemGap: legendItemGap,
+            selectedMode: true,
+          }
+        : undefined,
+
+      series: [
+        {
+          name: "Dados",
+          type: "pie",
+          radius: radius,
+          center: config.centerPosition,
+          data: filteredData,
+          minAngle: config.minAngle,
+          avoidLabelOverlap: false,
+          emphasis: {
+            scale: config.emphasisScale,
+            scaleSize: config.emphasisScale ? 10 : 0,
+            itemStyle: {
+              shadowBlur: config.emphasisScale ? 10 : 0,
+              shadowOffsetX: 0,
+              shadowColor: "rgba(0, 0, 0, 0.5)",
+            },
           },
-          backgroundColor: themeStyles.themePrimaryColor,
-          confine: true,
-          textStyle: { color: themeStyles.textPrimaryColor },
-        }
-      : undefined,
 
-    legend: config.showLegend
-      ? {
-          left: this.getLegendPosition(config.legendPosition).left,
-          top: this.getLegendPosition(config.legendPosition).top,
-          orient: config.legendOrient,
-          right: "5%",
-          textStyle: {
-            color: themeStyles.textPrimaryColor,
-            fontSize: legendFontSize,
+          label: {
+            show: true,
+            position: "inside",
+            formatter: function (params) {
+              return params.percent >= 4
+                ? Math.round(params.percent) + "%"
+                : "";
+            },
+            fontSize: labelFontSize,
+            color: "#FFFFFF",
           },
-          type: "scroll",
-          pageTextStyle: { color: themeStyles.textPrimaryColor },
-          itemWidth: isMobile ? 8 : 10,
-          itemHeight: isMobile ? 8 : 10,
-          itemGap: isMobile ? 8 : 10,
-          selectedMode: true,
-        }
-      : undefined,
 
-    series: [
-      {
-        name: "Dados",
-        type: "pie",
-        radius: radius,
-        center: config.centerPosition,
-        data: filteredData,
-        minAngle: config.minAngle,
-        avoidLabelOverlap: false,
-        emphasis: {
-          scale: config.emphasisScale,
-          scaleSize: config.emphasisScale ? 10 : 0,
-          itemStyle: {
-            shadowBlur: config.emphasisScale ? 10 : 0,
-            shadowOffsetX: 0,
-            shadowColor: "rgba(0, 0, 0, 0.5)",
+          labelLine: {
+            show: true,
+            length: isMobile ? 5 : 10,
+            length2: isMobile ? 3 : 5,
+            smooth: true,
           },
+
+          animationType: "scale",
+          animationEasing: "elasticOut",
+          animationDelay: () => Math.random() * 200,
         },
+      ],
+    };
 
-        label: {
-          show: true,
-          position: "inside",
-          formatter: function (params) {
-            return params.percent >= 4
-              ? Math.round(params.percent) + "%"
-              : "";
-          },
-          fontSize: labelFontSize,
-          color: "#FFFFFF",
-        },
-
-        labelLine: {
-          show: true,
-          length: isMobile ? 5 : 10,
-          length2: isMobile ? 3 : 5,
-          smooth: true,
-        },
-
-        animationType: "scale",
-        animationEasing: "elasticOut",
-        animationDelay: () => Math.random() * 200,
-      },
-    ],
-  };
-
-  if (this.echartsInstance) {
-    this.echartsInstance.setOption(this.chartOptions, true);
+    if (this.echartsInstance) {
+      this.echartsInstance.setOption(this.chartOptions, true);
+    }
   }
-}
 
   private filterSmallSlices(
     data: PieChartData[],

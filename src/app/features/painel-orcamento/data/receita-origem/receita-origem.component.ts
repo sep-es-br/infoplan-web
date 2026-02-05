@@ -214,7 +214,7 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
 
       totalNodeData.push({
         propertyName: "variação (%)",
-        value: `${variacaoTotal} %`,
+        value: `${variacaoTotal}%`,
       });
     }
 

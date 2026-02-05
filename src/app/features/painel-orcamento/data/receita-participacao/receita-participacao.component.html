@@ -2,7 +2,9 @@
   [showTableIcon]="showTableIcon" [showSearchField]="false" (executeDownload)="handleTableDownload()"
   [showMaximizeButton]="true" (showMaximizeButtonClick)="onMaximizeButtonClick('receita-participacao', $event)">
   <ngx-pie-chart [data]="chartData" [colors]="['#F58B9B', '#4DB6D2']"
-    [height]="isChartMaximized('receita-participacao') ? calcMaximizedHeight() : '300'" [config]="chartConfig"
+    [height]="isChartMaximized('receita-participacao') ? calcMaximizedHeight() : '300'"
+    [config]="chartConfig"
+    [showMaximizeButton]="isChartMaximized('receita-participacao')"
     card-front>
   </ngx-pie-chart>
 </ngx-flip-table>

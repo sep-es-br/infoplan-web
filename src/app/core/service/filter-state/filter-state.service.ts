@@ -12,7 +12,6 @@ export class FilterStateService {
 
   updateYear(year: number) {
     const isVisible = (year >= 2014) && (year <= 2022);
-    console.log(`FilterStateService: Updating year to ${year}, showExpensePanel: ${isVisible}`);
     this.showExpensePanel.next(isVisible);
   }
 }

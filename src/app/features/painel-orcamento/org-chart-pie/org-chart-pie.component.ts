@@ -1,3 +1,4 @@
+import { UtilitiesService } from "./../../../core/service/utilities.service";
 import { CommonModule } from "@angular/common";
 import {
   Component,
@@ -7,6 +8,7 @@ import {
   OnInit,
   OnDestroy,
   SimpleChanges,
+  inject,
 } from "@angular/core";
 import { NbThemeService } from "@nebular/theme";
 import { ECharts, EChartsOption } from "echarts";
@@ -64,6 +66,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
   echartsInstance: ECharts | null = null;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimer: any;
+  private readonly _utilitiesService = inject(UtilitiesService);
 
   private readonly defaultConfig: PieChartConfig = {
     showTitle: false,
@@ -87,6 +90,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     avoidLabelOverlap: true,
   };
 
+  private totais: number = 0;
   constructor(private themeService: NbThemeService) {
     this.themeService
       .onThemeChange()
@@ -96,7 +100,6 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
       });
   }
 
-  // ✅ LISTENER DE RESIZE COM DEBOUNCE
   @HostListener("window:resize")
   onResize() {
     clearTimeout(this.resizeTimer);
@@ -119,7 +122,6 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // ✅ CLEANUP
   ngOnDestroy(): void {
     clearTimeout(this.resizeTimer);
     if (this.echartsInstance) {
@@ -132,28 +134,117 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     this.echartsInstance = chartInstance;
   }
 
-  // ✅ ATUALIZA GRÁFICO QUANDO REDIMENSIONAR
-  private updateChartOnResize(): void {
-    if (!this.echartsInstance || !this.data || this.data.length === 0) return;
+  // private updateChartOnResize(): void {
+  //   if (!this.echartsInstance || !this.data || this.data.length === 0) return;
 
-    const config = { ...this.defaultConfig, ...this.config };
-    const themeStyles = getAvailableThemesStyles(this.currentTheme);
-    const isMobile = window.innerWidth <= 1000;
-    const isPhone = window.innerWidth <= 575;
-    const isTablet = window.innerWidth <= 768;
+  //   const config = { ...this.defaultConfig, ...this.config };
+  //   const themeStyles = getAvailableThemesStyles(this.currentTheme);
+  //   const isMobile = window.innerWidth <= 1000;
+  //   const isPhone = window.innerWidth <= 575;
+  //   const isTablet = window.innerWidth <= 768;
 
-    // Ajusta raio baseado no tamanho da tela
-    const radius = isMobile
-      ? (isPhone ? ["25%", "55%"] : ["30%", "60%"])
-      : config.radius;
+  //   // Ajusta raio baseado no tamanho da tela
+  //   const radius = isMobile
+  //     ? isPhone
+  //       ? ["25%", "55%"]
+  //       : ["30%", "60%"]
+  //     : config.radius;
 
-    // Ajusta posição da legenda
-    const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 10;
-    const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 10;
+  //   // Ajusta posição da legenda
+  //   const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 10;
+  //   const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 10;
 
-    this.echartsInstance.setOption({
-      legend: config.showLegend
-        ? {
+  //   this.echartsInstance.setOption({
+  //     legend: config.showLegend
+  //       ? {
+  //           textStyle: {
+  //             color: themeStyles.textPrimaryColor,
+  //             fontSize: legendFontSize,
+  //           },
+  //           itemWidth: isMobile ? 8 : 10,
+  //           itemHeight: isMobile ? 8 : 10,
+  //           itemGap: isMobile ? 8 : 10,
+  //         }
+  //       : undefined,
+
+  //     series: [
+  //       {
+  //         radius: radius,
+  //         label: {
+  //           show: true,
+  //           position: "inside",
+  //           formatter: function (params) {
+  //             return params.percent >= 4
+  //               ? Math.round(params.percent) + "%"
+  //               : "";
+  //           },
+  //           fontSize: labelFontSize,
+  //           color: "#FFFFFF",
+  //         },
+  //         labelLine: {
+  //           show: true,
+  //           length: isMobile ? 5 : 10,
+  //           length2: isMobile ? 3 : 5,
+  //         },
+  //       },
+  //     ],
+  //   });
+
+  //   this.resizeChart();
+  // }
+
+private updateChartOnResize(): void {
+  if (!this.echartsInstance || !this.data || this.data.length === 0) return;
+
+  const config = { ...this.defaultConfig, ...this.config };
+  const themeStyles = getAvailableThemesStyles(this.currentTheme);
+  const isMobile = window.innerWidth <= 1000;
+  const isPhone = window.innerWidth <= 575;
+  const isTablet = window.innerWidth <= 768;
+  const screenWidth = window.innerWidth;
+
+  const radius = isMobile
+    ? isPhone
+      ? ["25%", "55%"]
+      : ["30%", "60%"]
+    : config.radius;
+
+  const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 10;
+  const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 10;
+
+  // Usar o formatCurrencyStringWithLabels em vez de Intl.NumberFormat
+  const formattedTotal = this._utilitiesService.formatCurrencyStringWithLabels(this.totais);
+
+  // Calcular offset para posição do título (igual ao buildChart)
+  const centerX = config.centerPosition ? parseFloat(config.centerPosition[0]) : 50;
+  const centerY = config.centerPosition ? parseFloat(config.centerPosition[1]) : 50;
+
+  let offsetX = centerX;
+  if (screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)) {
+    offsetX = centerX - 1;
+  } else {
+    offsetX = centerX - 0.5;
+  }
+
+  this.echartsInstance.setOption({
+    title: {
+      text: formattedTotal,
+      left: `${offsetX}%`,
+      top: `${centerY}%`,
+      textAlign: "center",
+      textVerticalAlign: "middle",
+      textStyle: {
+        fontSize: isPhone ? 14 : isTablet ? 16 : 18,
+        fontWeight: "bold",
+        color: themeStyles.textPrimaryColor,
+      },
+      subtextStyle: {
+        fontSize: isPhone ? 10 : isTablet ? 11 : 12,
+        color: themeStyles.textSecondaryColor,
+      },
+    },
+    legend: config.showLegend
+      ? {
           textStyle: {
             color: themeStyles.textPrimaryColor,
             fontSize: legendFontSize,
@@ -162,79 +253,109 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
           itemHeight: isMobile ? 8 : 10,
           itemGap: isMobile ? 8 : 10,
         }
-        : undefined,
+      : undefined,
 
-      series: [
-        {
-          radius: radius,
-          label: {
-            show: true,
-            position: "inside",
-            formatter: function (params) {
-              return params.percent >= 4 ? Math.round(params.percent) + '%' : '';
-            },
-            fontSize: labelFontSize,
-            color: "#FFFFFF",
+    series: [
+      {
+        radius: radius,
+        label: {
+          show: true,
+          position: "inside",
+          formatter: function (params) {
+            return params.percent >= 4
+              ? Math.round(params.percent) + "%"
+              : "";
           },
-          labelLine: {
-            show: true,
-            length: isMobile ? 5 : 10,
-            length2: isMobile ? 3 : 5,
-          },
+          fontSize: labelFontSize,
+          color: "#FFFFFF",
         },
-      ],
-    });
+        labelLine: {
+          show: true,
+          length: isMobile ? 5 : 10,
+          length2: isMobile ? 3 : 5,
+        },
+      },
+    ],
+  });
 
-    this.resizeChart();
-  }
+  this.resizeChart();
+}
 
   private buildChart() {
-    if (!this.data || this.data.length === 0) {
-      console.warn("Nenhum dado disponível para o gráfico");
-      return;
-    }
+  if (!this.data || this.data.length === 0) {
+    console.warn("Nenhum dado disponível para o gráfico");
+    return;
+  }
 
-    const config = { ...this.defaultConfig, ...this.config };
-    const themeStyles = getAvailableThemesStyles(this.currentTheme);
-    const isMobile = window.innerWidth <= 1000;
-    const isPhone = window.innerWidth <= 575;
-    const isTablet = window.innerWidth <= 768;
+  const config = { ...this.defaultConfig, ...this.config };
+  const themeStyles = getAvailableThemesStyles(this.currentTheme);
+  const isMobile = window.innerWidth <= 1000;
+  const isPhone = window.innerWidth <= 575;
+  const isTablet = window.innerWidth <= 768;
+  const screenWidth = window.innerWidth;
 
-    // Responsividade inicial
-    const radius = isMobile
-      ? (isPhone ? ["25%", "55%"] : ["30%", "60%"])
-      : config.radius;
-    const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 12;
-    const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 12;
+  // Responsividade inicial
+  const radius = isMobile
+    ? isPhone
+      ? ["25%", "55%"]
+      : ["30%", "60%"]
+    : config.radius;
+  const legendFontSize = isPhone ? 7 : isTablet ? 8 : isMobile ? 10 : 12;
+  const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 12;
 
-    const filteredData = this.filterSmallSlices(
-      this.data,
-      config.minAngle || 5
-    );
+  // IMPORTANTE: Chamar filterSmallSlices ANTES de formatar o total
+  const filteredData = this.filterSmallSlices(
+    this.data,
+    config.minAngle || 5,
+  );
 
-    this.chartOptions = {
-      color: this.colors.length > 0 ? this.colors : undefined,
+  // AGORA sim podemos formatar o total (depois do filterSmallSlices ter calculado this.totais)
+  const formattedTotal = this._utilitiesService.formatCurrencyStringWithLabels(this.totais);
 
-      grid: {
-        top: config.gridTop,
-        bottom: config.gridBottom,
-        left: config.gridLeft,
-        right: config.gridRight,
-        containLabel: true,
+  // Calcular offset para posição do título (baseado no pieChartModel)
+  const centerX = config.centerPosition ? parseFloat(config.centerPosition[0]) : 50;
+  const centerY = config.centerPosition ? parseFloat(config.centerPosition[1]) : 50;
+
+  // Ajustar offset baseado na largura da tela
+  let offsetX = centerX;
+  if (screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)) {
+    offsetX = centerX - 1;
+  } else {
+    offsetX = centerX - 0.5;
+  }
+
+  this.chartOptions = {
+    color: this.colors.length > 0 ? this.colors : undefined,
+
+    grid: {
+      top: config.gridTop,
+      bottom: config.gridBottom,
+      left: config.gridLeft,
+      right: config.gridRight,
+      containLabel: true,
+    },
+
+    // Usar title para mostrar o total no centro com offset
+    title: {
+      text: formattedTotal,
+      left: `${offsetX}%`,
+      top: `${centerY}%`,
+      textAlign: "center",
+      textVerticalAlign: "middle",
+      textStyle: {
+        fontSize: isPhone ? 14 : isTablet ? 16 : 18,
+        fontWeight: "bold",
+        color: themeStyles.textPrimaryColor,
       },
+      subtext: "Total",
+      subtextStyle: {
+        fontSize: isPhone ? 10 : isTablet ? 11 : 12,
+        color: themeStyles.textSecondaryColor,
+      },
+    },
 
-      title: config.showTitle
-        ? {
-          text: config.titleText,
-          subtext: config.titleSubtext,
-          left: config.titlePosition,
-          textStyle: { color: themeStyles.textPrimaryColor },
-          subtextStyle: { color: themeStyles.textSecondaryColor },
-        }
-        : undefined,
-
-      tooltip: config.showTooltip
-        ? {
+    tooltip: config.showTooltip
+      ? {
           trigger: "item",
           formatter: (params: any) => {
             const data = params;
@@ -254,10 +375,10 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
           confine: true,
           textStyle: { color: themeStyles.textPrimaryColor },
         }
-        : undefined,
+      : undefined,
 
-      legend: config.showLegend
-        ? {
+    legend: config.showLegend
+      ? {
           left: this.getLegendPosition(config.legendPosition).left,
           top: this.getLegendPosition(config.legendPosition).top,
           orient: config.legendOrient,
@@ -273,61 +394,64 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
           itemGap: isMobile ? 8 : 10,
           selectedMode: true,
         }
-        : undefined,
+      : undefined,
 
-      series: [
-        {
-          name: "Dados",
-          type: "pie",
-          radius: radius,
-          center: config.centerPosition,
-          data: filteredData,
-          minAngle: config.minAngle,
-          avoidLabelOverlap: false,
-          emphasis: {
-            scale: config.emphasisScale,
-            scaleSize: config.emphasisScale ? 10 : 0,
-            itemStyle: {
-              shadowBlur: config.emphasisScale ? 10 : 0,
-              shadowOffsetX: 0,
-              shadowColor: "rgba(0, 0, 0, 0.5)",
-            },
+    series: [
+      {
+        name: "Dados",
+        type: "pie",
+        radius: radius,
+        center: config.centerPosition,
+        data: filteredData,
+        minAngle: config.minAngle,
+        avoidLabelOverlap: false,
+        emphasis: {
+          scale: config.emphasisScale,
+          scaleSize: config.emphasisScale ? 10 : 0,
+          itemStyle: {
+            shadowBlur: config.emphasisScale ? 10 : 0,
+            shadowOffsetX: 0,
+            shadowColor: "rgba(0, 0, 0, 0.5)",
           },
-
-          label: {
-            show: true,
-            position: "inside",
-            formatter: function (params) {
-              return params.percent >= 4 ? Math.round(params.percent) + '%' : '';
-            },
-            fontSize: labelFontSize,
-            color: "#FFFFFF",
-          },
-
-          labelLine: {
-            show: true,
-            length: isMobile ? 5 : 10,
-            length2: isMobile ? 3 : 5,
-            smooth: true,
-          },
-
-          animationType: "scale",
-          animationEasing: "elasticOut",
-          animationDelay: () => Math.random() * 200,
         },
-      ],
-    };
 
-    if (this.echartsInstance) {
-      this.echartsInstance.setOption(this.chartOptions, true);
-    }
+        label: {
+          show: true,
+          position: "inside",
+          formatter: function (params) {
+            return params.percent >= 4
+              ? Math.round(params.percent) + "%"
+              : "";
+          },
+          fontSize: labelFontSize,
+          color: "#FFFFFF",
+        },
+
+        labelLine: {
+          show: true,
+          length: isMobile ? 5 : 10,
+          length2: isMobile ? 3 : 5,
+          smooth: true,
+        },
+
+        animationType: "scale",
+        animationEasing: "elasticOut",
+        animationDelay: () => Math.random() * 200,
+      },
+    ],
+  };
+
+  if (this.echartsInstance) {
+    this.echartsInstance.setOption(this.chartOptions, true);
   }
+}
 
   private filterSmallSlices(
     data: PieChartData[],
-    minAngle: number
+    minAngle: number,
   ): PieChartData[] {
     const total = data.reduce((sum, item) => sum + item.value, 0);
+    this.totais = total;
     const minValue = (minAngle / 360) * total;
 
     return data.map((item) => ({
@@ -371,7 +495,6 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // API Pública
   public setData(newData: PieChartData[]) {
     this.data = newData;
     this.buildChart();

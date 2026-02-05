@@ -321,11 +321,9 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   // No TypeScript, mude para uma propriedade ou garanta o retorno
   get isVisiblePanelExpense(): boolean {
     const isVisible = this.finalFilter.ano >= 2014 && this.finalFilter.ano <= 2022;
-    console.log("isVisiblePanelExpense:", isVisible);
     if (isVisible) {
       this._filterStateService.updateYear(this.finalFilter.ano);
     }
-    console.log("FilterStateService showExpensePanel$:", this._filterStateService.showExpensePanel$);
     return isVisible;
   }
 

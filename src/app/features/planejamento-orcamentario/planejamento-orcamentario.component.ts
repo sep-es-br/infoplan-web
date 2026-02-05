@@ -893,8 +893,6 @@ selectUO(uo: ISPOFiltroUos): void {
     );
   }
 
-  // ==================== Métodos Auxiliares Genéricos ====================
-
   private realizarBusca<T>(
     valorBusca: string,
     propriedadeTermoBusca: string,
@@ -1031,21 +1029,21 @@ selectUO(uo: ISPOFiltroUos): void {
       return `${(value / 1_000_000_000).toLocaleString("pt-BR", {
         minimumFractionDigits: 0,
         maximumFractionDigits: 1,
-      })} bi`;
+      })} B`;
     }
 
     if (value >= 1_000_000) {
       return `${(value / 1_000_000).toLocaleString("pt-BR", {
         minimumFractionDigits: 0,
         maximumFractionDigits: 1,
-      })} mi`;
+      })} M`;
     }
 
     if (value >= 1_000) {
       return `${(value / 1_000).toLocaleString("pt-BR", {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-      })} mil`;
+      })} K`;
     }
 
     return `${value.toLocaleString("pt-BR")}`;

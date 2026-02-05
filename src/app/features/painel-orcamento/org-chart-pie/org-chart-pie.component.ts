@@ -309,14 +309,12 @@ private updateChartOnResize(): void {
     config.minAngle || 5,
   );
 
-  // AGORA sim podemos formatar o total (depois do filterSmallSlices ter calculado this.totais)
   const formattedTotal = this._utilitiesService.formatCurrencyStringWithLabels(this.totais);
 
   // Calcular offset para posição do título (baseado no pieChartModel)
   const centerX = config.centerPosition ? parseFloat(config.centerPosition[0]) : 50;
   const centerY = config.centerPosition ? parseFloat(config.centerPosition[1]) : 50;
 
-  // Ajustar offset baseado na largura da tela
   let offsetX = centerX;
   if (screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)) {
     offsetX = centerX - 1;
@@ -343,11 +341,10 @@ private updateChartOnResize(): void {
       textAlign: "center",
       textVerticalAlign: "middle",
       textStyle: {
-        fontSize: isPhone ? 14 : isTablet ? 16 : 18,
+        fontSize: isPhone ? 14 : isTablet ? 10 : 16,
         fontWeight: "bold",
         color: themeStyles.textPrimaryColor,
       },
-      subtext: "Total",
       subtextStyle: {
         fontSize: isPhone ? 10 : isTablet ? 11 : 12,
         color: themeStyles.textSecondaryColor,

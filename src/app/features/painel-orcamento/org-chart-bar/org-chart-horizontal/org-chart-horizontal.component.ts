@@ -6,6 +6,7 @@ import {
   OnInit,
   OnDestroy,
   SimpleChanges,
+  AfterViewInit,
 } from "@angular/core";
 import { NbThemeService } from "@nebular/theme";
 import { ECharts, EChartsOption } from "echarts";
@@ -30,6 +31,7 @@ export interface ChartDataConfig {
     bottom?: string;
     containLabel?: boolean;
   };
+  showMaximizeButton?: boolean;
 }
 @Component({
   selector: "ngx-org-chart-horizontal",
@@ -92,6 +94,10 @@ export class OrgChartHorizontalComponent
     if (changes["height"]) {
       this.resizeChart();
     }
+    if(changes["showMaximizeButton"]) {
+      this.showMaximizeButton = changes["showMaximizeButton"].currentValue;
+      this.updateChartOnResize();
+    }
   }
 
   ngOnDestroy(): void {
@@ -118,22 +124,26 @@ export class OrgChartHorizontalComponent
       yAxis: {
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+          // fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+          fontSize: this.showMaximizeButton ? 14 : 11,
           margin: 8,
-          overflow: "break",
+          overflow: "truncate",
           width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
-          formatter: (value: string) => {
-            const limite = isMobile ? 15 : 20;
-            return this.quebrarTexto(value, limite);
-          },
         },
       },
       xAxis: {
         axisLabel: {
-          fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+          // fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+          fontSize: this.showMaximizeButton ? 13 : 10,
           formatter: (value: number) => {
             return this.formatValue(value);
           },
+        },
+      },
+      legend: {
+        textStyle: {
+          color: theme.textPrimaryColor,
+          fontSize: this.showMaximizeButton ? 16 : 12,
         },
       },
       series: this.chart.data.datasets.map(() => ({
@@ -237,7 +247,7 @@ export class OrgChartHorizontalComponent
         itemGap: this.ChartDataConfig?.legend?.itemGap || 20,
         textStyle: {
           color: theme.textPrimaryColor,
-          fontSize: this.ChartDataConfig?.legend?.fontSize || 9,
+          fontSize: this.showMaximizeButton ? 16 : 12,
         },
       },
 
@@ -254,7 +264,8 @@ export class OrgChartHorizontalComponent
         scale: true,
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: isMobile ? 8 : 10,
+          // fontSize: isMobile ? 8 : 10,
+          fontSize: this.showMaximizeButton ? 13 : 10,
           formatter: (value: number) => {
             return this.formatValue(value);
           },
@@ -267,15 +278,11 @@ export class OrgChartHorizontalComponent
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: isMobile ? 9 : 11,
-          margin: 15,
-          lineHeight: 11,
+          fontSize: this.showMaximizeButton ?  14 : 11,
+          // margin: 15,
+          // lineHeight: 11,
           width: 100,
-          overflow: "breakAll", // Deixamos a quebra apenas para sua função
-          formatter: (value: string) => {
-            const limite = isMobile ? 15 : 20;
-            return this.quebrarTexto(value, limite);
-          },
+          overflow: "truncate"
         },
       },
 
@@ -283,11 +290,12 @@ export class OrgChartHorizontalComponent
         name: dataset.label,
         type: "bar",
         data: data.map((d) => d.valores[index]),
-        itemStyle: { color: colors[index] },
+        itemStyle: {
+          color: colors[index]
+        },
         barCategoryGap: "20%",
         barGap: "20%",
         barMaxWidth: isMobile ? 15 : 25,
-        // barMinWidth: 5,
       })),
 
       dataZoom: [
@@ -327,40 +335,15 @@ export class OrgChartHorizontalComponent
     }
   }
 
-  private quebrarTexto(texto: string, maxCaracteres: number): string {
-    if (!texto) return "";
-
-    const words = texto.split(" ");
-    let lines: string[] = [];
-    let currentLine = "";
-
-    words.forEach((word) => {
-      if ((currentLine + word).length > maxCaracteres) {
-        if (currentLine.length > 0) {
-          lines.push(currentLine.trim());
-          currentLine = word + " ";
-        } else {
-          lines.push(word.substring(0, maxCaracteres));
-          currentLine = word.substring(maxCaracteres) + " ";
-        }
-      } else {
-        currentLine += word + " ";
-      }
-    });
-
-    if (currentLine) lines.push(currentLine.trim());
-    return lines.slice(0, 3).join("\n");
-  }
-
   formatValue(value: number): string {
     const absValue = Math.abs(value);
 
     if (absValue >= 1_000_000_000_000)
-      return (value / 1_000_000_000_000).toFixed(1) + "T";
+      return (value / 1_000_000_000_000).toFixed(1) + " T";
     if (absValue >= 1_000_000_000)
-      return (value / 1_000_000_000).toFixed(1) + "B";
-    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
-    if (absValue >= 1_000) return (value / 1_000).toFixed(1) + "K";
+      return (value / 1_000_000_000).toFixed(1) + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1) + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(1) + " K";
 
     return value.toString();
   }

@@ -1,28 +1,27 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap");
 
 // themes - our custom or/and out of the box themes
-@import 'themes';
+@import "themes";
 
 // framework component themes (styles tied to theme variables)
-@import '@nebular/theme/styles/globals';
-@import '@nebular/auth/styles/globals';
+@import "@nebular/theme/styles/globals";
+@import "@nebular/auth/styles/globals";
 
 // @import 'bootstrap/scss/functions';
 // @import 'bootstrap/scss/variables';
 // @import 'bootstrap/scss/mixins';
 // @import 'bootstrap/scss/grid';
-@import 'bootstrap';
+@import "bootstrap";
 
 // loading progress bar theme
-@import './pace.theme';
+@import "./pace.theme";
 
-@import './layout';
-@import './overrides';
-@import url('./_painel-orcamento-cores.scss');
+@import "./layout";
+@import "./overrides";
+@import url("./_painel-orcamento-cores.scss");
 
 // install the framework and custom global styles
 @include nb-install() {
-
   // framework global styles
   @include nb-theme-global();
   @include nb-auth-global();
@@ -32,8 +31,7 @@
   @include ngx-pace-theme();
 
   @include nb-overrides();
-};
-
+}
 
 .context-menu {
   text-align: left;
@@ -62,5 +60,82 @@
 }
 
 :host ::ng-deep .cdk-overlay-container {
-    z-index: 99999;
+  z-index: 99999;
+}
+
+nb-menu .menu-section-divider {
+  position: relative;
+  margin: 1rem 0 0 0 ;
+  text-align: center;
+  border-bottom-width: unset;
+  opacity: 1;
+  transition: none !important;
+  height: 22px;
+
+  // nb-sidebar.collapsed  {
+  //   content: "";
+  //   position: absolute;
+  //   left: 0;
+  //   right: 0;
+  //   top: 50%;
+  //   height: 1px;
+  //   background: #536ad1;
+  //   z-index: 1;
+  // }
+
+  .section-title {
+    position: relative;
+    /* display: inline-block; */
+    padding: 0 0.5rem;
+    /* background: #fff; */
+    /* color: #8f9bb3; */
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 1;
+  }
+}
+  .divisor {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #c3c3c3;
+  }
+
+  .divisor::before,
+  .divisor::after {
+    content: "";
+    flex: 1;
+    // border-bottom: 1px solid #c3c3c3;
+    border-bottom: 1px solid #536ad1;
+  }
+
+  // .divisor::before {
+  //   height: 1px;
+  //   background-color: #536ad1;
+  // }
+
+  // .divisor:not(:empty)::before {
+  //   margin-right: 0em;
+  // }
+
+  // .divisor:not(:empty)::after {
+  //   margin-left: 0em;
+  // }
+
+  // nb-sidebar.compacted .menu-section-divider .divisor-section-title .span-section-title,
+  nb-sidebar.compacted .section-title {
+    // visibility: hidden;
+    display: none;
+    margin: 0;
+  }
+
+::ng-deep nb-menu {
+  .menu-item {
+    a.active {
+      // Remove a borda inferior do item ativo (se for a linha azul)
+      border-color: transparent !important;
+    }
+  }
 }

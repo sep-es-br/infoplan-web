@@ -169,21 +169,9 @@
   }
 }
 
-// :host {
-//   @media screen and (min-width: 1330px) and (max-width: 1530px) {
-//     .card .card-content {
-//       gap: 10px;
-//       font-size: 11px;
-//     }
-//   }
-
-//   @media screen and (min-width: 348px) and (max-width: 1329px) {
-//     .card .card-content {
-//       gap: 20px;
-//       font-size: 11px;
-//     }
-//   }
-// }
+nb-tooltip {
+  pointer-events: none;
+}
 
 :host-context(.nb-theme-default, .nb-theme-dark, .nb-theme-cosmic) {
   .icon-top-right {

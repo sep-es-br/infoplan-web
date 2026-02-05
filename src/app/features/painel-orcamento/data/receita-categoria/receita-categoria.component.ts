@@ -75,6 +75,8 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     if (changes["filter"] && this.filter) {
       this.loadData();
     }
+    this.chartDataConfig.showMaximizeButton =
+      this.isChartMaximized("receita-categoria");
   }
 
   ngOnDestroy(): void {
@@ -219,7 +221,12 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       });
     }
 
-    treeNodes.push({ data: totalNodeData });
+    treeNodes.push({
+      data: totalNodeData
+    });
+
+
+    this._utilitiesService.sortTreeNodes(treeNodes, "top");
 
     const defaultColumns = anos.map((ano) => ({
       propertyName: `ano_${ano}`,
@@ -240,6 +247,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
         },
       });
     }
+
     this.tableContent = {
       customColumn: {
         propertyName: "categoria",
@@ -268,7 +276,7 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
     const temVariacao = this.tableContent.defaultColumns.some(
       (col) => col.propertyName === "variação",
     );
-    console.log("eqweqeqw", this.tableContent);
+
     const columns = [
       {
         key: "categoria",
@@ -289,12 +297,13 @@ export class ReceitaCategoriaComponent implements OnChanges, OnDestroy {
       });
     }
 
+    this._utilitiesService.sortTreeNodes(this.tableContent.data);
+
     const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};
-      // Processar cada propriedade do nó
+
       node.data.forEach((prop: { propertyName: string; value: any }) => {
         const { propertyName, value } = prop;
-        console.log("dasda", prop, "  ", " value: ", value)
         if (propertyName === "categoria") {
           row["categoria"] = value;
         } else if (propertyName.startsWith("ano_")) {

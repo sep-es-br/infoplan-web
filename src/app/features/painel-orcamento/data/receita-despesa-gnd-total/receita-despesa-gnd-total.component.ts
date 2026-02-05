@@ -45,7 +45,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   chartDataConfig: ChartDataConfig = {
     grid: {
-      top: "20%",
+      top: "25%",
       left: "0%",
       right: "0%",
       bottom: "0%",
@@ -107,7 +107,6 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
 
     this.filter.codPoder = poderes.join(",");
     this.getReceitaDespesaGNDTotal();
-    console.log("UPDATE FOI ACIONADO ", this.getReceitaDespesaGNDTotal());
     this.processTableData(this.receitaDespesaGNDTotal);
   }
 

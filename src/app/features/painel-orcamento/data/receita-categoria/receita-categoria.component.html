@@ -11,6 +11,8 @@
   [chart]="charData"
   [charactersPerLine]="19"
   [ChartDataConfig]="chartDataConfig"
+  [showMaximizeButton]="isChartMaximized('receita-categoria')"
   [height]="isChartMaximized('receita-categoria') ? calcMaximizedHeight() : 300"
-    card-front></ngx-org-chart-horizontal>
+  card-front
+  ></ngx-org-chart-horizontal>
 </ngx-flip-table>

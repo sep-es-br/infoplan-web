@@ -131,12 +131,10 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
       return;
     }
 
-    // Extrair categorias (origens) únicas
     const categorias = [...new Set(dados.map((item) => item.origem))].filter(
       Boolean,
     );
 
-    // Extrair anos únicos e ordenar
     const anos = [...new Set(dados.map((item) => item.ano))]
       .filter((ano) => ano != null)
       .sort();
@@ -146,7 +144,6 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
       return;
     }
 
-    // Criar dados no formato TreeNode para tabela comparativa
     const treeNodes: TreeNode[] = categorias.map((categoria) => {
       const nodeData = [
         {
@@ -155,7 +152,6 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
         },
       ];
 
-      // Adicionar valores para cada ano
       anos.forEach((ano) => {
         const item = dados.find((d) => d.origem === categoria && d.ano === ano);
         const valor = item?.receitaLiquida || 0;
@@ -166,7 +162,6 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
         });
       });
 
-      // Calcular variação se tiver pelo menos 2 anos
       if (anos.length >= 2) {
         const variacao = this.calcularVariacao(categoria, anos, dados);
         nodeData.push({
@@ -182,7 +177,6 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
       };
     });
 
-    // Criar linha de totais
     const totalNodeData = [
       {
         propertyName: "categoria",
@@ -201,7 +195,6 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
       });
     });
 
-    // Adicionar variação total
     if (anos.length >= 2) {
       const totalAnoAnterior = dados
         .filter((d) => d.ano === anos[0])
@@ -225,14 +218,14 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
       });
     }
 
-    // Adicionar linha de total aos dados
     treeNodes.push({
       data: totalNodeData,
       children: [],
       expanded: false,
     });
 
-    // Criar colunas
+    this._utilitiesService.sortTreeNodes(treeNodes, "top");
+
     const defaultColumns: FlipTableColumn[] = anos.map((ano) => ({
       propertyName: `Arrecadação LI - ${ano.toString()}`,
       displayName: `Arrecadação Líquida - ${ano.toString()} (R$)`,
@@ -334,6 +327,8 @@ export class ReceitaOrigemComponent implements OnChanges, OnDestroy {
         label: `Variação - ${ultimoAno}`,
       });
     }
+
+    this._utilitiesService.sortTreeNodes(this.tableContent.data);
 
     const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};

@@ -46,6 +46,11 @@
 //   height: 100% !important;
 // }
 
+.is-visible-card-filter {
+  display: none;
+  visibility: hidden;
+}
+
 .outer-card {
   // height: 275px;
   background-color: var(--card-background-color);
@@ -56,13 +61,13 @@
 
   .card-header {
     border: none;
-    height: 3rem;
+    height: 4rem;
     background-color: transparent;
 
     .card-title {
       color: var(--card-text-color);
-      font-size: 0.9rem;
-      font-weight: var(--layout-text-font-weight);
+      font-size: 1rem;
+      font-weight: 600;
     }
 
     .sub-card-title {
@@ -105,9 +110,7 @@
     }
   }
 
-
   .flip-card {
-
     .card-front,
     .card-back {
       border: none;
@@ -132,7 +135,6 @@
           z-index: 2;
           // background-color: aqua;
 
-
           .nb-tree-grid-header-row {
             position: sticky;
             top: -1px;
@@ -140,10 +142,10 @@
           }
 
           th {
-            font-size: 12px !important;
+            font-size: 13px !important;
             // padding: 0;
-            padding-left: .5em;
-            padding-right: .5em;
+            padding-left: 0.5em;
+            padding-right: 0.5em;
             height: 20px;
             line-height: normal;
           }
@@ -166,18 +168,17 @@
           }
 
           td {
-            font-size: 10px !important;
+            font-size: 12px !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;
-            padding-left: .5em;
+            padding-left: 0.5em;
             height: 25px;
           }
 
           .icon {
             color: var(--card-text-color);
           }
-
         }
 
         &.maximized {
@@ -193,10 +194,10 @@
           }
 
           th {
-            font-size: 12px !important;
+            font-size: 18px !important;
             padding: 0;
-            padding-left: .5em;
-            padding-right: .5em;
+            padding-left: 0.5em;
+            padding-right: 0.5em;
             height: 40px;
             line-height: normal;
           }
@@ -220,11 +221,11 @@
           }
 
           td {
-            font-size: 10px !important;
+            font-size: 14px !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;
-            padding-left: .5em;
+            padding-left: 0.5em;
             height: 25px;
           }
 

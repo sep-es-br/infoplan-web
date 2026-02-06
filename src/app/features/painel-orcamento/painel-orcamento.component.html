@@ -110,11 +110,9 @@
                             : null
                         "
                         [nbTooltipTrigger]="
-                          ano.num >= 2014 && ano.num <= 2022 ? 'hover' : 'noop'
+                          ano.num >= 2014 && ano.num <= 2022 ? 'hint' : 'noop'
                         "
                         [nbTooltipPlacement]="right"
-                        [nbTooltipShowDelay]="600"
-                        [nbTooltipHideDelay]="600"
                         #tooltip="nbTooltip"
                       >
                         {{ ano.num }}

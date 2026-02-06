@@ -21,7 +21,7 @@ import { ANO_DATA, CARDS_DATA, MESES_DATA } from "./data/datasets";
 import { ComunicationCardsService } from "../../core/service/comunication-cards/comunication-cards.service";
 import { ShortNumberPipe } from "../../@theme/pipes";
 import { environment } from "../../../environments/environment";
-import { NbSelectComponent } from "@nebular/theme";
+import { NbSelectComponent, NbTooltipDirective } from "@nebular/theme";
 import {
   ChartMaximizeService,
   ChartMaximizeState,
@@ -74,6 +74,9 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
   @ViewChild("modalCloseButton") modalCloseButtonRef: ElementRef;
   @ViewChildren("customSelect") customSelectRefs: QueryList<NbSelectComponent>;
   @Output() filterChanged = new EventEmitter<IExecucaoOrcamentariaRequest>();
+
+  @ViewChildren(NbTooltipDirective)
+  tooltips!: QueryList<NbTooltipDirective>;
 
   readonly meses = MESES_DATA;
   readonly ano = ANO_DATA;
@@ -255,6 +258,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
     // CORREÇÃO: Emitir evento de filtro alterado
     this.filterChanged.emit(this.currentRequestParams);
 
+     this.tooltips.forEach(t => t.hide());
     // Recarregar dados com novos filtros
     this.loadDataWithFilters();
   }
@@ -391,6 +395,7 @@ export class PainelOrcamentoComponent implements OnInit, OnDestroy {
         }
       }
     }
+     this.tooltips.forEach(t => t.hide());
   }
 
   closeFilterModal() {

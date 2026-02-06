@@ -273,7 +273,7 @@ export const menulinks: MyCustomMenuItem[] = [
     name: "Planejamento Orçamentário",
     icon: "logo-spo-branco.svg",
     link: "/pages/planejamento-orcamentario",
-    status: true,
+    status: false,
     url: "",
     src: "SPO",
     menuIcon: "",

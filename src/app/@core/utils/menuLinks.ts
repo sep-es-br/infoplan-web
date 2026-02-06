@@ -295,7 +295,7 @@ export const menulinks: MyCustomMenuItem[] = [
     color: "#4DB6D2",
     subTitle: "Execução Orçamentária",
     isExternal: false,
-        separator: true,
+    separator: true,
     sectionTitle: "Orçamento",
     section: "orcamento",
   },

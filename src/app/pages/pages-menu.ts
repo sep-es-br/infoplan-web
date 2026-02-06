@@ -11,7 +11,7 @@ export interface CustomNbMenuItem extends NbMenuItem {
 const dynamicMenuItems: CustomNbMenuItem[] = menulinks
   .filter(menu => menu.status) // Filtra apenas itens ativos
   .map(menu => ({
-    title: menu.isExternal ? `${menu.name} \u2197` : menu.name,
+    title: menu.name,
     icon: { icon: menu.menuIcon || menu.icon.toString().split('.')[0], pack: 'custom-icons' },
     link: menu.link || undefined,
     url: menu.url || undefined,

@@ -1,23 +1,23 @@
 export interface IStrategicProjectDeliveries {
-    portfolioId: number;
-    nomePortfolio: string;
-    areaId: number;
-    nomeArea: string;
-    programaId: number;
-    nomePrograma: string;
-    projetoId: number;
-    nomeProjeto: string;
-    orgaoId: number;
-    nomeOrgao: string;
-    entregaId: number;
-    nomeEntrega: string;
-    mcId: number;
-    nomeMarcoCritico: string;
-    statusId: number;
-    nomeStatus: string;
-    contagemPE: number;
-    corStatus: string;
-  }
+  portfolioId: number;
+  nomePortfolio: string;
+  areaId: number;
+  nomeArea: string;
+  programaId: number;
+  nomePrograma: string;
+  projetoId: number;
+  nomeProjeto: string;
+  orgaoId: number;
+  nomeOrgao: string;
+  entregaId: number;
+  nomeEntrega: string;
+  mcId: number;
+  nomeMarcoCritico: string;
+  statusId: number;
+  nomeStatus: string;
+  contagemPE: number;
+  corStatus: string;
+}
 
 export interface IStrategicProjectRisksByClassification {
   portfolioId: number;
@@ -36,15 +36,14 @@ export interface IStrategicProjectRisksByClassification {
   corImportancia: string;
 }
 
-export interface IStrategicProjectDeliveriesShow{
+export interface IStrategicProjectDeliveriesShow {
   statusId: number;
   nomeStatus: string;
   corStatus?: string;
   count: number;
 }
 
-
-export interface IStrategicProjectAccumulatedInvestment{
+export interface IStrategicProjectAccumulatedInvestment {
   anoMes: number;
   custoPrevisto: number;
   custoPrevistoAcumulado: number;
@@ -52,22 +51,22 @@ export interface IStrategicProjectAccumulatedInvestment{
   custoRealizadoAcumulado: number;
 }
 
-export interface IStrategicProjectInvestmentSelected{
+export interface IStrategicProjectInvestmentSelected {
   id: number;
   nome: string;
   custoPrevisto: number;
   custoRealizado: number;
 }
 
-export interface IStrategicProjectDeliveriesBySelected{
+export interface IStrategicProjectDeliveriesBySelected {
   id: number;
   nome: string;
   execucao: number;
   concluida: number;
 }
 
-export interface IStrategicProjectTimestamp{
-  timestamp: string
+export interface IStrategicProjectTimestamp {
+  timestamp: string;
 }
 
 export interface StrategicProjectProgramDetails {
@@ -102,4 +101,3 @@ export interface StrategicProjectProjectDetails {
   statusProjeto: string;
   responsavel: string;
 }
-

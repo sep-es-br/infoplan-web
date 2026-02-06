@@ -1,5 +1,3 @@
-<div  [ngStyle]="{ 'height': height + 'px' }" >
-  <div echarts [options]="chartOptions" (chartInit)="onChartInit($event)" class="echart"></div>
+<div  [ngStyle]="{ 'height': height + 'px' }">
+  <div  echarts [options]="chartOptions" (chartInit)="onChartInit($event)" autoResize="true" class="echart"></div>
 </div>
-
-

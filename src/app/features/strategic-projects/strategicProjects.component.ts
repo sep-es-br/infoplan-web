@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { StrategicProjectsService } from '../../core/service/strategic-projects.service';
 import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
@@ -7,7 +7,8 @@ import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project
 import { IStrategicProjectTimestamp } from '../../core/interfaces/strategic-project.interface';
 import { NbSelectComponent, NbThemeService } from '@nebular/theme';
 import { AvailableThemes } from '../../@theme/theme.module';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { ChartMaximizeService, ChartMaximizeState } from '../../core/service/chart-maximize/chart-maximize.service';
 
 enum AvailableFilters {
   PORTFOLIO = 'Portfolio',
@@ -56,7 +57,7 @@ export interface StrategicProjectsFilter {
   templateUrl: './strategicProjects.component.html',
   styleUrls: ['./strategicProjects.component.scss']
 })
-export class StrategicProjectsComponent {
+export class StrategicProjectsComponent implements OnInit, OnDestroy {
   @ViewChild('modalCloseButton') modalCloseButtonRef: ElementRef;
 
   @ViewChildren('customSelect') customSelectRefs: QueryList<NbSelectComponent>;
@@ -77,7 +78,7 @@ export class StrategicProjectsComponent {
       // Deve limitar essa verificação à apenas quando o modal de filtros estiver aberto
 
       const optionListElements = document.getElementsByTagName('nb-option-list');
-  
+
       if (
         optionListElements &&
         optionListElements.length > 0 &&
@@ -91,6 +92,8 @@ export class StrategicProjectsComponent {
       }
     }
   }
+
+  private readonly chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
 
   timestamp: string;
 
@@ -170,7 +173,7 @@ export class StrategicProjectsComponent {
     { num: 2031, disabledInicial: false, disabledFinal: false },
   ];
 
-  activeFilters: { key: string; label: string; displayValue: Array<{name: string; fullName?: string; }>; }[] = [];
+  activeFilters: { key: string; label: string; displayValue: Array<{ name: string; fullName?: string; }>; }[] = [];
 
   requestStatus = {
     totals: RequestStatus.EMPTY,
@@ -180,7 +183,15 @@ export class StrategicProjectsComponent {
 
   isFilterModalOpen: boolean = false;
 
-  get dateController(): { mesInicial: number; anoInicial: number; mesFinal: number; anoFinal: number} {
+  maximizeState: ChartMaximizeState = {
+    maximizedChartId: null,
+    isAnyChartMaximized: false,
+    maximizedHeight: this.chartMaximizeService.getCurrentHeight()
+  };
+
+  private subscriptionMaximizeState!: Subscription;
+
+  get dateController(): { mesInicial: number; anoInicial: number; mesFinal: number; anoFinal: number } {
     return {
       mesInicial: Number(this.filter.dataInicio.slice(5, 7)),
       anoInicial: Number(this.filter.dataInicio.slice(0, 4)),
@@ -202,13 +213,44 @@ export class StrategicProjectsComponent {
     }
   }
 
-  constructor(private strategicProjectsService: StrategicProjectsService, private themeService: NbThemeService) {
+  constructor(
+    private strategicProjectsService: StrategicProjectsService,
+    private themeService: NbThemeService
+  ) {
     this.loadTimestamp();
     this.updateActiveFilters();
     this.filterOutDisabledDates();
     this.loadAll();
     this.loadTotals();
   }
+
+  ngOnInit(): void {
+    this.subscriptionMaximizeState = this.chartMaximizeService.maximizeState$.subscribe(
+      (state: ChartMaximizeState) => {
+        this.maximizeState = state;
+      }
+    );
+
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscriptionMaximizeState) {
+      this.subscriptionMaximizeState.unsubscribe();
+    }
+  }
+
+  handleMaximizeButtonClick(chartId: string, event: boolean): void {
+    this.chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this.chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  isAnyChartMaximized(): boolean {
+    return this.chartMaximizeService.isAnyChartMaximized();
+  }
+
 
   updateActiveFilters() {
     const directValueKeys = ['portfolio', 'dataInicio', 'dataFim', 'previsaoConclusao'];
@@ -226,7 +268,7 @@ export class StrategicProjectsComponent {
     this.activeFilters = Object.entries(this.finalFilter)
       .filter(([key, value]) => value && (Array.isArray(value) ? value.length > 0 : true))
       .map(([key, value]) => {
-        let displayValue: Array<{name: string; fullName?: string; }>;
+        let displayValue: Array<{ name: string; fullName?: string; }>;
 
         if (directValueKeys.includes(key)) {
           if (key === 'dataInicio' || key === 'dataFim') {
@@ -265,7 +307,7 @@ export class StrategicProjectsComponent {
 
   handleFilterChange(origin: AvailableFilters | string, newValue: Array<number>) {
     const selectedValue = Array.isArray(newValue) && newValue.length === 0 ? '' : newValue.toString();
-    
+
     switch (origin) {
       case AvailableFilters.AREAS_TEMATICAS:
         // Faz uma requisição para pegar uma lista de Programas, Projetos e Entregas baseado nas Áreas Temáticas selecionadas
@@ -383,11 +425,11 @@ export class StrategicProjectsComponent {
         this.programaTList = allFilterList.programasTransversal;
         this.entregaList = allFilterList.entregas;
         this.orgaoList = allFilterList.orgaos.sort((a, b) => a.name.localeCompare(b.name));
-        
+
         // Monta a lista de localidades, ordenando por ordem alfabética todas as microregiões, e os municípios que pertencem àquela microregião
 
         const localidadesList = [allFilterList.localidades.find((el) => el.tipo === 'ESTADO')];
-        
+
         const microregioes = allFilterList.localidades
           .filter((localidade) => localidade?.tipo === 'MICRORREGIÃO')
           .sort((a, b) => a.name.localeCompare(b.name));
@@ -396,9 +438,9 @@ export class StrategicProjectsComponent {
           localidadesList.push(regiao);
 
           allFilterList.localidades
-          .filter((localidade) => localidade?.microregiaoId === regiao.microregiaoId && localidade?.name !== regiao.name)
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .forEach((localidade) => localidadesList.push(localidade));
+            .filter((localidade) => localidade?.microregiaoId === regiao.microregiaoId && localidade?.name !== regiao.name)
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .forEach((localidade) => localidadesList.push(localidade));
         });
 
         this.localidadeList = localidadesList;
@@ -465,15 +507,15 @@ export class StrategicProjectsComponent {
     }
 
     if (value >= 1_000_000_000) {
-      return `${(value / 1_000_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} bi`;
+      return `${(value / 1_000_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} B`;
     }
 
     if (value >= 1_000_000) {
-      return `${(value / 1_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} mi`;
+      return `${(value / 1_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} M`;
     }
 
     if (value >= 1_000) {
-      return `${(value / 1_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} mil`;
+      return `${(value / 1_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} K`;
     }
 
     return `R$ ${value.toLocaleString('pt-BR')}`;
@@ -502,7 +544,7 @@ export class StrategicProjectsComponent {
     let newEntityToBeDisplayed;
 
     if (newFilter.areaId) {
-      newLocalFilter = { ...newLocalFilter, areaTematica: [Number(newFilter.areaId)] }; 
+      newLocalFilter = { ...newLocalFilter, areaTematica: [Number(newFilter.areaId)] };
       newEntityToBeDisplayed = 'Programa';
     }
     if (newFilter.programaOriginalId) {
@@ -546,9 +588,9 @@ export class StrategicProjectsComponent {
   filterOutDisabledDates() {
     // ↳ Essa função controla quais meses e anos, iniciais e finais, devem estar desabilitados para seleção
     const currentDate = this.dateController;
-    
+
     if (currentDate.anoInicial === currentDate.anoFinal) {
-    // ↳ Se tiver selecionado anos iguais
+      // ↳ Se tiver selecionado anos iguais
       this.monthsList.filter((month) => month.num > currentDate.mesFinal).forEach((month) => month.disabledInicial = true);
       this.monthsList.filter((month) => month.num < currentDate.mesInicial).forEach((month) => month.disabledFinal = true);
 

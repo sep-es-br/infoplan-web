@@ -6,6 +6,7 @@ import { StrategicProjectsService } from '../../../../core/service/strategic-pro
 import { FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { RequestStatus } from '../../strategicProjects.component';
+import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
 @Component({
   selector: 'ngx-critical-milestones-for-performance',
@@ -37,6 +38,7 @@ export class CriticalMilestonesForPerformanceComponent  implements OnChanges {
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
+    private chartMaximizeService: ChartMaximizeService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -44,6 +46,19 @@ export class CriticalMilestonesForPerformanceComponent  implements OnChanges {
       this.loadData();
     }
   }
+
+    onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this.chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this.chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this.chartMaximizeService.calcMaximizedHeight();
+  }
+
 
   loadData() {
     this.requestStatus = RequestStatus.LOADING;
@@ -101,7 +116,7 @@ export class CriticalMilestonesForPerformanceComponent  implements OnChanges {
     const tableColumns = [{ propertyName: 'nomeStatus', displayName: 'Desempenho' }];
 
     const finalData: Array<TreeNode> = [];
-    
+
     rawData.forEach((marco) => {
       const areaIsAlreadyListed = finalData.find((area) => {
         const areaName = area.data.find((prop) => prop.propertyName === 'firstColumn' && prop.value === marco.nomeArea);
@@ -190,7 +205,7 @@ export class CriticalMilestonesForPerformanceComponent  implements OnChanges {
         marco.nomeMarcoCritico.toLowerCase().includes(preparedSearchTerm) ||
         marco.nomeStatus.toLowerCase().includes(preparedSearchTerm)
       ));
-  
+
       this.assembleFlipTableContent(filteredItems, true);
     } else {
       this.assembleFlipTableContent(this.performanceData);

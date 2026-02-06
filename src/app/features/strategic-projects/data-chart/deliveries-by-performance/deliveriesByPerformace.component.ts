@@ -6,6 +6,7 @@ import { StrategicProjectsService } from '../../../../core/service/strategic-pro
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { RequestStatus } from '../../strategicProjects.component';
+import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
 @Component({
   selector: 'ngx-deliveries-by-performace',
@@ -35,12 +36,26 @@ export class DeliveriesByPerformaceComponent implements OnChanges {
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
-  ) {}
+    private chartMaximizeService: ChartMaximizeService
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {
       this.loadData();
     }
+  }
+
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this.chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this.chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this.chartMaximizeService.calcMaximizedHeight();
   }
 
   loadData() {
@@ -76,7 +91,7 @@ export class DeliveriesByPerformaceComponent implements OnChanges {
 
         this.performanceShow.sort((a, b) => (a.statusId < b.statusId ? -1 : 1));
 
-        this.chartData = this.performanceShow.map(val => <any> {
+        this.chartData = this.performanceShow.map(val => <any>{
           value: val.count,
           name: val.nomeStatus
         });
@@ -87,11 +102,11 @@ export class DeliveriesByPerformaceComponent implements OnChanges {
 
         this.requestStatus = RequestStatus.SUCCESS;
       },
-      (error) => {
-        console.error('Erro ao carregar os dados das entregas por desempenho:', error);
-        this.requestStatus = RequestStatus.ERROR;
-      }
-    );
+        (error) => {
+          console.error('Erro ao carregar os dados das entregas por desempenho:', error);
+          this.requestStatus = RequestStatus.ERROR;
+        }
+      );
   }
 
   assembleFlipTableContent(rawData: IStrategicProjectDeliveries[], shouldStartExpanded: boolean = false) {
@@ -108,7 +123,7 @@ export class DeliveriesByPerformaceComponent implements OnChanges {
     ];
 
     const finalData: Array<TreeNode> = [];
-    
+
     rawData.forEach((entrega) => {
       const areaIsAlreadyListed = finalData.find((area) => {
         const areaName = area.data.find((prop) => prop.propertyName === 'firstColumn' && prop.value === entrega.nomeArea);
@@ -200,7 +215,7 @@ export class DeliveriesByPerformaceComponent implements OnChanges {
         entrega.nomeEntrega.toLowerCase().includes(preparedSearchTerm) ||
         entrega.nomeStatus.toLowerCase().includes(preparedSearchTerm)
       ));
-  
+
       this.assembleFlipTableContent(filteredItems, true);
     } else {
       this.assembleFlipTableContent(this.performanceData);

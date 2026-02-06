@@ -154,39 +154,39 @@ export class StrategicProjectsService {
 
   public getDeliveriesByArea(filter: IStrategicProjectFilterValuesDto): Observable<Array<IStrategicProjectDeliveriesBySelected>> {
     return this.http.get<Array<IStrategicProjectDeliveriesBySelected>>(this._urlBase + 'deliveriesByArea', {
-      params: { 
-        filterJson: JSON.stringify(filter) 
+      params: {
+        filterJson: JSON.stringify(filter)
       }
     }).pipe(catchError(err => this.handleError(err, this.router)));
   }
 
   public getDeliveriesByProgram(filter: IStrategicProjectFilterValuesDto): Observable<Array<IStrategicProjectDeliveriesBySelected>> {
     return this.http.get<Array<IStrategicProjectDeliveriesBySelected>>(this._urlBase + 'deliveriesByProgram', {
-      params: { 
-        filterJson: JSON.stringify(filter) 
+      params: {
+        filterJson: JSON.stringify(filter)
       }
     }).pipe(catchError(err => this.handleError(err, this.router)));
   }
 
   public getDeliveriesByProgramAt(filter: IStrategicProjectFilterValuesDto): Observable<Array<IStrategicProjectDeliveriesBySelected>> {
     return this.http.get<Array<IStrategicProjectDeliveriesBySelected>>(this._urlBase + 'deliveriesByProgramAt', {
-      params: { 
-        filterJson: JSON.stringify(filter) 
+      params: {
+        filterJson: JSON.stringify(filter)
       }
     }).pipe(catchError(err => this.handleError(err, this.router)));
   }
 
   public getDeliveriesByProject(filter: IStrategicProjectFilterValuesDto): Observable<Array<IStrategicProjectDeliveriesBySelected>> {
     return this.http.get<Array<IStrategicProjectDeliveriesBySelected>>(this._urlBase + 'deliveriesByProject', {
-      params: { 
-        filterJson: JSON.stringify(filter) 
+      params: {
+        filterJson: JSON.stringify(filter)
       }
     }).pipe(catchError(err => this.handleError(err, this.router)));
   }
 
   public getProgramDetails(filter: IStrategicProjectFilterValuesDto, programId: number): Observable<StrategicProjectProgramDetails> {
     filter = this.removeEmptyValues(filter);
-    
+
     return this.http.get<StrategicProjectProgramDetails>(this._urlBase + 'programDetails', {
       params: {
         filterJson: JSON.stringify({ programaOrigem: [programId], dataInicio: filter.dataInicio, dataFim: filter.dataFim, })
@@ -196,7 +196,6 @@ export class StrategicProjectsService {
 
   public getProjectDetails(filter: IStrategicProjectFilterValuesDto, projectId: number): Observable<StrategicProjectProjectDetails> {
     filter = this.removeEmptyValues(filter);
-
     return this.http.get<StrategicProjectProjectDetails>(this._urlBase + 'projectDetails', {
       params: {
         filterJson: JSON.stringify({ projetos: [projectId], dataInicio: filter.dataInicio, dataFim: filter.dataFim })
@@ -205,7 +204,6 @@ export class StrategicProjectsService {
   }
 
   private handleError(err: any, router: Router): Observable<never> {
-    console.log(err);
     if ((err as HttpErrorResponse).status == HttpStatusCode.Unauthorized) {
       router.navigate(['pages/home']);
     } else if ((err as HttpErrorResponse).status == HttpStatusCode.Forbidden) {

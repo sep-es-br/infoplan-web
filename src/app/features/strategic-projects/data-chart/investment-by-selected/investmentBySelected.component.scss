@@ -15,3 +15,7 @@
   width: 0px;
   height: 0px;
 }
+
+::ng-deep .cdk-overlay-container {
+    z-index: 99999;
+}

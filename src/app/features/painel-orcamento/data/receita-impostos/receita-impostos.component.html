@@ -1,0 +1,10 @@
+<ngx-flip-table [showSearchField]="false" [cardTitle]="title" [loadingStatus]="requestStatus"
+  [tableContent]="tableContent" (executeDownload)="handleTableDownload()" [backCardHeight]="308"
+  [showMaximizeButton]="true" (showMaximizeButtonClick)="onMaximizeButtonClick('receita-impostos',$event)">
+  <ngx-org-chart-horizontal
+    [chart]="chartData"
+    [ChartDataConfig]="chartDataConfig"
+    [height]="isChartMaximized('receita-impostos') ? calcMaximizedHeight() : 300"
+    card-front>
+  </ngx-org-chart-horizontal>
+</ngx-flip-table>

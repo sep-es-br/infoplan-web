@@ -5,33 +5,31 @@
     margin: 0;
     height: calc(100vh - 2 * #{$auth-layout-padding});
   }
-
 }
 
-.card-body{
-    display: flex;
-    flex-wrap: wrap;
-    align-content: center;
+.card-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
 }
 
 .login-btn {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .btn-lg {
-    padding: 10px 20px;
-    font-weight: bold;
-    background-color: #aeb8c7;
+  padding: 10px 20px;
+  font-weight: bold;
+  background-color: #aeb8c7;
 }
 
-h2{
-    margin-top: 1rem;
+h2 {
+  margin-top: 1rem;
+  font-size: 18px;
 }
 
 .logout-link {
-  color: #EA172F !important; 
+  color: #ea172f !important;
   cursor: pointer !important;
   font-weight: bold !important;
 }
-
-

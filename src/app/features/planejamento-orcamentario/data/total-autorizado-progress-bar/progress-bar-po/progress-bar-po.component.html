@@ -1,0 +1,18 @@
+<ngx-flip-table
+  [showSearchField]="true"
+  [cardTitle]="title"
+  [loadingStatus]="requestStatus"
+  [tableContent]="tableContent"
+  (executeDownload)="handleTableDownload()"
+  (executeSearch)="handleTableSearch($event)"
+  [backCardHeight]="500"
+  [showMaximizeButton]="true"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('progress-bar-po',$event)">
+  <ngx-chart-progress-bar
+    [chart]="chartData"
+    [chartDataConfig]="chartDataConfig"
+    [height]="isChartMaximized('progress-bar-po') ? maximizedHeight : 500"
+    [showMaximizeButton]="true"
+    card-front>
+  </ngx-chart-progress-bar>
+</ngx-flip-table>

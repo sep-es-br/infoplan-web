@@ -1,4 +1,13 @@
-@import '../@theme/styles/themes';
+// Tema escuro
+:host-context(.dark) {
+  .menu-section-divider {
+    &::before {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+@import "../@theme/styles/themes";
 
 @include nb-install-component() {
   ::ng-deep router-outlet + * {
@@ -15,12 +24,148 @@
       }
     }
   }
-  ::ng-deep{
-    .menu-item a:hover, .menu-item a.active, .menu-item a.active .menu-icon, .menu-item a:hover .menu-icon{
-      color: #DC3545;
+
+  ::ng-deep {
+    // Estilos do menu
+    // .menu-item a:hover,
+    // .menu-item a.active,
+    // .menu-item a.active .menu-icon,
+    // .menu-item a:hover .menu-icon {
+    //   color: currentColor;
+    // }
+
+    :host-context(.nb-theme-dark, .nb-theme-cosmic) {
+      .menu-item a:hover,
+      .menu-item a.active,
+      .menu-item a.active .menu-icon,
+      .menu-item a:hover .menu-icon {
+        color: #dac8ff !important;
+      }
     }
-    .menu-item a.active::before{
-      background: #DC3545 !important;
+
+    // Estilos dos ícones - CORREÇÃO PARA O PROBLEMA
+    nb-menu {
+      .menu-item {
+
+        a {
+          display: inline-flex;
+        }
+        // border: none !important;
+
+        .menu-icon {
+          margin: 0 !important;
+        }
+
+        .menu-title {
+          margin-left: 0.5rem !important;
+        }
+      }
+      .menu-item:first-child {
+        border: none !important;
+      }
+
+      // ADICIONE ISTO: Remove a borda do menu-item que vem antes do divisor
+      .menu-item:has(+ .menu-section-divider) {
+        border-bottom: none !important;
+      }
+
+      nb-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        min-height: 20px !important;
+        flex-shrink: 0;
+        font-size: 0; // Remove espaço extra
+
+        svg {
+          width: 20px !important;
+          height: 20px !important;
+          min-width: 20px !important;
+          min-height: 20px !important;
+          max-width: 20px !important;
+          max-height: 20px !important;
+          flex-shrink: 0;
+          display: block;
+          vertical-align: top; // Remove espaço abaixo
+
+          // Garante que todos os elementos com fill usem currentColor
+          &,
+          * {
+            &[fill]:not([fill="none"]):not([fill="transparent"]) {
+              fill: currentColor !important;
+            }
+
+            &[stroke]:not([stroke="none"]):not([stroke="transparent"]) {
+              stroke: currentColor !important;
+            }
+          }
+
+          // Se houver style com fill
+          &[style*="fill"]:not([style*="fill: none"]):not(
+              [style*="fill: transparent"]
+            ) {
+            fill: currentColor !important;
+          }
+        }
+
+        img {
+          width: 20px !important;
+          height: 20px !important;
+          min-width: 20px !important;
+          min-height: 20px !important;
+          max-width: 20px !important;
+          max-height: 20px !important;
+          object-fit: contain;
+          display: block;
+          vertical-align: top;
+        }
+      }
+
+      // Estados do menu
+      .menu-item:hover {
+        nb-icon {
+          svg {
+            &,
+            * {
+              &[fill]:not([fill="none"]):not([fill="transparent"]) {
+                fill: currentColor !important;
+              }
+
+              &[stroke]:not([stroke="none"]):not([stroke="transparent"]) {
+                stroke: currentColor !important;
+              }
+            }
+          }
+        }
+      }
+
+      .menu-item.active {
+        nb-icon {
+          svg {
+            &,
+            * {
+              &[fill]:not([fill="none"]):not([fill="transparent"]) {
+                fill: currentColor !important;
+              }
+
+              &[stroke]:not([stroke="none"]):not([stroke="transparent"]) {
+                stroke: currentColor !important;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Remove o piscar/flash inicial
+    nb-icon svg,
+    nb-icon img {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transition: none !important;
     }
 
     @media screen and (max-width: 767.98px) {
@@ -28,5 +173,10 @@
         overflow-x: hidden;
       }
     }
-  }   
+
+    .menu-group,
+    nb-menu .menu-item a {
+      line-height: unset;
+    }
+  }
 }

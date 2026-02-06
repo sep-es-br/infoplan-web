@@ -36,9 +36,9 @@ export class CapitationService {
     }
 
     public getEstimatedAmmout(type : string, filter : CapitacaoFilter, callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
-                
-        this.http.get<Array<NameAmmount>>(this._urlBase + "valores-estimado", {params: { 
-            tipo: type, 
+
+        this.http.get<Array<NameAmmount>>(this._urlBase + "valores-estimado", {params: {
+            tipo: type,
             filterJson: JSON.stringify(filter)
         }}).toPromise()
         .then(callbackSuccess)
@@ -56,14 +56,13 @@ export class CapitationService {
 
     public getEstimatedAmmountSecretary(filter : CapitacaoFilter, callbackSuccess : (value: any) => void, callbackFail? : (err: any) => void) : void {
         this.http.get<Array<NameAmmount>>(this._urlBase + "valores-estimado-secretaria", {params: {
-            filterJson: JSON.stringify(filter) 
+            filterJson: JSON.stringify(filter)
         }}).toPromise()
         .then(callbackSuccess)
         .catch(err => this.handleError(err, this.router, callbackFail));
     }
 
     private handleError(err : any, router : Router, callback) : void {
-        console.log(err);
         if((err as HttpErrorResponse).status == HttpStatusCode.Unauthorized) {
             router.navigate(['pages/home']);
         } else if((err as HttpErrorResponse).status == HttpStatusCode.Forbidden) {

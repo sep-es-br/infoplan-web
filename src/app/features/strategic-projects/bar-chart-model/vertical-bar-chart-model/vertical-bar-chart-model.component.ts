@@ -1,19 +1,28 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { NbThemeService } from '@nebular/theme';
-import { EChartsOption } from 'echarts';
-import { NgxEchartsModule } from 'ngx-echarts';
-import { AvailableThemes, getAvailableThemesStyles } from '../../../../@theme/theme.module';
+import { CommonModule } from "@angular/common";
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from "@angular/core";
+import { NbThemeService } from "@nebular/theme";
+import { EChartsOption } from "echarts";
+import { NgxEchartsModule } from "ngx-echarts";
+import {
+  AvailableThemes,
+  getAvailableThemesStyles,
+} from "../../../../@theme/theme.module";
 
 @Component({
-  selector: 'ngx-vertical-bar-chart-model',
-  templateUrl: './vertical-bar-chart-model.component.html',
-  styles: [' .echarts { width: 100%; height: 100%; } '],
+  selector: "ngx-vertical-bar-chart-model",
+  templateUrl: "./vertical-bar-chart-model.component.html",
+  styles: [" .echarts { width: 100%; height: 100%; } "],
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
 export class VerticalBarChartModelComponent implements OnInit, OnChanges {
-  @Input() data: { date: string, previsto: number, realizado: number }[] = [];
+  @Input() data: { date: string; previsto: number; realizado: number }[] = [];
 
   @Input() colors: string[] = [];
 
@@ -21,13 +30,14 @@ export class VerticalBarChartModelComponent implements OnInit, OnChanges {
 
   chartOptions: EChartsOption;
 
-  echartsInstance: any = null
+  echartsInstance: any = null;
 
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
 
   constructor(private themeService: NbThemeService) {
-    this.themeService.onThemeChange()
-      .subscribe((newTheme: { name: AvailableThemes; previous: string; }) => {
+    this.themeService
+      .onThemeChange()
+      .subscribe((newTheme: { name: AvailableThemes; previous: string }) => {
         if (this.echartsInstance) {
           this.currentTheme = newTheme.name;
 
@@ -64,11 +74,11 @@ export class VerticalBarChartModelComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.currentTheme = (this.themeService.currentTheme as AvailableThemes);
+    this.currentTheme = this.themeService.currentTheme as AvailableThemes;
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['data']) {
+    if (changes["data"]) {
       this.initChartOptions(this.data, this.colors);
     }
   }
@@ -78,21 +88,27 @@ export class VerticalBarChartModelComponent implements OnInit, OnChanges {
   }
 
   formatNumber(value: number): string {
-    return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `R$ ${value.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
   }
 
-  initChartOptions(data: { date: string, previsto: number, realizado: number }[], colors: string[] ) {
+  initChartOptions(
+    data: { date: string; previsto: number; realizado: number }[],
+    colors: string[]
+  ) {
     if (!Array.isArray(data) || data.length === 0) {
       data = [];
     }
 
     const currentThemeStyles = getAvailableThemesStyles(this.currentTheme);
-    
+
     this.chartOptions = {
       tooltip: {
-        trigger: 'axis',
+        trigger: "axis",
         axisPointer: {
-          type: 'shadow',
+          type: "shadow",
         },
         textStyle: {
           color: currentThemeStyles.textPrimaryColor,
@@ -103,16 +119,18 @@ export class VerticalBarChartModelComponent implements OnInit, OnChanges {
         formatter: (params: any) => {
           let tooltipContent = `${params[0].name}<br>`;
           params.forEach((param: any) => {
-            tooltipContent += `${param.seriesName}: ${this.formatNumber(param.value)}<br>`;
+            tooltipContent += `${param.seriesName}: ${this.formatNumber(
+              param.value
+            )}<br>`;
           });
 
           return tooltipContent;
         },
       },
       legend: {
-        data: ['Previsto', 'Realizado'],
-        top: '5%',
-        itemWidth: 10, 
+        data: ["Previsto", "Realizado"],
+        top: "5%",
+        itemWidth: 10,
         itemHeight: 10,
         itemGap: 15,
         textStyle: {
@@ -120,46 +138,46 @@ export class VerticalBarChartModelComponent implements OnInit, OnChanges {
         },
       },
       grid: {
-        left: '5%',
-        right: '5%',
-        bottom: '10%',
+        left: "5%",
+        right: "5%",
+        bottom: "10%",
         containLabel: true,
       },
       xAxis: {
-        type: 'category',
-        data: data.map(item => item.date),
+        type: "category",
+        data: data.map((item) => item.date),
         axisLabel: {
           color: currentThemeStyles.textPrimaryColor,
           fontSize: 10,
         },
       },
       yAxis: {
-        type: 'value',
+        type: "value",
         axisLabel: {
           color: currentThemeStyles.textPrimaryColor,
           fontSize: 10,
           formatter: function (value: number) {
-            return formatValue(value); 
+            return formatValue(value);
           },
         },
       },
       series: [
         {
-          name: 'Previsto',
-          type: 'bar',
-          barWidth: '40%',
-          data: data.map(item => item.previsto),
+          name: "Previsto",
+          type: "bar",
+          barWidth: "40%",
+          data: data.map((item) => item.previsto),
           itemStyle: {
-            color: colors[0], 
+            color: colors[0],
           },
         },
         {
-          name: 'Realizado',
-          type: 'bar',
-          barWidth: '40%',
-          data: data.map(item => item.realizado),
+          name: "Realizado",
+          type: "bar",
+          barWidth: "40%",
+          data: data.map((item) => item.realizado),
           itemStyle: {
-            color: colors[1], 
+            color: colors[1],
           },
         },
       ],
@@ -167,9 +185,9 @@ export class VerticalBarChartModelComponent implements OnInit, OnChanges {
 
     function formatValue(value: number): string {
       if (value >= 1_000_000_000) {
-        return (value / 1_000_000_000).toFixed(2) + ' B'; 
+        return (value / 1_000_000_000).toFixed(2) + " B";
       } else if (value >= 1_000_000) {
-        return (value / 1_000_000).toFixed(2) + ' M'; 
+        return (value / 1_000_000).toFixed(2) + " M";
       } else {
         return value.toString();
       }

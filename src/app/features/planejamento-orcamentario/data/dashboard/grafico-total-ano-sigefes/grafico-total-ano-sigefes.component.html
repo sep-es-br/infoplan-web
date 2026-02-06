@@ -1,0 +1,17 @@
+<ngx-flip-table
+  [cardTitle]="title"
+  [loadingStatus]="requestStatus"
+  [tableContent]="tableContent"
+  (executeDownload)="handleTableDownload()"
+  [backCardHeight]="500"
+  (executeSearch)="handleTableSearch($event)"
+  [showMaximizeButton]="true"
+  [showSearchField]="false"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('grafico-total-ano-sigefes',$event)">
+  <ngx-org-chart-vertical
+    [chart]="chartData"
+    [height]="isChartMaximized('grafico-total-ano-sigefes') ? maximizedHeight : 500"
+    card-front>
+  </ngx-org-chart-vertical>
+</ngx-flip-table>
+    <!-- [ChartDataConfig]="chartDataConfig" -->

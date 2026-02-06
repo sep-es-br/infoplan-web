@@ -35,6 +35,8 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
 
   @Input() height: number;
 
+  @Input() width: number;
+
   @Input() customConfig: HorizontalBarChartCustomConfig;
 
   @Output() barClick = new EventEmitter<HorizontalBarChartBarClick>();
@@ -52,7 +54,6 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
       .subscribe((newTheme: { name: AvailableThemes; previous: string; }) => {
         if (this.echartsInstance) {
           this.currentTheme = newTheme.name;
-
           const newStyles = getAvailableThemesStyles(newTheme.name);
           const newTextColor = newStyles.textPrimaryColor;
           const newBackgroundColor = newStyles.themePrimaryColor;
@@ -93,12 +94,25 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
     if (changes['data']) {
       this.initChartOptions(this.data, this.colors);
     }
+
+    if (changes["height"] || changes["isMaximized"]) {
+      this.resizeChart();
+    }
+  }
+
+  private resizeChart(): void {
+    if (this.echartsInstance) {
+      setTimeout(() => {
+        this.echartsInstance?.resize({
+          width: 'auto',
+          height: this.height
+        });
+      }, 100);
+    }
   }
 
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
-
-    // https://apache.github.io/echarts-handbook/en/concepts/event/
     this.echartsInstance.off('click');
     this.echartsInstance.on('click', (event) => {
       if (event.componentType === 'yAxis' || event.componentType === 'xAxis') {
@@ -107,6 +121,10 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
         this.barClick.emit({ labelName: event.name, seriesName: event.seriesName, value: event.value.toString() });
       }
     });
+
+    setTimeout(() => {
+      this.resizeChart();
+    }, 100);
   }
 
   formatNumber(value: number): string {
@@ -167,12 +185,12 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
         },
         xAxis: {
           type: 'value',
-          
+
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
             fontSize: 10,
             formatter: function (value: number) {
-              return formatValue(value); 
+              return formatValue(value);
             },
           },
           triggerEvent: this.customConfig?.xAxisTriggerEvent || false,
@@ -214,25 +232,25 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           {
             type: 'slider',
             yAxisIndex: [0],
-            start: 0, 
-            end: (9 / data.length) * 100, 
-            zoomLock: true, 
-            orient: 'vertical', 
-            handleSize: '50%', 
-            width: 0, 
-            left: '97%', 
-            labelFormatter: '', 
+            start: 0,
+            end: (9 / data.length) * 100,
+            zoomLock: true,
+            orient: 'vertical',
+            handleSize: '50%',
+            width: 0,
+            left: '97%',
+            labelFormatter: '',
           },
           {
             type: 'inside',
             yAxisIndex: [0],
             start: 0,
             end: (9 / data.length) * 100,
-            zoomLock: true, 
+            zoomLock: true,
           },
         ],
       };
-    } else if (hasEmExecucaoConcluida) { 
+    } else if (hasEmExecucaoConcluida) {
       this.chartOptions = {
         tooltip: {
           trigger: 'axis',
@@ -258,8 +276,8 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           top: 'top',
           right: '3%',
           data: ['Em Execução', 'Concluída'],
-          itemWidth: 10, 
-          itemHeight: 10, 
+          itemWidth: 10,
+          itemHeight: 10,
           itemGap: 15,
           selectedMode: true,
           textStyle: {
@@ -272,22 +290,22 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           left: '3%',
           right: '4%',
           bottom: '3%',
-          containLabel: true, 
+          containLabel: true,
         },
         xAxis: {
           type: 'value',
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
-            fontSize: 10, 
+            fontSize: 10,
             formatter: function (value: number) {
-              return formatValue(value); 
+              return formatValue(value);
             },
           },
           triggerEvent: this.customConfig?.xAxisTriggerEvent || false,
         },
         yAxis: {
           type: 'category',
-          inverse: true, 
+          inverse: true,
           axisLabel: {
             color: currentThemeStyles.textPrimaryColor,
             fontSize: 10,
@@ -304,7 +322,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           {
             name: 'Em Execução',
             type: 'bar',
-            data: data.map(item => item.emExecucao), 
+            data: data.map(item => item.emExecucao),
             itemStyle: {
               color: colors[0],
             },
@@ -312,7 +330,7 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           {
             name: 'Concluída',
             type: 'bar',
-            data: data.map(item => item.concluida ), 
+            data: data.map(item => item.concluida ),
             itemStyle: {
               color: colors[1],
             },
@@ -322,21 +340,21 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
           {
             type: 'slider',
             yAxisIndex: [0],
-            start: 0, 
-            end: (9 / data.length) * 100, 
-            zoomLock: true, 
-            orient: 'vertical', 
-            handleSize: '50%', 
-            width: 0, 
-            left: '97%', 
-            labelFormatter: '', 
+            start: 0,
+            end: (9 / data.length) * 100,
+            zoomLock: true,
+            orient: 'vertical',
+            handleSize: '50%',
+            width: 0,
+            left: '97%',
+            labelFormatter: '',
           },
           {
             type: 'inside',
             yAxisIndex: [0],
             start: 0,
             end: (9 / data.length) * 100,
-            zoomLock: true, 
+            zoomLock: true,
           },
         ],
       };
@@ -346,9 +364,9 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
 
     function formatValue(value: number): string {
       if (value >= 1_000_000_000) {
-        return (value / 1_000_000_000).toFixed(1) + 'B'; 
+        return (value / 1_000_000_000).toFixed(1) + ' B';
       } else if (value >= 1_000_000) {
-        return (value / 1_000_000).toFixed(1) + 'M'; 
+        return (value / 1_000_000).toFixed(1) + ' M';
       } else {
         return value.toString();
       }

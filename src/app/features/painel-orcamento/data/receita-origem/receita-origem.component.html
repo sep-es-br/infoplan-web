@@ -1,0 +1,10 @@
+<ngx-flip-table [showSearchField]="false" [cardTitle]="title" [tableContent]="tableContent"
+  [loadingStatus]="requestStatus" (executeDownload)="handleTableDownload()" showMaximizeButton="true"
+  [backCardHeight]="308" (showMaximizeButtonClick)="onMaximizeButtonClick('receita-origem', $event)">
+  <ngx-org-chart-horizontal
+    [chart]="chartData"
+    [height]="isChartMaximized('receita-origem') ? calcMaximizedHeight() : 300"
+    [ChartDataConfig]="chartDataConfig"
+    [showMaximizeButton]="isChartMaximized('receita-origem')" card-front>
+  </ngx-org-chart-horizontal>
+</ngx-flip-table>

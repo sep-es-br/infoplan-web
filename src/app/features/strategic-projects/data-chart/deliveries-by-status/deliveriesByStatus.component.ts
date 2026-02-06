@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, HostListener, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { PieChartModelComponent } from '../../pie-chart-model/pieChartModel.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
@@ -6,7 +6,7 @@ import { IStrategicProjectDeliveries, IStrategicProjectDeliveriesShow } from '..
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { RequestStatus } from '../../strategicProjects.component';
-import { ECharts } from 'echarts';
+import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
 @Component({
   selector: 'ngx-deliveries-by-status',
@@ -36,7 +36,8 @@ export class DeliveriesByStatusComponent implements OnChanges {
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
-  ) {}
+    private chartMaximizeService: ChartMaximizeService
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {
@@ -84,15 +85,15 @@ export class DeliveriesByStatusComponent implements OnChanges {
         this.chartColors = this.statusShow.map(val => val.corStatus);
 
         this.assembleFlipTableContent(data);
-        
+
         this.requestStatus = RequestStatus.SUCCESS;
         this.statusData = data;
       },
-      (error) => {
-        console.error('Erro ao carregar os dados das entregas por status:', error);
-        this.requestStatus = RequestStatus.ERROR;
-      }
-    );
+        (error) => {
+          console.error('Erro ao carregar os dados das entregas por status:', error);
+          this.requestStatus = RequestStatus.ERROR;
+        }
+      );
   }
 
   assembleFlipTableContent(rawData: IStrategicProjectDeliveries[], shouldStartExpanded: boolean = false) {
@@ -110,7 +111,7 @@ export class DeliveriesByStatusComponent implements OnChanges {
     ];
 
     const finalData: Array<TreeNode> = [];
-    
+
     rawData.forEach((entrega) => {
       const areaIsAlreadyListed = finalData.find((area) => {
         const areaName = area.data.find((prop) => prop.propertyName === 'firstColumn' && prop.value === entrega.nomeArea);
@@ -202,7 +203,7 @@ export class DeliveriesByStatusComponent implements OnChanges {
         entrega.nomeEntrega.toLowerCase().includes(preparedSearchTerm) ||
         entrega.nomeStatus.toLowerCase().includes(preparedSearchTerm)
       ));
-  
+
       this.assembleFlipTableContent(filteredItems, true);
     } else {
       this.assembleFlipTableContent(this.statusData);
@@ -232,5 +233,22 @@ export class DeliveriesByStatusComponent implements OnChanges {
       columns,
       'InfoPlan_Entregas_por_Status.xlsx',
     );
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this.chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this.chartMaximizeService.isChartMaximized(chartId);
+  }
+
+
+  calcMaximizedHeight(): number {
+    return this.chartMaximizeService.calcMaximizedHeight();
+  }
+
+  callMaximizedWidth(): number {
+    return this.chartMaximizeService.calcMaximizedWidth();
   }
 }

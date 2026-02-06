@@ -31,7 +31,7 @@ export class ExportDataService {
 
     XLSX.writeFile(workbook, fileName);
   }
-  
+
   public exportCSVWithCustomHeaders(
     data: Array<any>,
     columns: Array<{ key: string; label: string; }>,

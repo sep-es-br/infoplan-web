@@ -1,4 +1,4 @@
-<ngx-flip-table
+<!-- <ngx-flip-table
   [cardTitle]="'Entregas por Status'"
   [tableContent]="flipTableContent"
   [loadingStatus]="requestStatus"
@@ -11,5 +11,27 @@
     [colors]="chartColors"
     [height]="150"
   >
+  </ngx-pie-chart-model>
+</ngx-flip-table> -->
+
+<ngx-flip-table
+  [cardTitle]="'Entregas por Status'"
+  [showSearchField]="true"
+  [tableContent]="flipTableContent"
+  [loadingStatus]="requestStatus"
+  [outerCardHeight]="275"
+  [backCardHeight]="isChartMaximized('deliveries-by-status') ? 700 : 150"
+  [showMaximizeButton]="true"
+  (executeSearch)="handleUserTableSearch($event)"
+  (executeDownload)="handleUserTableDownload()"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('deliveries-by-status', $event)"
+  >
+  <ngx-pie-chart-model
+    card-front
+    [data]="chartData"
+    [colors]="chartColors"
+    [height]="isChartMaximized('deliveries-by-status') ? calcMaximizedHeight() : 150"
+    [isMaximized]="isChartMaximized('deliveries-by-status')"
+    >
   </ngx-pie-chart-model>
 </ngx-flip-table>

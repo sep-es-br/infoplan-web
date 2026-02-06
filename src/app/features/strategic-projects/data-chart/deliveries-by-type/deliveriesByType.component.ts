@@ -6,6 +6,7 @@ import { StrategicProjectsService } from '../../../../core/service/strategic-pro
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../flip-table-model/flip-table.component';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { RequestStatus } from '../../strategicProjects.component';
+import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
 @Component({
   selector: 'ngx-deliveries-by-type',
@@ -35,12 +36,25 @@ export class DeliveriesByTypeComponent implements OnChanges {
   constructor(
     private strategicProjectsService: StrategicProjectsService,
     private exportDataService: ExportDataService,
+    private chartMaximizeService: ChartMaximizeService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {
       this.loadData();
     }
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this.chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this.chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this.chartMaximizeService.calcMaximizedHeight();
   }
 
   loadData() {
@@ -53,7 +67,7 @@ export class DeliveriesByTypeComponent implements OnChanges {
       .subscribe((data: IStrategicProjectDeliveries[]) => {
         this.typeShow = [];
         this.typeData = data;
-      
+
         this.typeData.forEach(type => {
           if (type.statusId !== 0 || type.nomeStatus !== 'null') {
             let tShow = this.typeShow.find((s) => s.nomeStatus == type.nomeStatus);
@@ -73,7 +87,7 @@ export class DeliveriesByTypeComponent implements OnChanges {
         });
 
         this.typeShow.sort((a, b) => (a.statusId < b.statusId ? -1 : 1));
-  
+
         this.chartData = this.typeShow.map(val => <any> {
           value: val.count,
           name: val.nomeStatus
@@ -88,15 +102,15 @@ export class DeliveriesByTypeComponent implements OnChanges {
         this.requestStatus = RequestStatus.ERROR;
       }
     );
-    
+
     this.chartColors = [
-      '#005073', 
-      '#006BA1', 
-      '#107DAC', 
-      '#189AD3', 
-      '#28AED3', 
-      '#1EBBD7', 
-      '#71C7EC', 
+      '#005073',
+      '#006BA1',
+      '#107DAC',
+      '#189AD3',
+      '#28AED3',
+      '#1EBBD7',
+      '#71C7EC',
     ];
   }
 
@@ -114,7 +128,7 @@ export class DeliveriesByTypeComponent implements OnChanges {
     ];
 
     const finalData: Array<TreeNode> = [];
-    
+
     rawData.forEach((entrega) => {
       const areaIsAlreadyListed = finalData.find((area) => {
         const areaName = area.data.find((prop) => prop.propertyName === 'firstColumn' && prop.value === entrega.nomeArea);
@@ -206,7 +220,7 @@ export class DeliveriesByTypeComponent implements OnChanges {
         entrega.nomeEntrega.toLowerCase().includes(preparedSearchTerm) ||
         entrega.nomeStatus.toLowerCase().includes(preparedSearchTerm)
       ));
-  
+
       this.assembleFlipTableContent(filteredItems, true);
     } else {
       this.assembleFlipTableContent(this.typeData);

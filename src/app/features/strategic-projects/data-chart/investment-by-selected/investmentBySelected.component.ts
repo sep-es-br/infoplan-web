@@ -10,6 +10,7 @@ import { UtilitiesService } from '../../../../core/service/utilities.service';
 import { CustomTableFilteringTrigger, RequestStatus } from '../../strategicProjects.component';
 import { BehaviorSubject } from 'rxjs';
 import { OffcanvasInfoModelComponent } from '../../offcanvas-info-model/offcanvas-info-model.components';
+import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
 @Component({
   selector: 'ngx-investment-by-selected',
@@ -60,6 +61,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
     private exportDataService: ExportDataService,
     private utilitiesService: UtilitiesService,
     private changeDetectorRef: ChangeDetectorRef,
+    private chartMaximizeService: ChartMaximizeService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -76,6 +78,22 @@ export class InvestmentBySelectedComponent implements OnChanges {
         }
       });
     }
+  }
+
+  onMaximizeButtonClick(chartId: string, event: boolean): void {
+    this.chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this.chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  calcMaximizedHeight(): number {
+    return this.chartMaximizeService.calcMaximizedHeight();
+  }
+
+  calcMaximizedWidth(): number {
+    return this.chartMaximizeService.calcMaximizedWidth();
   }
 
   loadData(){
@@ -189,9 +207,9 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   formatChartData(): void {
     this.chartData = this.investmentData.map(item => ({
-      category: item.nome,          
-      previsto: item.custoPrevisto, 
-      realizado: item.custoRealizado 
+      category: item.nome,
+      previsto: item.custoPrevisto,
+      realizado: item.custoRealizado
     }));
 
     this.assembleFlipTableContent(this.investmentData);
@@ -201,12 +219,12 @@ export class InvestmentBySelectedComponent implements OnChanges {
     const tableColumns = [
       {
         propertyName: 'custoPrevisto',
-        displayName: 'Previsto',
+        displayName: 'Previsto (R$)',
         alignment: { header: FlipTableAlignment.CENTER, data: FlipTableAlignment.RIGHT },
       },
       {
         propertyName: 'custoRealizado',
-        displayName: 'Realizado',
+        displayName: 'Realizado (R$)',
         alignment: { header: FlipTableAlignment.CENTER, data: FlipTableAlignment.RIGHT },
       },
     ];
@@ -245,7 +263,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
         this.utilitiesService.formatCurrencyUsingBrazilianStandards(investimento.custoPrevisto, 'R$').includes(preparedSearchTerm) ||
         this.utilitiesService.formatCurrencyUsingBrazilianStandards(investimento.custoRealizado, 'R$').includes(preparedSearchTerm)
       ));
-  
+
       this.assembleFlipTableContent(filteredItems, true);
     } else {
       this.assembleFlipTableContent(this.investmentData);
@@ -255,8 +273,8 @@ export class InvestmentBySelectedComponent implements OnChanges {
   handleUserTableDownload() {
     const columns: Array<{ key: string; label: string; }> = [
       { key: 'nome', label: this.selectedInvestmentOption },
-      { key: 'custoPrevisto', label: 'Custo Previsto' },
-      { key: 'custoRealizado', label: 'Custo Realizado' },
+      { key: 'custoPrevisto', label: 'Custo Previsto (R$)' },
+      { key: 'custoRealizado', label: 'Custo Realizado (R$)' },
     ];
 
     this.exportDataService.exportXLSXWithCustomHeaders(
@@ -316,7 +334,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   handleChartLabelClick(event: HorizontalBarChartLabelClick) {
     const selectedInvestment = this.investmentData.find((el) => el.nome === event.value);
-    this.offcanvasRequestStatus = RequestStatus.LOADING;      
+    this.offcanvasRequestStatus = RequestStatus.LOADING;
     setTimeout(() => this.offcanvasTrigger.nativeElement.click(), 50);
 
     if (['Programa', 'Programas Transversais'].includes(this.selectedInvestmentOption)) {
@@ -356,7 +374,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
     if (!this.isDoingDrillDownActions) {
       this.isDoingDrillDownActions = true;
       this.handleCustomFiltering(event.labelName);
-      
+
       setTimeout(() => {
         this.isDoingDrillDownActions = false;
       }, 500);

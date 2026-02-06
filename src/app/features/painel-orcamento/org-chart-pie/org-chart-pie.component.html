@@ -1,0 +1,8 @@
+<div
+  echarts
+  [ngStyle]="{ height: height + 'px' }"
+  [options]="chartOptions"
+  (chartInit)="onChartInit($event)"
+  class="chart"
+  *ngIf="data && data.length > 0"
+></div>

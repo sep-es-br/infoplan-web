@@ -123,15 +123,15 @@ export class ReceitaDespesaGndComponent
   public onToggleChange(toggle: "executivo" | "demaisPoderes"): void {
     if (!this.toggleExecutivo && !this.toggleDemaisPoderes) {
       if (toggle === "executivo") {
-        this.toggleExecutivo = true;
+        this.toggleExecutivo = false;
       } else {
-        this.toggleDemaisPoderes = true;
+        this.toggleDemaisPoderes = false;
       }
       return;
     }
 
     this.updateFilterPoderes();
-    this.getReceitaDespesaGND();
+    // this.getReceitaDespesaGND();
   }
 
   private updateFilterPoderes(): void {

@@ -182,7 +182,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
         const variacao = this.calcularVariacao(categoria, anos, dados);
         nodeData.push({
           propertyName: "variação",
-          value: `${variacao}%`,
+          value: `${variacao} %`,
         });
       }
 
@@ -233,7 +233,7 @@ export class ReceitaImpostosComponent implements OnChanges, OnDestroy {
 
       totalNodeData.push({
         propertyName: "variação",
-        value: `${variacaoTotal}%`,
+        value: `${variacaoTotal} %`,
       });
     }
 

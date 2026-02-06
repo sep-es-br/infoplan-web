@@ -92,7 +92,7 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
     }
 
     this.updateFilterPoderes();
-    this.getReceitaDespesaGNDTotal();
+    // this.getReceitaDespesaGNDTotal();
   }
 
   private updateFilterPoderes(): void {

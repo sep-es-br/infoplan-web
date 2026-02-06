@@ -1,4 +1,3 @@
-
 import {
   Component,
   inject,
@@ -28,16 +27,17 @@ import { ChartMaximizeService } from "../../../../core/service/chart-maximize/ch
 import { ChartDataConfig } from "../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { RequestStatus } from "../../../strategic-projects/strategicProjects.component";
 import { UtilitiesService } from "../../../../core/service/utilities.service";
-import { converterToNumber, replacePorcentage } from "../../../../@core/utils/functionts/functionts";
+import {
+  converterToNumber,
+  replacePorcentage,
+} from "../../../../@core/utils/functionts/functionts";
 
 @Component({
   selector: "ngx-receita-despesa-gnd",
   templateUrl: "./receita-despesa-gnd.component.html",
   styleUrls: ["./receita-despesa-gnd.component.scss"],
 })
-export class ReceitaDespesaGndComponent
-  implements OnChanges, OnDestroy
-{
+export class ReceitaDespesaGndComponent implements OnChanges, OnDestroy {
   @Input() filter: IExecucaoOrcamentariaRequest;
 
   readonly title: string = "Despesa por GND";
@@ -121,17 +121,16 @@ export class ReceitaDespesaGndComponent
   }
 
   public onToggleChange(toggle: "executivo" | "demaisPoderes"): void {
+    // Se ambos ficaram false, força o OUTRO toggle a ficar true
     if (!this.toggleExecutivo && !this.toggleDemaisPoderes) {
       if (toggle === "executivo") {
-        this.toggleExecutivo = false;
+        this.toggleDemaisPoderes = true; // Força o OUTRO
       } else {
-        this.toggleDemaisPoderes = false;
+        this.toggleExecutivo = true; // Força o OUTRO
       }
-      return;
     }
 
     this.updateFilterPoderes();
-    // this.getReceitaDespesaGND();
   }
 
   private updateFilterPoderes(): void {
@@ -147,7 +146,6 @@ export class ReceitaDespesaGndComponent
     this.filter.codPoder = poderes.join(",");
     this.getReceitaDespesaGND();
   }
-
   public isAtLeastOneToggleActive(): boolean {
     return this.toggleExecutivo || this.toggleDemaisPoderes;
   }
@@ -165,7 +163,9 @@ export class ReceitaDespesaGndComponent
     }
   }
 
-  private processChartData(data: IReceitaDespesaGNDOrcamentariaResponse[]): IChartOptions {
+  private processChartData(
+    data: IReceitaDespesaGNDOrcamentariaResponse[],
+  ): IChartOptions {
     return this._chartProcessor.criarChartLiquidadoEPago(
       data,
       "nome_gnd",
@@ -226,14 +226,18 @@ export class ReceitaDespesaGndComponent
 
         nodeData.push({
           propertyName: `Despesa Liquidada - ${ano}`,
-          value: this._utilitiesService
-            .formatCurrencyUsingBrazilianStandards(valores.liq, "R$")
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            valores.liq,
+            "R$",
+          ),
         });
 
         nodeData.push({
           propertyName: `Pago com RAP - ${ano}`,
-          value: this._utilitiesService
-            .formatCurrencyUsingBrazilianStandards(valores.pago, "R$")
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            valores.pago,
+            "R$",
+          ),
         });
       });
 
@@ -281,12 +285,18 @@ export class ReceitaDespesaGndComponent
 
       totalNodeData.push({
         propertyName: `Despesa Liquidada - ${ano}`,
-        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totaisAno.liq, "R$"),
+        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+          totaisAno.liq,
+          "R$",
+        ),
       });
 
       totalNodeData.push({
         propertyName: `Pago com RAP - ${ano}`,
-        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totaisAno.pago, "R$")
+        value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+          totaisAno.pago,
+          "R$",
+        ),
       });
     });
 
@@ -469,30 +479,28 @@ export class ReceitaDespesaGndComponent
       );
     }
 
-
     const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
       const row: any = {};
 
-      node.data.forEach((prop: { propertyName: string, value: string | "" }) => {
+      node.data.forEach(
+        (prop: { propertyName: string; value: string | "" }) => {
+          const { propertyName, value } = prop;
 
-        const  { propertyName, value } =  prop;
-
-        if (propertyName === "categoria") {
-          row["categoria"] = value;
-        } else if (propertyName.startsWith("Despesa Liquidada -")) {
-          const ano = propertyName
-            .replace("Despesa Liquidada -", "")
-            .trim();
-          row[`liquidado_${ano}`] = converterToNumber(value);
-        } else if (propertyName.startsWith("Pago com RAP -")) {
-          const ano = propertyName.replace("Pago com RAP -", "").trim();
-          row[`pago_rap_${ano}`] = converterToNumber(value);;
-        } else if (propertyName === "Variação Liquidado") {
-          row["variacao_liquidado"] = replacePorcentage(value);;
-        } else if (propertyName === "Variação Pago RAP") {
-          row["variacao_pago_rap"] = replacePorcentage(value);;
-        }
-      });
+          if (propertyName === "categoria") {
+            row["categoria"] = value;
+          } else if (propertyName.startsWith("Despesa Liquidada -")) {
+            const ano = propertyName.replace("Despesa Liquidada -", "").trim();
+            row[`liquidado_${ano}`] = converterToNumber(value);
+          } else if (propertyName.startsWith("Pago com RAP -")) {
+            const ano = propertyName.replace("Pago com RAP -", "").trim();
+            row[`pago_rap_${ano}`] = converterToNumber(value);
+          } else if (propertyName === "Variação Liquidado") {
+            row["variacao_liquidado"] = replacePorcentage(value);
+          } else if (propertyName === "Variação Pago RAP") {
+            row["variacao_pago_rap"] = replacePorcentage(value);
+          }
+        },
+      );
 
       return row;
     });

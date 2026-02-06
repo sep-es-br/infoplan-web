@@ -82,17 +82,16 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
   }
 
   public onToggleChange(toggle: "executivo" | "demaisPoderes"): void {
+    // Se ambos ficaram false, força o OUTRO toggle a ficar true
     if (!this.toggleExecutivo && !this.toggleDemaisPoderes) {
       if (toggle === "executivo") {
-        this.toggleExecutivo = true;
+        this.toggleDemaisPoderes = true; // Força o OUTRO
       } else {
-        this.toggleDemaisPoderes = true;
+        this.toggleExecutivo = true; // Força o OUTRO
       }
-      return;
     }
 
     this.updateFilterPoderes();
-    // this.getReceitaDespesaGNDTotal();
   }
 
   private updateFilterPoderes(): void {
@@ -107,13 +106,10 @@ export class ReceitaDespesaGndTotalComponent implements OnChanges, OnDestroy {
 
     this.filter.codPoder = poderes.join(",");
     this.getReceitaDespesaGNDTotal();
-    this.processTableData(this.receitaDespesaGNDTotal);
   }
-
   public isAtLeastOneToggleActive(): boolean {
     return this.toggleExecutivo || this.toggleDemaisPoderes;
   }
-
   onMaximizeButtonClick(chartId: string, event: boolean): void {
     this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
   }

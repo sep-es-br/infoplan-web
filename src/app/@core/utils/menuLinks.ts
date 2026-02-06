@@ -280,8 +280,6 @@ export const menulinks: MyCustomMenuItem[] = [
     color: "#9780ad",
     subTitle: "Sistema de Planejamento Orçamentário",
     isExternal: false,
-    separator: true,
-    sectionTitle: "Orçamento",
     section: "orcamento",
   },
   {
@@ -297,6 +295,8 @@ export const menulinks: MyCustomMenuItem[] = [
     color: "#4DB6D2",
     subTitle: "Execução Orçamentária",
     isExternal: false,
+        separator: true,
+    sectionTitle: "Orçamento",
     section: "orcamento",
   },
   {

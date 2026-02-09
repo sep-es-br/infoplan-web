@@ -33,11 +33,11 @@ const routes: Routes = [
         component: PainelOrcamentoComponent,
         data: { dataSource: "Sigefes" },
       },
-      // {
-      //   path: "planejamento-orcamentario",
-      //   component: PlanejamentoOrcamentarioComponent,
-      //   data: { dataSource: "SPO" },
-      // },
+      {
+        path: "planejamento-orcamentario",
+        component: PlanejamentoOrcamentarioComponent,
+        data: { dataSource: "SPO" },
+      },
       {
         path: "",
         redirectTo: "home",

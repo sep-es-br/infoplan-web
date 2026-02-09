@@ -11,7 +11,7 @@ type userInfo = {
 // let token = sessionStorage.getItem('token');
 
 function checkRoles(allowedRole: string): boolean {
-  let userInfos: userInfo = JSON.parse(sessionStorage.getItem("user-profile"));
+  let userInfos: userInfo = JSON.parse(sessionStorage.getItem("user-profile") || "{}");
 
   //if(userInfos.role.find(value => value == environment.allowedRoles.geral))
   //return true;
@@ -273,7 +273,7 @@ export const menulinks: MyCustomMenuItem[] = [
     name: "Planejamento Orçamentário",
     icon: "logo-spo-branco.svg",
     link: "/pages/planejamento-orcamentario",
-    status: false,
+    status: true,
     url: "",
     src: "SPO",
     menuIcon: "",
@@ -281,6 +281,8 @@ export const menulinks: MyCustomMenuItem[] = [
     subTitle: "Sistema de Planejamento Orçamentário",
     isExternal: false,
     section: "orcamento",
+    separator: true,
+    sectionTitle: "Orçamento",
   },
   {
     title: "Orçamento",
@@ -295,8 +297,6 @@ export const menulinks: MyCustomMenuItem[] = [
     color: "#4DB6D2",
     subTitle: "Execução Orçamentária",
     isExternal: false,
-    separator: true,
-    sectionTitle: "Orçamento",
     section: "orcamento",
   },
   {

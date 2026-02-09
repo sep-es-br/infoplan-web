@@ -18,6 +18,7 @@ import {
   getAvailableThemesStyles,
 } from "../../../@theme/theme.module";
 import { ShortNumberPipe } from "../../../@theme/pipes";
+import { tooltip } from "leaflet";
 
 export interface PieChartData {
   value: number;
@@ -60,8 +61,8 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: PieChartData[] = [];
   @Input() colors: string[] = [];
   @Input() showMaximizeButton!: boolean;
-  @Input() height: number;
-  @Input() width: number;
+  @Input() height!: number;
+  @Input() width!: number;
   @Input() config: PieChartConfig = {};
 
   chartOptions: EChartsOption = {};
@@ -256,6 +257,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
         top: `${centerY}%`,
         textAlign: "center",
         textVerticalAlign: "middle",
+        triggerEvent: true,
         textStyle: {
           fontSize: totalFontSize,
           fontWeight: "bold",
@@ -284,7 +286,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
           label: {
             show: true,
             position: "inside",
-            formatter: function (params) {
+            formatter: function (params: any) {
               return params.percent >= 4
                 ? Math.round(params.percent) + "%"
                 : "";
@@ -428,7 +430,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
           label: {
             show: true,
             position: "inside",
-            formatter: function (params) {
+            formatter: function (params: any) {
               return params.percent >= 4
                 ? Math.round(params.percent) + "%"
                 : "";

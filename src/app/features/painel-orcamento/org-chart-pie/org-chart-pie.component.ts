@@ -124,7 +124,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
       this.buildChart();
     }
 
-    if(changes["showMaximizeButton"]) {
+    if (changes["showMaximizeButton"]) {
       this.showMaximizeButton = changes["showMaximizeButton"].currentValue;
       this.updateChartOnResize();
     }
@@ -133,6 +133,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     clearTimeout(this.resizeTimer);
     if (this.echartsInstance) {
+      this.echartsInstance.off("legendselectchanged"); // Remove listener
       this.echartsInstance.dispose();
       this.echartsInstance = null;
     }
@@ -140,6 +141,34 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
 
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
+    // Adiciona o listener assim que o chart é inicializado
+    this.setupLegendListener();
+  }
+
+  /**
+   * Configura o listener para atualizar o total quando legendas são ocultadas/exibidas
+   */
+  private setupLegendListener(): void {
+    if (!this.echartsInstance) return;
+
+    // Remove listener anterior para evitar duplicação
+    this.echartsInstance.off("legendselectchanged");
+
+    // Adiciona o listener
+    this.echartsInstance.on("legendselectchanged", (params: any) => {
+      const selected = params.selected;
+      const newTotal = this.data.reduce((sum, item) => {
+        return selected[item.name] ? sum + item.value : sum;
+      }, 0);
+
+      const formattedNewTotal = this._shortNumber.transform(newTotal, 1);
+      this.echartsInstance?.setOption(
+        {
+          title: { text: formattedNewTotal },
+        },
+        false,
+      );
+    });
   }
 
   private calculateTotalFontSize(isPhone: boolean, isTablet: boolean): number {
@@ -150,7 +179,11 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private calculateLegendFontSize(isPhone: boolean, isTablet: boolean, isMobile: boolean): number {
+  private calculateLegendFontSize(
+    isPhone: boolean,
+    isTablet: boolean,
+    isMobile: boolean,
+  ): number {
     if (this.showMaximizeButton) {
       return isPhone ? 10 : isTablet ? 12 : 16;
     } else {
@@ -158,8 +191,10 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-
-  private calculateLegendItemSize(isMobile: boolean, isTablet: boolean): number {
+  private calculateLegendItemSize(
+    isMobile: boolean,
+    isTablet: boolean,
+  ): number {
     if (this.showMaximizeButton) {
       return isMobile ? 6 : isTablet ? 12 : 16;
     } else {
@@ -175,31 +210,29 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-
-  private calculateRadius(isMobile: boolean, isPhone: boolean, isTablet: boolean): string | [string, string] {
+  private calculateRadius(
+    isMobile: boolean,
+    isPhone: boolean,
+    isTablet: boolean,
+  ): string | [string, string] {
     if (this.showMaximizeButton) {
       if (isPhone) {
-        return ["15%", "40%"]; // Muito menor em mobile
+        return ["15%", "40%"];
       } else if (isTablet) {
-        return ["20%", "45%"]; // Menor em tablet
+        return ["20%", "45%"];
       } else {
-        return ["25%", "50%"]; // Menor em desktop
+        return ["25%", "50%"];
       }
     } else {
       if (isMobile) {
-        return isPhone
-          ? ["25%", "55%"]
-          : ["30%", "60%"];
+        return isPhone ? ["25%", "55%"] : ["30%", "60%"];
       } else {
         return this.config.radius || ["35%", "65%"];
       }
     }
   }
 
-  private calculateTitleOffsetX(
-    screenWidth: number,
-    centerX: number,
-  ): number {
+  private calculateTitleOffsetX(screenWidth: number, centerX: number): number {
     const fontSize = this.calculateTotalFontSize(
       screenWidth <= 575,
       screenWidth <= 768,
@@ -234,13 +267,26 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
 
     const radius = this.calculateRadius(isMobile, isPhone, isTablet);
 
-    const legendFontSize = this.calculateLegendFontSize(isPhone, isTablet, isMobile);
+    const legendFontSize = this.calculateLegendFontSize(
+      isPhone,
+      isTablet,
+      isMobile,
+    );
     const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 10;
     const totalFontSize = this.calculateTotalFontSize(isPhone, isTablet);
     const legendItemSize = this.calculateLegendItemSize(isMobile, isTablet);
     const legendItemGap = this.calculateLegendItemGap(isMobile);
 
-    const formattedTotal = this._shortNumber.transform(this.totais, 1);
+    // Captura o estado atual das legendas ANTES de atualizar
+    const currentOption = this.echartsInstance.getOption();
+    const currentLegendSelected = currentOption?.legend?.[0]?.selected || {};
+
+    // Calcula o total considerando as legendas selecionadas
+    const visibleTotal = this.data.reduce((sum, item) => {
+      return currentLegendSelected[item.name] !== false ? sum + item.value : sum;
+    }, 0);
+
+    const formattedTotal = this._shortNumber.transform(visibleTotal, 1);
     const centerX = config.centerPosition
       ? parseFloat(config.centerPosition[0])
       : 50;
@@ -250,58 +296,62 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
 
     const offsetX = this.calculateTitleOffsetX(screenWidth, centerX);
 
-    this.echartsInstance.setOption({
-      title: {
-        text: formattedTotal,
-        left: `${offsetX}%`,
-        top: `${centerY}%`,
-        textAlign: "center",
-        textVerticalAlign: "middle",
-        triggerEvent: true,
-        textStyle: {
-          fontSize: totalFontSize,
-          fontWeight: "bold",
-          color: themeStyles.textPrimaryColor,
+    this.echartsInstance.setOption(
+      {
+        title: {
+          text: formattedTotal,
+          left: `${offsetX}%`,
+          top: `${centerY}%`,
+          textAlign: "center",
+          textVerticalAlign: "middle",
+          triggerEvent: true,
+          textStyle: {
+            fontSize: totalFontSize,
+            fontWeight: "bold",
+            color: themeStyles.textPrimaryColor,
+          },
+          subtextStyle: {
+            fontSize: isPhone ? 10 : isTablet ? 11 : 12,
+            color: themeStyles.textSecondaryColor,
+          },
         },
-        subtextStyle: {
-          fontSize: isPhone ? 10 : isTablet ? 11 : 12,
-          color: themeStyles.textSecondaryColor,
-        },
-      },
-      legend: config.showLegend
-        ? {
-            textStyle: {
-              color: themeStyles.textPrimaryColor,
-              fontSize: legendFontSize,
-            },
-            itemWidth: legendItemSize,
-            itemHeight: legendItemSize,
-            itemGap: legendItemGap,
-          }
-        : undefined,
+        legend: config.showLegend
+          ? {
+              textStyle: {
+                color: themeStyles.textPrimaryColor,
+                fontSize: legendFontSize,
+              },
+              itemWidth: legendItemSize,
+              itemHeight: legendItemSize,
+              itemGap: legendItemGap,
+              selected: currentLegendSelected,
+            }
+          : undefined,
 
-      series: [
-        {
-          radius: radius,
-          label: {
-            show: true,
-            position: "inside",
-            formatter: function (params: any) {
-              return params.percent >= 4
-                ? Math.round(params.percent) + "%"
-                : "";
+        series: [
+          {
+            radius: radius,
+            label: {
+              show: true,
+              position: "inside",
+              formatter: function (params: any) {
+                return params.percent >= 4
+                  ? Math.round(params.percent) + "%"
+                  : "";
+              },
+              fontSize: labelFontSize,
+              color: "#FFFFFF",
             },
-            fontSize: labelFontSize,
-            color: "#FFFFFF",
+            labelLine: {
+              show: true,
+              length: isMobile ? 5 : 10,
+              length2: isMobile ? 3 : 5,
+            },
           },
-          labelLine: {
-            show: true,
-            length: isMobile ? 5 : 10,
-            length2: isMobile ? 3 : 5,
-          },
-        },
-      ],
-    });
+        ],
+      },
+      false,
+    );
 
     this.resizeChart();
   }
@@ -320,7 +370,11 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     const screenWidth = window.innerWidth;
 
     const radius = this.calculateRadius(isMobile, isPhone, isTablet);
-    const legendFontSize = this.calculateLegendFontSize(isPhone, isTablet, isMobile);
+    const legendFontSize = this.calculateLegendFontSize(
+      isPhone,
+      isTablet,
+      isMobile,
+    );
     const labelFontSize = isPhone ? 8 : isTablet ? 9 : isMobile ? 10 : 12;
     const totalFontSize = this.calculateTotalFontSize(isPhone, isTablet);
     const legendItemSize = this.calculateLegendItemSize(isMobile, isTablet);
@@ -455,6 +509,8 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
 
     if (this.echartsInstance) {
       this.echartsInstance.setOption(this.chartOptions, true);
+      // Reconfigura o listener após rebuild
+      this.setupLegendListener();
     }
   }
 

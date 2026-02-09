@@ -11,7 +11,9 @@ type userInfo = {
 // let token = sessionStorage.getItem('token');
 
 function checkRoles(allowedRole: string): boolean {
-  let userInfos: userInfo = JSON.parse(sessionStorage.getItem("user-profile"));
+  let userInfos: userInfo = JSON.parse(
+    sessionStorage.getItem("user-profile") || "{}",
+  );
 
   //if(userInfos.role.find(value => value == environment.allowedRoles.geral))
   //return true;
@@ -295,9 +297,9 @@ export const menulinks: MyCustomMenuItem[] = [
     color: "#4DB6D2",
     subTitle: "Execução Orçamentária",
     isExternal: false,
+    section: "orcamento",
     separator: true,
     sectionTitle: "Orçamento",
-    section: "orcamento",
   },
   {
     title: "Orçamento",

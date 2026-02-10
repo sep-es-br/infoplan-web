@@ -30,7 +30,7 @@
                     >
                       {{
                         (index > 0 ? " " : "") +
-                          (value.name | TextTruncate : 17 : ";")
+                          (value.name | TextTruncate: 17 : ";")
                       }}
                     </span>
                   </ng-template>
@@ -192,14 +192,14 @@
                       fieldSize="tiny"
                     />
 
-                    <nb-autocomplete
-                      #autoUo
-                      (selectedChange)="onUOSelected($event)"
-                    >
+                    <nb-autocomplete #autoUo
+                        (selectedChange)="onUOSelected($event, $event)"
+                     >
                       <nb-option
                         *ngFor="let uo of filteredUOList"
-                        [value]="uo"
-                        (mousedown)="onUOSelected(uo)"
+                        [value]="uo.cod_uo + ' - ' + uo.nome_uo"
+                        [class.uo-selected]="isUOSelected(uo)"
+                        (mousedown)="onUOSelected(uo, $event)"
                       >
                         {{ uo.cod_uo }} - {{ uo.nome_uo }}
                       </nb-option>
@@ -221,7 +221,6 @@
                       </nb-tag>
                     </div>
                   </div>
-
                   <!-- PO com multiselect -->
                   <div
                     class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
@@ -250,7 +249,7 @@
                     </nb-select>
 
                     <!-- Mensagem quando não há UOs selecionadas -->
-                    <div
+                    <!-- <div
                       *ngIf="
                         !filter.uo ||
                         filter.uo.length === 0 ||
@@ -259,10 +258,10 @@
                       class="text-muted small mt-1 sub-title-po"
                     >
                       Selecione primeiro a UO
-                    </div>
+                    </div> -->
 
                     <!-- Mensagem quando não há POs -->
-                    <div
+                    <!-- <div
                       *ngIf="
                         filter.uo &&
                         filter.uo.length > 0 &&
@@ -272,7 +271,7 @@
                       class="text-warning small mt-1"
                     >
                       Nenhuma PO disponível para as UOs selecionadas
-                    </div>
+                    </div> -->
                   </div>
                 </div>
               </div>
@@ -337,7 +336,7 @@
         </div>
         <div
           class="card-content"
-          [title]="'R$ ' + (totals.totalPlanejado | number : '1.2-2')"
+          [title]="'R$ ' + (totals.totalPlanejado | number: '1.2-2')"
         >
           <ng-container
             *ngIf="requestStatus.totals === 'Loading'; else planejadoContent"
@@ -380,7 +379,7 @@
         </div>
         <div
           class="card-content"
-          [title]="'R$ ' + (totals.totalContratado | number : '1.2-2')"
+          [title]="'R$ ' + (totals.totalContratado | number: '1.2-2')"
         >
           <ng-container
             *ngIf="requestStatus.totals === 'Loading'; else contratadoContent"
@@ -400,7 +399,7 @@
                 <div class="currency">R$</div>
                 <div
                   class="value"
-                  [title]="'R$ ' + (totals.totalContratado | number : '1.2-2')"
+                  [title]="'R$ ' + (totals.totalContratado | number: '1.2-2')"
                 >
                   {{ formatNumber(totals.totalContratado) }}
                 </div>
@@ -426,7 +425,7 @@
         </div>
         <div
           class="card-content"
-          [title]="'R$ ' + (totals.totalAutorizado | number : '1.2-2')"
+          [title]="'R$ ' + (totals.totalAutorizado | number: '1.2-2')"
         >
           <ng-container
             *ngIf="requestStatus.totals === 'Loading'; else autorizadoContent"
@@ -468,7 +467,7 @@
         </div>
         <div
           class="card-content"
-          [title]="'R$ ' + (totals.totalEmpenhado | number : '1.2-2')"
+          [title]="'R$ ' + (totals.totalEmpenhado | number: '1.2-2')"
         >
           <ng-container
             *ngIf="requestStatus.totals === 'Loading'; else empenhadoContent"
@@ -511,7 +510,7 @@
         </div>
         <div
           class="card-content"
-          [title]="'R$ ' + (totals.totalLiquidado | number : '1.2-2')"
+          [title]="'R$ ' + (totals.totalLiquidado | number: '1.2-2')"
         >
           <ng-container
             *ngIf="requestStatus.totals === 'Loading'; else liquidadoContent"
@@ -556,10 +555,10 @@
           class="card-content"
           [title]="
             'Pago R$ ' +
-            (totals.totalPago | number : '1.2-2') +
+            (totals.totalPago | number: '1.2-2') +
             '\n' +
             'Pago com Rap R$ ' +
-            (totals.totalRestosAPagar | number : '1.2-2')
+            (totals.totalRestosAPagar | number: '1.2-2')
           "
         >
           <ng-container

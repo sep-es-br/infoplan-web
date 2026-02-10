@@ -28,7 +28,12 @@ import {
 import { Subject, Subscription } from "rxjs";
 import { ComunicationCardsService } from "../../core/service/comunication-cards/comunication-cards.service";
 import { PlanejamentoOrcamentarioService } from "../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
-import { debounceTime, distinctUntilChanged, finalize, takeUntil } from "rxjs/operators";
+import {
+  debounceTime,
+  distinctUntilChanged,
+  finalize,
+  takeUntil,
+} from "rxjs/operators";
 
 const DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS: IPlanejamentoOrcamentarioFilter =
   {
@@ -76,8 +81,8 @@ export enum AvailableThemes {
   styleUrls: ["./planejamento-orcamentario.component.scss"],
 })
 export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
-  @ViewChild("modalCloseButton") modalCloseButtonRef: ElementRef;
-  @ViewChildren("customSelect") customSelectRefs: QueryList<NbSelectComponent>;
+  @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
+  @ViewChildren("customSelect") customSelectRefs!: QueryList<NbSelectComponent>;
   @Output() filterChanged = new EventEmitter<IPlanejamentoOrcamentarioFilter>();
 
   activeFilters: {
@@ -98,7 +103,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
   yearsList = Array.from(
     { length: new Date().getFullYear() - 2024 + 1 },
-    (_, i) => ({ num: 2024 + i })
+    (_, i) => ({ num: 2024 + i }),
   );
 
   requestStatus = {
@@ -140,8 +145,8 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     { num: 12, name: "Dezembro" },
   ];
 
-  UOList: ISPOFiltroUos[];
-  POList: ISPOFiltroPos[];
+  UOList: ISPOFiltroUos[] = [];
+  POList: ISPOFiltroPos[] = [];
 
   private uoSearchSubject = new Subject<string>();
   private poSearchSubject = new Subject<string>();
@@ -155,7 +160,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   uoSearchTerm: string = "";
   poSearchTerm: string = "";
 
-  timesTamp: string;
+  timesTamp!: string;
 
   currentRequestParams: IPlanejamentoOrcamentarioFilter =
     DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS;
@@ -166,7 +171,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     inject(ChartMaximizeService);
 
   private readonly _comunicationCardsService: ComunicationCardsService = inject(
-    ComunicationCardsService
+    ComunicationCardsService,
   );
 
   private readonly _planejamentoOrcamentarioService: PlanejamentoOrcamentarioService =
@@ -210,22 +215,18 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       this._chartMaximizeService.maximizeState$.subscribe(
         (state: ChartMaximizeState) => {
           this.maximizeState = state;
-        }
+        },
       );
 
-      // Configuração do Debounce para UO
-    this.uoSearchSubject.pipe(
-      debounceTime(400),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$)
-    ).subscribe(term => this.executarBuscaUO(term));
+    // Configuração do Debounce para UO
+    this.uoSearchSubject
+      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((term) => this.executarBuscaUO(term));
 
     // Configuração do Debounce para PO
-    this.poSearchSubject.pipe(
-      debounceTime(400),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$)
-    ).subscribe(term => this.executarBuscaPO(term));
+    this.poSearchSubject
+      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((term) => this.executarBuscaPO(term));
 
     this.getTotais();
     this.updateActiveFilters();
@@ -235,9 +236,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   private getListPos(ano: number, codUosList: string[]) {
     this._planejamentoOrcamentarioService
       .getFiltroPos(ano, codUosList)
-      .pipe(
-        takeUntil(this.destroy$)
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: ISPOFiltroPos[]) => {
           this.POList = response;
@@ -248,13 +247,12 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
           // Atualiza filteredPOList removendo as POs já selecionadas
           this.filteredPOList = this.POList.filter(
-            (po) => !this.selectedPOs.some((s) => s.cod_po === po.cod_po)
+            (po) => !this.selectedPOs.some((s) => s.cod_po === po.cod_po),
           );
-
         },
         error: (err) => {
           console.error("Erro ao carregar as POS:", err);
-          this.POList = null;
+          this.POList = [];
           this.filteredPOList = [];
           this.selectedPOs = [];
         },
@@ -264,9 +262,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   private getListUos() {
     this._planejamentoOrcamentarioService
       .getFiltroUos()
-      .pipe(
-        takeUntil(this.destroy$)
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: ISPOFiltroUos[]) => {
           this.UOList = response;
@@ -286,37 +282,37 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     this.totals.totalAutorizado =
       this.totalAutorizadoResponse?.reduce(
         (total, item) => total + item.autorizado,
-        0
+        0,
       ) || 0;
     this.totals.totalContratado =
       this.totalPrevistoResponse?.reduce(
         (total, item) => total + item.contratado,
-        0
+        0,
       ) || 0;
     this.totals.totalEmpenhado =
       this.totalAutorizadoResponse?.reduce(
         (total, item) => total + item.empenhado,
-        0
+        0,
       ) || 0;
     this.totals.totalLiquidado =
       this.totalAutorizadoResponse?.reduce(
         (total, item) => total + item.liquidado,
-        0
+        0,
       ) || 0;
     this.totals.totalPago =
       this.totalAutorizadoResponse?.reduce(
         (total, item) => total + item.pago,
-        0
+        0,
       ) || 0;
     this.totals.totalPlanejado =
       this.totalPrevistoResponse?.reduce(
         (total, item) => total + item.previsto,
-        0
+        0,
       ) || 0;
     this.totals.totalRestosAPagar =
       this.totalAutorizadoResponse?.reduce(
         (total, item) => total + item.pago_com_rap,
-        0
+        0,
       ) || 0;
   }
 
@@ -605,9 +601,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
     this._planejamentoOrcamentarioService
       .getTotalAutorizado(filterAutorizado)
-      .pipe(
-        takeUntil(this.destroy$)
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.totalAutorizadoResponse = response;
@@ -633,9 +627,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
     this._planejamentoOrcamentarioService
       .getTotalPrevisto(filterPrevisto)
-      .pipe(
-        takeUntil(this.destroy$)
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.totalPrevistoResponse = response;
@@ -672,54 +664,65 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     this.uoSearchSubject.next(valor);
   }
 
-    private executarBuscaUO(term: any): void {
-      const termoValido = (typeof term === 'string') ? term : '';
-      const termo = termoValido.toLowerCase().trim();
+  private executarBuscaUO(term: any): void {
+    const termoValido = typeof term === "string" ? term : "";
+    const termo = termoValido.toLowerCase().trim();
 
-      if (!this.UOList) return;
+    if (!this.UOList) return;
 
-      const selectedIds = new Set(this.selectedUOs.map(s => s.cod_uo));
-
-      if (termo === "") {
-        this.filteredUOList = this.UOList.filter(uo => !selectedIds.has(uo.cod_uo));
-      } else {
-        this.filteredUOList = this.UOList.filter(uo =>
-          (uo.nome_uo.toLowerCase().includes(termo) || uo.cod_uo.toString().includes(termo)) &&
-          !selectedIds.has(uo.cod_uo)
-        );
-      }
-}
-
-  onUOSelected(selectedValue: any): void {
-    // Previne que o objeto seja exibido no input
-    const timer = setTimeout(() => {
-      this.uoSearchTerm = "";
-      clearTimeout(timer);
-    }, 0);
-
-    // Chama o método de seleção
-    if (selectedValue && selectedValue.cod_uo) {
-      this.selectUO(selectedValue);
+    if (termo === "") {
+      this.filteredUOList = this.UOList;
+    } else {
+      this.filteredUOList = this.UOList.filter(
+        (uo) =>
+          uo.nome_uo.toLowerCase().includes(termo) ||
+          uo.cod_uo.toString().includes(termo),
+      );
     }
   }
 
-selectUO(uo: ISPOFiltroUos): void {
-  if (!uo?.cod_uo) return;
-
-  if (!this.filter.uo.includes(uo.cod_uo)) {
-    this.filter.uo = [...this.filter.uo.filter(id => id !== -1), uo.cod_uo];
-    this.selectedUOs = [...this.selectedUOs, uo];
-
-    this.uoSearchTerm = "";
-    this.executarBuscaUO("");
-
-    this.handleFilterChange("uo", this.filter.uo);
+  isUOSelected(uo: any): boolean {
+    return this.selectedUOs.some((selected) => selected.cod_uo === uo.cod_uo);
   }
-}
+
+  onUOSelected(uo: ISPOFiltroUos, event: MouseEvent ): void {
+    // event.preventDefault();
+    // event.stopPropagation();
+    console.log("UO selecionada:", uo);
+    const index = this.selectedUOs.findIndex(
+      s => s.cod_uo === uo.cod_uo
+    );
+
+    if (index === -1) {
+      this.selectedUOs.push(uo);
+      this.filter.uo = [...this.filter.uo.filter(id => id !== -1), uo.cod_uo];
+    } else {
+      this.selectedUOs.splice(index, 1);
+      this.filter.uo = this.filter.uo.filter(id => id !== uo.cod_uo);
+    }
+
+    this.executarBuscaUO('');
+
+    this.uoSearchTerm = '';
+    this.handleFilterChange('uo', this.filter.uo);
+  }
+
+  selectUO(uo: ISPOFiltroUos): void {
+    if (!uo?.cod_uo) return;
+    if (!this.filter.uo.includes(uo.cod_uo)) {
+      this.filter.uo = [...this.filter.uo.filter((id) => id !== -1), uo.cod_uo];
+      this.selectedUOs = [...this.selectedUOs, uo];
+
+      this.uoSearchTerm = "";
+      this.executarBuscaUO("");
+
+      this.handleFilterChange("uo", this.filter.uo);
+    }
+  }
+
   formatUOName(uo: any): string {
     const fullText = `${uo.cod_uo} - ${uo.nome_uo}`;
 
-    // Define um limite de caracteres (ajuste conforme necessário)
     const maxLength = 40;
 
     if (fullText.length > maxLength) {
@@ -749,8 +752,8 @@ selectUO(uo: ISPOFiltroUos): void {
   // }
 
   removeUO(uoId: string): void {
-    this.filter.uo = this.filter.uo.filter(id => id !== uoId);
-    this.selectedUOs = this.selectedUOs.filter(uo => uo.cod_uo !== uoId);
+    this.filter.uo = this.filter.uo.filter((id) => id !== uoId);
+    this.selectedUOs = this.selectedUOs.filter((uo) => uo.cod_uo !== uoId);
 
     if (this.filter.uo.length === 0) {
       this.resetarSelecaoPO();
@@ -786,11 +789,11 @@ selectUO(uo: ISPOFiltroUos): void {
     }
 
     this.selectedUOs = this.UOList.filter((uo) =>
-      this.filter.uo.includes(uo.cod_uo)
+      this.filter.uo.includes(uo.cod_uo),
     );
 
     this.filteredUOList = this.UOList.filter(
-      (uo) => !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo)
+      (uo) => !this.selectedUOs.some((s) => s.cod_uo === uo.cod_uo),
     );
   }
 
@@ -807,26 +810,28 @@ selectUO(uo: ISPOFiltroUos): void {
   //   );
   // }
 
-
   onPOSearch(event: any): void {
-      const valor = event.target.value;
-      this.poSearchTerm = valor;
-      this.poSearchSubject.next(valor);
-    }
+    const valor = event.target.value;
+    this.poSearchTerm = valor;
+    this.poSearchSubject.next(valor);
+  }
 
-
-    private executarBuscaPO(term: string): void {
+  private executarBuscaPO(term: string): void {
     const termo = term.toLowerCase().trim();
     if (!this.POList) return;
 
-    const selectedIds = new Set(this.selectedPOs.map(s => s.cod_po));
+    const selectedIds = new Set(this.selectedPOs.map((s) => s.cod_po));
 
     if (termo === "") {
-      this.filteredPOList = this.POList.filter(po => !selectedIds.has(po.cod_po));
+      this.filteredPOList = this.POList.filter(
+        (po) => !selectedIds.has(po.cod_po),
+      );
     } else {
-      this.filteredPOList = this.POList.filter(po =>
-        (po.nome_po.toLowerCase().includes(termo) || po.cod_po.toString().includes(termo)) &&
-        !selectedIds.has(po.cod_po)
+      this.filteredPOList = this.POList.filter(
+        (po) =>
+          (po.nome_po.toLowerCase().includes(termo) ||
+            po.cod_po.toString().includes(termo)) &&
+          !selectedIds.has(po.cod_po),
       );
     }
   }
@@ -861,14 +866,14 @@ selectUO(uo: ISPOFiltroUos): void {
       poId,
       this.selectedPOs,
       this.filter.po,
-      "cod_po"
+      "cod_po",
     );
 
     if (poRemovida && this.POList) {
       this.adicionarDeVoltaAListaFiltrada(
         poRemovida,
         this.filteredPOList,
-        "nome_po"
+        "nome_po",
       );
     }
 
@@ -889,7 +894,7 @@ selectUO(uo: ISPOFiltroUos): void {
       .filter((po): po is ISPOFiltroPos => po !== undefined);
 
     this.filteredPOList = this.POList.filter(
-      (po) => !this.selectedPOs.some((s) => s.cod_po === po.cod_po)
+      (po) => !this.selectedPOs.some((s) => s.cod_po === po.cod_po),
     );
   }
 
@@ -899,7 +904,7 @@ selectUO(uo: ISPOFiltroUos): void {
     listaOrigem: T[] | null | undefined,
     listaSelecionados: T[],
     propriedadeListaFiltrada: string,
-    camposBusca: string[]
+    camposBusca: string[],
   ): void {
     const termoBusca = valorBusca.toLowerCase().trim();
     (this as any)[propriedadeTermoBusca] = termoBusca;
@@ -908,7 +913,7 @@ selectUO(uo: ISPOFiltroUos): void {
 
     if (termoBusca === "") {
       (this as any)[propriedadeListaFiltrada] = lista.filter(
-        (item) => !listaSelecionados.some((s) => this.mesmaEntidade(s, item))
+        (item) => !listaSelecionados.some((s) => this.mesmaEntidade(s, item)),
       );
       return;
     }
@@ -917,10 +922,10 @@ selectUO(uo: ISPOFiltroUos): void {
       const correspondeBusca = camposBusca.some((campo) =>
         String((item as any)[campo])
           .toLowerCase()
-          .includes(termoBusca)
+          .includes(termoBusca),
       );
       const naoSelecionado = !listaSelecionados.some((s) =>
-        this.mesmaEntidade(s, item)
+        this.mesmaEntidade(s, item),
       );
       return correspondeBusca && naoSelecionado;
     });
@@ -930,7 +935,7 @@ selectUO(uo: ISPOFiltroUos): void {
     id: string,
     listaSelecionados: T[],
     arrayFiltro: any[],
-    campoId: string
+    campoId: string,
   ): T | undefined {
     const indice = arrayFiltro.indexOf(id);
     if (indice > -1) {
@@ -938,11 +943,11 @@ selectUO(uo: ISPOFiltroUos): void {
     }
 
     const itemRemovido = listaSelecionados.find(
-      (item) => (item as any)[campoId] === id
+      (item) => (item as any)[campoId] === id,
     );
 
     const indiceSelecionado = listaSelecionados.findIndex(
-      (item) => (item as any)[campoId] === id
+      (item) => (item as any)[campoId] === id,
     );
     if (indiceSelecionado > -1) {
       listaSelecionados.splice(indiceSelecionado, 1);
@@ -955,7 +960,7 @@ selectUO(uo: ISPOFiltroUos): void {
     item: T,
     listaSelecionados: T[],
     arrayFiltro: any[],
-    campoId: string
+    campoId: string,
   ): void {
     listaSelecionados.push(item);
     arrayFiltro.push((item as any)[campoId]);
@@ -964,10 +969,10 @@ selectUO(uo: ISPOFiltroUos): void {
   private removerDaListaFiltrada<T>(
     item: T,
     listaFiltrada: T[],
-    campoId: string
+    campoId: string,
   ): void {
     const indice = listaFiltrada.findIndex(
-      (itemLista) => (itemLista as any)[campoId] === (item as any)[campoId]
+      (itemLista) => (itemLista as any)[campoId] === (item as any)[campoId],
     );
     if (indice > -1) {
       listaFiltrada.splice(indice, 1);
@@ -977,11 +982,11 @@ selectUO(uo: ISPOFiltroUos): void {
   private adicionarDeVoltaAListaFiltrada<T>(
     item: T,
     listaFiltrada: T[],
-    campoOrdenacao: string
+    campoOrdenacao: string,
   ): void {
     listaFiltrada.push(item);
     listaFiltrada.sort((a, b) =>
-      (a as any)[campoOrdenacao].localeCompare((b as any)[campoOrdenacao])
+      (a as any)[campoOrdenacao].localeCompare((b as any)[campoOrdenacao]),
     );
   }
 

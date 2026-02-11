@@ -77,7 +77,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly _planejamentoService = inject(
-    PlanejamentoOrcamentarioService
+    PlanejamentoOrcamentarioService,
   );
 
   ngOnInit(): void {
@@ -99,7 +99,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     if (
       changes["filter"] &&
       JSON.stringify(changes["filter"].previousValue) !==
-      JSON.stringify(changes["filter"].currentValue)
+        JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
       this.title = `PO - Plano Orçamentário • Filtro Anual ${this.filter?.ano}`;
@@ -148,8 +148,8 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     const top5 = [...dados]
       .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
       .slice(0, 5)
-      .reverse();
 
+    console.log("Dados processados para o gráfico:", top5); // Log para verificar os dados processados
     const labels = top5.map((d) => `${d.sigla} - ${d.nome_po}`);
     const planejado = top5.map((d) => d.vlr_previsto || 0);
     const contratado = top5.map((d) => d.vlr_contratado || 0);
@@ -191,22 +191,31 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     const dadosArray = Array.isArray(dados) ? [...dados] : [dados];
 
     const dadosOrdenados = dadosArray.sort(
-      (a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0)
+      (a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0),
     );
     const linhasTabela = dadosOrdenados.map((item) => ({
       data: [
         { propertyName: "nome", value: `${item.uo} - ${item.nome_po}` },
         {
           propertyName: "planejado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_previsto, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            item.vlr_previsto,
+            "R$",
+          ),
         },
         {
           propertyName: "contratado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_contratado, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            item.vlr_contratado,
+            "R$",
+          ),
         },
         {
           propertyName: "autorizado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_autorizado, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            item.vlr_autorizado,
+            "R$",
+          ),
         },
       ],
     }));
@@ -265,7 +274,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       (item) =>
         item.nome_po.toLowerCase().includes(search) ||
         item.po.toLowerCase().includes(search) ||
-        item.sigla.toLowerCase().includes(search)
+        item.sigla.toLowerCase().includes(search),
     );
 
     this.processarDados(filtered);
@@ -301,8 +310,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      `PO - Unidade Orçamentária.xlsx`
+      `PO - Unidade Orçamentária.xlsx`,
     );
   }
-
 }

@@ -150,6 +150,8 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         },
       },
       legend: {
+        itemWidth: this.isMaximized ? 20 : 10,
+        itemHeight: this.isMaximized ? 20 :10,
         textStyle: {
           color: theme.textPrimaryColor,
           fontSize: this.isMaximized ? 16 : 12,
@@ -195,7 +197,9 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         this.getFallbackColor(chart.data.datasets.indexOf(dataset)),
     );
 
-    const data = chart.data.labels.map((label: string, i: number) => ({
+    const labels = chart.data.labels as string[];
+
+    const data = labels.map((label: string, i: number) => ({
       category: label,
       valores: chart.data.datasets.map((dataset) => dataset.data[i] ?? 0),
     }));
@@ -235,8 +239,8 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         top: "top",
         left: "center",
         data: chart.data.datasets.map((r) => r.label),
-        itemWidth: 10,
-        itemHeight: 10,
+        itemWidth: this.isMaximized ? 15 : 12,
+        itemHeight: this.isMaximized ? 15 :12,
         itemGap: 10,
         textStyle: {
           color: theme.textPrimaryColor,
@@ -255,18 +259,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           overflow: "truncate",
           width: isPhone ? 40 : isTablet ? 60 : isMobile ? 60 : 130,
         },
-        // axisLabel: {
-        //   color: theme.textPrimaryColor,
-        //   fontSize: isMobile ? 12 : 12,
-        //   interval: 0,
-        //   rotate: 0,
-        //   margin: 12,
-        //   overflow: "truncate",
-
-        //   // width: isPhone ? 30 : isTablet ? 40 : isMobile ? 100 : 150,
-        //   width: isPhone ? 80 : isTablet ? 40 : isMobile ? 40 : 150,
-        //   // formatter: (value: string) => this.quebrarTexto(value, this.charactersPerLine),
-        // },
         axisTick: {
           alignWithLabel: true,
         },
@@ -276,7 +268,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         inverse: false,
         axisLabel: {
           color: theme.textPrimaryColor,
-          // fontSize: isMobile ? (this.isMaximized ? 12 : 8) : 10,
           fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
           width: isMobile ? 20 : 100,
           formatter: (v: number) => `${this.formatValue(v)}`,

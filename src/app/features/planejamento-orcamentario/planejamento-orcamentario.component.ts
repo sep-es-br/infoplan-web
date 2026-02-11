@@ -929,39 +929,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     );
   }
 
-  private realizarBusca<T>(
-    valorBusca: string,
-    propriedadeTermoBusca: string,
-    listaOrigem: T[] | null | undefined,
-    listaSelecionados: T[],
-    propriedadeListaFiltrada: string,
-    camposBusca: string[],
-  ): void {
-    const termoBusca = valorBusca.toLowerCase().trim();
-    (this as any)[propriedadeTermoBusca] = termoBusca;
-
-    const lista = listaOrigem || [];
-
-    if (termoBusca === "") {
-      (this as any)[propriedadeListaFiltrada] = lista.filter(
-        (item) => !listaSelecionados.some((s) => this.mesmaEntidade(s, item)),
-      );
-      return;
-    }
-
-    (this as any)[propriedadeListaFiltrada] = lista.filter((item) => {
-      const correspondeBusca = camposBusca.some((campo) =>
-        String((item as any)[campo])
-          .toLowerCase()
-          .includes(termoBusca),
-      );
-      const naoSelecionado = !listaSelecionados.some((s) =>
-        this.mesmaEntidade(s, item),
-      );
-      return correspondeBusca && naoSelecionado;
-    });
-  }
-
   private removerDaSelecao<T>(
     id: string,
     listaSelecionados: T[],

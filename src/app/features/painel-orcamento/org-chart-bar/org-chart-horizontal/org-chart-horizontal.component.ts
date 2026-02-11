@@ -44,12 +44,12 @@ export class OrgChartHorizontalComponent
   implements OnInit, OnChanges, OnDestroy
 {
   @Input() chart!: IChartOptions;
-  @Input() height: number;
-  @Input() charactersPerLine: number;
+  @Input() height!: number;
+  @Input() charactersPerLine!: number;
   @Input() showMaximizeButton!: boolean;
   @Input() ChartDataConfig!: ChartDataConfig;
 
-  chartOptions: EChartsOption;
+  chartOptions!: EChartsOption;
   echartsInstance: ECharts | null = null;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimer: any;

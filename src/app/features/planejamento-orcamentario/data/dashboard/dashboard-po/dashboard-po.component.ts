@@ -66,8 +66,8 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     legend: { fontSize: 12, itemHeight: 13, itemWidth: 13, itemGap: 20 },
     grid: {
       top: "10%",
-      left: "0%",
-      right: "10%",
+      left: "2%",
+      right: "2%",
       bottom: "0%",
       containLabel: true,
     },
@@ -149,7 +149,6 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
       .slice(0, 5)
 
-    console.log("Dados processados para o gráfico:", top5); // Log para verificar os dados processados
     const labels = top5.map((d) => `${d.sigla} - ${d.nome_po}`);
     const planejado = top5.map((d) => d.vlr_previsto || 0);
     const contratado = top5.map((d) => d.vlr_contratado || 0);

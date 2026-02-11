@@ -188,12 +188,6 @@ export class FlipTableComponent implements OnChanges {
     public _filterStateService: FilterStateService,
   ) {}
 
-
-  // get hasFilter(): boolean {
-  //   console.log("valor chegado ", this._filterStateService.showExpensePanel$);
-  //   return this._filterStateService.showExpensePanel$.subscribe((value) => value.valueOf());
-  // }
-
   get allColumnsNames(): Array<string> {
     return this.allColumns.map((el) => el.propertyName);
   }

@@ -41,15 +41,15 @@ import { ChartDataConfig } from "../org-chart-horizontal/org-chart-horizontal.co
 })
 export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chart!: IChartOptions;
-  @Input() height: number;
+  @Input() height!: number;
   @Input() barGap: string = "30";
   @Input() isMaximized!: boolean;
-  @Input() charactersPerLine: number;
+  @Input() charactersPerLine!: number;
 
   @Input() chartDataConfig!: ChartDataConfig;
 
   echartsInstance: ECharts | null = null;
-  chartOptions: EChartsOption;
+  chartOptions!: EChartsOption;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimeout: any;
 
@@ -73,7 +73,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  // ✅ LISTENER DE RESIZE DA JANELA
   @HostListener("window:resize", ["$event"])
   onWindowResize(event?: Event) {
     clearTimeout(this.resizeTimeout);
@@ -109,7 +108,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // ✅ CLEANUP
   ngOnDestroy(): void {
     clearTimeout(this.resizeTimeout);
     if (this.echartsInstance) {
@@ -118,7 +116,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // ✅ ATUALIZA GRÁFICO QUANDO REDIMENSIONAR
   private updateChartOnResize(): void {
     if (!this.echartsInstance || !this.chart?.data) return;
 

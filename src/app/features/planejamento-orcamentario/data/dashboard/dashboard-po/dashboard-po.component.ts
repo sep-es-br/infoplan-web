@@ -41,7 +41,7 @@ import { UtilitiesService } from "../../../../../core/service/utilities.service"
   imports: [OrgChartHorizontalComponent, FlipTableComponent],
 })
 export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() filter: ISPOTotalAutorizadoFilter;
+  @Input() filter!: ISPOTotalAutorizadoFilter;
 
   maximizedHeight: number = 500;
 
@@ -52,7 +52,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  title: string;
+  title!: string;
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
@@ -102,7 +102,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
-      this.title = `PO - Unidade Orçamentária • Filtro Anual ${this.filter?.ano}`;
+      this.title = `PO - Plano Orçamentário • Filtro Anual ${this.filter?.ano}`;
     }
   }
 
@@ -214,7 +214,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     this.tableContent = {
       customColumn: {
         propertyName: "nome",
-        displayName: "PO - Unidade Orçamentária",
+        displayName: "PO - Plano Orçamentário",
         alignment: {
           header: FlipTableAlignment.LEFT,
           data: FlipTableAlignment.LEFT,

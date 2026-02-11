@@ -38,7 +38,7 @@ import { converterToNumber, replacePorcentage } from "../../../../../@core/utils
   imports: [ChartProgressBarComponent, FlipTableComponent],
 })
 export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() filter: ISPOTotalAutorizadoFilter;
+  @Input() filter!: ISPOTotalAutorizadoFilter;
 
   @HostListener("window:resize")
   onResize() {
@@ -186,7 +186,7 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
     this.tableContent = {
       customColumn: {
         propertyName: "nome",
-        displayName: "PO - Unidade Orçamentária",
+        displayName: "PO - Plano Orçamentário",
         alignment: {
           header: FlipTableAlignment.LEFT,
           data: FlipTableAlignment.LEFT,

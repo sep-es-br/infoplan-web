@@ -124,8 +124,8 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
     const top5Uo = dados
       .sort((a, b) => b.vlr_previsto - a.vlr_previsto)
       .slice(0, 5)
-      .reverse();
-    this.chartData = {
+
+      this.chartData = {
       data: {
         labels: top5Uo.map((d) =>
           d.sigla_uo || d.nome_po != null

@@ -37,7 +37,7 @@ import { replacePorcentage } from "../../../../../@core/utils/functionts/functio
   imports: [ChartProgressBarComponent, FlipTableComponent],
 })
 export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() filter: ISPOTotalAutorizadoFilter;
+  @Input() filter!: ISPOTotalAutorizadoFilter;
 
   readonly title: string = "Empenhado, Liquidado e Pago sem RAP (% Autorizado)";
 
@@ -139,8 +139,8 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
     const top5Uo = dados
       .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
       .slice(0, 5)
-      .reverse();
-    this.chartData = {
+
+      this.chartData = {
       data: {
         labels: top5Uo.map((d) =>
           d.cod || d.sigla != null

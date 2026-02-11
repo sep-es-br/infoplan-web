@@ -53,7 +53,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  title: string;
+  title!: string;
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
   dasboardResponse: ISPODashboardUo[] = [];
@@ -165,7 +165,6 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
       const top5 = [...dados]
         .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
         .slice(0, 5)
-        .reverse();
 
       const chartConfig: IChartOptions = {
         data: {

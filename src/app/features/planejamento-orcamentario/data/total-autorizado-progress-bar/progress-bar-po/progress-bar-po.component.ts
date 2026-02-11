@@ -79,7 +79,7 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
     this.searchSubject
@@ -170,15 +170,15 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "Empenhado",
-          value: `${item.porcentagem_empenhado}%`,
+          value: `${item.porcentagem_empenhado} %`,
         },
         {
           propertyName: "Liquidado",
-          value: `${item.porcentagem_liquidado}%`,
+          value: `${item.porcentagem_liquidado} %`,
         },
         {
           propertyName: "Pago",
-          value: `${item.porcentagem_pago_sem_rap}%`,
+          value: `${item.porcentagem_pago_sem_rap} %`,
         },
       ],
     }));
@@ -236,47 +236,47 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
 
 
   handleTableDownload(): void {
-  if (!this.tableContent) return;
+    if (!this.tableContent) return;
 
-  // Definir as colunas baseadas no tableContent atual
-  const columns = [
-    {
-      key: this.tableContent.customColumn.propertyName,
-      label: this.tableContent.customColumn.displayName || "PO - Unidade orçamentária",
-    },
-  ];
+    // Definir as colunas baseadas no tableContent atual
+    const columns = [
+      {
+        key: this.tableContent.customColumn.propertyName,
+        label: this.tableContent.customColumn.displayName || "PO - Unidade orçamentária",
+      },
+    ];
 
-  this.tableContent.defaultColumns.forEach((col) => {
-    columns.push({
-      key: col.propertyName,
-      label: col.displayName,
-    });
-  });
-
-  const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
-    const row: any = {};
-
-    node.data.forEach((prop: { propertyName: string; value: string | "" }) => {
-      const { propertyName, value } = prop;
-
-      const cleanValue = typeof value === 'string' && value.includes('%')
-        ? replacePorcentage(value)
-        : value;
-
-      row[propertyName] = cleanValue;
+    this.tableContent.defaultColumns.forEach((col) => {
+      columns.push({
+        key: col.propertyName,
+        label: col.displayName,
+      });
     });
 
-    return row;
-  });
+    const dataForDownload = this.tableContent.data.map((node: TreeNode) => {
+      const row: any = {};
 
-  const fileName = `Empenhado_Liquidado_E_Pago_Sem_RAP_(% Autorizado)_PO.xlsx`;
+      node.data.forEach((prop: { propertyName: string; value: string | "" }) => {
+        const { propertyName, value } = prop;
 
-  this._exportDataService.exportXLSXWithCustomHeaders(
-    dataForDownload,
-    columns,
-    fileName,
-  );
-}
+        const cleanValue = typeof value === 'string' && value.includes('%')
+          ? replacePorcentage(value)
+          : value;
+
+        row[propertyName] = cleanValue;
+      });
+
+      return row;
+    });
+
+    const fileName = `Empenhado_Liquidado_E_Pago_Sem_RAP_(% Autorizado)_PO.xlsx`;
+
+    this._exportDataService.exportXLSXWithCustomHeaders(
+      dataForDownload,
+      columns,
+      fileName,
+    );
+  }
 
   handleTableSearch(query: string): void {
     this.searchSubject.next(query);

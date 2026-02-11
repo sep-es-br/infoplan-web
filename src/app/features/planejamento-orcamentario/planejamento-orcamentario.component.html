@@ -8,40 +8,30 @@
               <div class="tag-label">{{ tag.label }}:</div>
 
               <div class="tag-value">
-                <ng-container
-                  *ngFor="let value of tag.displayValue; let index = index"
-                >
-                  <ng-container
-                    *ngIf="value.name?.length <= 20; else spanWithTooltip"
-                  >
+                <ng-container *ngFor="let value of tag.displayValue; let index = index">
+                  <ng-container *ngIf="value.name?.length <= 20; else spanWithTooltip">
                     <span>
                       {{
-                        (index > 0 ? " " : "") +
-                          (tag.displayValue.length > 1
-                            ? value.name + ";"
-                            : value.name)
+                      (index > 0 ? " " : "") +
+                      (tag.displayValue.length > 1
+                      ? value.name + ";"
+                      : value.name)
                       }}
                     </span>
                   </ng-container>
 
                   <ng-template #spanWithTooltip>
-                    <span
-                      [nbTooltip]="value.fullName ? value.fullName : value.name"
-                    >
+                    <span [nbTooltip]="value.fullName ? value.fullName : value.name">
                       {{
-                        (index > 0 ? " " : "") +
-                          (value.name | TextTruncate : 17 : ";")
+                      (index > 0 ? " " : "") +
+                      (value.name | TextTruncate: 17 : ";")
                       }}
                     </span>
                   </ng-template>
                 </ng-container>
               </div>
             </div>
-            <button
-              *ngIf="tag.key !== 'ano'"
-              class="remove-button"
-              (click)="removeFilter(tag.key)"
-            >
+            <button *ngIf="tag.key !== 'ano'" class="remove-button" (click)="removeFilter(tag.key)">
               x
             </button>
           </div>
@@ -49,12 +39,7 @@
       </div>
 
       <div class="filter-button">
-        <button
-          class="filter-toggle p-0"
-          type="button"
-          data-bs-toggle="modal"
-          data-bs-target="#filtrosModal"
-        >
+        <button class="filter-toggle p-0" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
           Filtros
           <nb-icon [icon]="'funnel-outline'"></nb-icon>
         </button>
@@ -62,91 +47,47 @@
     </div>
 
     <!-- Painel de Filtros Simplificado -->
-    <div
-      class="modal fade"
-      id="filtrosModal"
-      tabindex="-1"
-      aria-labelledby="filtrosModalLabel"
-      tabindex="-1"
-      role="dialog"
-    >
+    <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" tabindex="-1"
+      role="dialog">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-body">
             <form class="w-100">
               <div class="form-header w-100 d-flex justify-content-end">
-                <button
-                  class="btn p-0 close-filter-button"
-                  data-bs-dismiss="modal"
-                  #modalCloseButton
-                  (click)="closeFilterModal()"
-                >
+                <button class="btn p-0 close-filter-button" data-bs-dismiss="modal" #modalCloseButton
+                  (click)="closeFilterModal()">
                   <nb-icon [icon]="'close-outline'"></nb-icon>
                 </button>
               </div>
 
               <div class="d-flex flex-column w-100">
-                <div
-                  class="filter-row d-flex flex-column flex-md-row flex-wrap w-100"
-                >
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
                   <!-- Ano -->
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Ano</span>
-                    <nb-select
-                      name="ano"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="this.filter.ano"
-                      (selectedChange)="handleFilterChange('ano', [$event])"
-                      #customSelect
-                    >
-                      <nb-option
-                        *ngFor="let ano of yearsList"
-                        [value]="ano.num"
-                      >
+                    <nb-select name="ano" placeholder="Selecionar" size="tiny" [(ngModel)]="this.filter.ano"
+                      (selectedChange)="handleFilterChange('ano', [$event])" #customSelect>
+                      <nb-option *ngFor="let ano of yearsList" [value]="ano.num">
                         {{ ano.num }}
                       </nb-option>
                     </nb-select>
                   </div>
 
                   <!-- Mês -->
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Mês</span>
-                    <nb-select
-                      multiple
-                      name="mes"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.mes"
-                      (selectedChange)="handleFilterChange('mes', $event)"
-                      #customSelect
-                    >
-                      <nb-option
-                        *ngFor="let mes of monthsList"
-                        [value]="mes.num"
-                      >
+                    <nb-select multiple name="mes" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.mes"
+                      (selectedChange)="handleFilterChange('mes', $event)" #customSelect>
+                      <nb-option *ngFor="let mes of monthsList" [value]="mes.num">
                         {{ mes.name }}
                       </nb-option>
                     </nb-select>
                   </div>
 
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">GND</span>
-                    <nb-select
-                      multiple
-                      name="gnd"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.gnd"
-                      (selectedChange)="handleFilterChange('gnd', $event)"
-                      #customSelect
-                    >
+                    <nb-select multiple name="gnd" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.gnd"
+                      (selectedChange)="handleFilterChange('gnd', $event)" #customSelect>
                       <nb-option *ngFor="let gnd of GNDList" [value]="gnd.id">
                         {{ gnd.name }}
                       </nb-option>
@@ -154,124 +95,78 @@
                   </div>
 
                   <!-- Tipo de Fonte -->
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Tipo de Fonte</span>
-                    <nb-select
-                      multiple
-                      name="tipoFonte"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.tipoFonte"
-                      (selectedChange)="handleFilterChange('tipoFonte', $event)"
-                      #customSelect
-                    >
+                    <nb-select multiple name="tipoFonte" placeholder="Selecionar" size="tiny"
+                      [(ngModel)]="filter.tipoFonte" (selectedChange)="handleFilterChange('tipoFonte', $event)"
+                      #customSelect>
                       <nb-option [value]="1">Caixas Tesouros</nb-option>
                       <nb-option [value]="2">Demais Fontes</nb-option>
                     </nb-select>
                   </div>
 
                   <!-- UO com autocomplete e chips -->
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">UO</span>
 
-                    <input
-                      class="autocomplete-input-uo"
-                      type="text"
-                      nbInput
-                      fullWidth
-                      name="uoSearch"
-                      placeholder="Buscar UO..."
-                      autocomplete="off"
-                      [nbAutocomplete]="autoUo"
-                      [(ngModel)]="uoSearchTerm"
-                      (input)="onUOSearch($event)"
-                      fieldSize="tiny"
-                    />
+                    <input class="autocomplete-input-uo" type="text" nbInput fullWidth name="uoSearch"
+                      placeholder="Buscar UO..." autocomplete="off" [nbAutocomplete]="autoUo" [(ngModel)]="uoSearchTerm"
+                      (input)="onUOSearch($event)" fieldSize="tiny" />
 
-                    <nb-autocomplete
-                      #autoUo
-                      (selectedChange)="onUOSelected($event)"
-                    >
-                      <nb-option
-                        *ngFor="let uo of filteredUOList"
-                        [value]="uo"
-                        (mousedown)="onUOSelected(uo)"
-                      >
-                        {{ uo.cod_uo }} - {{ uo.nome_uo }}
+                    <nb-autocomplete #autoUo (selectedChange)="onUOSelected($event)">
+                      <nb-option *ngFor="let uo of filteredUOList" [value]="uo.cod_uo"
+                        [class.uo-selected]="isUOSelected(uo)" (mousedown)="$event.preventDefault()">
+                        <div (click)="onUOSelected(uo); $event.stopPropagation()"
+                          class="option-wrapper d-flex align-items-center w-100 h-100">
+                          <nb-icon *ngIf="isUOSelected(uo)" icon="checkmark-outline" class="me-2"></nb-icon>
+                          {{ uo.cod_uo }} - {{ uo.nome_uo }}
+                        </div>
                       </nb-option>
                     </nb-autocomplete>
 
-                    <div
-                      class="chips-container mt-2"
-                      *ngIf="selectedUOs.length > 0"
-                    >
-                      <nb-tag
-                        *ngFor="let uo of selectedUOs"
-                        [text]="formatUOName(uo)"
-                        [removable]="true"
-                        [nbTooltip]="uo.cod_uo + ' - ' + uo.nome_uo"
-                        (remove)="removeUO(uo.cod_uo)"
-                        size="tiny"
-                        appearance="filled"
-                      >
+                    <div class="chips-container mt-2" *ngIf="selectedUOs.length > 0">
+                      <nb-tag *ngFor="let uo of selectedUOs" [text]="formatUOName(uo)" [removable]="true"
+                        [nbTooltip]="uo.cod_uo + ' - ' + uo.nome_uo" (remove)="removeUO(uo.cod_uo)" size="tiny"
+                        appearance="filled">
                       </nb-tag>
                     </div>
                   </div>
-
                   <!-- PO com multiselect -->
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">PO</span>
 
-                    <nb-select
-                      multiple
-                      name="po"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.po"
-                      (selectedChange)="handleFilterChange('po', $event)"
-                      [disabled]="
+                    <nb-select multiple name="po" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.po"
+                      (selectedChange)="handleFilterChange('po', $event)" [disabled]="
                         !filter.uo ||
                         filter.uo.length === 0 ||
                         filter.uo.includes(-1) ||
                         !POList ||
                         POList.length === 0
-                      "
-                      #customSelect
-                    >
+                      " #customSelect>
                       <nb-option *ngFor="let po of POList" [value]="po.cod_po">
                         {{ po.cod_po }} - {{ po.nome_po }}
                       </nb-option>
                     </nb-select>
 
                     <!-- Mensagem quando não há UOs selecionadas -->
-                    <div
-                      *ngIf="
-                        !filter.uo ||
+                    <div *ngIf="
+                        !isPOListLoading &&
+                        (!filter.uo ||
                         filter.uo.length === 0 ||
-                        filter.uo.includes(-1)
-                      "
-                      class="text-muted small mt-1 sub-title-po"
-                    >
-                      Selecione primeiro a UO
+                        filter.uo.includes(-1))
+                      " class="text-info-custom small mt-1">
+                      Primeiro precisa selecionar pelo menos uma UO
                     </div>
 
-                    <!-- Mensagem quando não há POs -->
-                    <div
-                      *ngIf="
+                    <!-- Mensagem quando houver UOs mas não houver POs -->
+                    <div *ngIf="
+                        !isPOListLoading &&
                         filter.uo &&
                         filter.uo.length > 0 &&
                         !filter.uo.includes(-1) &&
                         (!POList || POList.length === 0)
-                      "
-                      class="text-warning small mt-1"
-                    >
-                      Nenhuma PO disponível para as UOs selecionadas
+                      " class="text-info-custom small mt-1">
+                      PO da(s) UO(s) {{ filter.uo.join(', ') }} ainda não cadastrada
                     </div>
                   </div>
                 </div>
@@ -279,29 +174,13 @@
             </form>
           </div>
 
-          <div
-            class="modal-footer d-flex flex-column flex-sm-row justify-content-center justify-content-sm-end"
-          >
-            <button
-              class="mx-4"
-              nbButton
-              size="small"
-              status="warning"
-              outline
-              shape="semi-round"
-              (click)="resetFilters()"
-            >
+          <div class="modal-footer d-flex flex-column flex-sm-row justify-content-center justify-content-sm-end">
+            <button class="mx-4" nbButton size="small" status="warning" outline shape="semi-round"
+              (click)="resetFilters()">
               Restaurar Filtros
             </button>
-            <button
-              nbButton
-              size="small"
-              status="success"
-              hero
-              shape="semi-round"
-              data-bs-dismiss="modal"
-              (click)="filtrar($event)"
-            >
+            <button nbButton size="small" status="success" hero shape="semi-round" data-bs-dismiss="modal"
+              (click)="filtrar($event)">
               Filtrar
             </button>
           </div>
@@ -316,11 +195,7 @@
       <div class="card h-100">
         <div class="card-content">
           <div class="portfolio-content">
-            <img
-              class="portfolio-logo"
-              [src]="planejamentoLogoUrl"
-              alt="Logo SPO"
-            />
+            <img class="portfolio-logo" [src]="planejamentoLogoUrl" alt="Logo SPO" />
           </div>
         </div>
       </div>
@@ -329,22 +204,12 @@
     <!-- Card 2: Planejado -->
     <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xxl-4 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right planejado"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right planejado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">monitoring</span>
         </div>
-        <div
-          class="card-content"
-          [title]="'R$ ' + (totals.totalPlanejado | number : '1.2-2')"
-        >
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else planejadoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+        <div class="card-content" [title]="'R$ ' + (totals.totalPlanejado | number: '1.2-2')">
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else planejadoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-planejado" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -372,22 +237,12 @@
     <!-- Card 3: Contratado -->
     <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xxl-4 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right contratado"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right contratado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">handshake</span>
         </div>
-        <div
-          class="card-content"
-          [title]="'R$ ' + (totals.totalContratado | number : '1.2-2')"
-        >
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else contratadoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+        <div class="card-content" [title]="'R$ ' + (totals.totalContratado | number: '1.2-2')">
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else contratadoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-contratado" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -398,10 +253,7 @@
             <div class="number-box contratado">
               <div class="d-flex flex-column align-items-start">
                 <div class="currency">R$</div>
-                <div
-                  class="value"
-                  [title]="'R$ ' + (totals.totalContratado | number : '1.2-2')"
-                >
+                <div class="value" [title]="'R$ ' + (totals.totalContratado | number: '1.2-2')">
                   {{ formatNumber(totals.totalContratado) }}
                 </div>
               </div>
@@ -418,22 +270,12 @@
     <!-- Card 4: Autorizado -->
     <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right autorizado"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right autorizado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">check_circle</span>
         </div>
-        <div
-          class="card-content"
-          [title]="'R$ ' + (totals.totalAutorizado | number : '1.2-2')"
-        >
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else autorizadoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+        <div class="card-content" [title]="'R$ ' + (totals.totalAutorizado | number: '1.2-2')">
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else autorizadoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-autorizado" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -460,22 +302,12 @@
     <!-- Card 5: Empenhado -->
     <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right empenhado"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right empenhado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">gavel</span>
         </div>
-        <div
-          class="card-content"
-          [title]="'R$ ' + (totals.totalEmpenhado | number : '1.2-2')"
-        >
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else empenhadoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+        <div class="card-content" [title]="'R$ ' + (totals.totalEmpenhado | number: '1.2-2')">
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else empenhadoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-empenhado" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -503,22 +335,12 @@
     <!-- Card 6: Liquidado -->
     <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right liquidado"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right liquidado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">checkbook</span>
         </div>
-        <div
-          class="card-content"
-          [title]="'R$ ' + (totals.totalLiquidado | number : '1.2-2')"
-        >
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else liquidadoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+        <div class="card-content" [title]="'R$ ' + (totals.totalLiquidado | number: '1.2-2')">
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else liquidadoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-liquidado" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -546,28 +368,18 @@
     <!-- Card 7: Pago -->
     <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
       <div class="card h-100">
-        <div
-          class="icon-top-right pago"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right pago" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">paid</span>
         </div>
-        <div
-          class="card-content"
-          [title]="
+        <div class="card-content" [title]="
             'Pago R$ ' +
-            (totals.totalPago | number : '1.2-2') +
+            (totals.totalPago | number: '1.2-2') +
             '\n' +
             'Pago com Rap R$ ' +
-            (totals.totalRestosAPagar | number : '1.2-2')
-          "
-        >
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else pagoContent"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center w-100 h-100"
-            >
+            (totals.totalRestosAPagar | number: '1.2-2')
+          ">
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else pagoContent">
+            <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-pago" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
@@ -594,88 +406,42 @@
   </div>
 
   <div class="row g-1 py-2">
-    <div
-      class="chart-container"
-      [class.maximized]="isChartMaximized('dashboard-uo')"
-      [class.col-12]="!isChartMaximized('dashboard-uo')"
-      [class.col-md-12]="!isChartMaximized('dashboard-uo')"
-      [class.col-lg-6]="!isChartMaximized('dashboard-uo')"
-      [class.col-xl-6]="!isChartMaximized('dashboard-uo')"
-    >
-      <ngx-dashboard-uo
-        class="w-100"
-        [filter]="currentRequestParams"
-      ></ngx-dashboard-uo>
+    <div class="chart-container" [class.maximized]="isChartMaximized('dashboard-uo')"
+      [class.col-12]="!isChartMaximized('dashboard-uo')" [class.col-md-12]="!isChartMaximized('dashboard-uo')"
+      [class.col-lg-6]="!isChartMaximized('dashboard-uo')" [class.col-xl-6]="!isChartMaximized('dashboard-uo')">
+      <ngx-dashboard-uo class="w-100" [filter]="currentRequestParams"></ngx-dashboard-uo>
     </div>
 
-    <div
-      class="chart-container"
-      [class.maximized]="isChartMaximized('progress-bar-uo')"
-      [class.col-12]="!isChartMaximized('progress-bar-uo')"
-      [class.col-md-12]="!isChartMaximized('progress-bar-uo')"
-      [class.col-lg-6]="!isChartMaximized('progress-bar-uo')"
-      [class.col-xl-6]="!isChartMaximized('progress-bar-uo')"
-    >
-      <ngx-progress-bar-uo
-        class="w-100"
-        [filter]="currentRequestParams"
-      ></ngx-progress-bar-uo>
+    <div class="chart-container" [class.maximized]="isChartMaximized('progress-bar-uo')"
+      [class.col-12]="!isChartMaximized('progress-bar-uo')" [class.col-md-12]="!isChartMaximized('progress-bar-uo')"
+      [class.col-lg-6]="!isChartMaximized('progress-bar-uo')" [class.col-xl-6]="!isChartMaximized('progress-bar-uo')">
+      <ngx-progress-bar-uo class="w-100" [filter]="currentRequestParams"></ngx-progress-bar-uo>
     </div>
 
-    <div
-      class="chart-container"
-      [class.maximized]="isChartMaximized('dashboard-po')"
-      [class.col-12]="!isChartMaximized('dashboard-po')"
-      [class.col-md-12]="!isChartMaximized('dashboard-po')"
-      [class.col-lg-6]="!isChartMaximized('dashboard-po')"
-      [class.col-xl-6]="!isChartMaximized('dashboard-po')"
-    >
-      <ngx-dashboard-po
-        class="w-100"
-        [filter]="currentRequestParams"
-      ></ngx-dashboard-po>
+    <div class="chart-container" [class.maximized]="isChartMaximized('dashboard-po')"
+      [class.col-12]="!isChartMaximized('dashboard-po')" [class.col-md-12]="!isChartMaximized('dashboard-po')"
+      [class.col-lg-6]="!isChartMaximized('dashboard-po')" [class.col-xl-6]="!isChartMaximized('dashboard-po')">
+      <ngx-dashboard-po class="w-100" [filter]="currentRequestParams"></ngx-dashboard-po>
     </div>
 
-    <div
-      class="chart-container"
-      [class.maximized]="isChartMaximized('progress-bar-po')"
-      [class.col-12]="!isChartMaximized('progress-bar-po')"
-      [class.col-md-12]="!isChartMaximized('progress-bar-po')"
-      [class.col-lg-6]="!isChartMaximized('progress-bar-po')"
-      [class.col-xl-6]="!isChartMaximized('progress-bar-po')"
-    >
-      <ngx-progress-bar-po
-        class="w-100"
-        [filter]="currentRequestParams"
-      ></ngx-progress-bar-po>
+    <div class="chart-container" [class.maximized]="isChartMaximized('progress-bar-po')"
+      [class.col-12]="!isChartMaximized('progress-bar-po')" [class.col-md-12]="!isChartMaximized('progress-bar-po')"
+      [class.col-lg-6]="!isChartMaximized('progress-bar-po')" [class.col-xl-6]="!isChartMaximized('progress-bar-po')">
+      <ngx-progress-bar-po class="w-100" [filter]="currentRequestParams"></ngx-progress-bar-po>
     </div>
 
-    <div
-      class="chart-container"
-      [class.maximized]="isChartMaximized('grafico-total-ano')"
-      [class.col-12]="!isChartMaximized('grafico-total-ano')"
-      [class.col-md-12]="!isChartMaximized('grafico-total-ano')"
+    <div class="chart-container" [class.maximized]="isChartMaximized('grafico-total-ano')"
+      [class.col-12]="!isChartMaximized('grafico-total-ano')" [class.col-md-12]="!isChartMaximized('grafico-total-ano')"
       [class.col-lg-6]="!isChartMaximized('grafico-total-ano')"
-      [class.col-xl-6]="!isChartMaximized('grafico-total-ano')"
-    >
-      <ngx-grafico-total-ano
-        class="w-100"
-        [filter]="currentRequestParams"
-      ></ngx-grafico-total-ano>
+      [class.col-xl-6]="!isChartMaximized('grafico-total-ano')">
+      <ngx-grafico-total-ano class="w-100" [filter]="currentRequestParams"></ngx-grafico-total-ano>
     </div>
 
-    <div
-      class="chart-container"
-      [class.maximized]="isChartMaximized('grafico-total-ano')"
-      [class.col-12]="!isChartMaximized('grafico-total-ano')"
-      [class.col-md-12]="!isChartMaximized('grafico-total-ano')"
+    <div class="chart-container" [class.maximized]="isChartMaximized('grafico-total-ano')"
+      [class.col-12]="!isChartMaximized('grafico-total-ano')" [class.col-md-12]="!isChartMaximized('grafico-total-ano')"
       [class.col-lg-6]="!isChartMaximized('grafico-total-ano')"
-      [class.col-xl-6]="!isChartMaximized('grafico-total-ano')"
-    >
-      <ngx-grafico-total-ano-sigefes
-        class="w-100"
-        [filter]="currentRequestParams"
-      ></ngx-grafico-total-ano-sigefes>
+      [class.col-xl-6]="!isChartMaximized('grafico-total-ano')">
+      <ngx-grafico-total-ano-sigefes class="w-100" [filter]="currentRequestParams"></ngx-grafico-total-ano-sigefes>
     </div>
   </div>
 </div>

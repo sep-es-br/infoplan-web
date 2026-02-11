@@ -184,15 +184,15 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "Empenhado",
-          value: `${item.porcentagem_empenhado}%`,
+          value: `${item.porcentagem_empenhado} %`,
         },
         {
           propertyName: "Liquidado",
-          value: `${item.porcentagem_liquidado}%`,
+          value: `${item.porcentagem_liquidado} %`,
         },
         {
           propertyName: "Pago",
-          value: `${item.porcentagem_pago_sem_rap}%`,
+          value: `${item.porcentagem_pago_sem_rap} %`,
         },
       ],
     }));

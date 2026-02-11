@@ -60,7 +60,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
   private searchSubject = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
   private readonly _zone = inject(NgZone);
-   private readonly _utilitiesService = inject(UtilitiesService);
+  private readonly _utilitiesService = inject(UtilitiesService);
 
   chartDataConfig: ChartDataConfig = {
     legend: { fontSize: 12, itemHeight: 13, itemWidth: 13, itemGap: 20 },
@@ -99,10 +99,10 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     if (
       changes["filter"] &&
       JSON.stringify(changes["filter"].previousValue) !==
-        JSON.stringify(changes["filter"].currentValue)
+      JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
-      this.title = `PO - Unidade Orçamentária • Filtro anual ${this.filter?.ano}`;
+      this.title = `PO - Unidade Orçamentária • Filtro Anual ${this.filter?.ano}`;
     }
   }
 

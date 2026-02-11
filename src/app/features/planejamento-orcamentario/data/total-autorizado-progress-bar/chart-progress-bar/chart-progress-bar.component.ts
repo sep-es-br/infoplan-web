@@ -198,7 +198,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
           params.forEach((p: any) => {
             const valor =
               p.value !== undefined && p.value !== null ? p.value : 0;
-            tooltip += `${p.seriesName}: ${valor}% </br>`;
+            tooltip += `${p.seriesName}: ${valor} % </br>`;
           });
 
           return tooltip;
@@ -234,7 +234,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,
-          formatter: (v: number) => `${v}%`,
+          formatter: (v: number) => `${v} %`,
         },
       },
 
@@ -280,7 +280,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
           show: true,
           position: "right",
           distance: 8,
-          formatter: (params) => params.value + "%",
+          formatter: (params) => params.value + " %",
           color: theme.textPrimaryColor,
           fontSize: 10,
         },

@@ -3,17 +3,45 @@
     z-index: 1060;
   }
 }
-  ::ng-deep {
-    nb-option.uo-selected {
-      background-color: #e3f2fd !important;
-      font-weight: 600;
-      color: #959799;
 
-      &:hover {
-        background-color: #e3f2fd !important;
+::ng-deep {
+  nb-option {
+    display: flex !important;
+    align-items: center;
+
+    &.uo-selected {
+      // font-weight: bold;
+      font-size: 12px;
+
+      nb-icon {
+        color: #005c99;
+        font-size: 1.2rem;
       }
+
+      // &:hover {
+      //   background-color: #bbdefb !important;
+      // }
     }
   }
+}
+
+.text-info-custom {
+  font-style: italic;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+:host-context(.nb-theme-default) .text-info-custom {
+  color: #005c99 !important;
+}
+
+:host-context(.nb-theme-dark) .text-info-custom {
+  color: #82aaff !important;
+}
+
+:host-context(.nb-theme-cosmic) .text-info-custom {
+  color: #a16eff !important;
+}
 
 
 .filter-container {
@@ -98,14 +126,12 @@
 
       &:hover {
         .map-icon {
-          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
         }
       }
 
       &.map-btn-clicked {
-        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-          saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
       }
     }
 
@@ -454,6 +480,7 @@ chart-container.maximized::before:hover {
 
 // // Aplica esses estilos sob o tema "dark" e "cosmic"
 :host-context(.nb-theme-dark, .nb-theme-cosmic) {
+
   .sub-title-po,
   .icon-top-right,
   .text-section {

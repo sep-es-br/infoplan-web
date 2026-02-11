@@ -83,7 +83,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
   private readonly _planejamentoService = inject(
     PlanejamentoOrcamentarioService
   );
-   private readonly _utilitiesService = inject(UtilitiesService);
+  private readonly _utilitiesService = inject(UtilitiesService);
   private readonly _zone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -106,10 +106,10 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
     if (
       changes["filter"] &&
       JSON.stringify(changes["filter"].previousValue) !==
-        JSON.stringify(changes["filter"].currentValue)
+      JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
-      this.title = `UO - Unidade Orçamentária • Filtro anual ${this.filter?.ano}`;
+      this.title = `UO - Unidade Orçamentária • Filtro Anual ${this.filter?.ano}`;
     }
   }
 

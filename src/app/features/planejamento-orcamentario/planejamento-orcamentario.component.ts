@@ -10,7 +10,7 @@ import {
   ViewChild,
   ViewChildren,
 } from "@angular/core";
-import { NbSelectComponent, NbThemeService } from "@nebular/theme";
+import { NbAutocompleteDirective, NbSelectComponent, NbThemeService } from "@nebular/theme";
 import { environment } from "../../../environments/environment";
 import {
   ISPOFiltroPos,
@@ -36,14 +36,14 @@ import {
 } from "rxjs/operators";
 
 const DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS: IPlanejamentoOrcamentarioFilter =
-  {
-    ano: environment.planejamentoOrcamentarioFilter.ano,
-    tipoFonte: environment.planejamentoOrcamentarioFilter.tipoFonte,
-    uo: environment.planejamentoOrcamentarioFilter.uo,
-    mes: environment.planejamentoOrcamentarioFilter.mes,
-    po: environment.planejamentoOrcamentarioFilter.po,
-    gnd: environment.planejamentoOrcamentarioFilter.gnd,
-  };
+{
+  ano: environment.planejamentoOrcamentarioFilter.ano,
+  tipoFonte: environment.planejamentoOrcamentarioFilter.tipoFonte,
+  uo: environment.planejamentoOrcamentarioFilter.uo,
+  mes: environment.planejamentoOrcamentarioFilter.mes,
+  po: environment.planejamentoOrcamentarioFilter.po,
+  gnd: environment.planejamentoOrcamentarioFilter.gnd,
+};
 
 interface IPlanejamentoOrcamentarioFilter {
   ano: number;
@@ -83,6 +83,7 @@ export enum AvailableThemes {
 export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
   @ViewChildren("customSelect") customSelectRefs!: QueryList<NbSelectComponent>;
+  @ViewChild(NbAutocompleteDirective) autocomplete!: NbAutocompleteDirective<any>;
   @Output() filterChanged = new EventEmitter<IPlanejamentoOrcamentarioFilter>();
 
   activeFilters: {
@@ -156,6 +157,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   filteredPOList: ISPOFiltroPos[] = [];
   selectedUOs: ISPOFiltroUos[] = [];
   selectedPOs: ISPOFiltroPos[] = [];
+  isPOListLoading: boolean = false;
 
   uoSearchTerm: string = "";
   poSearchTerm: string = "";
@@ -234,9 +236,13 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   }
 
   private getListPos(ano: number, codUosList: string[]) {
+    this.isPOListLoading = true;
     this._planejamentoOrcamentarioService
       .getFiltroPos(ano, codUosList)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        finalize(() => (this.isPOListLoading = false)),
+        takeUntil(this.destroy$),
+      )
       .subscribe({
         next: (response: ISPOFiltroPos[]) => {
           this.POList = response;
@@ -681,16 +687,32 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     }
   }
 
-  isUOSelected(uo: any): boolean {
+  isUOSelected(uo: ISPOFiltroUos): boolean {
     return this.selectedUOs.some((selected) => selected.cod_uo === uo.cod_uo);
   }
 
-  onUOSelected(uo: ISPOFiltroUos, event: MouseEvent ): void {
-    // event.preventDefault();
-    // event.stopPropagation();
+  private _processingUO: boolean = false;
+
+  onUOSelected(uoInput: ISPOFiltroUos | string): void {
+    if (!uoInput || this._processingUO) return;
+
+    let uo: ISPOFiltroUos | undefined;
+
+    // Se vier do Enter (Nebular), vem como string (cod_uo)
+    if (typeof uoInput === 'string') {
+      uo = this.filteredUOList.find(u => u.cod_uo === uoInput);
+    } else {
+      // Se vier do Clique (wrapper), vem como objeto
+      uo = uoInput;
+    }
+
+    if (!uo || !uo.cod_uo) return;
+
+    this._processingUO = true;
     console.log("UO selecionada:", uo);
+
     const index = this.selectedUOs.findIndex(
-      s => s.cod_uo === uo.cod_uo
+      s => s.cod_uo === uo!.cod_uo
     );
 
     if (index === -1) {
@@ -701,10 +723,19 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
       this.filter.uo = this.filter.uo.filter(id => id !== uo.cod_uo);
     }
 
+    this.handleFilterChange('uo', this.filter.uo);
+
+    // Limpar o termo de busca e recarregar a lista completa para a próxima seleção
+    this.uoSearchTerm = '';
     this.executarBuscaUO('');
 
-    this.uoSearchTerm = '';
-    this.handleFilterChange('uo', this.filter.uo);
+    setTimeout(() => {
+      this._processingUO = false;
+      // Força o menu a permanecer aberto (útil para seleção via teclado/Enter)
+      if (this.autocomplete) {
+        this.autocomplete.show();
+      }
+    }, 100);
   }
 
   selectUO(uo: ISPOFiltroUos): void {

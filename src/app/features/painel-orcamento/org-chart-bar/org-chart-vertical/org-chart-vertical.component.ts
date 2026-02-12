@@ -152,11 +152,11 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         },
       },
       legend: {
-        itemWidth: this.isMaximized ? 20 : 10,
-        itemHeight: this.isMaximized ? 20 : 10,
+        itemWidth: this.isMaximized ? 14 : 12,
+        itemHeight: this.isMaximized ? 14 : 12,
         textStyle: {
           color: theme.textPrimaryColor,
-          fontSize: this.isMaximized ? 16 : 12,
+          fontSize: this.isMaximized ? 14 : 12,
         },
       },
       series: this.chart.data.datasets.map((dataset, index) => ({
@@ -241,12 +241,12 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         top: "top",
         left: "center",
         data: chart.data.datasets.map((r) => r.label),
-        itemWidth: this.isMaximized ? 15 : 12,
-        itemHeight: this.isMaximized ? 15 : 12,
+        itemWidth: this.isMaximized ? 14 : 12,
+        itemHeight: this.isMaximized ? 14 : 12,
         itemGap: 10,
         textStyle: {
           color: theme.textPrimaryColor,
-          fontSize: this.isMaximized ? 16 : 12,
+          fontSize: this.isMaximized ? 14 : 12,
         },
       },
       xAxis: {

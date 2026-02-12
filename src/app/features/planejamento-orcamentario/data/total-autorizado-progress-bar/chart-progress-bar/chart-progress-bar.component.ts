@@ -80,6 +80,11 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
     if (changes["height"]) {
       this.resizeChart();
     }
+
+    if(changes["showMaximizeButton"]) {
+      this.showMaximizeButton = changes["showMaximizeButton"] ? changes["showMaximizeButton"].currentValue : this.showMaximizeButton;
+      this.updateChartOnResize();
+    }
   }
 
   ngOnDestroy(): void {
@@ -121,6 +126,18 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
       xAxis: {
         axisLabel: {
           fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+        },
+      },
+      legend: {
+        orient: "horizontal",
+        top: "top",
+        left: "center",
+        itemWidth: this.showMaximizeButton ? 14 : 13,
+        itemHeight: this.showMaximizeButton ? 14 : 13,
+        itemGap: this.chartDataConfig?.legend?.itemGap || 20,
+        textStyle: {
+          color: theme.textPrimaryColor,
+          fontSize: this.showMaximizeButton ? 14 : 12,
         },
       },
       series: this.chart.data.datasets.map(() => ({
@@ -213,12 +230,12 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         top: "top",
         left: "center",
         data: datasetLabels,
-        itemWidth: this.chartDataConfig?.legend?.itemWidth || 10,
-        itemHeight: this.chartDataConfig?.legend?.itemHeight || 10,
+        itemWidth: this.showMaximizeButton ? 14 : 13,
+        itemHeight: this.showMaximizeButton ? 14 : 13,
         itemGap: this.chartDataConfig?.legend?.itemGap || 20,
         textStyle: {
           color: theme.textPrimaryColor,
-          fontSize: this.chartDataConfig?.legend?.fontSize || 12,
+          fontSize: this.showMaximizeButton ? 14 : 12,
         },
       },
 
@@ -276,7 +293,6 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         label: {
           show: true,
           position: "right",
-          distance: 8,
           formatter: (params) => params.value + " %",
           color: theme.textPrimaryColor,
           fontSize: 10,
@@ -294,62 +310,4 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // private quebrarTexto(texto: string, maxCaracteres: number): string {
-  //   if (!texto) return "";
-
-  //   // 1. Processa abreviações e limites
-  //   const textoProcessado = this.tratarTextoEspecifico(
-  //     texto,
-  //     maxCaracteres * 3
-  //   );
-
-  //   const words = textoProcessado.split(" ");
-  //   let lines: string[] = [];
-  //   let currentLine = "";
-
-  //   words.forEach((word) => {
-  //     // Se a palavra sozinha for maior que o limite, não cortamos no meio,
-  //     // a menos que seja estritamente necessário para não quebrar o layout
-  //     if ((currentLine + word).length > maxCaracteres) {
-  //       if (currentLine) lines.push(currentLine.trim());
-  //       currentLine = word + " ";
-  //     } else {
-  //       currentLine += word + " ";
-  //     }
-  //   });
-
-  //   if (currentLine) lines.push(currentLine.trim());
-
-  //   // Limita a exibição a no máximo 3 ou 4 linhas para não "esticar" demais o gráfico verticalmente
-  //   return lines.slice(0, 4).join("\n");
-  // }
-
-  // private tratarTextoEspecifico(texto: string, limite: number): string {
-  //   if (!texto) return "";
-  //   if (this.showMaximizeButton) return texto;
-
-  //   let textoTratado = texto.toUpperCase();
-
-  //   // 1. Abreviações mais agressivas para órgãos públicos
-  //   const termosParaEncurtar = {
-  //     "SECRETARIA ESTADUAL DE": "SEC.",
-  //     "SECRETARIA MUNICIPAL DE": "SEC.",
-  //     "CONSERVAÇÃO RODOVIÁRIA": "CONS. ROD.",
-  //     ESTADUAIS: "EST.",
-  //     MANUTENÇÕES: "MANUT.",
-  //     RODOVIAS: "ROD.",
-  //     DISTRIBUIÇÃO: "DISTRIB.",
-  //     "DESEMPENHO E DEMANDA": "DESEMP./DEMANDA",
-  //   };
-
-  //   Object.entries(termosParaEncurtar).forEach(([termo, substituto]) => {
-  //     textoTratado = textoTratado.replace(new RegExp(termo, "g"), substituto);
-  //   });
-
-  //   if (textoTratado.length > limite) {
-  //     textoTratado = textoTratado.substring(0, limite) + "...";
-  //   }
-
-  //   return textoTratado;
-  // }
 }

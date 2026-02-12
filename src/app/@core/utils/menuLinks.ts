@@ -23,24 +23,11 @@ function checkRoles(allowedRole: string): boolean {
   return false;
 }
 
-// export const menulinks: NbMenuItem[] = [
-//   // Seção: Orçamento
+// export const menulinks: MyCustomMenuItem[] = [
+//   // SEÇÃO: ORÇAMENTO
 //   {
-//     id: 7,
-//     name: "Execução Orçamentária",
-//     icon: "painelOrcamento.svg",
-//     link: "/pages/execucao-orcamentaria",
-//     status: checkRoles(environment.allowedRoles.execucaoOrcamentaria),
-//     url: "",
-//     src: "Sigefes",
-//     menuIcon: "",
-//     color: "#4DB6D2",
-//     subTitle: "Execução Orçamentária",
-//     isExternal: false,
-//     section: "orcamento"
-//   },
-//   {
-//     id: 8,
+//     title: "Orçamento",
+//     id: 1,
 //     name: "Planejamento Orçamentário",
 //     icon: "logo-spo-branco.svg",
 //     link: "/pages/planejamento-orcamentario",
@@ -51,39 +38,27 @@ function checkRoles(allowedRole: string): boolean {
 //     color: "#9780ad",
 //     subTitle: "Sistema de Planejamento Orçamentário",
 //     isExternal: false,
-//     section: "orcamento"
-//   },
-
-//   // Seção: Outros
-//   {
-//     id: 1,
-//     status: checkRoles(environment.allowedRoles.indicadores),
-//     name: "Indicadores Estratégicos",
-//     link: "",
-//     url: environment.urls.indicadores,
-//     icon: "menu-icone-indicadores.svg",
-//     src: "Indicadores Admin",
-//     menuIcon: "",
-//     color: "#5e759f",
-//     isExternal: true,
-//     subTitle: "Link externo para o Painel de Indicadores Estratégicos do Governo do Espírito Santo",
-//     section: "outros"
+//     section: "orcamento",
+//     separator: true,
+//     sectionTitle: "Orçamento",
 //   },
 //   {
+//     title: "Orçamento",
 //     id: 2,
-//     status: checkRoles(environment.allowedRoles.capitacao),
-//     name: "Captação de Recursos",
-//     icon: "menu-icone-siscap.svg",
-//     link: "/pages/capitation",
+//     name: "Execução Orçamentária",
+//     icon: "painelOrcamento.svg",
+//     link: "/pages/execucao-orcamentaria",
+//     status: checkRoles(environment.allowedRoles.execucaoOrcamentaria),
 //     url: "",
-//     src: "Siscap",
+//     src: "Sigefes",
 //     menuIcon: "",
-//     color: "#F09BBE",
+//     color: "#4DB6D2",
+//     subTitle: "Execução Orçamentária",
 //     isExternal: false,
-//     subTitle: "Siscap - Sistema de Captação de Recursos",
-//     section: "outros"
+//     section: "orcamento",
 //   },
 //   {
+//     title: "Orçamento",
 //     id: 3,
 //     status: checkRoles(environment.allowedRoles.sas),
 //     name: "Painéis SAS(Sigefes)",
@@ -95,10 +70,27 @@ function checkRoles(allowedRole: string): boolean {
 //     color: "#0478ce",
 //     isExternal: true,
 //     subTitle: "Link externo para o Painéis SAS(Sigefes)",
-//     section: "outros"
+//     section: "orcamento",
 //   },
 //   {
+//     title: "Orçamento",
 //     id: 4,
+//     status: false,
+//     name: "Gestão Fiscal",
+//     icon: "menu-icone-gestao-fiscal.svg",
+//     link: "/pages/gfiscal",
+//     url: "",
+//     src: "Sigefes/BI SEP",
+//     menuIcon: "",
+//     color: "red",
+//     isExternal: false,
+//     section: "orcamento",
+//   },
+
+//   // SEÇÃO: PROJETOS
+//   {
+//     title: "Projetos",
+//     id: 5,
 //     status: checkRoles(environment.allowedRoles.projetosEstrategicos),
 //     name: "Projetos Estratégicos",
 //     link: "/pages/strategicProjects",
@@ -109,41 +101,13 @@ function checkRoles(allowedRole: string): boolean {
 //     color: "#44B39B",
 //     subTitle: "Portfólio Realiza+",
 //     isExternal: false,
-//     section: "outros"
+//     section: "projetos",
+//     separator: true,
+//     sectionTitle: "Projetos",
 //   },
 //   {
-//     id: 5,
-//     status: false,
-//     name: "Gestão Fiscal",
-//     icon: "menu-icone-gestao-fiscal.svg",
-//     link: "/pages/gfiscal",
-//     url: "",
-//     src: "Sigefes/BI SEP",
-//     menuIcon: "",
-//     color: "red",
-//     isExternal: false,
-//     section: "outros"
-//   },
-//   {
+//     title: "Projetos",
 //     id: 6,
-//     status: true,
-//     name: "Programa Estado Presente",
-//     icon: "logoAmareloEstadoPresente.svg",
-//     link: "",
-//     url: environment.urls.estadoPresente,
-//     src: "Programa Estado Presente",
-//     menuIcon: "",
-//     color: "#f7a600ff",
-//     subTitle: "Link externo para o mapa das principais entregas do Programa Estado Presente",
-//     isExternal: true,
-//     section: "outros"
-//   }
-// ];
-
-// export const menulinks: MyCustomMenuItem[] = [
-//   {
-//     title: "teste",
-//     id: 1,
 //     status: checkRoles(environment.allowedRoles.indicadores),
 //     name: "Indicadores Estratégicos",
 //     link: "",
@@ -156,70 +120,11 @@ function checkRoles(allowedRole: string): boolean {
 //     subTitle:
 //       "Link externo para o Painel de Indicadores Estratégicos do Governo do Espírito Santo",
 //     section: "projetos",
-//     separator: true
 //   },
+
 //   {
-//     title: "teste",
-//     id: 2,
-//     status: checkRoles(environment.allowedRoles.capitacao),
-//     name: "Captação de Recursos",
-//     icon: "menu-icone-siscap.svg",
-//     link: "/pages/capitation",
-//     url: "",
-//     src: "Siscap",
-//     menuIcon: "",
-//     color: "#F09BBE",
-//     isExternal: false,
-//     subTitle: "Siscap - Sistema de Captação de Recursos",
-//     section: "captacao",
-//   },
-//   {
-//     title: "teste",
-//     id: 3,
-//     status: checkRoles(environment.allowedRoles.sas),
-//     name: "Painéis SAS(Sigefes)",
-//     link: "",
-//     url: environment.urls.sas,
-//     icon: "menu-icone-sas.svg",
-//     src: "Sigefes/SAS Sefaz",
-//     menuIcon: "",
-//     color: "#0478ce",
-//     isExternal: true,
-//     subTitle: "Link externo para o Painéis SAS(Sigefes)",
-//     section: "orcamento",
-//   },
-//   {
-//     title: "teste",
-//     id: 4,
-//     status: checkRoles(environment.allowedRoles.projetosEstrategicos),
-//     name: "Projetos Estratégicos",
-//     link: "/pages/strategicProjects",
-//     url: "",
-//     icon: "menu-icone-openpmo.svg",
-//     src: "OpenPMO",
-//     menuIcon: "",
-//     color: "#44B39B",
-//     subTitle: "Portfólio Realiza+",
-//     isExternal: false,
-//     section: "projetos",
-//   },
-//   {
-//     title: "teste",
-//     id: 5,
-//     status: false,
-//     name: "Gestão Fiscal",
-//     icon: "menu-icone-gestao-fiscal.svg",
-//     link: "/pages/gfiscal",
-//     url: "",
-//     src: "Sigefes/BI SEP",
-//     menuIcon: "",
-//     color: "red",
-//     isExternal: false,
-//     section: "orcamento",
-//   },
-//   {
-//     title: "teste",
-//     id: 6,
+//     title: "Projetos",
+//     id: 7,
 //     status: true,
 //     name: "Programa Estado Presente",
 //     icon: "logoAmareloEstadoPresente.svg",
@@ -233,42 +138,38 @@ function checkRoles(allowedRole: string): boolean {
 //     isExternal: true,
 //     section: "projetos",
 //   },
-//   // --- SEÇÃO: ORÇAMENTO ---
+
+//   // SEÇÃO: CAPTAÇÃO
 //   {
-//     title: "teste",
+//     title: "Captação",
 //     id: 8,
-//     name: "Planejamento Orçamentário",
-//     icon: "logo-spo-branco.svg",
-//     link: "/pages/planejamento-orcamentario",
-//     // status: checkRoles(environment.allowedRoles.planejamentoOrcamentario),
-//     status: true,
+//     status: checkRoles(environment.allowedRoles.capitacao),
+//     name: "Captação de Recursos",
+//     icon: "menu-icone-siscap.svg",
+//     link: "/pages/capitation",
 //     url: "",
-//     src: "SPO",
+//     src: "Siscap",
 //     menuIcon: "",
-//     color: "#9780ad ",
-//     subTitle: "Sistema de Planejamento Orçamentário",
+//     color: "#F09BBE",
 //     isExternal: false,
-//     section: "orcamento",
-//   },
-//   {
-//     title: "teste",
-//     id: 8,
-//     name: "Execução Orçamentária",
-//     icon: "painelOrcamento.svg",
-//     link: "/pages/execucao-orcamentaria",
-//     status: checkRoles(environment.allowedRoles.execucaoOrcamentaria),
-//     url: "",
-//     src: "Sigefes",
-//     menuIcon: "",
-//     color: "#4DB6D2",
-//     subTitle: "Execução Orçamentária",
-//     isExternal: false,
-//     section: "orcamento",
+//     subTitle: "Siscap - Sistema de Captação de Recursos",
+//     section: "captacao",
+//     separator: true,
+//     sectionTitle: "Captação de Recursos",
 //   },
 // ];
 
 export const menulinks: MyCustomMenuItem[] = [
-  // SEÇÃO: ORÇAMENTO
+  // SEPARADOR ORÇAMENTO
+  {
+    id: 100,
+    separator: true,
+    sectionTitle: "Orçamento",
+    section: "orcamento",
+    status: false,
+    title: "", name: "", icon: "", link: "", url: "", src: "", 
+    menuIcon: "", color: "#9780ad", subTitle: "", isExternal: false,
+  },
   {
     title: "Orçamento",
     id: 1,
@@ -283,8 +184,6 @@ export const menulinks: MyCustomMenuItem[] = [
     subTitle: "Sistema de Planejamento Orçamentário",
     isExternal: false,
     section: "orcamento",
-    separator: true,
-    sectionTitle: "Orçamento",
   },
   {
     title: "Orçamento",
@@ -331,7 +230,16 @@ export const menulinks: MyCustomMenuItem[] = [
     section: "orcamento",
   },
 
-  // SEÇÃO: PROJETOS
+  // SEPARADOR PROJETOS
+  {
+    id: 101,
+    separator: true,
+    sectionTitle: "Projetos",
+    section: "projetos",
+    status: false,
+    title: "", name: "", icon: "", link: "", url: "", src: "",
+    menuIcon: "", color: "#44B39B", subTitle: "", isExternal: false,
+  },
   {
     title: "Projetos",
     id: 5,
@@ -346,8 +254,6 @@ export const menulinks: MyCustomMenuItem[] = [
     subTitle: "Portfólio Realiza+",
     isExternal: false,
     section: "projetos",
-    separator: true,
-    sectionTitle: "Projetos",
   },
   {
     title: "Projetos",
@@ -361,11 +267,9 @@ export const menulinks: MyCustomMenuItem[] = [
     menuIcon: "",
     color: "#5e759f",
     isExternal: true,
-    subTitle:
-      "Link externo para o Painel de Indicadores Estratégicos do Governo do Espírito Santo",
+    subTitle: "Link externo para o Painel de Indicadores Estratégicos do Governo do Espírito Santo",
     section: "projetos",
   },
-
   {
     title: "Projetos",
     id: 7,
@@ -377,13 +281,21 @@ export const menulinks: MyCustomMenuItem[] = [
     src: "Programa Estado Presente",
     menuIcon: "",
     color: "#f7a600ff",
-    subTitle:
-      "Link externo para o mapa das principais entregas do Programa Estado Presente",
+    subTitle: "Link externo para o mapa das principais entregas do Programa Estado Presente",
     isExternal: true,
     section: "projetos",
   },
 
-  // SEÇÃO: CAPTAÇÃO
+  // SEPARADOR CAPTAÇÃO
+  {
+    id: 102,
+    separator: true,
+    sectionTitle: "Captação de Recursos",
+    section: "captacao",
+    status: false,
+    title: "", name: "", icon: "", link: "", url: "", src: "",
+    menuIcon: "", color: "#F09BBE", subTitle: "", isExternal: false,
+  },
   {
     title: "Captação",
     id: 8,
@@ -398,7 +310,5 @@ export const menulinks: MyCustomMenuItem[] = [
     isExternal: false,
     subTitle: "Siscap - Sistema de Captação de Recursos",
     section: "captacao",
-    separator: true,
-    sectionTitle: "Captação de Recursos",
   },
 ];

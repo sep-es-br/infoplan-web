@@ -31,7 +31,7 @@ export class HomeComponent {
   return this.menulinks
     .filter((item) => item.section === sectionId && !item.separator) // ← ADICIONE !item.separator
     .sort((a, b) => a.id - b.id);
-}
+  }
 
   // No seu component.ts
   get groupedMenu() {

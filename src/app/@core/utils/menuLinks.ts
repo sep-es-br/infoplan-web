@@ -184,8 +184,6 @@ export const menulinks: MyCustomMenuItem[] = [
     subTitle: "Sistema de Planejamento Orçamentário",
     isExternal: false,
     section: "orcamento",
-    separator: true,
-    sectionTitle: "Orçamento",
   },
   {
     title: "Orçamento",
@@ -239,7 +237,7 @@ export const menulinks: MyCustomMenuItem[] = [
     sectionTitle: "Projetos",
     section: "projetos",
     status: false,
-    title: "projetos", name: "", icon: "", link: "", url: "", src: "",
+    title: "", name: "", icon: "", link: "", url: "", src: "",
     menuIcon: "", color: "#44B39B", subTitle: "", isExternal: false,
   },
   {

@@ -167,7 +167,7 @@ export const menulinks: MyCustomMenuItem[] = [
     sectionTitle: "Orçamento",
     section: "orcamento",
     status: false,
-    title: "", name: "", icon: "", link: "", url: "", src: "", 
+    title: "", name: "", icon: "", link: "", url: "", src: "",
     menuIcon: "", color: "#9780ad", subTitle: "", isExternal: false,
   },
   {
@@ -237,7 +237,7 @@ export const menulinks: MyCustomMenuItem[] = [
     sectionTitle: "Projetos",
     section: "projetos",
     status: false,
-    title: "", name: "", icon: "", link: "", url: "", src: "",
+    title: "projetos", name: "", icon: "", link: "", url: "", src: "",
     menuIcon: "", color: "#44B39B", subTitle: "", isExternal: false,
   },
   {

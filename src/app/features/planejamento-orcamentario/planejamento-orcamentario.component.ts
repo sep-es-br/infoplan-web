@@ -709,7 +709,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     if (!uo || !uo.cod_uo) return;
 
     this._processingUO = true;
-    console.log("UO selecionada:", uo);
 
     const index = this.selectedUOs.findIndex(
       s => s.cod_uo === uo!.cod_uo

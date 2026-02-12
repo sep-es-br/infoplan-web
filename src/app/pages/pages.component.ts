@@ -98,57 +98,116 @@ export class PagesComponent implements OnInit {
       });
   }
 
+  // private applySectionDividers() {
+  //   requestAnimationFrame(() => {
+  //     // Remove divisores antigos
+  //     const oldDividers = document.querySelectorAll(".menu-section-divider");
+  //     oldDividers.forEach((el) => {
+  //       el.remove();
+  //     });
+
+  //     const menuItems = document.querySelectorAll("nb-menu .menu-item");
+
+  //     // Para cada item renderizado no menu
+  //     menuItems.forEach((element: HTMLElement | Element, index) => {
+  //       const renderedItem = this.menu[index];
+  //       if (!renderedItem) return;
+
+  //       // Encontra a posição deste item no array original (menulinks)
+  //       const originalIndex = menulinks.findIndex(
+  //         (item) => item.id === renderedItem.id,
+  //       );
+
+  //       // Se não é o primeiro item, verifica o item anterior no array original
+  //       if (originalIndex > 0) {
+  //         const previousItem = menulinks[originalIndex - 1];
+
+  //         // Se o item anterior é um separador, insere o divisor visual
+  //         if (previousItem?.separator && previousItem?.sectionTitle) {
+  //           const previousElement = element.previousElementSibling;
+
+  //           // Só insere se ainda não existe um divisor
+  //           if (
+  //             !previousElement ||
+  //             !previousElement.classList.contains("menu-section-divider")
+  //           ) {
+  //             const divider = document.createElement("div");
+  //             divider.className = "menu-section-divider";
+  //             divider.style.opacity = "1";
+  //             divider.innerHTML = `
+  //               <div class="divisor">
+  //                 <div class="section-title">
+  //                   <span class="span-section-title">${previousItem.sectionTitle}</span>
+  //                 </div>
+  //               </div>
+  //             `;
+  //             element.parentNode.insertBefore(divider, element);
+  //           }
+  //         }
+  //       }
+  //     });
+  //   });
+  // }
+
   private applySectionDividers() {
-    requestAnimationFrame(() => {
-      // Remove divisores antigos
-      const oldDividers = document.querySelectorAll(".menu-section-divider");
-      oldDividers.forEach((el) => {
-        el.remove();
-      });
+  requestAnimationFrame(() => {
+    // Remove divisores antigos
+    const oldDividers = document.querySelectorAll(".menu-section-divider");
+    oldDividers.forEach((el) => el.remove());
 
-      const menuItems = document.querySelectorAll("nb-menu .menu-item");
+    const menuItems = document.querySelectorAll("nb-menu .menu-item");
 
-      // Para cada item renderizado no menu
-      menuItems.forEach((element: HTMLElement | Element, index) => {
-        const renderedItem = this.menu[index];
-        if (!renderedItem) return;
+    // Rastreia qual foi o último item processado
+    let lastProcessedOriginalIndex = -1;
 
-        // Encontra a posição deste item no array original (menulinks)
-        const originalIndex = menulinks.findIndex(
-          (item) => item.id === renderedItem.id,
-        );
+    menuItems.forEach((element, index) => {
+      const htmlElement = element as HTMLElement;
+      const renderedItem = this.menu[index];
+      if (!renderedItem) return;
 
-        // Se não é o primeiro item, verifica o item anterior no array original
-        if (originalIndex > 0) {
-          const previousItem = menulinks[originalIndex - 1];
+      // Encontra a posição deste item no array original
+      const currentOriginalIndex = menulinks.findIndex(
+        (item) => item.id === renderedItem.id
+      );
 
-          // Se o item anterior é um separador, insere o divisor visual
-          if (previousItem?.separator && previousItem?.sectionTitle) {
-            const previousElement = element.previousElementSibling;
+      if (currentOriginalIndex === -1) return;
 
-            // Só insere se ainda não existe um divisor
-            if (
-              !previousElement ||
-              !previousElement.classList.contains("menu-section-divider")
-            ) {
-              const divider = document.createElement("div");
-              divider.className = "menu-section-divider";
-              divider.style.opacity = "1";
-              divider.innerHTML = `
-                <div class="divisor">
-                  <div class="section-title">
-                    <span class="span-section-title">${previousItem.sectionTitle}</span>
-                  </div>
+      // Procura por separadores ENTRE o último item e este item
+      for (let i = lastProcessedOriginalIndex + 1; i < currentOriginalIndex; i++) {
+        const betweenItem = menulinks[i];
+
+        if (betweenItem?.separator && betweenItem?.sectionTitle) {
+          // Verifica se já existe um divisor antes deste elemento
+          const previousElement = htmlElement.previousElementSibling;
+
+          if (
+            !previousElement ||
+            !previousElement.classList.contains("menu-section-divider")
+          ) {
+            const divider = document.createElement("div");
+            divider.className = "menu-section-divider";
+            divider.style.opacity = "1";
+            divider.style.pointerEvents = "none";
+            divider.innerHTML = `
+              <div class="divisor">
+                <div class="section-title">
+                  <span class="span-section-title">${betweenItem.sectionTitle}</span>
                 </div>
-              `;
-              element.parentNode.insertBefore(divider, element);
-            }
+              </div>
+            `;
+            htmlElement.parentNode?.insertBefore(divider, htmlElement);
+
+            // Para no primeiro separador encontrado
+            break;
           }
         }
-      });
-    });
-  }
+      }
 
+      // Atualiza o último índice processado
+      lastProcessedOriginalIndex = currentOriginalIndex;
+    });
+  });
+}
   private setInitialActiveItem() {
     const currentPath = this.location.path().split("?")[0];
 

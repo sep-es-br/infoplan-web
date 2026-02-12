@@ -184,8 +184,6 @@ export const menulinks: MyCustomMenuItem[] = [
     subTitle: "Sistema de Planejamento Orçamentário",
     isExternal: false,
     section: "orcamento",
-    separator: true,
-    sectionTitle: "Orçamento",
   },
   {
     title: "Orçamento",

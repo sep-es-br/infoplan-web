@@ -12,7 +12,7 @@
     [chart]="chartData"
     [chartDataConfig]="chartDataConfig"
     [height]="isChartMaximized('progress-bar-po') ? maximizedHeight : 500"
-    [showMaximizeButton]="true"
+    [showMaximizeButton]="isChartMaximized('progress-bar-po')"
     card-front>
   </ngx-chart-progress-bar>
 </ngx-flip-table>

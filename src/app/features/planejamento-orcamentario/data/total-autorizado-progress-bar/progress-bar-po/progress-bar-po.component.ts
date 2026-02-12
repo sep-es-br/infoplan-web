@@ -56,8 +56,8 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
     },
     grid: {
       top: "10%",
-      left: "3%",
-      right: "3%",
+      left: "2%",
+      right: "5%",
       bottom: "0%",
       containLabel: true,
     },

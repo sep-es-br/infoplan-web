@@ -41,7 +41,7 @@ import { UtilitiesService } from "../../../../../core/service/utilities.service"
   imports: [OrgChartHorizontalComponent, FlipTableComponent],
 })
 export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() filter: ISPOTotalAutorizadoFilter;
+  @Input() filter!: ISPOTotalAutorizadoFilter;
 
   maximizedHeight: number = 500;
 
@@ -52,7 +52,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  title: string;
+  title!: string;
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
@@ -60,14 +60,14 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
   private searchSubject = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
   private readonly _zone = inject(NgZone);
-   private readonly _utilitiesService = inject(UtilitiesService);
+  private readonly _utilitiesService = inject(UtilitiesService);
 
   chartDataConfig: ChartDataConfig = {
     legend: { fontSize: 12, itemHeight: 13, itemWidth: 13, itemGap: 20 },
     grid: {
       top: "10%",
-      left: "0%",
-      right: "10%",
+      left: "2%",
+      right: "2%",
       bottom: "0%",
       containLabel: true,
     },
@@ -77,7 +77,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly _planejamentoService = inject(
-    PlanejamentoOrcamentarioService
+    PlanejamentoOrcamentarioService,
   );
 
   ngOnInit(): void {
@@ -102,7 +102,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
         JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
-      this.title = `PO - Unidade Orçamentária • Filtro anual ${this.filter?.ano}`;
+      this.title = `PO - Plano Orçamentário • Filtro Anual ${this.filter?.ano}`;
     }
   }
 
@@ -148,7 +148,6 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     const top5 = [...dados]
       .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
       .slice(0, 5)
-      .reverse();
 
     const labels = top5.map((d) => `${d.sigla} - ${d.nome_po}`);
     const planejado = top5.map((d) => d.vlr_previsto || 0);
@@ -191,22 +190,31 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     const dadosArray = Array.isArray(dados) ? [...dados] : [dados];
 
     const dadosOrdenados = dadosArray.sort(
-      (a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0)
+      (a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0),
     );
     const linhasTabela = dadosOrdenados.map((item) => ({
       data: [
         { propertyName: "nome", value: `${item.uo} - ${item.nome_po}` },
         {
           propertyName: "planejado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_previsto, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            item.vlr_previsto,
+            "R$",
+          ),
         },
         {
           propertyName: "contratado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_contratado, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            item.vlr_contratado,
+            "R$",
+          ),
         },
         {
           propertyName: "autorizado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_autorizado, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+            item.vlr_autorizado,
+            "R$",
+          ),
         },
       ],
     }));
@@ -214,7 +222,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     this.tableContent = {
       customColumn: {
         propertyName: "nome",
-        displayName: "PO - Unidade Orçamentária",
+        displayName: "PO - Plano Orçamentário",
         alignment: {
           header: FlipTableAlignment.LEFT,
           data: FlipTableAlignment.LEFT,
@@ -265,7 +273,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       (item) =>
         item.nome_po.toLowerCase().includes(search) ||
         item.po.toLowerCase().includes(search) ||
-        item.sigla.toLowerCase().includes(search)
+        item.sigla.toLowerCase().includes(search),
     );
 
     this.processarDados(filtered);
@@ -301,8 +309,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataForDownload,
       columns,
-      `PO - Unidade Orçamentária.xlsx`
+      `PO - Unidade Orçamentária.xlsx`,
     );
   }
-
 }

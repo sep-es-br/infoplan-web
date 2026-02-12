@@ -54,7 +54,7 @@ export class GraficoTotalAnoSigefesComponent
   }
 
   readonly title: string = "Evolução dos Valores por Ano";
-  subTitulo: string;
+  subTitulo: string = "";
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
@@ -68,8 +68,8 @@ export class GraficoTotalAnoSigefesComponent
     },
     grid: {
       top: "10%",
-      left: "0%",
-      right: "10%",
+      left: "2%",
+      right: "2%",
       bottom: "0%",
       containLabel: true,
     },

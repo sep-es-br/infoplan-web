@@ -41,17 +41,25 @@ import { ChartDataConfig } from "../org-chart-horizontal/org-chart-horizontal.co
 })
 export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chart!: IChartOptions;
-  @Input() height: number;
+  @Input() height!: number;
   @Input() barGap: string = "30";
   @Input() isMaximized!: boolean;
-  @Input() charactersPerLine: number;
+  @Input() charactersPerLine!: number;
 
   @Input() chartDataConfig!: ChartDataConfig;
 
   echartsInstance: ECharts | null = null;
-  chartOptions: EChartsOption;
+  chartOptions!: EChartsOption;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimeout: any;
+
+  @HostListener("window:resize", ["$event"])
+  onWindowResize(event?: Event) {
+    clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = setTimeout(() => {
+      this.updateChartOnResize();
+    }, 150);
+  }
 
   constructor(private _themeService: NbThemeService) {
     this._themeService.onThemeChange().subscribe((newTheme) => {
@@ -73,15 +81,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  // ✅ LISTENER DE RESIZE DA JANELA
-  @HostListener("window:resize", ["$event"])
-  onWindowResize(event?: Event) {
-    clearTimeout(this.resizeTimeout);
-    this.resizeTimeout = setTimeout(() => {
-      this.updateChartOnResize();
-    }, 150);
-  }
-
   ngOnInit(): void {
     this.currentTheme = this._themeService.currentTheme as AvailableThemes;
     if (this.chart) this.initChartOptions(this.chart);
@@ -93,6 +92,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
 
       if (this.echartsInstance) {
         this.echartsInstance.setOption({
+          xYAxis: this.chartOptions.xAxis,
           xAxis: this.chartOptions.xAxis,
           series: this.chartOptions.series,
         });
@@ -109,7 +109,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // ✅ CLEANUP
   ngOnDestroy(): void {
     clearTimeout(this.resizeTimeout);
     if (this.echartsInstance) {
@@ -118,7 +117,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // ✅ ATUALIZA GRÁFICO QUANDO REDIMENSIONAR
   private updateChartOnResize(): void {
     if (!this.echartsInstance || !this.chart?.data) return;
 
@@ -137,7 +135,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           interval: 0,
           margin: 12,
           overflow: "truncate",
-          ellipsis: "...",
+          // ellipsis: "...",
           // width: isPhone ? 30 : isTablet ? 40 : isMobile ? 100 : 150,
           width: isPhone ? 40 : isTablet ? 60 : isMobile ? 60 : 130,
           // formatter: (value: string) => this.quebrarTexto(value, this.charactersPerLine),
@@ -150,9 +148,12 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         axisLabel: {
           fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
           width: isMobile ? 20 : 100,
+          formatter: (v: number) => `${this.formatValue(v)}`,
         },
       },
       legend: {
+        itemWidth: this.isMaximized ? 20 : 10,
+        itemHeight: this.isMaximized ? 20 : 10,
         textStyle: {
           color: theme.textPrimaryColor,
           fontSize: this.isMaximized ? 16 : 12,
@@ -198,7 +199,9 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         this.getFallbackColor(chart.data.datasets.indexOf(dataset)),
     );
 
-    const data = chart.data.labels.map((label: string, i: number) => ({
+    const labels = chart.data.labels as string[];
+
+    const data = labels.map((label: string, i: number) => ({
       category: label,
       valores: chart.data.datasets.map((dataset) => dataset.data[i] ?? 0),
     }));
@@ -238,8 +241,8 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         top: "top",
         left: "center",
         data: chart.data.datasets.map((r) => r.label),
-        itemWidth: 10,
-        itemHeight: 10,
+        itemWidth: this.isMaximized ? 15 : 12,
+        itemHeight: this.isMaximized ? 15 : 12,
         itemGap: 10,
         textStyle: {
           color: theme.textPrimaryColor,
@@ -258,18 +261,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           overflow: "truncate",
           width: isPhone ? 40 : isTablet ? 60 : isMobile ? 60 : 130,
         },
-        // axisLabel: {
-        //   color: theme.textPrimaryColor,
-        //   fontSize: isMobile ? 12 : 12,
-        //   interval: 0,
-        //   rotate: 0,
-        //   margin: 12,
-        //   overflow: "truncate",
-
-        //   // width: isPhone ? 30 : isTablet ? 40 : isMobile ? 100 : 150,
-        //   width: isPhone ? 80 : isTablet ? 40 : isMobile ? 40 : 150,
-        //   // formatter: (value: string) => this.quebrarTexto(value, this.charactersPerLine),
-        // },
         axisTick: {
           alignWithLabel: true,
         },
@@ -279,7 +270,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         inverse: false,
         axisLabel: {
           color: theme.textPrimaryColor,
-          // fontSize: isMobile ? (this.isMaximized ? 12 : 8) : 10,
           fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
           width: isMobile ? 20 : 100,
           formatter: (v: number) => `${this.formatValue(v)}`,
@@ -323,10 +313,16 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
     return fallbackColors[index % fallbackColors.length];
   }
 
-  private formatValue(value: number): string {
-    if (value >= 1_000_000_000)
-      return (value / 1_000_000_000).toFixed(2) + " B";
-    if (value >= 1_000_000) return (value / 1_000_000).toFixed(2) + " M";
+  formatValue(value: number): string {
+    const absValue = Math.abs(value);
+
+    if (absValue >= 1_000_000_000_000)
+      return (value / 1_000_000_000_000).toFixed(1) + " T";
+    if (absValue >= 1_000_000_000)
+      return (value / 1_000_000_000).toFixed(1) + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1) + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(1) + " K";
+
     return value.toString();
   }
 

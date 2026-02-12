@@ -275,7 +275,7 @@ export const menulinks: MyCustomMenuItem[] = [
     name: "Planejamento Orçamentário",
     icon: "logo-spo-branco.svg",
     link: "/pages/planejamento-orcamentario",
-    status: false,
+    status: true,
     url: "",
     src: "SPO",
     menuIcon: "",
@@ -283,6 +283,8 @@ export const menulinks: MyCustomMenuItem[] = [
     subTitle: "Sistema de Planejamento Orçamentário",
     isExternal: false,
     section: "orcamento",
+    separator: true,
+    sectionTitle: "Orçamento",
   },
   {
     title: "Orçamento",
@@ -298,8 +300,6 @@ export const menulinks: MyCustomMenuItem[] = [
     subTitle: "Execução Orçamentária",
     isExternal: false,
     section: "orcamento",
-    separator: true,
-    sectionTitle: "Orçamento",
   },
   {
     title: "Orçamento",

@@ -25,12 +25,12 @@ import { IChartOptions } from "../../../../../shared/models/painel-orcamento/ICh
 })
 export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chart!: IChartOptions;
-  @Input() height: number;
-  @Input() charactersPerLine: number;
+  @Input() height!: number;
+  @Input() charactersPerLine!: number;
   @Input() showMaximizeButton!: boolean;
   @Input() chartDataConfig!: ChartDataConfig;
 
-  chartOptions: EChartsOption;
+  chartOptions!: EChartsOption;
   echartsInstance: ECharts | null = null;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimer: any;
@@ -108,12 +108,14 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
           color: theme.textPrimaryColor,
           fontSize: isTablet ? 9 : isMobile ? 10 : 11,
           margin: 8,
-          overflow: "break",
+          width: 100,
+          overflow: "truncate",
+          align: "right",
           // width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
-          formatter: (value: string) => {
-            const limite = this.showMaximizeButton ? 20 : 40;
-            return this.quebrarTexto(value, limite);
-          },
+          // formatter: (value: string) => {
+          //   const limite = this.showMaximizeButton ? 20 : 40;
+          //   return this.quebrarTexto(value, limite);
+          // },
         },
       },
       xAxis: {
@@ -138,8 +140,9 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
     const theme = getAvailableThemesStyles(this.currentTheme);
 
     const datasetLabels = chart.data.datasets.map((dataset) => dataset.label);
+    const labels = chart.data.labels as string[];
 
-    const data = chart.data.labels.map((label: string, i: number) => ({
+    const data = labels.map((label: string, i: number) => ({
       category: label,
       valores: chart.data.datasets.map((dataset) => dataset.data[i] ?? 0),
     }));
@@ -198,7 +201,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
           params.forEach((p: any) => {
             const valor =
               p.value !== undefined && p.value !== null ? p.value : 0;
-            tooltip += `${p.seriesName}: ${valor}% </br>`;
+            tooltip += `${p.seriesName}: ${valor} % </br>`;
           });
 
           return tooltip;
@@ -234,7 +237,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,
-          formatter: (v: number) => `${v}%`,
+          formatter: (v: number) => `${v} %`,
         },
       },
 
@@ -247,15 +250,9 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: isMobile ? 8 : 10,
-          margin: 15,
-          lineHeight: 14,
-          width: 120,
-          overflow: "breakAll",
+          width: 100,
+          overflow: "truncate",
           align: "right",
-          formatter: (value: string) => {
-            const limite = isMobile ? 15 : 18;
-            return this.quebrarTexto(value, limite);
-          },
         },
       },
 
@@ -280,7 +277,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
           show: true,
           position: "right",
           distance: 8,
-          formatter: (params) => params.value + "%",
+          formatter: (params) => params.value + " %",
           color: theme.textPrimaryColor,
           fontSize: 10,
         },
@@ -297,62 +294,62 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private quebrarTexto(texto: string, maxCaracteres: number): string {
-    if (!texto) return "";
+  // private quebrarTexto(texto: string, maxCaracteres: number): string {
+  //   if (!texto) return "";
 
-    // 1. Processa abreviações e limites
-    const textoProcessado = this.tratarTextoEspecifico(
-      texto,
-      maxCaracteres * 3
-    );
+  //   // 1. Processa abreviações e limites
+  //   const textoProcessado = this.tratarTextoEspecifico(
+  //     texto,
+  //     maxCaracteres * 3
+  //   );
 
-    const words = textoProcessado.split(" ");
-    let lines: string[] = [];
-    let currentLine = "";
+  //   const words = textoProcessado.split(" ");
+  //   let lines: string[] = [];
+  //   let currentLine = "";
 
-    words.forEach((word) => {
-      // Se a palavra sozinha for maior que o limite, não cortamos no meio,
-      // a menos que seja estritamente necessário para não quebrar o layout
-      if ((currentLine + word).length > maxCaracteres) {
-        if (currentLine) lines.push(currentLine.trim());
-        currentLine = word + " ";
-      } else {
-        currentLine += word + " ";
-      }
-    });
+  //   words.forEach((word) => {
+  //     // Se a palavra sozinha for maior que o limite, não cortamos no meio,
+  //     // a menos que seja estritamente necessário para não quebrar o layout
+  //     if ((currentLine + word).length > maxCaracteres) {
+  //       if (currentLine) lines.push(currentLine.trim());
+  //       currentLine = word + " ";
+  //     } else {
+  //       currentLine += word + " ";
+  //     }
+  //   });
 
-    if (currentLine) lines.push(currentLine.trim());
+  //   if (currentLine) lines.push(currentLine.trim());
 
-    // Limita a exibição a no máximo 3 ou 4 linhas para não "esticar" demais o gráfico verticalmente
-    return lines.slice(0, 4).join("\n");
-  }
+  //   // Limita a exibição a no máximo 3 ou 4 linhas para não "esticar" demais o gráfico verticalmente
+  //   return lines.slice(0, 4).join("\n");
+  // }
 
-  private tratarTextoEspecifico(texto: string, limite: number): string {
-    if (!texto) return "";
-    if (this.showMaximizeButton) return texto;
+  // private tratarTextoEspecifico(texto: string, limite: number): string {
+  //   if (!texto) return "";
+  //   if (this.showMaximizeButton) return texto;
 
-    let textoTratado = texto.toUpperCase();
+  //   let textoTratado = texto.toUpperCase();
 
-    // 1. Abreviações mais agressivas para órgãos públicos
-    const termosParaEncurtar = {
-      "SECRETARIA ESTADUAL DE": "SEC.",
-      "SECRETARIA MUNICIPAL DE": "SEC.",
-      "CONSERVAÇÃO RODOVIÁRIA": "CONS. ROD.",
-      ESTADUAIS: "EST.",
-      MANUTENÇÕES: "MANUT.",
-      RODOVIAS: "ROD.",
-      DISTRIBUIÇÃO: "DISTRIB.",
-      "DESEMPENHO E DEMANDA": "DESEMP./DEMANDA",
-    };
+  //   // 1. Abreviações mais agressivas para órgãos públicos
+  //   const termosParaEncurtar = {
+  //     "SECRETARIA ESTADUAL DE": "SEC.",
+  //     "SECRETARIA MUNICIPAL DE": "SEC.",
+  //     "CONSERVAÇÃO RODOVIÁRIA": "CONS. ROD.",
+  //     ESTADUAIS: "EST.",
+  //     MANUTENÇÕES: "MANUT.",
+  //     RODOVIAS: "ROD.",
+  //     DISTRIBUIÇÃO: "DISTRIB.",
+  //     "DESEMPENHO E DEMANDA": "DESEMP./DEMANDA",
+  //   };
 
-    Object.entries(termosParaEncurtar).forEach(([termo, substituto]) => {
-      textoTratado = textoTratado.replace(new RegExp(termo, "g"), substituto);
-    });
+  //   Object.entries(termosParaEncurtar).forEach(([termo, substituto]) => {
+  //     textoTratado = textoTratado.replace(new RegExp(termo, "g"), substituto);
+  //   });
 
-    if (textoTratado.length > limite) {
-      textoTratado = textoTratado.substring(0, limite) + "...";
-    }
+  //   if (textoTratado.length > limite) {
+  //     textoTratado = textoTratado.substring(0, limite) + "...";
+  //   }
 
-    return textoTratado;
-  }
+  //   return textoTratado;
+  // }
 }

@@ -66,8 +66,8 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     legend: { fontSize: 12, itemHeight: 13, itemWidth: 13, itemGap: 20 },
     grid: {
       top: "10%",
-      left: "0%",
-      right: "10%",
+      left: "2%",
+      right: "2%",
       bottom: "0%",
       containLabel: true,
     },

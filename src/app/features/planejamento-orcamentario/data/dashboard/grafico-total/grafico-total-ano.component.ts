@@ -74,8 +74,8 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
     },
     grid: {
       top: "10%",
-      left: "0%",
-      right: "5%",
+      left: "2%",
+      right: "2%",
       bottom: "0%",
       containLabel: true,
     },

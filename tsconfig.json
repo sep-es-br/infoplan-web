@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "rootDir": "./src",
     "importHelpers": true,
     "skipLibCheck": true,
     "module": "es2020",
@@ -22,6 +23,7 @@
         "name": "tslint-language-service"
       }
     ],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "ignoreDeprecations": "5.0"
   }
 }

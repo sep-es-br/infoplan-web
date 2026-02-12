@@ -149,6 +149,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
       .slice(0, 5)
 
+    console.log("Dados processados para o gráfico:", top5); // Log para verificar os dados processados
     const labels = top5.map((d) => `${d.sigla} - ${d.nome_po}`);
     const planejado = top5.map((d) => d.vlr_previsto || 0);
     const contratado = top5.map((d) => d.vlr_contratado || 0);

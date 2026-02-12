@@ -62,6 +62,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   constructor(private _themeService: NbThemeService) {
+    console.log('')
     this._themeService.onThemeChange().subscribe((newTheme) => {
       if (this.echartsInstance) {
         this.currentTheme = newTheme.name;

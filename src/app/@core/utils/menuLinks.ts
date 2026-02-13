@@ -176,7 +176,7 @@ export const menulinks: MyCustomMenuItem[] = [
     name: "Planejamento Orçamentário",
     icon: "logo-spo-branco.svg",
     link: "/pages/planejamento-orcamentario",
-    status: true,
+    status: checkRoles(environment.allowedRoles.planejamentoOrcamentario),
     url: "",
     src: "SPO",
     menuIcon: "",

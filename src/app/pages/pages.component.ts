@@ -150,33 +150,42 @@ export class PagesComponent implements OnInit {
   // }
 
   private applySectionDividers() {
-  requestAnimationFrame(() => {
-    // Remove divisores antigos
-    const oldDividers = document.querySelectorAll(".menu-section-divider");
-    oldDividers.forEach((el) => el.remove());
+    requestAnimationFrame(() => {
+      // Remove divisores antigos
+      const oldDividers = document.querySelectorAll(".menu-section-divider");
+      oldDividers.forEach((el) => el.remove());
 
-    const menuItems = document.querySelectorAll("nb-menu .menu-item");
+      const menuItems = document.querySelectorAll("nb-menu .menu-item");
 
-    // Rastreia qual foi o último item processado
-    let lastProcessedOriginalIndex = -1;
+      // Rastreia qual foi o último item processado
+      let lastProcessedOriginalIndex = -1;
 
-    menuItems.forEach((element, index) => {
-      const htmlElement = element as HTMLElement;
-      const renderedItem = this.menu[index];
-      if (!renderedItem) return;
+      menuItems.forEach((element, index) => {
+        const htmlElement = element as HTMLElement;
+        const renderedItem = this.menu[index];
+        if (!renderedItem) return;
 
-      // Encontra a posição deste item no array original
-      const currentOriginalIndex = menulinks.findIndex(
-        (item) => item.id === renderedItem.id
-      );
+        // Encontra a posição deste item no array original
+        const currentOriginalIndex = menulinks.findIndex(
+          (item) => item.id === renderedItem.id
+        );
 
-      if (currentOriginalIndex === -1) return;
+        if (currentOriginalIndex === -1) return;
 
-      // Procura por separadores ENTRE o último item e este item
-      for (let i = lastProcessedOriginalIndex + 1; i < currentOriginalIndex; i++) {
-        const betweenItem = menulinks[i];
+        // Procura pelo ÚLTIMO separador ENTRE o último item processado e este item
+        let foundSeparator = null;
+        for (
+          let i = lastProcessedOriginalIndex + 1;
+          i < currentOriginalIndex;
+          i++
+        ) {
+          const betweenItem = menulinks[i];
+          if (betweenItem?.separator && betweenItem?.sectionTitle) {
+            foundSeparator = betweenItem;
+          }
+        }
 
-        if (betweenItem?.separator && betweenItem?.sectionTitle) {
+        if (foundSeparator) {
           // Verifica se já existe um divisor antes deste elemento
           const previousElement = htmlElement.previousElementSibling;
 
@@ -187,27 +196,23 @@ export class PagesComponent implements OnInit {
             const divider = document.createElement("div");
             divider.className = "menu-section-divider";
             divider.style.opacity = "1";
-            divider.style.pointerEvents = "none";
+            // divider.style.pointerEvents = "none";
             divider.innerHTML = `
               <div class="divisor">
                 <div class="section-title">
-                  <span class="span-section-title">${betweenItem.sectionTitle}</span>
+                  <span class="span-section-title">${foundSeparator.sectionTitle}</span>
                 </div>
               </div>
             `;
             htmlElement.parentNode?.insertBefore(divider, htmlElement);
-
-            // Para no primeiro separador encontrado
-            break;
           }
         }
-      }
 
-      // Atualiza o último índice processado
-      lastProcessedOriginalIndex = currentOriginalIndex;
+        // Atualiza o último índice processado
+        lastProcessedOriginalIndex = currentOriginalIndex;
+      });
     });
-  });
-}
+  }
   private setInitialActiveItem() {
     const currentPath = this.location.path().split("?")[0];
 

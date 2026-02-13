@@ -273,7 +273,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Projetos",
     id: 7,
-    status: true,
+    status: checkRoles(environment.allowedRoles.estado),
     name: "Programa Estado Presente",
     icon: "logoAmareloEstadoPresente.svg",
     link: "",

@@ -11,11 +11,10 @@ export class HomeComponent {
   // menulinks = menulinks;
   menulinks = menulinks.filter(item => item.status && !item.separator);
 
-  secoes = [
-    { id: "orcamento", label: "Orçamento" },
-    { id: "projetos", label: "Projetos" },
-    { id: "captacao", label: "Captação de Recursos" },
-  ];
+  secoes = menulinks
+    .filter((item) => item.separator)
+    .filter((sep) => this.menulinks.some((item) => item.section === sep.section))
+    .map((item) => ({ id: item.section, label: item.sectionTitle }));
 
   constructor(private router: Router) {
     this.menulinks = this.menulinks
@@ -28,24 +27,24 @@ export class HomeComponent {
   // }
 
   getItemsBySection(sectionId: string) {
-  return this.menulinks
-    .filter((item) => item.section === sectionId && !item.separator) // ← ADICIONE !item.separator
-    .sort((a, b) => a.id - b.id);
+    return this.menulinks
+      .filter((item) => item.section === sectionId && !item.separator) // ← ADICIONE !item.separator
+      .sort((a, b) => a.id - b.id);
   }
 
   // No seu component.ts
   get groupedMenu() {
     const teste = this.menulinks
-    .filter(item => !item.separator)
-    .reduce(
-      (acc, item) => {
-        const section = item.section || "Outros";
-        if (!acc[section]) acc[section] = [];
-        acc[section].push(item);
-        return acc;
-      },
-      {} as { [key: string]: any[] },
-    );
+      .filter(item => !item.separator)
+      .reduce(
+        (acc, item) => {
+          const section = item.section || "Outros";
+          if (!acc[section]) acc[section] = [];
+          acc[section].push(item);
+          return acc;
+        },
+        {} as { [key: string]: any[] },
+      );
     return teste;
   }
 
@@ -66,10 +65,10 @@ export class HomeComponent {
   // }
 
   handleClick(menuItem: any) {
-  if (menuItem.link !== "") {
-    this.router.navigate([menuItem.link]);
-  } else if (menuItem.url !== "") {
-    window.open(menuItem.url, "_blank");
+    if (menuItem.link !== "") {
+      this.router.navigate([menuItem.link]);
+    } else if (menuItem.url !== "") {
+      window.open(menuItem.url, "_blank");
+    }
   }
-}
 }

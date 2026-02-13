@@ -10,6 +10,8 @@
   (showMaximizeButtonClick)="onMaximizeButtonClick('grafico-total-ano-sigefes',$event)">
   <ngx-org-chart-vertical
     [chart]="chartData"
+    [chartDataConfig]="chartDataConfig"
+    [isMaximized]="isChartMaximized('grafico-total-ano-sigefes')"
     [height]="isChartMaximized('grafico-total-ano-sigefes') ? maximizedHeight : 500"
     card-front>
   </ngx-org-chart-vertical>

@@ -4,7 +4,48 @@
   }
 }
 
+::ng-deep {
+  nb-option {
+    display: flex !important;
+    align-items: center;
+
+    &.uo-selected {
+      // font-weight: bold;
+      font-size: 12px;
+
+      nb-icon {
+        color: #005c99;
+        font-size: 1.2rem;
+      }
+
+      // &:hover {
+      //   background-color: #bbdefb !important;
+      // }
+    }
+  }
+}
+
+.text-info-custom {
+  font-style: italic;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+:host-context(.nb-theme-default) .text-info-custom {
+  color: #005c99 !important;
+}
+
+:host-context(.nb-theme-dark) .text-info-custom {
+  color: #82aaff !important;
+}
+
+:host-context(.nb-theme-cosmic) .text-info-custom {
+  color: #a16eff !important;
+}
+
+
 .filter-container {
+
   position: relative;
   width: 100%;
   margin-top: -15px;
@@ -20,7 +61,7 @@
       overflow-x: auto;
       white-space: nowrap;
       gap: 8px;
-      padding: 6px 0;
+      padding: 6px 0px;
       scrollbar-width: thin;
       scrollbar-color: #005c99 transparent;
 
@@ -85,14 +126,12 @@
 
       &:hover {
         .map-icon {
-          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
         }
       }
 
       &.map-btn-clicked {
-        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-          saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
       }
     }
 
@@ -441,6 +480,7 @@ chart-container.maximized::before:hover {
 
 // // Aplica esses estilos sob o tema "dark" e "cosmic"
 :host-context(.nb-theme-dark, .nb-theme-cosmic) {
+
   .sub-title-po,
   .icon-top-right,
   .text-section {
@@ -452,26 +492,26 @@ chart-container.maximized::before:hover {
   }
 
   .autocomplete-input-uo {
-    background-color: #2B2B4F !important;
+    background-color: #2b2b4f !important;
     border: 1px solid #222241 !important;
     color: #ffffff !important;
   }
 
   .autocomplete-input-uo::placeholder {
-    color: #73739A !important;
+    color: #73739a !important;
   }
 }
 
 :host-context(.nb-theme-default) {
   .autocomplete-input-uo {
-    border: 1px solid #F1F4F8 !important;
+    border: 1px solid #f1f4f8 !important;
   }
 }
 
 :host-context(.nb-theme-dark) {
   .autocomplete-input-uo {
-    border: 1px solid #191F35 !important;
-    background-color: #1D253E !important;
+    border: 1px solid #191f35 !important;
+    background-color: #1d253e !important;
   }
 }
 

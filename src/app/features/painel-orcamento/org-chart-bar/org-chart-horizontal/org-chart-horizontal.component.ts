@@ -44,12 +44,12 @@ export class OrgChartHorizontalComponent
   implements OnInit, OnChanges, OnDestroy
 {
   @Input() chart!: IChartOptions;
-  @Input() height: number;
-  @Input() charactersPerLine: number;
+  @Input() height!: number;
+  @Input() charactersPerLine!: number;
   @Input() showMaximizeButton!: boolean;
   @Input() ChartDataConfig!: ChartDataConfig;
 
-  chartOptions: EChartsOption;
+  chartOptions!: EChartsOption;
   echartsInstance: ECharts | null = null;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimer: any;
@@ -128,7 +128,7 @@ export class OrgChartHorizontalComponent
           fontSize: this.showMaximizeButton ? 14 : 11,
           margin: 8,
           overflow: "truncate",
-          width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
+          // width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
         },
       },
       xAxis: {
@@ -164,7 +164,9 @@ export class OrgChartHorizontalComponent
 
     const datasetLabels = chart.data.datasets.map((dataset) => dataset.label);
 
-    const data = chart.data.labels.map((label: string, i: number) => ({
+    const labels = chart.data.labels as string[];
+
+    const data = labels.map((label: string, i: number) => ({
       category: label,
       valores: chart.data.datasets.map((dataset) => dataset.data[i] ?? 0),
     }));

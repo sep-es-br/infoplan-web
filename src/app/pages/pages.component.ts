@@ -17,8 +17,9 @@ import { CustomNbMenuItem, MENU_ITEMS } from "./pages-menu";
   `,
 })
 export class PagesComponent implements OnInit {
-  menu = [];
-  private lastSelectedItem: CustomNbMenuItem;
+  menu: CustomNbMenuItem[] = [];
+
+  private lastSelectedItem: CustomNbMenuItem | undefined;
 
   constructor(
     private iconsLibrary: NbIconLibraries,
@@ -46,9 +47,11 @@ export class PagesComponent implements OnInit {
 
     await Promise.all(
       menulinks.map(async (item) => {
-        const iconName = item.icon.toString().split(".")[0];
+        if (typeof item.icon !== "string" || !item.icon.toString()) return;
 
-        if (item.icon.toString().endsWith(".svg")) {
+        const iconName = item.icon.toString().split(".")[0];
+        const isIcon = item.icon.toString().endsWith(".svg");
+        if (isIcon) {
           try {
             const response = await fetch(`assets/images/app/${item.icon}`);
             let svgContent = await response.text();
@@ -95,20 +98,96 @@ export class PagesComponent implements OnInit {
       });
   }
 
+  // private applySectionDividers() {
+  //   requestAnimationFrame(() => {
+  //     // Remove divisores antigos
+  //     const oldDividers = document.querySelectorAll(".menu-section-divider");
+  //     oldDividers.forEach((el) => {
+  //       el.remove();
+  //     });
+
+  //     const menuItems = document.querySelectorAll("nb-menu .menu-item");
+
+  //     // Para cada item renderizado no menu
+  //     menuItems.forEach((element: HTMLElement | Element, index) => {
+  //       const renderedItem = this.menu[index];
+  //       if (!renderedItem) return;
+
+  //       // Encontra a posição deste item no array original (menulinks)
+  //       const originalIndex = menulinks.findIndex(
+  //         (item) => item.id === renderedItem.id,
+  //       );
+
+  //       // Se não é o primeiro item, verifica o item anterior no array original
+  //       if (originalIndex > 0) {
+  //         const previousItem = menulinks[originalIndex - 1];
+
+  //         // Se o item anterior é um separador, insere o divisor visual
+  //         if (previousItem?.separator && previousItem?.sectionTitle) {
+  //           const previousElement = element.previousElementSibling;
+
+  //           // Só insere se ainda não existe um divisor
+  //           if (
+  //             !previousElement ||
+  //             !previousElement.classList.contains("menu-section-divider")
+  //           ) {
+  //             const divider = document.createElement("div");
+  //             divider.className = "menu-section-divider";
+  //             divider.style.opacity = "1";
+  //             divider.innerHTML = `
+  //               <div class="divisor">
+  //                 <div class="section-title">
+  //                   <span class="span-section-title">${previousItem.sectionTitle}</span>
+  //                 </div>
+  //               </div>
+  //             `;
+  //             element.parentNode.insertBefore(divider, element);
+  //           }
+  //         }
+  //       }
+  //     });
+  //   });
+  // }
+
   private applySectionDividers() {
     requestAnimationFrame(() => {
+      // Remove divisores antigos
       const oldDividers = document.querySelectorAll(".menu-section-divider");
-      oldDividers.forEach((el) => {
-        el.remove();
-      });
+      oldDividers.forEach((el) => el.remove());
 
       const menuItems = document.querySelectorAll("nb-menu .menu-item");
 
-      menuItems.forEach((element: HTMLElement, index) => {
-        const menuItem = this.menu[index];
+      // Rastreia qual foi o último item processado
+      let lastProcessedOriginalIndex = -1;
 
-        if (menuItem?.separator && menuItem?.sectionTitle) {
-          const previousElement = element.previousElementSibling;
+      menuItems.forEach((element, index) => {
+        const htmlElement = element as HTMLElement;
+        const renderedItem = this.menu[index];
+        if (!renderedItem) return;
+
+        // Encontra a posição deste item no array original
+        const currentOriginalIndex = menulinks.findIndex(
+          (item) => item.id === renderedItem.id
+        );
+
+        if (currentOriginalIndex === -1) return;
+
+        // Procura pelo ÚLTIMO separador ENTRE o último item processado e este item
+        let foundSeparator = null;
+        for (
+          let i = lastProcessedOriginalIndex + 1;
+          i < currentOriginalIndex;
+          i++
+        ) {
+          const betweenItem = menulinks[i];
+          if (betweenItem?.separator && betweenItem?.sectionTitle) {
+            foundSeparator = betweenItem;
+          }
+        }
+
+        if (foundSeparator) {
+          // Verifica se já existe um divisor antes deste elemento
+          const previousElement = htmlElement.previousElementSibling;
 
           if (
             !previousElement ||
@@ -117,21 +196,23 @@ export class PagesComponent implements OnInit {
             const divider = document.createElement("div");
             divider.className = "menu-section-divider";
             divider.style.opacity = "1";
+            // divider.style.pointerEvents = "none";
             divider.innerHTML = `
               <div class="divisor">
                 <div class="section-title">
-                  <span class="span-section-title">${menuItem.sectionTitle}</span>
+                  <span class="span-section-title">${foundSeparator.sectionTitle}</span>
                 </div>
               </div>
             `;
-            element.parentNode.insertBefore(divider, element);
+            htmlElement.parentNode?.insertBefore(divider, htmlElement);
           }
         }
-        // <span class="section-title">${menuItem.sectionTitle}</span>
+
+        // Atualiza o último índice processado
+        lastProcessedOriginalIndex = currentOriginalIndex;
       });
     });
   }
-
   private setInitialActiveItem() {
     const currentPath = this.location.path().split("?")[0];
 
@@ -155,7 +236,7 @@ export class PagesComponent implements OnInit {
 
     this.menu = [...this.menu];
     this.setIconStyles();
-    this.applySectionDividers(); // Reaplica os divisores
+    this.applySectionDividers();
   }
 
   private resetMenuSelection() {
@@ -169,27 +250,52 @@ export class PagesComponent implements OnInit {
 
     this.menu = [...this.menu];
     this.setIconStyles();
-    this.applySectionDividers(); // Reaplica os divisores
+    this.applySectionDividers();
   }
 
   private setIconStyles() {
     setTimeout(() => {
-      const icons = document.querySelectorAll("nb-icon svg");
-      icons.forEach((icon: SVGElement) => {
+      const icons = Array.from(
+        document.querySelectorAll<SVGElement>("nb-icon svg"),
+      );
+      icons.forEach((icon) => {
         icon.setAttribute("width", "20px");
         icon.setAttribute("height", "20px");
 
-        const paths = icon.querySelectorAll("[fill]");
-        paths.forEach((path: SVGElement) => {
+        const paths = Array.from(icon.querySelectorAll<SVGElement>("[fill]"));
+        paths.forEach((path) => {
           path.setAttribute("fill", "currentColor");
         });
       });
 
-      const imgIcons = document.querySelectorAll("nb-icon img");
-      imgIcons.forEach((img: HTMLImageElement) => {
+      const imgIcons = Array.from(
+        document.querySelectorAll<HTMLImageElement>("nb-icon img"),
+      );
+      imgIcons.forEach((img) => {
         img.style.width = "20px";
         img.style.height = "20px";
       });
     });
   }
+
+  // private setIconStyles() {
+  //   setTimeout(() => {
+  //     const icons = document.querySelectorAll("nb-icon svg");
+  //     icons.forEach((icon: SVGElement) => {
+  //       icon.setAttribute("width", "20px");
+  //       icon.setAttribute("height", "20px");
+
+  //       const paths = icon.querySelectorAll("[fill]");
+  //       paths.forEach((path: SVGElement) => {
+  //         path.setAttribute("fill", "currentColor");
+  //       });
+  //     });
+
+  //     const imgIcons = document.querySelectorAll("nb-icon img");
+  //     imgIcons.forEach((img: HTMLImageElement) => {
+  //       img.style.width = "20px";
+  //       img.style.height = "20px";
+  //     });
+  //   });
+  // }
 }

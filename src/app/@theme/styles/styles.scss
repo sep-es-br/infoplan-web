@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap");
+﻿@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap");
 
 // themes - our custom or/and out of the box themes
 @import "themes";
@@ -18,7 +18,7 @@
 
 @import "./layout";
 @import "./overrides";
-@import url("./_painel-orcamento-cores.scss");
+@import url("./_budget-panel-cores.scss");
 
 // install the framework and custom global styles
 @include nb-install() {

@@ -112,13 +112,13 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   };
 
   totals: ISPOTotals = {
-    totalAutorizado: 0,
-    totalContratado: 0,
-    totalEmpenhado: 0,
-    totalLiquidado: 0,
-    totalPago: 0,
-    totalPlanejado: 0,
-    totalRestosAPagar: 0,
+    totalAuthorized: 0,
+    totalContracted: 0,
+    totalCommitted: 0,
+    totalLiquidated: 0,
+    totalPaid: 0,
+    totalPlanned: 0,
+    totalRAP: 0,
   };
 
   readonly tipoFonteList = [
@@ -285,39 +285,39 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   }
 
   private dataCards() {
-    this.totals.totalAutorizado =
+    this.totals.totalAuthorized =
       this.totalAutorizadoResponse?.reduce(
-        (total, item) => total + item.autorizado,
+        (total, item) => total + item.authorized,
         0,
       ) || 0;
-    this.totals.totalContratado =
+    this.totals.totalContracted =
       this.totalPrevistoResponse?.reduce(
-        (total, item) => total + item.contratado,
+        (total, item) => total + item.contracted,
         0,
       ) || 0;
-    this.totals.totalEmpenhado =
+    this.totals.totalCommitted =
       this.totalAutorizadoResponse?.reduce(
-        (total, item) => total + item.empenhado,
+        (total, item) => total + item.committed,
         0,
       ) || 0;
-    this.totals.totalLiquidado =
+    this.totals.totalLiquidated =
       this.totalAutorizadoResponse?.reduce(
-        (total, item) => total + item.liquidado,
+        (total, item) => total + item.liquidated,
         0,
       ) || 0;
-    this.totals.totalPago =
+    this.totals.totalPaid =
       this.totalAutorizadoResponse?.reduce(
-        (total, item) => total + item.pago,
+        (total, item) => total + item.paid,
         0,
       ) || 0;
-    this.totals.totalPlanejado =
+    this.totals.totalPlanned =
       this.totalPrevistoResponse?.reduce(
-        (total, item) => total + item.previsto,
+        (total, item) => total + item.planned,
         0,
       ) || 0;
-    this.totals.totalRestosAPagar =
+    this.totals.totalRAP =
       this.totalAutorizadoResponse?.reduce(
-        (total, item) => total + item.pago_com_rap,
+        (total, item) => total + item.paidWithRAP,
         0,
       ) || 0;
   }

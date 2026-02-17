@@ -17,18 +17,18 @@ import {
 import {
   ChartDataConfig,
   OrgChartHorizontalComponent,
-} from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+} from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import {
   ISPODashboardPo,
   ISPOTotalAutorizadoFilter,
 } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
 import { takeUntil, debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { ExportDataService } from "../../../../../core/service/export-data";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import { Subject } from "rxjs";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
 import { converterToNumber } from "../../../../../@core/utils/functionts/functionts";
 import { UtilitiesService } from "../../../../../core/service/utilities.service";
@@ -99,7 +99,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     if (
       changes["filter"] &&
       JSON.stringify(changes["filter"].previousValue) !==
-        JSON.stringify(changes["filter"].currentValue)
+      JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
       this.title = `PO - Plano Orçamentário • Filtro Anual ${this.filter?.ano}`;
@@ -146,14 +146,14 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
 
   private processarDados(dados: ISPODashboardPo[]): void {
     const top5 = [...dados]
-      .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
+      .sort((a, b) => (b.plannedValue || 0) - (a.plannedValue || 0))
       .slice(0, 5)
 
     console.log("Dados processados para o gráfico:", top5); // Log para verificar os dados processados
     const labels = top5.map((d) => `${d.sigla} - ${d.nome_po}`);
-    const planejado = top5.map((d) => d.vlr_previsto || 0);
-    const contratado = top5.map((d) => d.vlr_contratado || 0);
-    const autorizado = top5.map((d) => d.vlr_autorizado || 0);
+    const planejado = top5.map((d) => d.plannedValue || 0);
+    const contratado = top5.map((d) => d.contractedValue || 0);
+    const autorizado = top5.map((d) => d.authorizedValue || 0);
 
     this._zone.run(() => {
       this.chartData = {
@@ -191,7 +191,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     const dadosArray = Array.isArray(dados) ? [...dados] : [dados];
 
     const dadosOrdenados = dadosArray.sort(
-      (a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0),
+      (a, b) => (b.plannedValue || 0) - (a.plannedValue || 0),
     );
     const linhasTabela = dadosOrdenados.map((item) => ({
       data: [
@@ -199,21 +199,21 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
         {
           propertyName: "planejado",
           value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.vlr_previsto,
+            item.plannedValue,
             "R$",
           ),
         },
         {
           propertyName: "contratado",
           value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.vlr_contratado,
+            item.contractedValue,
             "R$",
           ),
         },
         {
           propertyName: "autorizado",
           value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.vlr_autorizado,
+            item.authorizedValue,
             "R$",
           ),
         },

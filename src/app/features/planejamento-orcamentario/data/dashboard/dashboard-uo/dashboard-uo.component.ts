@@ -20,13 +20,13 @@ import {
 import {
   ChartDataConfig,
   OrgChartHorizontalComponent,
-} from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+} from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import {
   ISPODashboardUo,
   ISPOTotalAutorizadoFilter,
 } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
+import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { Subject } from "rxjs";
@@ -163,7 +163,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
   private processarDados(dados: ISPODashboardUo[]): void {
     this._zone.runOutsideAngular(() => {
       const top5 = [...dados]
-        .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
+        .sort((a, b) => (b.plannedValue || 0) - (a.plannedValue || 0))
         .slice(0, 5)
 
       const chartConfig: IChartOptions = {
@@ -174,17 +174,17 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
           datasets: [
             {
               label: "Planejado",
-              data: top5.map((d) => d.vlr_previsto || 0),
+              data: top5.map((d) => d.plannedValue || 0),
               backgroundColor: this._chartProcessor.colors[14],
             },
             {
               label: "Contratado",
-              data: top5.map((d) => d.vlr_contratado || 0),
+              data: top5.map((d) => d.contractedValue || 0),
               backgroundColor: this._chartProcessor.colors[15],
             },
             {
               label: "Autorizado",
-              data: top5.map((d) => d.vlr_autorizado || 0),
+              data: top5.map((d) => d.authorizedValue || 0),
               backgroundColor: this._chartProcessor.colors[16],
             },
           ],
@@ -203,7 +203,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
     const dadosArray = Array.isArray(dados) ? [...dados] : [dados];
 
     const dadosOrdenados = dadosArray.sort(
-      (a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0)
+      (a, b) => (b.plannedValue || 0) - (a.plannedValue || 0)
     );
 
     const linhasTabela = dadosOrdenados.map((item) => ({
@@ -214,15 +214,15 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "planejado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_previsto, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.plannedValue, "R$"),
         },
         {
           propertyName: "contratado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_contratado, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.contractedValue, "R$"),
         },
         {
           propertyName: "autorizado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_autorizado, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.authorizedValue, "R$"),
         },
       ],
     }));

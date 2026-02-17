@@ -21,19 +21,19 @@ import {
   ISPOTotalAutorizadoFilter,
   ISPOTotalPrevistoFilter,
 } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
+import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { Subject } from "rxjs";
 import {
   ChartDataConfig,
   OrgChartHorizontalComponent,
-} from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+} from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
-import { OrgChartVerticalComponent } from "../../../../painel-orcamento/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
+import { OrgChartVerticalComponent } from "../../../../budget-panel/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
 import { UtilitiesService } from "../../../../../core/service/utilities.service";
 import { converterToNumber } from "../../../../../@core/utils/functionts/functionts";
 
@@ -96,7 +96,7 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
   private readonly _zone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit(): void {
     this.searchSubject
@@ -117,7 +117,7 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
     if (
       changes["filter"] &&
       JSON.stringify(changes["filter"].previousValue) !==
-        JSON.stringify(changes["filter"].currentValue)
+      JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
     }
@@ -170,17 +170,17 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
           datasets: [
             {
               label: "Planejado",
-              data: dados.map((d) => d.vlr_previsto || 0),
+              data: dados.map((d) => d.plannedValue || 0),
               backgroundColor: this._chartProcessor.colors[14],
             },
             {
               label: "Autorizado",
-              data: dados.map((d) => d.vlr_autorizado || 0),
+              data: dados.map((d) => d.authorizedValue || 0),
               backgroundColor: this._chartProcessor.colors[16],
             },
             {
               label: "Empenhado",
-              data: dados.map((d) => d.vlr_empenhado || 0),
+              data: dados.map((d) => d.committedValue || 0),
               backgroundColor: this._chartProcessor.colors[17],
             },
           ],
@@ -206,15 +206,15 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "planejado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_previsto, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.plannedValue, "R$"),
         },
         {
           propertyName: "autorizado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_autorizado, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.authorizedValue, "R$"),
         },
         {
           propertyName: "empenhado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_empenhado, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.committedValue, "R$"),
         },
       ],
     }));

@@ -15,19 +15,19 @@ import {
   SimpleChanges,
 } from "@angular/core";
 import { ExportDataService } from "../../../../../core/service/export-data";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
 import {
   FlipTableAlignment,
   FlipTableComponent,
   FlipTableContent,
 } from "../../../../strategic-projects/flip-table-model/flip-table.component";
-import { ChartDataConfig } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
-import { OrgChartVerticalComponent } from "../../../../painel-orcamento/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
+import { ChartDataConfig } from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { OrgChartVerticalComponent } from "../../../../budget-panel/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
 import { UtilitiesService } from "../../../../../core/service/utilities.service";
 import { converterToNumber } from "../../../../../@core/utils/functionts/functionts";
@@ -40,8 +40,7 @@ import { converterToNumber } from "../../../../../@core/utils/functionts/functio
   imports: [OrgChartVerticalComponent, FlipTableComponent],
 })
 export class GraficoTotalAnoSigefesComponent
-  implements OnInit, OnDestroy, OnChanges
-{
+  implements OnInit, OnDestroy, OnChanges {
   @Input() filter!: ISPOTotalAutorizadoFilter;
 
   maximizedHeight: number = 500;
@@ -89,7 +88,7 @@ export class GraficoTotalAnoSigefesComponent
   private readonly _zone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit(): void {
     this.searchSubject
@@ -110,7 +109,7 @@ export class GraficoTotalAnoSigefesComponent
     if (
       changes["filter"] &&
       JSON.stringify(changes["filter"].previousValue) !==
-        JSON.stringify(changes["filter"].currentValue)
+      JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
     }
@@ -165,12 +164,12 @@ export class GraficoTotalAnoSigefesComponent
           datasets: [
             {
               label: "Pago",
-              data: dados.map((d) => d.vlr_pago_sem_rap || 0),
+              data: dados.map((d) => d.paidValueWithoutRAP || 0),
               backgroundColor: this._chartProcessor.colors[20],
             },
             {
               label: "Pago com RAP",
-              data: dados.map((d) => d.vlr_pago_com_rap || 0),
+              data: dados.map((d) => d.paidValueWithRAP || 0),
               backgroundColor: this._chartProcessor.colors[19],
             },
           ],
@@ -198,14 +197,14 @@ export class GraficoTotalAnoSigefesComponent
         {
           propertyName: "pago",
           value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.vlr_pago_sem_rap,
+            item.paidValueWithoutRAP,
             "R$",
           ),
         },
         {
           propertyName: "pago_com_rap",
           value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.vlr_pago_com_rap,
+            item.paidValueWithRAP,
             "R$",
           ),
         },

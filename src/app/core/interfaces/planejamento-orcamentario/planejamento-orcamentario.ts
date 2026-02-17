@@ -1,41 +1,41 @@
 export interface ISPOTotalPrevistoFilter {
   ano: number;
-  tipoFonte: string[] |  number[];
-  uo: string[] |  number[];
-  po: string[] |  number[];
-  gnd: string[] |  number[];
+  tipoFonte: string[] | number[];
+  uo: string[] | number[];
+  po: string[] | number[];
+  gnd: string[] | number[];
 }
 
 export interface ISPOTotalAutorizadoFilter {
   ano: number;
-  tipoFonte: string[] |  number[];
+  tipoFonte: string[] | number[];
   mes: string[] | number[];
   uo: string[] | string | number[];
-  po: string[] | string|  number[];
-  gnd: string[] |  number[];
+  po: string[] | string | number[];
+  gnd: string[] | number[];
 }
 
 export interface ISPOTotals {
-  totalPlanejado: number;
-  totalContratado: number;
-  totalPago: number;
-  totalRestosAPagar: number;
-  totalEmpenhado: number;
-  totalLiquidado: number;
-  totalAutorizado: number;
+  totalPlanned: number;
+  totalContracted: number;
+  totalPaid: number;
+  totalRAP: number;
+  totalCommitted: number;
+  totalLiquidated: number;
+  totalAuthorized: number;
 }
 
 export interface ISPOTotalAutorizadoDTO {
-  autorizado: number;
-  empenhado: number;
-  liquidado: number;
-  pago: number;
-  pago_com_rap: number;
+  authorized: number;
+  committed: number;
+  liquidated: number;
+  paid: number;
+  paidWithRAP: number;
 }
 
 export interface ISPOTotalPrevistoDTO {
-  previsto: number;
-  contratado: number;
+  planned: number;
+  contracted: number;
   times_temp: string;
 }
 
@@ -55,9 +55,9 @@ export interface ISPODashboardUo {
   nome_uo: string;
   po: string;
   nome: string;
-  vlr_previsto: number;
-  vlr_contratado: number;
-  vlr_autorizado: number;
+  plannedValue: number;
+  contractedValue: number;
+  authorizedValue: number;
 }
 export interface ISPODashboardPo {
   uo: string;
@@ -65,19 +65,19 @@ export interface ISPODashboardPo {
   sigla: string;
   nome_uo: string;
   nome_po: string;
-  vlr_previsto: number;
-  vlr_contratado: number;
-  vlr_autorizado: number;
+  plannedValue: number;
+  contractedValue: number;
+  authorizedValue: number;
 }
 
 export interface ISPOTotalAutorizadoProgressUo {
   cod: string;
   sigla: string;
   nome_uo: string;
-  porcentagem_empenhado: number;
-  porcentagem_liquidado: number;
-  porcentagem_pago_sem_rap: number;
-  vlr_previsto: number;
+  percentageCommitted: number;
+  percentageLiquidated: number;
+  percentagePaidWithoutRAP: number;
+  plannedValue: number;
 }
 
 export interface ISPOTotalAutorizadoProgressPo {
@@ -86,21 +86,21 @@ export interface ISPOTotalAutorizadoProgressPo {
   sigla_uo: string;
   cod_po: string;
   nome_po: string;
-  porcentagem_empenhado: number;
-  porcentagem_liquidado: number;
-  porcentagem_pago_sem_rap: number;
-  vlr_previsto: number;
+  percentageCommitted: number;
+  percentageLiquidated: number;
+  percentagePaidWithoutRAP: number;
+  plannedValue: number;
 }
 export interface ISPOTotalAno {
   ano: number;
-  vlr_previsto: number;
-  vlr_contratado: number;
-  vlr_autorizado: number;
-  vlr_empenhado: number;
-  vlr_pago: number;
+  plannedValue: number;
+  contractedValue: number;
+  authorizedValue: number;
+  committedValue: number;
+  paidValue: number;
 }
 export interface ISPOTotalAnoSigefes {
   ano: number;
-  vlr_pago_sem_rap: number;
-  vlr_pago_com_rap: number;
+  paidValueWithoutRAP: number;
+  paidValueWithRAP: number;
 }

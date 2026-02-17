@@ -18,13 +18,13 @@ import {
   ISPOTotalAutorizadoFilter,
   ISPOTotalAutorizadoProgressPo,
 } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { Subject } from "rxjs";
-import { ChartDataConfig } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { ChartDataConfig } from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { ChartProgressBarComponent } from "../chart-progress-bar/chart-progress-bar.component";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
@@ -122,10 +122,10 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
 
   processarDados(dados: ISPOTotalAutorizadoProgressPo[]): void {
     const top5Uo = dados
-      .sort((a, b) => b.vlr_previsto - a.vlr_previsto)
+      .sort((a, b) => b.plannedValue - a.plannedValue)
       .slice(0, 5)
 
-      this.chartData = {
+    this.chartData = {
       data: {
         labels: top5Uo.map((d) =>
           d.sigla_uo || d.nome_po != null
@@ -138,17 +138,17 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
         datasets: [
           {
             label: "Empenhado (% Autorizado)",
-            data: top5Uo.map((d) => d.porcentagem_empenhado),
+            data: top5Uo.map((d) => d.percentageCommitted),
             backgroundColor: "#1bbc9c",
           },
           {
             label: "Liquidado (% Autorizado)",
-            data: top5Uo.map((d) => d.porcentagem_liquidado),
+            data: top5Uo.map((d) => d.percentageLiquidated),
             backgroundColor: "#d9ac22",
           },
           {
             label: "Pago (% Autorizado)",
-            data: top5Uo.map((d) => d.porcentagem_pago_sem_rap),
+            data: top5Uo.map((d) => d.percentagePaidWithoutRAP),
             backgroundColor: "#F77D00",
           },
         ],
@@ -170,15 +170,15 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "Empenhado",
-          value: `${item.porcentagem_empenhado} %`,
+          value: `${item.percentageCommitted} %`,
         },
         {
           propertyName: "Liquidado",
-          value: `${item.porcentagem_liquidado} %`,
+          value: `${item.percentageLiquidated} %`,
         },
         {
           propertyName: "Pago",
-          value: `${item.porcentagem_pago_sem_rap} %`,
+          value: `${item.percentagePaidWithoutRAP} %`,
         },
       ],
     }));

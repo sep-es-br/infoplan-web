@@ -10,7 +10,7 @@
 @import "../@theme/styles/themes";
 
 @include nb-install-component() {
-  ::ng-deep router-outlet + * {
+  ::ng-deep router-outlet+* {
     display: block;
     animation: fade 1s;
 
@@ -35,6 +35,7 @@
     // }
 
     :host-context(.nb-theme-dark, .nb-theme-cosmic) {
+
       .menu-item a:hover,
       .menu-item a.active,
       .menu-item a.active .menu-icon,
@@ -50,6 +51,7 @@
         a {
           display: inline-flex;
         }
+
         // border: none !important;
 
         .menu-icon {
@@ -60,6 +62,7 @@
           margin-left: 0.5rem !important;
         }
       }
+
       .menu-item:first-child {
         border: none !important;
       }
@@ -104,9 +107,7 @@
           }
 
           // Se houver style com fill
-          &[style*="fill"]:not([style*="fill: none"]):not(
-              [style*="fill: transparent"]
-            ) {
+          &[style*="fill"]:not([style*="fill: none"]):not([style*="fill: transparent"]) {
             fill: currentColor !important;
           }
         }
@@ -128,6 +129,7 @@
       .menu-item:hover {
         nb-icon {
           svg {
+
             &,
             * {
               &[fill]:not([fill="none"]):not([fill="transparent"]) {
@@ -145,6 +147,7 @@
       .menu-item.active {
         nb-icon {
           svg {
+
             &,
             * {
               &[fill]:not([fill="none"]):not([fill="transparent"]) {

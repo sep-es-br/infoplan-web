@@ -5,7 +5,7 @@ export interface CustomNbMenuItem extends NbMenuItem {
   isExternalUrl?: boolean;
   separator?: boolean;
   sectionTitle?: string;
-  id:number
+  id: number
 }
 
 const dynamicMenuItems: CustomNbMenuItem[] = menulinks
@@ -20,7 +20,8 @@ const dynamicMenuItems: CustomNbMenuItem[] = menulinks
     isExternalUrl: !!menu.url,
     id: menu.id,
     separator: menu.separator,
-    sectionTitle: menu.sectionTitle
+    sectionTitle: menu.sectionTitle,
+    tooltip: menu.name
   }));
 
 export const MENU_ITEMS: CustomNbMenuItem[] = [
@@ -29,7 +30,7 @@ export const MENU_ITEMS: CustomNbMenuItem[] = [
     icon: 'home-outline',
     link: '/pages/home',
     isExternalUrl: false,
-    id: 0
+    id: 0,
   },
   ...dynamicMenuItems
 ];

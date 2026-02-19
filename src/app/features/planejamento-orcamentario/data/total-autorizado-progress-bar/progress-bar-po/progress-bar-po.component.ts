@@ -18,13 +18,13 @@ import {
   ISPOTotalAutorizadoFilter,
   ISPOTotalAutorizadoProgressPo,
 } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { Subject } from "rxjs";
-import { ChartDataConfig } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { ChartDataConfig } from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { ChartProgressBarComponent } from "../chart-progress-bar/chart-progress-bar.component";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
@@ -37,6 +37,7 @@ import { converterToNumber, replacePorcentage } from "../../../../../@core/utils
   standalone: true,
   imports: [ChartProgressBarComponent, FlipTableComponent],
 })
+
 export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
   @Input() filter!: ISPOTotalAutorizadoFilter;
 

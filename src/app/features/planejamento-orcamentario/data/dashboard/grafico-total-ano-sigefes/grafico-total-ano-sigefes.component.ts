@@ -15,19 +15,19 @@ import {
   SimpleChanges,
 } from "@angular/core";
 import { ExportDataService } from "../../../../../core/service/export-data";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
 import {
   FlipTableAlignment,
   FlipTableComponent,
   FlipTableContent,
 } from "../../../../strategic-projects/flip-table-model/flip-table.component";
-import { ChartDataConfig } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
-import { OrgChartVerticalComponent } from "../../../../painel-orcamento/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
+import { ChartDataConfig } from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { OrgChartVerticalComponent } from "../../../../budget-panel/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
 import { UtilitiesService } from "../../../../../core/service/utilities.service";
 import { converterToNumber } from "../../../../../@core/utils/functionts/functionts";
@@ -129,7 +129,7 @@ export class GraficoTotalAnoSigefesComponent
           if (this.dasboardResponse.length > 0) {
             this.processarDados(this.dasboardResponse);
           } else {
-            this.chartData = null;
+            this.chartData;
           }
           this.requestStatus = RequestStatus.SUCCESS;
         },

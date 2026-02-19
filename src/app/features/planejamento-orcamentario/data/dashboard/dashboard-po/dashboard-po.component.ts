@@ -14,24 +14,22 @@ import {
   FlipTableComponent,
   FlipTableContent,
 } from "../../../../strategic-projects/flip-table-model/flip-table.component";
-import {
-  ChartDataConfig,
-  OrgChartHorizontalComponent,
-} from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+
 import {
   ISPODashboardPo,
   ISPOTotalAutorizadoFilter,
 } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
 import { takeUntil, debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { ExportDataService } from "../../../../../core/service/export-data";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import { Subject } from "rxjs";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
 import { converterToNumber } from "../../../../../@core/utils/functionts/functionts";
 import { UtilitiesService } from "../../../../../core/service/utilities.service";
+import { ChartDataConfig, OrgChartHorizontalComponent } from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-dashboard-po",
@@ -129,7 +127,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
             } else {
               // Voltamos para a zona apenas para atualizar a UI
               this._zone.run(() => {
-                this.chartData = null;
+                this.chartData;
                 this.requestStatus = RequestStatus.SUCCESS;
               });
             }
@@ -149,7 +147,6 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
       .slice(0, 5)
 
-    console.log("Dados processados para o gráfico:", top5); // Log para verificar os dados processados
     const labels = top5.map((d) => `${d.sigla} - ${d.nome_po}`);
     const planejado = top5.map((d) => d.vlr_previsto || 0);
     const contratado = top5.map((d) => d.vlr_contratado || 0);

@@ -6,13 +6,13 @@ import {
   OnDestroy,
   SimpleChanges,
 } from "@angular/core";
-import { OrgChartHorizontalComponent } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { OrgChartHorizontalComponent } from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import {
   FlipTableComponent,
   FlipTableContent,
 } from "../../../../strategic-projects/flip-table-model/flip-table.component";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
+import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { Subject } from "rxjs";

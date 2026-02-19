@@ -21,19 +21,19 @@ import {
   ISPOTotalAutorizadoFilter,
   ISPOTotalPrevistoFilter,
 } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
+import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { Subject } from "rxjs";
 import {
   ChartDataConfig,
   OrgChartHorizontalComponent,
-} from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+} from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
-import { OrgChartVerticalComponent } from "../../../../painel-orcamento/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
+import { OrgChartVerticalComponent } from "../../../../budget-panel/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
 import { UtilitiesService } from "../../../../../core/service/utilities.service";
 import { converterToNumber } from "../../../../../@core/utils/functionts/functionts";
 
@@ -48,6 +48,7 @@ import { converterToNumber } from "../../../../../@core/utils/functionts/functio
   styleUrls: ["./grafico-total-ano.component.scss"],
   standalone: true,
 })
+
 export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
   @Input() filter!: ISPOTotalAutorizadoFilter;
 
@@ -136,7 +137,7 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
           if (this.dasboardResponse.length > 0) {
             this.processarDados(this.dasboardResponse);
           } else {
-            this.chartData = null;
+            this.chartData;
           }
           this.requestStatus = RequestStatus.SUCCESS;
         },

@@ -7,7 +7,7 @@ export const environment = {
   production: true,
   apiUrl: 'http://localhost:8080/infoplan',
   baseUrl: 'http://localhost:4200/',
-  allowedRoles : {
+  allowedRoles: {
     geral: "",
     capitacao: "",
     indicadoresAdmin: "",
@@ -28,6 +28,13 @@ export const environment = {
     portfolio: "",
     dataInicio: "",
     dataFim: ""
-  }
-  
+  },
+
+  budgetExecutionFilter: {
+    year: new Date().getFullYear(),
+    month: [-1],
+    sourceType: [-1],
+    branchCode: [-1],
+  },
+
 };

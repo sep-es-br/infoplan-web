@@ -71,8 +71,8 @@ const DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS: IBudgetExecutionRequest =
   providers: [ShortNumberPipe],
 })
 export class BudgetPanelComponent implements OnInit, OnDestroy {
-  @ViewChild("modalCloseButton") modalCloseButtonRef: ElementRef;
-  @ViewChildren("customSelect") customSelectRefs: QueryList<NbSelectComponent>;
+  @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
+  @ViewChildren("customSelect") customSelectRefs!: QueryList<NbSelectComponent>;
   @Output() filterChanged = new EventEmitter<IBudgetExecutionRequest>();
 
   @ViewChildren(NbTooltipDirective)
@@ -101,9 +101,9 @@ export class BudgetPanelComponent implements OnInit, OnDestroy {
 
   private subscription!: Subscription;
 
-  dataCards: IDataCard;
+  dataCards!: IDataCard;
   sendCards: ICards[] = [];
-  timestamp: string;
+  timestamp!: string;
 
   // CORREÇÃO: Atualizar currentRequestParams quando filtrar
   currentRequestParams: IBudgetExecutionRequest =

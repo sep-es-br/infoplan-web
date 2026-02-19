@@ -14,10 +14,7 @@ import {
   FlipTableComponent,
   FlipTableContent,
 } from "../../../../strategic-projects/flip-table-model/flip-table.component";
-import {
-  ChartDataConfig,
-  OrgChartHorizontalComponent,
-} from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+
 import {
   ISPODashboardPo,
   ISPOTotalAutorizadoFilter,
@@ -32,6 +29,7 @@ import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartO
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
 import { converterToNumber } from "../../../../../@core/utils/functionts/functionts";
 import { UtilitiesService } from "../../../../../core/service/utilities.service";
+import { ChartDataConfig, OrgChartHorizontalComponent } from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-dashboard-po",
@@ -149,7 +147,6 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       .sort((a, b) => (b.plannedValue || 0) - (a.plannedValue || 0))
       .slice(0, 5)
 
-    console.log("Dados processados para o gráfico:", top5); // Log para verificar os dados processados
     const labels = top5.map((d) => `${d.sigla} - ${d.nome_po}`);
     const planejado = top5.map((d) => d.plannedValue || 0);
     const contratado = top5.map((d) => d.contractedValue || 0);

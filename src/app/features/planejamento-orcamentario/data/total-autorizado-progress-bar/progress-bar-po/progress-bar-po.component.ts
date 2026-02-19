@@ -37,6 +37,7 @@ import { converterToNumber, replacePorcentage } from "../../../../../@core/utils
   standalone: true,
   imports: [ChartProgressBarComponent, FlipTableComponent],
 })
+
 export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
   @Input() filter!: ISPOTotalAutorizadoFilter;
 
@@ -122,10 +123,10 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
 
   processarDados(dados: ISPOTotalAutorizadoProgressPo[]): void {
     const top5Uo = dados
-      .sort((a, b) => b.plannedValue - a.plannedValue)
+      .sort((a, b) => b.vlr_previsto - a.vlr_previsto)
       .slice(0, 5)
 
-    this.chartData = {
+      this.chartData = {
       data: {
         labels: top5Uo.map((d) =>
           d.sigla_uo || d.nome_po != null
@@ -138,17 +139,17 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
         datasets: [
           {
             label: "Empenhado (% Autorizado)",
-            data: top5Uo.map((d) => d.percentageCommitted),
+            data: top5Uo.map((d) => d.porcentagem_empenhado),
             backgroundColor: "#1bbc9c",
           },
           {
             label: "Liquidado (% Autorizado)",
-            data: top5Uo.map((d) => d.percentageLiquidated),
+            data: top5Uo.map((d) => d.porcentagem_liquidado),
             backgroundColor: "#d9ac22",
           },
           {
             label: "Pago (% Autorizado)",
-            data: top5Uo.map((d) => d.percentagePaidWithoutRAP),
+            data: top5Uo.map((d) => d.porcentagem_pago_sem_rap),
             backgroundColor: "#F77D00",
           },
         ],
@@ -170,15 +171,15 @@ export class ProgressBarPoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "Empenhado",
-          value: `${item.percentageCommitted} %`,
+          value: `${item.porcentagem_empenhado} %`,
         },
         {
           propertyName: "Liquidado",
-          value: `${item.percentageLiquidated} %`,
+          value: `${item.porcentagem_liquidado} %`,
         },
         {
           propertyName: "Pago",
-          value: `${item.percentagePaidWithoutRAP} %`,
+          value: `${item.porcentagem_pago_sem_rap} %`,
         },
       ],
     }));

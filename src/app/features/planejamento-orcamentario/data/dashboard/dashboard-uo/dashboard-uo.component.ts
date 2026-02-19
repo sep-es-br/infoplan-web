@@ -134,7 +134,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
           if (this.dasboardResponse.length > 0) {
             this.processarDados(this.dasboardResponse);
           } else {
-            this.chartData = null;
+            this.chartData;
           }
           this.requestStatus = RequestStatus.SUCCESS;
         },
@@ -163,7 +163,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
   private processarDados(dados: ISPODashboardUo[]): void {
     this._zone.runOutsideAngular(() => {
       const top5 = [...dados]
-        .sort((a, b) => (b.plannedValue || 0) - (a.plannedValue || 0))
+        .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
         .slice(0, 5)
 
       const chartConfig: IChartOptions = {
@@ -174,17 +174,17 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
           datasets: [
             {
               label: "Planejado",
-              data: top5.map((d) => d.plannedValue || 0),
+              data: top5.map((d) => d.vlr_previsto || 0),
               backgroundColor: this._chartProcessor.colors[14],
             },
             {
               label: "Contratado",
-              data: top5.map((d) => d.contractedValue || 0),
+              data: top5.map((d) => d.vlr_contratado || 0),
               backgroundColor: this._chartProcessor.colors[15],
             },
             {
               label: "Autorizado",
-              data: top5.map((d) => d.authorizedValue || 0),
+              data: top5.map((d) => d.vlr_autorizado || 0),
               backgroundColor: this._chartProcessor.colors[16],
             },
           ],
@@ -203,7 +203,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
     const dadosArray = Array.isArray(dados) ? [...dados] : [dados];
 
     const dadosOrdenados = dadosArray.sort(
-      (a, b) => (b.plannedValue || 0) - (a.plannedValue || 0)
+      (a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0)
     );
 
     const linhasTabela = dadosOrdenados.map((item) => ({
@@ -214,15 +214,15 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "planejado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.plannedValue, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_previsto, "R$"),
         },
         {
           propertyName: "contratado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.contractedValue, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_contratado, "R$"),
         },
         {
           propertyName: "autorizado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.authorizedValue, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_autorizado, "R$"),
         },
       ],
     }));

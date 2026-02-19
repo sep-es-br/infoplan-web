@@ -97,7 +97,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     if (
       changes["filter"] &&
       JSON.stringify(changes["filter"].previousValue) !==
-      JSON.stringify(changes["filter"].currentValue)
+        JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
       this.title = `PO - Plano Orçamentário • Filtro Anual ${this.filter?.ano}`;
@@ -127,7 +127,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
             } else {
               // Voltamos para a zona apenas para atualizar a UI
               this._zone.run(() => {
-                this.chartData = null;
+                this.chartData;
                 this.requestStatus = RequestStatus.SUCCESS;
               });
             }
@@ -144,13 +144,13 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
 
   private processarDados(dados: ISPODashboardPo[]): void {
     const top5 = [...dados]
-      .sort((a, b) => (b.plannedValue || 0) - (a.plannedValue || 0))
+      .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
       .slice(0, 5)
 
     const labels = top5.map((d) => `${d.sigla} - ${d.nome_po}`);
-    const planejado = top5.map((d) => d.plannedValue || 0);
-    const contratado = top5.map((d) => d.contractedValue || 0);
-    const autorizado = top5.map((d) => d.authorizedValue || 0);
+    const planejado = top5.map((d) => d.vlr_previsto || 0);
+    const contratado = top5.map((d) => d.vlr_contratado || 0);
+    const autorizado = top5.map((d) => d.vlr_autorizado || 0);
 
     this._zone.run(() => {
       this.chartData = {
@@ -188,7 +188,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     const dadosArray = Array.isArray(dados) ? [...dados] : [dados];
 
     const dadosOrdenados = dadosArray.sort(
-      (a, b) => (b.plannedValue || 0) - (a.plannedValue || 0),
+      (a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0),
     );
     const linhasTabela = dadosOrdenados.map((item) => ({
       data: [
@@ -196,21 +196,21 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
         {
           propertyName: "planejado",
           value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.plannedValue,
+            item.vlr_previsto,
             "R$",
           ),
         },
         {
           propertyName: "contratado",
           value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.contractedValue,
+            item.vlr_contratado,
             "R$",
           ),
         },
         {
           propertyName: "autorizado",
           value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.authorizedValue,
+            item.vlr_autorizado,
             "R$",
           ),
         },

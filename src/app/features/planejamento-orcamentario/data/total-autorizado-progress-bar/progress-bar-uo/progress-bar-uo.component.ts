@@ -135,10 +135,10 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
 
   processarDados(dados: ISPOTotalAutorizadoProgressUo[]): void {
     const top5Uo = dados
-      .sort((a, b) => (b.plannedValue || 0) - (a.plannedValue || 0))
+      .sort((a, b) => (b.vlr_previsto || 0) - (a.vlr_previsto || 0))
       .slice(0, 5)
 
-    this.chartData = {
+      this.chartData = {
       data: {
         labels: top5Uo.map((d) =>
           d.cod || d.sigla != null
@@ -150,17 +150,17 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
         datasets: [
           {
             label: "Empenhado (% Autorizado)",
-            data: top5Uo.map((d) => d.percentageCommitted),
+            data: top5Uo.map((d) => d.porcentagem_empenhado),
             backgroundColor: "#1bbc9c",
           },
           {
             label: "Liquidado (% Autorizado)",
-            data: top5Uo.map((d) => d.percentageLiquidated),
+            data: top5Uo.map((d) => d.porcentagem_liquidado),
             backgroundColor: "#d9ac22",
           },
           {
             label: "Pago (% Autorizado)",
-            data: top5Uo.map((d) => d.percentagePaidWithoutRAP),
+            data: top5Uo.map((d) => d.porcentagem_pago_sem_rap),
             backgroundColor: "#F77D00",
           },
         ],
@@ -182,15 +182,15 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "Empenhado",
-          value: `${item.percentageCommitted} %`,
+          value: `${item.porcentagem_empenhado} %`,
         },
         {
           propertyName: "Liquidado",
-          value: `${item.percentageLiquidated} %`,
+          value: `${item.porcentagem_liquidado} %`,
         },
         {
           propertyName: "Pago",
-          value: `${item.percentagePaidWithoutRAP} %`,
+          value: `${item.porcentagem_pago_sem_rap} %`,
         },
       ],
     }));

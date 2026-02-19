@@ -40,7 +40,8 @@ import { converterToNumber } from "../../../../../@core/utils/functionts/functio
   imports: [OrgChartVerticalComponent, FlipTableComponent],
 })
 export class GraficoTotalAnoSigefesComponent
-  implements OnInit, OnDestroy, OnChanges {
+  implements OnInit, OnDestroy, OnChanges
+{
   @Input() filter!: ISPOTotalAutorizadoFilter;
 
   maximizedHeight: number = 500;
@@ -88,7 +89,7 @@ export class GraficoTotalAnoSigefesComponent
   private readonly _zone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     this.searchSubject
@@ -109,7 +110,7 @@ export class GraficoTotalAnoSigefesComponent
     if (
       changes["filter"] &&
       JSON.stringify(changes["filter"].previousValue) !==
-      JSON.stringify(changes["filter"].currentValue)
+        JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
     }
@@ -128,7 +129,7 @@ export class GraficoTotalAnoSigefesComponent
           if (this.dasboardResponse.length > 0) {
             this.processarDados(this.dasboardResponse);
           } else {
-            this.chartData = null;
+            this.chartData;
           }
           this.requestStatus = RequestStatus.SUCCESS;
         },
@@ -164,12 +165,12 @@ export class GraficoTotalAnoSigefesComponent
           datasets: [
             {
               label: "Pago",
-              data: dados.map((d) => d.paidValueWithoutRAP || 0),
+              data: dados.map((d) => d.vlr_pago_sem_rap || 0),
               backgroundColor: this._chartProcessor.colors[20],
             },
             {
               label: "Pago com RAP",
-              data: dados.map((d) => d.paidValueWithRAP || 0),
+              data: dados.map((d) => d.vlr_pago_com_rap || 0),
               backgroundColor: this._chartProcessor.colors[19],
             },
           ],
@@ -197,14 +198,14 @@ export class GraficoTotalAnoSigefesComponent
         {
           propertyName: "pago",
           value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.paidValueWithoutRAP,
+            item.vlr_pago_sem_rap,
             "R$",
           ),
         },
         {
           propertyName: "pago_com_rap",
           value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.paidValueWithRAP,
+            item.vlr_pago_com_rap,
             "R$",
           ),
         },

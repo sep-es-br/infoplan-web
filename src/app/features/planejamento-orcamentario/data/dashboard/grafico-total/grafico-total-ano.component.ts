@@ -48,6 +48,7 @@ import { converterToNumber } from "../../../../../@core/utils/functionts/functio
   styleUrls: ["./grafico-total-ano.component.scss"],
   standalone: true,
 })
+
 export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
   @Input() filter!: ISPOTotalAutorizadoFilter;
 
@@ -96,7 +97,7 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
   private readonly _zone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     this.searchSubject
@@ -117,7 +118,7 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
     if (
       changes["filter"] &&
       JSON.stringify(changes["filter"].previousValue) !==
-      JSON.stringify(changes["filter"].currentValue)
+        JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
     }
@@ -136,7 +137,7 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
           if (this.dasboardResponse.length > 0) {
             this.processarDados(this.dasboardResponse);
           } else {
-            this.chartData = null;
+            this.chartData;
           }
           this.requestStatus = RequestStatus.SUCCESS;
         },
@@ -170,17 +171,17 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
           datasets: [
             {
               label: "Planejado",
-              data: dados.map((d) => d.plannedValue || 0),
+              data: dados.map((d) => d.vlr_previsto || 0),
               backgroundColor: this._chartProcessor.colors[14],
             },
             {
               label: "Autorizado",
-              data: dados.map((d) => d.authorizedValue || 0),
+              data: dados.map((d) => d.vlr_autorizado || 0),
               backgroundColor: this._chartProcessor.colors[16],
             },
             {
               label: "Empenhado",
-              data: dados.map((d) => d.committedValue || 0),
+              data: dados.map((d) => d.vlr_empenhado || 0),
               backgroundColor: this._chartProcessor.colors[17],
             },
           ],
@@ -206,15 +207,15 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "planejado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.plannedValue, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_previsto, "R$"),
         },
         {
           propertyName: "autorizado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.authorizedValue, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_autorizado, "R$"),
         },
         {
           propertyName: "empenhado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.committedValue, "R$"),
+          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.vlr_empenhado, "R$"),
         },
       ],
     }));

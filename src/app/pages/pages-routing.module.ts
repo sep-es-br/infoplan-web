@@ -3,7 +3,7 @@ import { RouterModule, Routes } from "@angular/router";
 
 import { CapitationComponent } from "../features/capitation/capitation.component";
 import { HomeComponent } from "../features/home/home.component";
-import { PainelOrcamentoComponent } from "../features/painel-orcamento/painel-orcamento.component";
+import { BudgetPanelComponent } from "../features/budget-panel/budget-panel.component";
 import { StrategicProjectsComponent } from "../features/strategic-projects/strategicProjects.component";
 import { NotFoundComponent } from "./miscellaneous/not-found/not-found.component";
 import { PagesComponent } from "./pages.component";
@@ -30,7 +30,7 @@ const routes: Routes = [
       },
       {
         path: "execucao-orcamentaria",
-        component: PainelOrcamentoComponent,
+        component: BudgetPanelComponent, // Updated component reference
         data: { dataSource: "Sigefes" },
       },
       {
@@ -55,4 +55,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class PagesRoutingModule {}
+export class PagesRoutingModule { }

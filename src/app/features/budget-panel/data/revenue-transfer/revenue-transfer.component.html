@@ -1,0 +1,14 @@
+﻿<ngx-flip-table 
+  [cardTitle]="title" 
+  [showSearchField]="false" 
+  [tableContent]="tableContent"
+  [loadingStatus]="requestStatus" 
+  (executeDownload)="handleTableDownload()" 
+  [backCardHeight]="397"
+  [showMaximizeButton]="true" (showMaximizeButtonClick)="onMaximizeButtonClick('revenue-transfer',$event)">
+  <ngx-org-chart-horizontal
+    [chart]="chartData"
+    [ChartDataConfig]="chartDataConfig"
+    [height]="isChartMaximized('revenue-transfer') ? calcMaximizedHeight() : 300"
+    card-front></ngx-org-chart-horizontal>
+</ngx-flip-table>

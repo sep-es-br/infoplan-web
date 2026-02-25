@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { IReceitaDespesaGNDTotalOrcamentariaResponse, IReceitaTotalOrcamentariaResponse } from '../../interfaces/painel-orcamento/painel-orcamento';
+import { IRevenueExpenseGndTotalBudgetExecutionResponse, IRevenueTotalBudgetExecutionResponse } from '../../interfaces/budget-panel/budget-panel';
 import { ISPOTotalAutorizadoDTO, ISPOTotalPrevistoDTO } from '../../interfaces/planejamento-orcamentario/planejamento-orcamentario';
 
 interface IDataCard {
-  receitaTotal?: IReceitaTotalOrcamentariaResponse | null;
-  receitaDespesaGNDOrcamentaria?: IReceitaDespesaGNDTotalOrcamentariaResponse[] | null;
-  totalPrevisto?: ISPOTotalPrevistoDTO[] | null;
-  totalAutorizado?: ISPOTotalAutorizadoDTO[] | null;
+  revenueTotal?: IRevenueTotalBudgetExecutionResponse | null;
+  revenueExpenseGNDBudget?: IRevenueExpenseGndTotalBudgetExecutionResponse[] | null;
+  plannedTotal?: ISPOTotalPrevistoDTO[] | null;
+  authorizedTotal?: ISPOTotalAutorizadoDTO[] | null;
 }
 
 @Injectable({
@@ -16,8 +16,8 @@ interface IDataCard {
 export class ComunicationCardsService {
   private dataSubject = new BehaviorSubject<IDataCard>(
     {
-      receitaTotal: null,
-      receitaDespesaGNDOrcamentaria: null,
+      revenueTotal: null,
+      revenueExpenseGNDBudget: null,
     });
   data$ = this.dataSubject.asObservable();
 
@@ -27,25 +27,25 @@ export class ComunicationCardsService {
   }
 
   // Método para enviar apenas receita total
-  sendReceitaTotal(receitaTotal: IReceitaTotalOrcamentariaResponse) {
-    this.dataSubject.next({ receitaTotal });
+  sendRevenueTotal(revenueTotal: IRevenueTotalBudgetExecutionResponse) {
+    this.dataSubject.next({ revenueTotal });
   }
 
-  sendReceitaDespesaGNDOrcamentaria(receitaDespesaGNDOrcamentaria: IReceitaDespesaGNDTotalOrcamentariaResponse[]) {
-    this.dataSubject.next({ receitaDespesaGNDOrcamentaria });
+  sendRevenueExpenseGNDBudget(revenueExpenseGNDBudget: IRevenueExpenseGndTotalBudgetExecutionResponse[]) {
+    this.dataSubject.next({ revenueExpenseGNDBudget });
   }
 
 
-  sendTotalPrevisto(totalPrevisto: ISPOTotalPrevistoDTO[]) {
-    this.dataSubject.next({totalPrevisto})
+  sendPlannedTotal(plannedTotal: ISPOTotalPrevistoDTO[]) {
+    this.dataSubject.next({ plannedTotal })
   }
 
-  sendTotalAutorizado(totalAutorizado: ISPOTotalAutorizadoDTO[]) {
-    this.dataSubject.next({totalAutorizado})
+  sendAuthorizedTotal(authorizedTotal: ISPOTotalAutorizadoDTO[]) {
+    this.dataSubject.next({ authorizedTotal })
   }
 
   // Método para obter o valor atual
-  getDataAtual(): IDataCard {
+  getCurrentData(): IDataCard {
     return this.dataSubject.value;
   }
 }

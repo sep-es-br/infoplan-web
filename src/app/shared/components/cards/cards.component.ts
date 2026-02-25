@@ -12,10 +12,10 @@ import {
 } from "../../../@theme/theme.module";
 import { NbThemeService } from "@nebular/theme";
 import {
-  IExecucaoOrcamentariaRequest,
-  IReceitaTotalOrcamentariaResponse,
-} from "../../../core/interfaces/painel-orcamento/painel-orcamento";
-import { PainelOrcamentoService } from "../../../core/service/painel-orcamento/painel-orcamento.service";
+  IBudgetExecutionRequest,
+  IRevenueTotalBudgetExecutionResponse,
+} from "../../../core/interfaces/budget-panel/budget-panel";
+import { BudgetPanelService } from "../../../core/service/budget-panel/budget-panel.service";
 import { ComunicationCardsService } from "../../../core/service/comunication-cards/comunication-cards.service";
 import { Subscription } from "rxjs";
 
@@ -53,12 +53,12 @@ export class CardsComponent implements OnInit {
   @Input() descricaoAlinhada: "esquerda" | "centro" | "direita" = "centro";
   @Input() tooltip: string = "";
 
-  receitaTotal: IReceitaTotalOrcamentariaResponse | null = null;
+  revenueTotal: IRevenueTotalBudgetExecutionResponse | null = null;
 
   private subscription!: Subscription;
 
   private readonly _themeservice = inject(NbThemeService);
-  private readonly _execucaoOrcamentaria = inject(PainelOrcamentoService);
+  private readonly _execucaoOrcamentaria = inject(BudgetPanelService);
   private readonly _comunicationCardsService = inject(ComunicationCardsService);
 
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;

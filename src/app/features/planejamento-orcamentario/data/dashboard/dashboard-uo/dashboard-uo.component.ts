@@ -20,13 +20,13 @@ import {
 import {
   ChartDataConfig,
   OrgChartHorizontalComponent,
-} from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+} from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import {
   ISPODashboardUo,
   ISPOTotalAutorizadoFilter,
 } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
+import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { Subject } from "rxjs";
@@ -134,7 +134,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
           if (this.dasboardResponse.length > 0) {
             this.processarDados(this.dasboardResponse);
           } else {
-            this.chartData = null;
+            this.chartData;
           }
           this.requestStatus = RequestStatus.SUCCESS;
         },

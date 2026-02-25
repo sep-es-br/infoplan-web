@@ -1,7 +1,7 @@
-<ngx-flip-table [showSearchField]="true" [cardTitle]="title" [loadingStatus]="loadingStatus"
+﻿<ngx-flip-table [showSearchField]="true" [cardTitle]="title" [loadingStatus]="loadingStatus"
   [tableContent]="tableContent" (executeDownload)="handleTableDownload()" [backCardHeight]="500"
-  [showMaximizeButton]="true" (showMaximizeButtonClick)="onMaximizeButtonClick('receita-impostos',$event)">
+  [showMaximizeButton]="true" (showMaximizeButtonClick)="onMaximizeButtonClick('revenue-taxes',$event)">
   <ngx-org-chart-horizontal [chart]="chartData"
-    [height]="isChartMaximized('receita-impostos') ? calcMaximizedHeight() : 300" card-front>
+    [height]="isChartMaximized('revenue-taxes') ? calcMaximizedHeight() : 300" card-front>
   </ngx-org-chart-horizontal>
 </ngx-flip-table>

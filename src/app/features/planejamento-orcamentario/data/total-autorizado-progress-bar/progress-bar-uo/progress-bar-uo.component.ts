@@ -18,16 +18,15 @@ import {
   ISPOTotalAutorizadoFilter,
   ISPOTotalAutorizadoProgressUo,
 } from "../../../../../core/interfaces/planejamento-orcamentario/planejamento-orcamentario";
-import { ChartDataProcessorService } from "../../../../../core/service/painel-orcamento/chart-data-processor.service";
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { ChartMaximizeService } from "../../../../../core/service/chart-maximize/chart-maximize.service";
 import { Subject } from "rxjs";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
 import { PlanejamentoOrcamentarioService } from "../../../../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
-import { ChartDataConfig } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { RequestStatus } from "../../../planejamento-orcamentario.component";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { replacePorcentage } from "../../../../../@core/utils/functionts/functionts";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
+import { ChartDataConfig } from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-progress-bar-uo",
@@ -48,7 +47,6 @@ export class ProgressBarUoComponent implements OnInit, OnChanges, OnDestroy {
   private readonly _planejamentoOrcamentarioService = inject(
     PlanejamentoOrcamentarioService,
   );
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly destroy$ = new Subject<void>();

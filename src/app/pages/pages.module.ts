@@ -4,7 +4,7 @@ import { NbMenuModule } from "@nebular/theme";
 import { ThemeModule } from "../@theme/theme.module";
 import { HomeModule } from "../features/home/home.module";
 import { LoginModule } from "../features/login/login.module";
-import { PainelOrcamentoModule } from "../features/painel-orcamento/painel-orcamento.module";
+import { BudgetPanelModule } from "../features/budget-panel/budget-panel.module";
 import { StrategicProjectsModule } from "../features/strategic-projects/strategicProjects.module";
 import { MiscellaneousModule } from "./miscellaneous/miscellaneous.module";
 import { PagesRoutingModule } from "./pages-routing.module";
@@ -24,4 +24,4 @@ import { PlanejamentoOrcamentarioModule } from "../features/planejamento-orcamen
   ],
   declarations: [PagesComponent],
 })
-export class PagesModule {}
+export class PagesModule { }

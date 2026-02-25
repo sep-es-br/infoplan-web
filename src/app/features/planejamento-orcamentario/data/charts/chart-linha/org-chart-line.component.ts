@@ -14,9 +14,9 @@ import {
   getAvailableThemesStyles,
 } from "../../../../../@theme/theme.module";
 import { NbThemeService } from "@nebular/theme";
-import { IChartOptions } from "../../../../../shared/models/painel-orcamento/IChartOptions";
+import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
 import { ECharts, EChartsOption } from "echarts";
-import { ChartDataConfig } from "../../../../painel-orcamento/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { ChartDataConfig } from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-org-chart-line",
@@ -207,7 +207,7 @@ export class OrgChartLineComponent implements OnInit, OnChanges, OnDestroy {
           show: true,
           lineStyle: { color: theme.textPrimaryColor, width: 2 },
         },
-        axisLabel:{
+        axisLabel: {
           formatter: (v: number) => `R$ ${this.formatValue(v)}`,
           color: theme.textPrimaryColor,
           fontSize: isTablet ? 9 : isMobile ? 10 : 11,

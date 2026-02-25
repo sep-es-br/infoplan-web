@@ -1,0 +1,52 @@
+﻿<ngx-flip-table
+  [cardTitle]="title"
+  [tableContent]="tableContent"
+  [showSearchField]="false"
+  (executeDownload)="handleTableDownload()"
+  [loadingStatus]="requestStatus"
+  [subCardTitle]=""
+  [showMaximizeButton]="true"
+  [backCardHeight]="308"
+  (showMaximizeButtonClick)="
+    onMaximizeButtonClick('revenue-expense-gnd', $event)
+  "
+>
+<div class="toggles-container small-toggle" card-toggles #cardToggles>
+  <div class="form-check form-switch">
+    <input
+      class="form-check-input"
+      [(ngModel)]="toggleExecutivo"
+      (ngModelChange)="onToggleChange('executivo')"
+      type="checkbox"
+      role="switch"
+      id="flexSwitchCheckDefault"
+    />
+    <label class="form-check-label" for="flexSwitchCheckDefault">
+      Executivo
+    </label>
+  </div>
+
+  <div class="form-check form-switch">
+    <input
+      class="form-check-input"
+      [(ngModel)]="toggleDemaisPoderes"
+      (ngModelChange)="onToggleChange('demaisPoderes')"
+      type="checkbox"
+      role="switch"
+      id="flexSwitchCheckChecked"
+    />
+    <label class="form-check-label" for="flexSwitchCheckChecked">
+      Demais Poderes
+    </label>
+  </div>
+</div>
+  <ngx-org-chart-vertical
+    [chart]="chartData"
+    [height]="
+      isChartMaximized('revenue-expense-gnd') ? calcMaximizedHeight() : 300
+    "
+    [charactersPerLine]="15"
+    [chartDataConfig]="chartDataConfig"
+    card-front
+  ></ngx-org-chart-vertical>
+</ngx-flip-table>

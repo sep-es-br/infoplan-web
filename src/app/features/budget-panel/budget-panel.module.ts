@@ -1,7 +1,7 @@
 ﻿import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { NbCardModule, NbSelectModule, NbIconModule, NbButtonModule, NbDatepickerModule, NbInputModule, NbTooltipModule, NbLayoutModule, NbToggleModule } from "@nebular/theme"; // <-- ESSENCIAL
+import { NbCardModule, NbSelectModule, NbIconModule, NbButtonModule, NbDatepickerModule, NbInputModule, NbTooltipModule, NbLayoutModule, NbToggleModule, NbTagModule, NbAutocompleteModule } from "@nebular/theme"; // <-- ESSENCIAL
 
 import { NgxChartsModule } from "@swimlane/ngx-charts";
 import { NgxEchartsModule } from "ngx-echarts";
@@ -25,6 +25,9 @@ import { ShortNumberPipe } from "../../@theme/pipes";
 import { RevenueIcmsComponent } from "./data/revenue-icms/revenue-icms.component";
 import { ThemeModule } from "../../@theme/theme.module";
 import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
+import { NavigationBudgetPanel } from "./navigation-budget-panel/navigation-budget-panel";
+import { BudgetPanelRoutingModule } from "./budget-panel-routing.module";
+import { BudgetPanelIndicatorComponent } from './budget-panel-indicator/budget-panel-indicator.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +37,8 @@ import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
     RevenueExpenseGndComponent,
     RevenueIcmsComponent,
     RevenueParticipationComponent,
+    NavigationBudgetPanel,
+    BudgetPanelIndicatorComponent
   ],
   imports: [
     CommonModule,
@@ -60,7 +65,10 @@ import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
     RevenueOriginComponent,
     RevenueTransferComponent,
     OrgChartVerticalComponent,
-    NbToggleModule
+    NbToggleModule,
+    NbTagModule,
+    BudgetPanelRoutingModule,
+    NbAutocompleteModule
   ],
   providers: [
     ShortNumberPipe,

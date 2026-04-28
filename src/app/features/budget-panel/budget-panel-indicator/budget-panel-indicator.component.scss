@@ -1,0 +1,504 @@
+::ng-deep {
+  .cdk-overlay-container {
+    z-index: 1060;
+  }
+}
+
+.execucao-orcamentaria-logo {
+  min-height: 100px;
+  padding: 1rem;
+}
+
+.logo-card {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.logo-wrapper {
+  max-height: 100%;
+  padding: 0.5rem;
+}
+
+.img-fluid {
+  width: 95%;
+  // max-height: 56px;
+}
+
+.execucao-orcamentaria-content {
+  display: flex;
+  align-items: center;
+  height: 65px;
+  // max-width: 80%;
+}
+
+button:focus,
+select:focus,
+input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.filter-container {
+  position: relative;
+  width: 100%;
+  // margin-top: -15px;
+
+  .filter-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+    padding: 0px !important;
+
+    .filter-tags {
+      display: flex;
+      overflow-x: auto;
+      white-space: nowrap;
+      gap: 8px;
+      padding: 6px 0;
+      scrollbar-width: thin;
+      scrollbar-color: #005c99 transparent;
+
+      .filter-tag {
+        background-color: var(--card-background-color);
+        // border: 1px solid #ced4da;
+        color: var(--card-text-color);
+        padding: 0px 10px;
+        border-radius: 15px;
+        font-weight: bold;
+        display: block;
+        align-items: center;
+        font-size: 9px;
+        white-space: nowrap;
+
+        @media screen and (max-width: 576px) {
+          padding: 2px 12px;
+          font-size: 9px;
+        }
+
+        .tag-label {
+          font-weight: normal;
+        }
+
+        .tag-value {
+          margin-top: -6px;
+        }
+
+        button {
+          background: none;
+          border: none;
+          font-weight: bold;
+          margin-left: 4px;
+          font-size: 17px;
+          cursor: pointer;
+          color: #005c99;
+
+          transition: color 0.35s ease;
+
+          &:hover {
+            color: #dc3545;
+          }
+        }
+      }
+    }
+
+    .map-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+
+      @media (max-width: 767px) {
+        display: none !important;
+      }
+
+      .map-icon {
+        width: 24px;
+        height: 50px;
+        vertical-align: middle;
+      }
+
+      &:hover {
+        .map-icon {
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        }
+      }
+
+      &.map-btn-clicked {
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+          saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+      }
+    }
+
+    .filter-toggle {
+      color: var(--card-text-color);
+      min-width: 90px;
+      border: none;
+      background-color: transparent;
+      padding-bottom: 10px;
+      padding-top: 10px;
+      cursor: pointer;
+      z-index: 1;
+      border-radius: 4px;
+    }
+  }
+
+  .modal {
+    .modal-dialog {
+      max-width: 70vw;
+      justify-self: center;
+
+      .modal-content {
+        width: 70vw;
+        background-color: var(--card-background-color);
+        color: var(--card-text-color);
+
+        .modal-body {
+          .close-filter-button {
+            color: var(--card-text-color);
+          }
+
+          .filter-row {
+            margin-bottom: 0.75em;
+
+            .filter-entity {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+
+              span {
+                font-size: 12px;
+              }
+
+              nb-select,
+              input {
+                width: 100%;
+                max-width: 100%;
+                // height: 2.5em !important;
+                font-size: 12px;
+              }
+            }
+          }
+        }
+
+        .modal-footer {
+          border: none;
+        }
+      }
+    }
+  }
+}
+
+
+.card {
+  background-color: var(--card-background-color);
+  border-radius: 8px;
+  padding: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  height: 100%;
+  line-height: 16px;
+  // padding-right: 33px;
+  .delivery-select {
+    min-width: 200px;
+  }
+
+  .icon-top-right {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+  }
+
+  .card-content {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    padding: 5px 0 5px 5px;
+    height: 100%;
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+      border-width: 0.35em;
+
+      &.qt-programas,
+      &.qt-projetos,
+
+      &.available-without-reservation {
+        color: var(--available-without-reservation) !important;
+      }
+
+      &.planned-success {
+        color: var(--planned-success) !important;
+      }
+
+      &.comparative {
+        color: var(--comparative) !important;
+      }
+
+      &.budgetary-feasibility {
+        color: var(--budgetary-feasibility) !important;
+      }
+
+      &.budgetary-changes {
+        color: var(--budgetary-changes) !important;
+      }
+
+      &.budget-management-indicator {
+        color: var(--budget-management-indicator) !important;
+      }
+
+      &.po-with-highest-settlement {
+        color: var(--po-with-highest-settlement) !important;
+      }
+
+      &.focus-on-the-mission {
+        color: var(--focus-on-the-mission) !important;
+      }
+
+      .sr-only,
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    }
+
+    .portfolio-content {
+      display: flex;
+      align-items: center;
+      // height: 65px;
+      height: 157px;
+      // max-width: 80%;
+    }
+
+    .number-box {
+      background-color: #005c99;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      padding: 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 65px;
+      min-width: 80px;
+      // color: white;
+      // font-size: 16px;
+      // font-weight: bold;
+      // padding: 8px;
+      // border-radius: 4px;
+      // display: flex;
+      // align-items: center;
+      // justify-content: center;
+      // height: 65px;
+      // min-width: 40%;
+
+      &.available-without-reservation {
+        background-color: var(--available-without-reservation) !important;
+      }
+
+      &.planned-success {
+        background-color: var(--planned-success) !important;
+      }
+
+      &.comparative {
+        background-color: var(--comparative) !important;
+      }
+
+      &.budgetary-feasibility {
+        background-color: var(--budgetary-feasibility) !important;
+      }
+
+      &.budgetary-changes {
+        background-color: var(--budgetary-changes) !important;
+      }
+
+      &.budget-management-indicator {
+        background-color: var(--budget-management-indicator) !important;
+      }
+
+      &.po-with-highest-settlement {
+        background-color: var(--po-with-highest-settlement) !important;
+      }
+
+      &.focus-on-the-mission {
+        background-color: var(--focus-on-the-mission) !important;
+      }
+
+      .currency {
+        font-size: 15px;
+      }
+    }
+
+    .text-section {
+      display: flex;
+      align-items: end;
+      font-size: 12px;
+      font-weight: bold;
+      width: 100%;
+      text-align: start;
+      height: 100%;
+      line-height: 16px;
+      padding-right: 33px;
+    }
+  }
+}
+
+
+:host-context(.nb-theme-default, .nb-theme-dark, .nb-theme-cosmic) {
+  .icon-top-right {
+    color: #005c99 !important;
+
+    &.available-without-reservation {
+      color: var(--available-without-reservation) !important;
+    }
+
+    &.planned-success {
+      color: var(--planned-success) !important;
+    }
+
+    &.comparative {
+      color: var(--comparative) !important;
+    }
+
+    &.po-with-highest-settlement {
+      color: var(--po-with-highest-settlement) !important;
+    }
+
+    &.budgetary-feasibility {
+      color: var(--budgetary-feasibility) !important;
+    }
+
+    &.focus-on-the-mission {
+      color: var(--focus-on-the-mission) !important;
+    }
+
+    &.budgetary-changes {
+      color: var(--budgetary-changes) !important;
+    }
+
+    &.budget-management-indicator {
+      color: var(--budget-management-indicator) !important;
+    }
+  }
+
+  .text-section {
+    color: #005c99 !important;
+
+    &.available-without-reservation {
+      color: var(--available-without-reservation) !important;
+    }
+
+    &.planned-success {
+      color: var(--planned-success) !important;
+    }
+
+    &.comparative {
+      color: var(--comparative) !important;
+    }
+
+    &.po-with-highest-settlement {
+      color: var(--po-with-highest-settlement) !important;
+    }
+
+    &.budgetary-feasibility {
+      color: var(--budgetary-feasibility) !important;
+    }
+
+    &.focus-on-the-mission {
+      color: var(--focus-on-the-mission) !important;
+    }
+
+    &.budgetary-changes {
+      color: var(--budgetary-changes) !important;
+    }
+
+    &.budget-management-indicator {
+      color: var(--budget-management-indicator) !important;
+    }
+  }
+}
+
+
+// config
+
+.autocomplete-input-uo {
+  // height: 24px !important;
+  border-radius: 6px !important;
+}
+
+:host-context(.nb-theme-default) {
+  .autocomplete-input-uo {
+    border: 1px solid #f1f4f8 !important;
+  }
+}
+
+:host-context(.nb-theme-dark) {
+  .autocomplete-input-uo {
+    border: 1px solid #191f35 !important;
+    background-color: #1d253e !important;
+  }
+}
+
+
+nb-tag {
+  background-color: var(--color-primary-500);
+  color: white;
+  font-size: 10px !important;
+  // padding: 3px 8px !important;
+  height: auto !important;
+  min-height: 22px !important;
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: fit-content;
+  box-sizing: border-box;
+  border-radius: 12px;
+
+  &:hover {
+    background-color: var(--color-primary-600);
+  }
+
+  ::ng-deep {
+    .nb-tag-text {
+      font-size: 10px !important;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+      display: inline-block;
+    }
+
+    .nb-tag-remove {
+      font-size: 12px !important;
+      margin-left: 4px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+
+@media screen and (max-width: 991px) {
+    .portfolio-content {
+      display: flex;
+      align-items: center;
+      // height: 65px;
+      height: 65px !important;
+      max-width: 100% !important;
+    }
+
+  .img-fluid {
+    width: 44% !important;
+    max-height: 140px;
+  }
+}

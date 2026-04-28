@@ -94,7 +94,6 @@
         color: var(--despesa-liquida-autorizada) !important;
       }
 
-
       .sr-only,
       .visually-hidden {
         position: absolute;
@@ -107,7 +106,6 @@
         white-space: nowrap;
         border: 0;
       }
-
     }
 
     .portfolio-content {
@@ -246,13 +244,14 @@ input:focus {
 .filter-container {
   position: relative;
   width: 100%;
-  margin-top: -15px;
+  // margin-top: -15px;
 
   .filter-button {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 5px;
+    padding: 0px !important;
 
     .filter-tags {
       display: flex;
@@ -265,14 +264,14 @@ input:focus {
 
       .filter-tag {
         background-color: var(--card-background-color);
-        border: 1px solid #ced4da;
+        // border: 1px solid #ced4da;
         color: var(--card-text-color);
-        padding: 4px 12px;
-        border-radius: 20px;
+        padding: 0px 10px;
+        border-radius: 15px;
         font-weight: bold;
         display: flex;
         align-items: center;
-        font-size: 10px;
+        font-size: 9px;
         white-space: nowrap;
 
         @media screen and (max-width: 576px) {

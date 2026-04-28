@@ -30,7 +30,7 @@
                     >
                       {{
                         (index > 0 ? " " : "") +
-                          (value.name | TextTruncate: 17 : ";")
+                          (value.name | TextTruncate : 17 : ";")
                       }}
                     </span>
                   </ng-template>
@@ -154,7 +154,9 @@
                       placeholder="Selecionar"
                       size="tiny"
                       [(ngModel)]="filter.sourceType"
-                      (selectedChange)="handleFilterChange('sourceType', $event)"
+                      (selectedChange)="
+                        handleFilterChange('sourceType', $event)
+                      "
                       #customSelect
                     >
                       <nb-option [value]="1"> 1 - Caixa do Tesouro</nb-option>
@@ -226,7 +228,7 @@
         </div>
         <div
           class="card-content"
-          [title]="'R$ ' + (totals.totalPlannedRevenue | number: '1.0-0')"
+          [title]="'R$ ' + (totals.totalPlannedRevenue | number : '1.0-0')"
         >
           <ng-container
             *ngIf="requestStatus.totals === 'Loading'; else previstaContent"
@@ -271,7 +273,7 @@
         </div>
         <div
           class="card-content"
-          [title]="'R$ ' + (totals.totalRealizedRevenue | number: '1.0-2')"
+          [title]="'R$ ' + (totals.totalRealizedRevenue | number : '1.0-2')"
         >
           <ng-container
             *ngIf="requestStatus.totals === 'Loading'; else realizadaContent"

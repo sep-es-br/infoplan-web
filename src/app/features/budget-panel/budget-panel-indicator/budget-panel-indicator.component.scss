@@ -39,6 +39,7 @@ input:focus {
   box-shadow: none;
 }
 
+
 .filter-container {
   position: relative;
   width: 100%;
@@ -67,7 +68,7 @@ input:focus {
         padding: 0px 10px;
         border-radius: 15px;
         font-weight: bold;
-        display: block;
+        display: flex;
         align-items: center;
         font-size: 9px;
         white-space: nowrap;
@@ -121,14 +122,12 @@ input:focus {
 
       &:hover {
         .map-icon {
-          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
         }
       }
 
       &.map-btn-clicked {
-        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-          saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
       }
     }
 
@@ -175,8 +174,11 @@ input:focus {
               input {
                 width: 100%;
                 max-width: 100%;
-                // height: 2.5em !important;
+                height: 28px !important;
                 font-size: 12px;
+                border-radius: 4px !important;
+                // padding: 0 0.75rem;
+                line-height: normal;
               }
             }
           }
@@ -190,7 +192,6 @@ input:focus {
   }
 }
 
-
 .card {
   background-color: var(--card-background-color);
   border-radius: 8px;
@@ -199,6 +200,7 @@ input:focus {
   text-align: center;
   height: 100%;
   line-height: 16px;
+
   // padding-right: 33px;
   .delivery-select {
     min-width: 200px;
@@ -433,8 +435,44 @@ input:focus {
 // config
 
 .autocomplete-input-uo {
-  // height: 24px !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.selected-items-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 100%;
+
+  nb-tag {
+    font-size: 9px !important;
+    border-radius: 12px;
+    height: 18px !important;
+    min-height: 18px !important;
+    padding: 0 6px !important;
+  }
+}
+
+:host-context(.nb-theme-dark) {
+  .selected-items-row nb-tag {
+    background-color: rgba(51, 102, 255, 0.1);
+    color: #3366ff;
+    border: 1px solid rgba(51, 102, 255, 0.3);
+  }
+}
+
+:host-context(.nb-theme-default) {
+  .selected-items-row nb-tag {
+    background-color: #f7f9fc;
+    color: #3366ff;
+    border: 1px solid #edf1f7;
+  }
 }
 
 :host-context(.nb-theme-default) {
@@ -445,8 +483,9 @@ input:focus {
 
 :host-context(.nb-theme-dark) {
   .autocomplete-input-uo {
-    border: 1px solid #191f35 !important;
-    background-color: #1d253e !important;
+    border: 1px solid #101426 !important;
+    background-color: #151a30 !important;
+    color: white !important;
   }
 }
 
@@ -489,13 +528,13 @@ nb-tag {
 
 
 @media screen and (max-width: 991px) {
-    .portfolio-content {
-      display: flex;
-      align-items: center;
-      // height: 65px;
-      height: 65px !important;
-      max-width: 100% !important;
-    }
+  .portfolio-content {
+    display: flex;
+    align-items: center;
+    // height: 65px;
+    height: 65px !important;
+    max-width: 100% !important;
+  }
 
   .img-fluid {
     width: 44% !important;

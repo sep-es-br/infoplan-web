@@ -28,6 +28,7 @@ import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
 import { NavigationBudgetPanel } from "./navigation-budget-panel/navigation-budget-panel";
 import { BudgetPanelRoutingModule } from "./budget-panel-routing.module";
 import { BudgetPanelIndicatorComponent } from './budget-panel-indicator/budget-panel-indicator.component';
+import { AvailabilityTuUoComponent } from "./budget-panel-indicator/data/availability-tu-uo/availability-tu-uo.component";
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { BudgetPanelIndicatorComponent } from './budget-panel-indicator/budget-p
     RevenueIcmsComponent,
     RevenueParticipationComponent,
     NavigationBudgetPanel,
-    BudgetPanelIndicatorComponent
+    BudgetPanelIndicatorComponent,
+    AvailabilityTuUoComponent
   ],
   imports: [
     CommonModule,

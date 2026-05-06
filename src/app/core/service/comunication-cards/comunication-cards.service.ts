@@ -8,6 +8,14 @@ interface IDataCard {
   revenueExpenseGNDBudget?: IRevenueExpenseGndTotalBudgetExecutionResponse[] | null;
   plannedTotal?: ISPOTotalPrevistoDTO[] | null;
   authorizedTotal?: ISPOTotalAutorizadoDTO[] | null;
+  cardAvailableWithoutReversation?: number | null;
+  cardPlannedSuccess?: number | null;
+  cardComparative?: number | null;
+  cardPoWithHighestSettlement?: number | null;
+  cardBudgetFeasibility?: number | null;
+  cardFocusOnTheMission?: number | null;
+  cardBudgetChanges?: number | null;
+  cardIGO?: number | null;
 }
 
 @Injectable({
@@ -42,6 +50,38 @@ export class ComunicationCardsService {
 
   sendAuthorizedTotal(authorizedTotal: ISPOTotalAutorizadoDTO[]) {
     this.dataSubject.next({ authorizedTotal })
+  }
+
+  sendCardAvailableWithoutReversation(cardAvailableWithoutReversation: number) {
+    this.dataSubject.next({ cardAvailableWithoutReversation })
+  }
+
+  sendCardPlannedSuccess(cardPlannedSuccess: number) {
+    this.dataSubject.next({ cardPlannedSuccess })
+  }
+
+  sendCardComparative(cardComparative: number) {
+    this.dataSubject.next({ cardComparative })
+  }
+
+  sendCardPoWithHighestSettlement(cardPoWithHighestSettlement: number) {
+    this.dataSubject.next({ cardPoWithHighestSettlement })
+  }
+
+  sendCardBudgetFeasibility(cardBudgetFeasibility: number) {
+    this.dataSubject.next({ cardBudgetFeasibility })
+  }
+
+  sendCardFocusOnTheMission(cardFocusOnTheMission: number) {
+    this.dataSubject.next({ cardFocusOnTheMission })
+  }
+
+  sendCardBudgetChanges(cardBudgetChanges: number) {
+    this.dataSubject.next({ cardBudgetChanges })
+  }
+
+  sendCardIGO(cardIGO: number) {
+    this.dataSubject.next({ cardIGO })
   }
 
   // Método para obter o valor atual

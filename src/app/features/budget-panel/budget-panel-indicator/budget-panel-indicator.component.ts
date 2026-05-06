@@ -3,6 +3,7 @@ import {
   ElementRef,
   EventEmitter,
   inject,
+  OnDestroy,
   OnInit,
   Output,
   QueryList,
@@ -19,16 +20,32 @@ import {
 } from "../../../core/interfaces/indicator-execution/indicator-execution";
 import { environment } from "../../../../environments/environment";
 import { IndicatorExecutionService } from "../../../core/service/indicator-execution-service/indicator-execution.service";
+import { ComunicationCardsService } from "../../../core/service/comunication-cards/comunication-cards.service";
+import { Subject, Subscription } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { ChartMaximizeService } from "../../../core/service/chart-maximize/chart-maximize.service";
 
 const DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS: IIndicatorExecutionFilter = {
   year: environment.indicatorExecutionFilter.year,
   month: environment.indicatorExecutionFilter.month,
-  sourceType: environment.indicatorExecutionFilter.sourceType,
-  uo: environment.indicatorExecutionFilter.uo.map(String),
-  action: environment.indicatorExecutionFilter.action.map(String),
-  fullSource: environment.indicatorExecutionFilter.fullSource.map(String),
-  parlamentaryAmendment: environment.indicatorExecutionFilter.parlamentaryAmendment,
+  typeSource: environment.indicatorExecutionFilter.typeSource,
+  codUo: environment.indicatorExecutionFilter.codUo.map(String),
+  codAction: environment.indicatorExecutionFilter.codAction.map(String),
+  codSource: environment.indicatorExecutionFilter.codSource.map(String),
+  codGnd: environment.indicatorExecutionFilter.codGnd.map(String),
+  codAmendment: environment.indicatorExecutionFilter.codAmendment.map(String),
 };
+
+interface ICardExecutionResponse {
+  cardAvailableWithoutReversation?: number | null;
+  cardPlannedSuccess?: number | null;
+  cardComparative?: number | null;
+  cardPoWithHighestSettlement?: number | null;
+  cardBudgetFeasibility?: number | null;
+  cardFocusOnTheMission?: number | null;
+  cardBudgetChanges?: number | null;
+  cardIGO?: number | null;
+}
 
 interface ACTIVE_FILTERS {
   key: string;
@@ -52,8 +69,11 @@ enum AvailableFilters {
   templateUrl: "./budget-panel-indicator.component.html",
   styleUrls: ["./budget-panel-indicator.component.scss"],
 })
-export class BudgetPanelIndicatorComponent implements OnInit {
+export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
+
   private indicatorExecutionService = inject(IndicatorExecutionService);
+  private comunicationCardsService = inject(ComunicationCardsService);
+  private _chartMaximizeService = inject(ChartMaximizeService);
 
   @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
   @ViewChild("uoSearchInput") uoSearchInput!: ElementRef<HTMLInputElement>;
@@ -63,13 +83,14 @@ export class BudgetPanelIndicatorComponent implements OnInit {
 
   @Output() filterChanged = new EventEmitter<IIndicatorExecutionFilter>();
 
-  activeFilters: ACTIVE_FILTERS[] = [];
-  isFilterModalOpen: boolean = false;
   @ViewChildren(NbTooltipDirective) tooltips!: QueryList<NbTooltipDirective>;
 
   filter: IIndicatorExecutionFilter = { ...DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS };
   finalFilter: IIndicatorExecutionFilter = { ...DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS };
   currentRequestParams = DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS;
+  activeFilters: ACTIVE_FILTERS[] = [];
+
+  isFilterModalOpen: boolean = false;
 
   uoList: IBudgetaryUnitResponse[] = [];
   filteredUOList: IBudgetaryUnitResponse[] = [];
@@ -83,6 +104,9 @@ export class BudgetPanelIndicatorComponent implements OnInit {
   requestStatus = {
     status: RequestStatus.EMPTY,
   }
+
+  private subscriptionCard: Subscription;
+  private destroy$ = new Subject<void>();
 
   yearsList = Array.from(
     { length: new Date().getFullYear() - 2014 + 1 },
@@ -151,10 +175,61 @@ export class BudgetPanelIndicatorComponent implements OnInit {
     this.loadFullSourceList();
   }
 
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+
+    if (this.subscriptionCard) this.subscriptionCard.unsubscribe();
+  }
+
+  getComunicationCard(): void {
+    this.subscriptionCard = this.comunicationCardsService.data$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+
+        if (res.cardAvailableWithoutReversation !== undefined) {
+          this.statusTotal.availableWithoutReservation = res.cardAvailableWithoutReversation;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        }
+        else if (res.cardPlannedSuccess !== undefined) {
+          this.statusTotal.plannedSuccess = res.cardPlannedSuccess;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        }
+        else if (res.cardComparative !== undefined) {
+          this.statusTotal.comparative = res.cardComparative;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        }
+        else if (res.cardPoWithHighestSettlement !== undefined) {
+          this.statusTotal.poWithHighestSettlement = res.cardPoWithHighestSettlement;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        }
+        else if (res.cardBudgetFeasibility !== undefined) {
+          this.statusTotal.budgetaryFeasibility = res.cardBudgetFeasibility;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        }
+        else if (res.cardFocusOnTheMission !== undefined) {
+          this.statusTotal.focusOnTheMission = res.cardFocusOnTheMission;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        }
+        else if (res.cardBudgetChanges !== undefined) {
+          this.statusTotal.budgetaryChanges = res.cardBudgetChanges;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        }
+        else if (res.cardIGO !== undefined) {
+          this.statusTotal.budgetManagementIndicator = res.cardIGO;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        }
+      });
+  }
+
+
   loadInitialData(): void {
     this.currentRequestParams = { ...this.filter };
     this.updateActiveFilters();
     this.filterChanged.emit(this.currentRequestParams);
+    this.getComunicationCard();
+
   }
 
   loadUOList() {
@@ -165,7 +240,7 @@ export class BudgetPanelIndicatorComponent implements OnInit {
   }
 
   loadActionList() {
-    if (!this.filter.uo || this.filter.uo.length === 0) {
+    if (!this.filter.codUo || this.filter.codUo.length === 0) {
       this.actionList = [];
       this.filteredActionList = [];
       return;
@@ -177,27 +252,27 @@ export class BudgetPanelIndicatorComponent implements OnInit {
   }
 
   loadFullSourceList() {
-    if (!this.filter.action || this.filter.action.length === 0) {
+    if (!this.filter.codAction || this.filter.codAction.length === 0) {
       this.fullSourceList = [];
       this.filteredFullSourceList = [];
       return;
     }
     this.indicatorExecutionService.getSearchFullSource(this.filter).subscribe(res => {
-      this.fullSourceList = res as any; // Service returns IActionResponse[] but should be IFullSourceResponse[]
+      this.fullSourceList = res as any;
       this.filteredFullSourceList = res as any;
     });
   }
 
   isUOSelected(uo: IBudgetaryUnitResponse): boolean {
-    return this.filter.uo?.includes(uo.uo);
+    return this.filter.codUo?.includes(uo.uo);
   }
 
   isActionSelected(action: IActionResponse): boolean {
-    return this.filter.action?.includes(action.cod_action);
+    return this.filter.codAction?.includes(action.cod_action);
   }
 
   isFullSourceSelected(source: IFullSourceResponse): boolean {
-    return this.filter.fullSource?.includes(source.cod_source);
+    return this.filter.codSource?.includes(source.cod_source);
   }
 
   onUOSearch(event: any) {
@@ -222,18 +297,18 @@ export class BudgetPanelIndicatorComponent implements OnInit {
   }
 
   get selectedUOs(): IBudgetaryUnitResponse[] {
-    return this.uoList.filter((uo) => this.filter.uo.includes(uo.uo));
+    return this.uoList.filter((uo) => this.filter.codUo.includes(uo.uo));
   }
 
   get selectedActions(): IActionResponse[] {
     return this.actionList.filter((a) =>
-      this.filter.action.includes(a.cod_action)
+      this.filter.codAction.includes(a.cod_action)
     );
   }
 
   get selectedFullSources(): IFullSourceResponse[] {
     return this.fullSourceList.filter((s) =>
-      this.filter.fullSource.includes(s.cod_source)
+      this.filter.codSource.includes(s.cod_source)
     );
   }
 
@@ -250,76 +325,76 @@ export class BudgetPanelIndicatorComponent implements OnInit {
   }
 
   removeUO(code: string) {
-    this.filter.uo = this.filter.uo.filter((c) => c !== code);
-    if (this.filter.uo.length === 0) this.filter.uo = ["-1"];
+    this.filter.codUo = this.filter.codUo.filter((c) => c !== code);
+    if (this.filter.codUo.length === 0) this.filter.codUo = ["-1"];
     this.loadActionList();
   }
 
   removeAction(code: string) {
-    this.filter.action = this.filter.action.filter((c) => c !== code);
-    if (this.filter.action.length === 0) this.filter.action = ["-1"];
+    this.filter.codAction = this.filter.codAction.filter((c) => c !== code);
+    if (this.filter.codAction.length === 0) this.filter.codAction = ["-1"];
     this.loadFullSourceList();
   }
 
   removeFullSource(code: string) {
-    this.filter.fullSource = this.filter.fullSource.filter((c) => c !== code);
-    if (this.filter.fullSource.length === 0) this.filter.fullSource = ["-1"];
+    this.filter.codSource = this.filter.codSource.filter((c) => c !== code);
+    if (this.filter.codSource.length === 0) this.filter.codSource = ["-1"];
   }
 
   onUOSelected(selectedCode: string) {
-    if (this.filter.uo.includes("-1")) {
-      this.filter.uo = this.filter.uo.filter((code) => code !== "-1");
+    if (this.filter.codUo.includes("-1")) {
+      this.filter.codUo = this.filter.codUo.filter((code) => code !== "-1");
     }
 
-    const index = this.filter.uo.indexOf(selectedCode);
+    const index = this.filter.codUo.indexOf(selectedCode);
     if (index > -1) {
-      this.filter.uo.splice(index, 1);
+      this.filter.codUo.splice(index, 1);
     } else {
-      this.filter.uo.push(selectedCode);
+      this.filter.codUo.push(selectedCode);
     }
 
-    if (this.filter.uo.length === 0) {
-      this.filter.uo = ["-1"];
+    if (this.filter.codUo.length === 0) {
+      this.filter.codUo = ["-1"];
     }
 
     this.loadActionList();
   }
 
   onActionSelected(selectedCode: string) {
-    if (this.filter.action.includes("-1")) {
-      this.filter.action = this.filter.action.filter((code) => code !== "-1");
+    if (this.filter.codAction.includes("-1")) {
+      this.filter.codAction = this.filter.codAction.filter((code) => code !== "-1");
     }
 
-    const index = this.filter.action.indexOf(selectedCode);
+    const index = this.filter.codAction.indexOf(selectedCode);
     if (index > -1) {
-      this.filter.action.splice(index, 1);
+      this.filter.codAction.splice(index, 1);
     } else {
-      this.filter.action.push(selectedCode);
+      this.filter.codAction.push(selectedCode);
     }
 
-    if (this.filter.action.length === 0) {
-      this.filter.action = ["-1"];
+    if (this.filter.codAction.length === 0) {
+      this.filter.codAction = ["-1"];
     }
 
     this.loadFullSourceList();
   }
 
   onFullSourceSelected(selectedCode: string) {
-    if (this.filter.fullSource.includes("-1")) {
-      this.filter.fullSource = this.filter.fullSource.filter(
+    if (this.filter.codSource.includes("-1")) {
+      this.filter.codSource = this.filter.codSource.filter(
         (code) => code !== "-1"
       );
     }
 
-    const index = this.filter.fullSource.indexOf(selectedCode);
+    const index = this.filter.codSource.indexOf(selectedCode);
     if (index > -1) {
-      this.filter.fullSource.splice(index, 1);
+      this.filter.codSource.splice(index, 1);
     } else {
-      this.filter.fullSource.push(selectedCode);
+      this.filter.codSource.push(selectedCode);
     }
 
-    if (this.filter.fullSource.length === 0) {
-      this.filter.fullSource = ["-1"];
+    if (this.filter.codSource.length === 0) {
+      this.filter.codSource = ["-1"];
     }
   }
 
@@ -344,11 +419,12 @@ export class BudgetPanelIndicatorComponent implements OnInit {
     this.currentRequestParams = {
       year: this.finalFilter.year,
       month: this.finalFilter.month,
-      sourceType: this.finalFilter.sourceType,
-      uo: this.finalFilter.uo,
-      action: this.finalFilter.action,
-      fullSource: this.finalFilter.fullSource,
-      parlamentaryAmendment: this.finalFilter.parlamentaryAmendment,
+      typeSource: this.finalFilter.typeSource,
+      codUo: this.finalFilter.codUo,
+      codAction: this.finalFilter.codAction,
+      codSource: this.finalFilter.codSource,
+      codGnd: this.finalFilter.codGnd,
+      codAmendment: this.finalFilter.codAmendment,
     };
   }
 
@@ -380,26 +456,26 @@ export class BudgetPanelIndicatorComponent implements OnInit {
       }
     }
 
-    if (this.finalFilter.sourceType && this.finalFilter.sourceType.length >= 1) {
-      if (!this.finalFilter.sourceType.includes(-1)) {
-        const tiposSelecionados = this.finalFilter.sourceType.map((tipoNum) => {
+    if (this.finalFilter.typeSource && this.finalFilter.typeSource.length >= 1) {
+      if (!this.finalFilter.typeSource.includes(-1)) {
+        const tiposSelecionados = this.finalFilter.typeSource.map((tipoNum) => {
           const tipo = this.tipoFonteList.find((t) => t.id === tipoNum);
           return { name: tipo ? tipo.name : `Tipo ${tipoNum}` };
         });
         this.activeFilters.push({
-          key: "sourceType",
+          key: "typeSource",
           label: "Tipo de Fonte",
           displayValue: tiposSelecionados,
         });
       }
     }
 
-    if (this.finalFilter.uo && this.finalFilter.uo.length >= 1) {
-      if (!this.finalFilter.uo.includes("-1")) {
+    if (this.finalFilter.codUo && this.finalFilter.codUo.length >= 1) {
+      if (!this.finalFilter.codUo.includes("-1")) {
         this.activeFilters.push({
-          key: 'uo',
+          key: 'codUo',
           label: "UO",
-          displayValue: this.finalFilter.uo.map(code => {
+          displayValue: this.finalFilter.codUo.map(code => {
             const item = this.uoList.find(i => i.uo === code);
             return { name: item ? `${item.uo} - ${item.name}` : code };
           })
@@ -407,12 +483,12 @@ export class BudgetPanelIndicatorComponent implements OnInit {
       }
     }
 
-    if (this.finalFilter.action && this.finalFilter.action.length >= 1) {
-      if (!this.finalFilter.action.includes("-1")) {
+    if (this.finalFilter.codAction && this.finalFilter.codAction.length >= 1) {
+      if (!this.finalFilter.codAction.includes("-1")) {
         this.activeFilters.push({
-          key: 'action',
+          key: 'codAction',
           label: "Ação",
-          displayValue: this.finalFilter.action.map(code => {
+          displayValue: this.finalFilter.codAction.map(code => {
             const item = this.actionList.find(i => i.cod_action === code);
             return { name: item ? `${item.cod_action} - ${item.name_action}` : code };
           })
@@ -420,12 +496,12 @@ export class BudgetPanelIndicatorComponent implements OnInit {
       }
     }
 
-    if (this.finalFilter.fullSource && this.finalFilter.fullSource.length >= 1) {
-      if (!this.finalFilter.fullSource.includes("-1")) {
+    if (this.finalFilter.codSource && this.finalFilter.codSource.length >= 1) {
+      if (!this.finalFilter.codSource.includes("-1")) {
         this.activeFilters.push({
-          key: 'fullSource',
-          label: "Fonte Completa",
-          displayValue: this.finalFilter.fullSource.map(code => {
+          key: 'codSource',
+          label: "Fonte",
+          displayValue: this.finalFilter.codSource.map(code => {
             const item = this.fullSourceList.find(i => i.cod_source === code);
             return { name: item ? `${item.cod_source} - ${item.name_source}` : code };
           })
@@ -433,13 +509,13 @@ export class BudgetPanelIndicatorComponent implements OnInit {
       }
     }
 
-    if (this.finalFilter.parlamentaryAmendment && this.finalFilter.parlamentaryAmendment.length >= 1) {
-      if (!this.finalFilter.parlamentaryAmendment.includes(-1)) {
-        const emendasSelecionadas = this.finalFilter.parlamentaryAmendment.map(val => {
-          return { name: val === 1 ? "Sem Emenda Estadual" : "Apenas Emenda Estadual" };
+    if (this.finalFilter.codAmendment && this.finalFilter.codAmendment.length >= 1) {
+      if (!this.finalFilter.codAmendment.includes("-1")) {
+        const emendasSelecionadas = this.finalFilter.codAmendment.map(val => {
+          return { name: val === "1" ? "Sem Emenda Estadual" : "Apenas Emenda Estadual" };
         });
         this.activeFilters.push({
-          key: "parlamentaryAmendment",
+          key: "codAmendment",
           label: "Emenda Parlamentar",
           displayValue: emendasSelecionadas,
         });
@@ -452,24 +528,24 @@ export class BudgetPanelIndicatorComponent implements OnInit {
       if (newValue.length === 0) {
         if (origin === "month") {
           this.filter.month = [-1];
-        } else if (origin === "sourceType") {
-          this.filter.sourceType = [-1];
+        } else if (origin === "typeSource") {
+          this.filter.typeSource = [-1];
         } else if (origin === "year") {
           this.filter.year = [new Date().getFullYear()];
         } else if (origin === "uo") {
-          this.filter.uo = ["-1"];
+          this.filter.codUo = ["-1"];
         } else if (origin === "action") {
-          this.filter.action = ["-1"];
+          this.filter.codAction = ["-1"];
         } else if (origin === "fullSource") {
-          this.filter.fullSource = ["-1"];
-        } else if (origin === "parlamentaryAmendment") {
-          this.filter.parlamentaryAmendment = [-1];
+          this.filter.codSource = ["-1"];
+        } else if (origin === "codAmendment") {
+          this.filter.codAmendment = ["-1"];
         }
       } else if (newValue.length > 0) {
         if (origin === "month" && this.filter.month?.includes(-1)) {
           this.filter.month = this.filter.month.filter((m) => m !== -1);
-        } else if (origin === "sourceType" && this.filter.sourceType?.includes(-1)) {
-          this.filter.sourceType = this.filter.sourceType.filter((t) => t !== -1);
+        } else if (origin === "typeSource" && this.filter.typeSource?.includes(-1)) {
+          this.filter.typeSource = this.filter.typeSource.filter((t) => t !== -1);
         }
       }
     }
@@ -513,28 +589,60 @@ export class BudgetPanelIndicatorComponent implements OnInit {
       this.filter.year = [new Date().getFullYear()];
     } else if (filterKey === "month") {
       this.filter.month = environment.indicatorExecutionFilter.month;
-    } else if (filterKey === "sourceType") {
-      this.filter.sourceType = environment.indicatorExecutionFilter.sourceType;
+    } else if (filterKey === "typeSource") {
+      this.filter.typeSource = environment.indicatorExecutionFilter.typeSource;
     } else if (filterKey === "uo") {
-      this.filter.uo = ["-1"];
+      this.filter.codUo = ["-1"];
       this.loadActionList();
     } else if (filterKey === "action") {
-      this.filter.action = ["-1"];
+      this.filter.codAction = ["-1"];
       this.loadFullSourceList();
     } else if (filterKey === "fullSource") {
-      this.filter.fullSource = ["-1"];
-    } else if (filterKey === "parlamentaryAmendment") {
-      this.filter.parlamentaryAmendment = [-1];
+      this.filter.codSource = ["-1"];
+    } else if (filterKey === "codAmendment") {
+      this.filter.codAmendment = ["-1"];
     }
 
     this.filtrar();
   }
 
   formatNumber(value: number): string {
-    if (!value) return "R$ 0";
-    if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 2 })} B`;
-    if (value >= 1_000_000) return `${(value / 1_000_000).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 2 })} M`;
-    if (value >= 1_000) return `${(value / 1_000).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} K`;
-    return `${value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (!value || value === 0) return "R$ 0,00";
+
+    let v: number;
+    let unit = "";
+
+    if (value >= 1_000_000_000) {
+      v = value / 1_000_000_000;
+      unit = " B";
+    } else if (value >= 1_000_000) {
+      v = value / 1_000_000;
+      unit = " M";
+    } else if (value >= 1_000) {
+      v = value / 1_000;
+      unit = " K";
+    } else {
+      v = value;
+      unit = "";
+    }
+
+    const truncated = Math.trunc(v * 100) / 100;
+
+    return `${truncated.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}${unit}`;
+  }
+
+  handleMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  isAnyChartMaximized(): boolean {
+    return this._chartMaximizeService.isAnyChartMaximized();
   }
 }

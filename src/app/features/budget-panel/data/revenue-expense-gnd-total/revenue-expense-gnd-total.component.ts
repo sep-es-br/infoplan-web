@@ -110,6 +110,7 @@ export class RevenueExpenseGndTotalComponent implements OnChanges, OnDestroy {
   public isAtLeastOneToggleActive(): boolean {
     return this.toggleExecutivo || this.toggleDemaisPoderes;
   }
+
   onMaximizeButtonClick(chartId: string, event: boolean): void {
     this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
   }

@@ -1,11 +1,12 @@
 export interface IIndicatorExecutionFilter {
   year: number[];
-  month?: number[];
-  sourceType?: number[];
-  uo: string[];
-  action: string[];
-  fullSource: string[];
-  parlamentaryAmendment?: number[];
+  month: number[];
+  typeSource: number[];
+  codUo: string[];
+  codAction: string[];
+  codGnd: string[];
+  codSource: string[];
+  codAmendment: string[];
 }
 
 export interface IActionResponse {
@@ -23,3 +24,12 @@ export interface IBudgetaryUnitResponse {
   name: string;
   acronym: string;
 }
+
+export interface IDashAvailabilityToUoResponse {
+  availability: number;
+  availabilityWithoutReservation: number;
+  availabilityWithReservation: number;
+  committedToLiquidating: number;
+  year: number
+}
+

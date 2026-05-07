@@ -24,6 +24,7 @@ import { ComunicationCardsService } from "../../../core/service/comunication-car
 import { Subject, Subscription } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ChartMaximizeService } from "../../../core/service/chart-maximize/chart-maximize.service";
+import { Console } from "console";
 
 const DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS: IIndicatorExecutionFilter = {
   year: environment.indicatorExecutionFilter.year,
@@ -173,6 +174,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     this.loadUOList();
     this.loadActionList();
     this.loadFullSourceList();
+    this.getCardExecution();
   }
 
 
@@ -229,7 +231,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     this.updateActiveFilters();
     this.filterChanged.emit(this.currentRequestParams);
     this.getComunicationCard();
-
+    this.getCardExecution();
   }
 
   loadUOList() {
@@ -605,6 +607,49 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
 
     this.filtrar();
   }
+
+
+  private getCardExecution() {
+    this.getIGO();
+    this.getCardBudgetFeasibility();
+    this.getMission();
+    this.getChange();
+  }
+
+  private getIGO() {
+    this.indicatorExecutionService.getCardIGO(this.currentRequestParams).subscribe({
+      next: (response: any) => {
+        this.comunicationCardsService.sendCardIGO(response.IGO);
+      }
+    })
+  }
+
+  private getCardBudgetFeasibility() {
+    this.indicatorExecutionService.getCardBudgetFeasibility(this.currentRequestParams).subscribe({
+      next: (response: any) => {
+        this.comunicationCardsService.sendCardBudgetFeasibility(response.exequibilidade);
+      }
+    })
+  }
+
+  private getMission() {
+    this.indicatorExecutionService.getCardFocusOnTheMission(this.currentRequestParams).subscribe({
+      next: (response: any) => {
+        this.comunicationCardsService.sendCardFocusOnTheMission(response.missao);
+      }
+    })
+  }
+
+
+  private getChange() {
+    this.indicatorExecutionService.getCardBudgetChanges(this.currentRequestParams).subscribe({
+      next: (response: any) => {
+        this.comunicationCardsService.sendCardBudgetChanges(response.alteracao);
+      }
+    })
+  }
+
+
 
   formatNumber(value: number): string {
     if (!value || value === 0) return "R$ 0,00";

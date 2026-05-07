@@ -1,0 +1,17 @@
+.chart-controls {
+  background-color: transparent;
+  
+  .control-item {
+    .label {
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    
+    nb-select {
+        ::ng-deep button {
+            padding: 0.25rem 0.5rem;
+            max-height: 28px;
+        }
+    }
+  }
+}

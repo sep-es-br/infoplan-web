@@ -33,3 +33,29 @@ export interface IDashAvailabilityToUoResponse {
   year: number
 }
 
+export interface IDashSuccessPlannedResponse {
+  year: number,
+  codGnd: string,
+  nameGnd: string,
+  budgeted: number,
+  authorized: number,
+  committed: number,
+  liquidated: number,
+  committedBarAuthorized: number,
+  liquidatedBarAuthorized: number
+}
+
+
+export interface IDashComparativeResponse {
+  year: number,
+  codGnd: string,
+  nameGnd: string,
+  budgeted: number,
+  authorized: number,
+  committed: number,
+  liquidated: number,
+  committedBarAuthorized: number,
+  liquidatedBarAuthorized: number
+}
+
+

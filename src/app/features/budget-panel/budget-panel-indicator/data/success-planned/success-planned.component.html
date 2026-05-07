@@ -1,0 +1,23 @@
+<ngx-flip-table [showSearchField]="false" [cardTitle]="title" [tableContent]="tableContent"
+    [loadingStatus]="requestStatus" (executeDownload)="handleTableDownload()" [backCardHeight]="400"
+    [showMaximizeButton]="true" (showMaximizeButtonClick)="onMaximizeButtonClick('success-of-planned', $event)">
+
+    <div card-front>
+        <div class="chart-controls d-flex flex-wrap gap-3 mb-2 px-2 pb-2 border-bottom">
+            <div class="control-item d-flex align-items-center gap-2">
+                <span class="label small text-muted">Agrupar por:</span>
+                <nb-select size="tiny" [selected]="groupingMode" (selectedChange)="onGroupingModeChange($event)"
+                    style="min-width: 140px;">
+                    <nb-option value="YEAR_GND">Ano</nb-option>
+                    <nb-option value="GND">Despesas</nb-option>
+                </nb-select>
+            </div>
+        </div>
+
+        <ngx-org-chart-opposite [chart]="chartData"
+            [height]="isChartMaximized('success-of-planned') ? calcMaximizedHeight() : 500"
+            [groupingMode]="groupingMode" [isMaximized]="isChartMaximized('success-of-planned')">
+        </ngx-org-chart-opposite>
+    </div>
+
+</ngx-flip-table>

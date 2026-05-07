@@ -1,4 +1,4 @@
-﻿import { CommonModule } from "@angular/common";
+import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { NbCardModule, NbSelectModule, NbIconModule, NbButtonModule, NbDatepickerModule, NbInputModule, NbTooltipModule, NbLayoutModule, NbToggleModule, NbTagModule, NbAutocompleteModule } from "@nebular/theme"; // <-- ESSENCIAL
@@ -29,6 +29,9 @@ import { NavigationBudgetPanel } from "./navigation-budget-panel/navigation-budg
 import { BudgetPanelRoutingModule } from "./budget-panel-routing.module";
 import { BudgetPanelIndicatorComponent } from './budget-panel-indicator/budget-panel-indicator.component';
 import { AvailabilityTuUoComponent } from "./budget-panel-indicator/data/availability-tu-uo/availability-tu-uo.component";
+import { SuccessPlannedComponent } from './budget-panel-indicator/data/success-planned/success-planned.component';
+import { OrgChartOppositeComponent } from './budget-panel-indicator/data/org-chart-opposite/org-chart-opposite.component';
+import { ComparativeComponent } from './budget-panel-indicator/data/comparative/comparative.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +43,9 @@ import { AvailabilityTuUoComponent } from "./budget-panel-indicator/data/availab
     RevenueParticipationComponent,
     NavigationBudgetPanel,
     BudgetPanelIndicatorComponent,
-    AvailabilityTuUoComponent
+    AvailabilityTuUoComponent,
+    SuccessPlannedComponent,
+    ComparativeComponent,
   ],
   imports: [
     CommonModule,
@@ -70,7 +75,8 @@ import { AvailabilityTuUoComponent } from "./budget-panel-indicator/data/availab
     NbToggleModule,
     NbTagModule,
     BudgetPanelRoutingModule,
-    NbAutocompleteModule
+    NbAutocompleteModule,
+    OrgChartOppositeComponent
   ],
   providers: [
     ShortNumberPipe,

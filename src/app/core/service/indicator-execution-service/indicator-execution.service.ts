@@ -12,6 +12,7 @@ import {
   IActionResponse,
   IBudgetaryUnitResponse,
   IDashAvailabilityToUoResponse,
+  IDashSuccessPlannedResponse,
   IIndicatorExecutionFilter,
 } from "../../interfaces/indicator-execution/indicator-execution";
 import { catchError } from "rxjs/operators";
@@ -120,6 +121,15 @@ export class IndicatorExecutionService {
     })
       .pipe(catchError((err) => this.handleError(err, this._router)));
   }
+
+
+  public getDashSuccessPlanned(filter: IIndicatorExecutionFilter): Observable<IDashSuccessPlannedResponse[]> {
+    return this._http.get<IDashSuccessPlannedResponse[]>(`${this._URI}/dash/grupo-de-despesas`, {
+      params: this.paramsFilterGeneral(filter),
+    })
+      .pipe(catchError((err) => this.handleError(err, this._router)));
+  }
+
 
   private params(filter: IIndicatorExecutionFilter): HttpParams {
     const params = new HttpParams().set("year", Array.isArray(filter.year) ? filter.year.join(",") : filter.year);

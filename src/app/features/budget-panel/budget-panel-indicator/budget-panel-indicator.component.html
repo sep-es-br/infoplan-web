@@ -522,6 +522,23 @@
           </div>
         </ng-container>
       </div>
+      <div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+        <ng-container>
+          <div class="chart-container" [class.maximized]="isChartMaximized('success-of-planned')"
+            [class.col-12]="!isChartMaximized('success-of-planned')"
+            [class.col-md-12]="!isChartMaximized('success-of-planned')"
+            [class.col-lg-6]="!isChartMaximized('success-of-planned')"
+            [class.col-xl-6]="!isChartMaximized('success-of-planned')"
+            [class.col-xxl-6]="!isChartMaximized('success-of-planned')"
+            [class.col-xxxl-12]="!isChartMaximized('success-of-planned')">
+            <ngx-success-planned class="w-100"
+              (maximizeButtonClick)="handleMaximizeButtonClick('success-of-planned', $event)"
+              [filter]="currentRequestParams">
+
+            </ngx-success-planned>
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>

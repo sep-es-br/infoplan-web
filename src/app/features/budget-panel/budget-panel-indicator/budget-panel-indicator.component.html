@@ -539,6 +539,18 @@
           </div>
         </ng-container>
       </div>
+
+      <div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-12">
+        <ng-container>
+          <div class="chart-container" [class.maximized]="isChartMaximized('comparative')"
+            [class.col-12]="!isChartMaximized('comparative')" [class.col-md-12]="!isChartMaximized('comparative')"
+            [class.col-lg-6]="!isChartMaximized('comparative')" [class.col-xl-6]="!isChartMaximized('comparative')"
+            [class.col-xxl-6]="!isChartMaximized('comparative')" [class.col-xxxl-12]="!isChartMaximized('comparative')">
+            <ngx-comparative (maximizeButtonClick)="handleMaximizeButtonClick('comparative', $event)"
+              [filter]="currentRequestParams"></ngx-comparative>
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>

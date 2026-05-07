@@ -44,6 +44,8 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   chartOptions!: EChartsOption;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimeout: any;
+  private lastYear: string = '';
+  private lastGnd: string = '';
 
   private colorPalette = [
     '#6385EA',
@@ -182,27 +184,30 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         });
       });
     } else {
-      // MODO DESPESAS: Legenda são os Anos (2026, 2025...)
-      processedLabels = uniqueGnds;
+      // MODO DESPESAS: Agrupar por GND, mantendo anos separados em linhas e cores por ano
+      processedLabels = [];
+      uniqueGnds.forEach(gnd => {
+        uniqueYears.forEach(year => {
+          processedLabels.push(`${gnd} - ${year}`);
+        });
+      });
 
       uniqueYears.forEach((year, yIdx) => {
-        const empenhadoData = uniqueGnds.map((gnd) => {
-          const idx = labelsRaw.findIndex(l => l === `${year} - ${gnd}`);
-          return idx !== -1 ? datasetsRaw[0].data[idx] : null;
-        });
-
-        const liquidadoData = uniqueGnds.map((gnd) => {
-          const idx = labelsRaw.findIndex(l => l === `${year} - ${gnd}`);
-          return idx !== -1 ? datasetsRaw[1].data[idx] : null;
-        });
-
         const baseColor = this.colorPalette[yIdx % this.colorPalette.length];
         const fadedColor = this.getOpacityColor(baseColor, 0.4);
 
+        // Empenhado do Ano
         series.push({
           name: `${year} (Empenhado)`,
           type: 'bar',
-          data: empenhadoData,
+          data: processedLabels.map(label => {
+            const [lGnd, lYear] = label.split(' - ');
+            if (lYear === year.toString()) {
+              const idx = labelsRaw.findIndex(l => l === `${year} - ${lGnd}`);
+              return idx !== -1 ? datasetsRaw[0].data[idx] : null;
+            }
+            return null;
+          }),
           barWidth: barWidth,
           barCategoryGap: '30%',
           itemStyle: { color: fadedColor, borderRadius: [0, 4, 4, 0] },
@@ -210,10 +215,18 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           z: 1
         });
 
+        // Liquidado do Ano
         series.push({
           name: `${year} (Liquidado)`,
           type: 'bar',
-          data: liquidadoData,
+          data: processedLabels.map(label => {
+            const [lGnd, lYear] = label.split(' - ');
+            if (lYear === year.toString()) {
+              const idx = labelsRaw.findIndex(l => l === `${year} - ${lGnd}`);
+              return idx !== -1 ? datasetsRaw[1].data[idx] : null;
+            }
+            return null;
+          }),
           barWidth: barWidth,
           barGap: '-100%',
           barCategoryGap: '30%',
@@ -226,7 +239,8 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
 
     const theme = getAvailableThemesStyles(this.currentTheme);
     const isMobile = window.innerWidth <= 768;
-    let lastYear = '';
+    this.lastYear = '';
+    this.lastGnd = '';
 
     this.chartOptions = {
       tooltip: {
@@ -241,8 +255,8 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           if (validParams.length === 0) return '';
 
           const nameParts = validParams[0].name.split(' - ');
-          const year = this.groupingMode === 'YEAR_GND' ? nameParts[0] : validParams[0].seriesName.split(' ')[0];
-          const gnd = this.groupingMode === 'YEAR_GND' ? (nameParts.length > 1 ? nameParts[1] : nameParts[0]) : validParams[0].name;
+          const year = this.groupingMode === 'YEAR_GND' ? nameParts[0] : (nameParts.length > 1 ? nameParts[1] : '');
+          const gnd = this.groupingMode === 'YEAR_GND' ? (nameParts.length > 1 ? nameParts[1] : nameParts[0]) : nameParts[0];
 
           const dataIndex = labelsRaw.findIndex(l => l === `${year} - ${gnd}`);
           const extra = this.chart.data.datasets[0].extra ? this.chart.data.datasets[0].extra[dataIndex] : null;
@@ -293,10 +307,17 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           interval: 0,
           margin: 15,
           formatter: (value: string) => {
-            if (this.groupingMode === 'GND') return value;
+            if (this.groupingMode === 'GND') {
+              const [gnd, year] = value.split(' - ');
+              if (gnd !== this.lastGnd) {
+                this.lastGnd = gnd;
+                return gnd;
+              }
+              return '';
+            }
             const year = value.split(' - ')[0];
-            if (year !== lastYear) {
-              lastYear = year;
+            if (year !== this.lastYear) {
+              this.lastYear = year;
               return year;
             }
             return '';

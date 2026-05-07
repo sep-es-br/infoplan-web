@@ -12,6 +12,7 @@ import { FlipTableAlignment, FlipTableContent, TreeNode } from '../../../../stra
 import { ChartDataConfig } from '../../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { ChartDataProcessorService } from '../../../../../core/service/budget-panel/chart-data-processor.service';
+import { converterToNumber } from '../../../../../@core/utils/functionts/functionts';
 
 @Component({
   selector: 'ngx-availability-tu-uo',
@@ -209,7 +210,7 @@ export class AvailabilityTuUoComponent implements OnInit, OnChanges, OnDestroy {
     const data = this.tableContent.data.map((item) => {
       return {
         label: item.data[0].value,
-        valor: item.data[1].value,
+        valor: converterToNumber(item.data[1].value),
       }
     })
 

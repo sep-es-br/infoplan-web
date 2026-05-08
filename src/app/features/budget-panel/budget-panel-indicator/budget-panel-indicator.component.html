@@ -99,7 +99,7 @@
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
                     <span class="mb-1">Grupo de Despesa</span>
                     <nb-select multiple name="groupExpense" placeholder="Selecionar" size="tiny"
-                      [(selected)]="filter.codAction" (selectedChange)="handleFilterChange('groupExpense', $event)"
+                      [(selected)]="filter.codGnd" (selectedChange)="handleFilterChange('groupExpense', $event)"
                       #customSelect>
                       <nb-option *ngFor="let grupo of groupExpenseList" [value]="grupo.id">
                         {{ grupo.name }}
@@ -211,7 +211,7 @@
   </div>
 
   <div class="row g-1 g-md-1">
-    <div class="col-12 col-lg-2 px-1">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-2 px-1">
       <div class="col-12">
         <div class="card">
           <div class="card-content">
@@ -223,9 +223,9 @@
       </div>
     </div>
 
-    <div class="col-12 col-md-12 col-lg-10">
+    <div class="col-12 col-md-12 col-lg-12 col-xl-10">
       <div class="row g-1 g-md-1">
-        <div class="col-12 col-sm-6 col-md-6 col-lg-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
           <div class="card">
             <div class="icon-top-right available-without-reservation" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa-solid fa-wallet"></i>
@@ -265,7 +265,7 @@
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
           <div class="card">
             <div class="icon-top-right planned-success" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fas fa-chart-line"></i>
@@ -300,7 +300,7 @@
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
           <div class="card">
             <div class="icon-top-right comparative" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fas fa-arrows-up-down"></i>
@@ -329,7 +329,7 @@
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
           <div class="card">
             <div class="icon-top-right po-with-highest-settlement" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fas fa-trophy"></i>
@@ -351,20 +351,26 @@
                 <div class="number-box po-with-highest-settlement">
                   <div class="d-flex" style="flex-direction: column; align-items: start">
                     <div class="value">
-                      {{ formatNumber(statusTotal.poWithHighestSettlement) }}
+                      {{ formatNumber(statusTotal.poWithHighestSettlement.liquidado) }}
                     </div>
                   </div>
                 </div>
 
-                <div class="text-section po-with-highest-settlement">
-                  <span>PO com Maior Liquidação</span>
+                <div class="text-section po-with-highest-settlement d-flex flex-column justify-content-end">
+                  <span class="label-title">PO com Maior Liquidação</span>
+
+                  <span class="label-subtitle"
+                    [nbTooltip]="statusTotal.poWithHighestSettlement.cod_po + ' - ' + statusTotal.poWithHighestSettlement.nome_po">
+                    {{ statusTotal.poWithHighestSettlement.cod_po }} - {{ statusTotal.poWithHighestSettlement.nome_po |
+                    TextTruncate:20 }}
+                  </span>
                 </div>
               </ng-template>
             </div>
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
           <div class="card">
             <div class="icon-top-right budgetary-feasibility" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa-solid fa-scale-balanced"></i>
@@ -398,7 +404,7 @@
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
           <div class="card">
             <div class="icon-top-right focus-on-the-mission" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa fa-bullseye"></i>
@@ -432,7 +438,7 @@
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
           <div class="card">
             <div class="icon-top-right budgetary-changes" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa fa-exchange-alt"></i>
@@ -466,7 +472,7 @@
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
           <div class="card">
             <div class="icon-top-right budget-management-indicator" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa-solid fa-gears"></i>
@@ -505,14 +511,14 @@
 
   <div class="row px-2">
     <div class="row g-2 g-md-1 px-1">
-      <div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+      <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
         <ng-container>
           <div class="chart-container" [class.maximized]="isChartMaximized('availability-por-uo')"
             [class.col-12]="!isChartMaximized('availability-por-uo')"
             [class.col-md-12]="!isChartMaximized('availability-por-uo')"
-            [class.col-lg-6]="!isChartMaximized('availability-por-uo')"
-            [class.col-xl-6]="!isChartMaximized('availability-por-uo')"
-            [class.col-xxl-6]="!isChartMaximized('availability-por-uo')"
+            [class.col-lg-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-xl-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-xxl-12]="!isChartMaximized('availability-por-uo')"
             [class.col-xxxl-12]="!isChartMaximized('availability-por-uo')">
             <ngx-availability-tu-uo class="w-100"
               (maximizeButtonClick)="handleMaximizeButtonClick('availability-por-uo', $event)"
@@ -522,14 +528,15 @@
           </div>
         </ng-container>
       </div>
-      <div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+
+      <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
         <ng-container>
           <div class="chart-container" [class.maximized]="isChartMaximized('success-of-planned')"
             [class.col-12]="!isChartMaximized('success-of-planned')"
             [class.col-md-12]="!isChartMaximized('success-of-planned')"
-            [class.col-lg-6]="!isChartMaximized('success-of-planned')"
-            [class.col-xl-6]="!isChartMaximized('success-of-planned')"
-            [class.col-xxl-6]="!isChartMaximized('success-of-planned')"
+            [class.col-lg-12]="!isChartMaximized('success-of-planned')"
+            [class.col-xl-12]="!isChartMaximized('success-of-planned')"
+            [class.col-xxl-12]="!isChartMaximized('success-of-planned')"
             [class.col-xxxl-12]="!isChartMaximized('success-of-planned')">
             <ngx-success-planned class="w-100"
               (maximizeButtonClick)="handleMaximizeButtonClick('success-of-planned', $event)"
@@ -540,14 +547,31 @@
         </ng-container>
       </div>
 
-      <div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-12">
+      <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
         <ng-container>
           <div class="chart-container" [class.maximized]="isChartMaximized('comparative')"
             [class.col-12]="!isChartMaximized('comparative')" [class.col-md-12]="!isChartMaximized('comparative')"
-            [class.col-lg-6]="!isChartMaximized('comparative')" [class.col-xl-6]="!isChartMaximized('comparative')"
-            [class.col-xxl-6]="!isChartMaximized('comparative')" [class.col-xxxl-12]="!isChartMaximized('comparative')">
-            <ngx-comparative (maximizeButtonClick)="handleMaximizeButtonClick('comparative', $event)"
+            [class.col-lg-12]="!isChartMaximized('comparative')" [class.col-xl-12]="!isChartMaximized('comparative')"
+            [class.col-xxl-12]="!isChartMaximized('comparative')"
+            [class.col-xxxl-12]="!isChartMaximized('comparative')">
+            <ngx-comparative class="w-100" (maximizeButtonClick)="handleMaximizeButtonClick('comparative', $event)"
               [filter]="currentRequestParams"></ngx-comparative>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+        <ng-container>
+          <div class="chart-container" [class.maximized]="isChartMaximized('planned-budgetary')"
+            [class.col-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-md-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-lg-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-xl-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-xxl-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-xxxl-12]="!isChartMaximized('planned-budgetary')">
+            <ngx-planned-budgetary class="w-100"
+              (maximizeButtonClick)="handleMaximizeButtonClick('planned-budgetary', $event)"
+              [filter]="currentRequestParams"></ngx-planned-budgetary>
           </div>
         </ng-container>
       </div>

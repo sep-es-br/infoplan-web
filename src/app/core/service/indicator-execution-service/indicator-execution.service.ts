@@ -12,6 +12,7 @@ import {
   IActionResponse,
   IBudgetaryUnitResponse,
   IDashAvailabilityToUoResponse,
+  IDashPlannedBudgetResponse,
   IDashSuccessPlannedResponse,
   IIndicatorExecutionFilter,
 } from "../../interfaces/indicator-execution/indicator-execution";
@@ -131,9 +132,15 @@ export class IndicatorExecutionService {
   }
 
 
+  public getDashPlannedBudget(filter: IIndicatorExecutionFilter): Observable<IDashPlannedBudgetResponse[]> {
+    return this._http.get<IDashPlannedBudgetResponse[]>(`${this._URI}/dash/plano-orcamentario`, {
+      params: this.paramsFilterGeneral(filter),
+    })
+      .pipe(catchError((err) => this.handleError(err, this._router)));
+  }
+
   private params(filter: IIndicatorExecutionFilter): HttpParams {
     const params = new HttpParams().set("year", Array.isArray(filter.year) ? filter.year.join(",") : filter.year);
-
     return params;
   }
 

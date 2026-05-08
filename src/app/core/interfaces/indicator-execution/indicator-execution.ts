@@ -59,3 +59,18 @@ export interface IDashComparativeResponse {
 }
 
 
+export interface IDashPlannedBudgetResponse {
+  year: number,
+  codPo: string,
+  namePo: string,
+  uo?: string,
+  nameUo?: string,
+  budgeted: number,
+  authorized: number,
+  committed: number,
+  liquidated: number,
+  committedBarAuthorized: number,
+  liquidatedBarAuthorized: number
+}
+
+

@@ -11,7 +11,7 @@ interface IDataCard {
   cardAvailableWithoutReversation?: number | null;
   cardPlannedSuccess?: number | null;
   cardComparative?: number | null;
-  cardPoWithHighestSettlement?: number | null;
+  cardPoWithHighestSettlement?: { cod_po: string, nome_po: string, liquidado: number } | null;
   cardBudgetFeasibility?: number | null;
   cardFocusOnTheMission?: number | null;
   cardBudgetChanges?: number | null;
@@ -64,7 +64,7 @@ export class ComunicationCardsService {
     this.dataSubject.next({ cardComparative })
   }
 
-  sendCardPoWithHighestSettlement(cardPoWithHighestSettlement: number) {
+  sendCardPoWithHighestSettlement(cardPoWithHighestSettlement: { cod_po: string, nome_po: string, liquidado: number }) {
     this.dataSubject.next({ cardPoWithHighestSettlement })
   }
 

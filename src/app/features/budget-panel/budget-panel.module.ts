@@ -32,6 +32,8 @@ import { AvailabilityTuUoComponent } from "./budget-panel-indicator/data/availab
 import { SuccessPlannedComponent } from './budget-panel-indicator/data/success-planned/success-planned.component';
 import { OrgChartOppositeComponent } from './budget-panel-indicator/data/org-chart-opposite/org-chart-opposite.component';
 import { ComparativeComponent } from './budget-panel-indicator/data/comparative/comparative.component';
+import { PlannedBudgetaryComponent } from './budget-panel-indicator/data/planned-budgetary/planned-budgetary.component';
+import { OrgChartHorizontalComponent } from "./org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @NgModule({
   declarations: [
@@ -46,6 +48,7 @@ import { ComparativeComponent } from './budget-panel-indicator/data/comparative/
     AvailabilityTuUoComponent,
     SuccessPlannedComponent,
     ComparativeComponent,
+    PlannedBudgetaryComponent,
   ],
   imports: [
     CommonModule,
@@ -76,7 +79,8 @@ import { ComparativeComponent } from './budget-panel-indicator/data/comparative/
     NbTagModule,
     BudgetPanelRoutingModule,
     NbAutocompleteModule,
-    OrgChartOppositeComponent
+    OrgChartOppositeComponent,
+    OrgChartHorizontalComponent
   ],
   providers: [
     ShortNumberPipe,

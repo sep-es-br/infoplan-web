@@ -1,28 +1,29 @@
 import { Component, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { IDashComparativeResponse, IIndicatorExecutionFilter } from '../../../../../core/interfaces/indicator-execution/indicator-execution';
+import { IDashComparativeResponse, IDashPlannedBudgetResponse, IIndicatorExecutionFilter } from '../../../../../core/interfaces/indicator-execution/indicator-execution';
 import { ComunicationCardsService } from '../../../../../core/service/comunication-cards/comunication-cards.service';
 import { IndicatorExecutionService } from '../../../../../core/service/indicator-execution-service/indicator-execution.service';
 import { ChartMaximizeService } from '../../../../../core/service/chart-maximize/chart-maximize.service';
 import { ChartDataProcessorService } from '../../../../../core/service/budget-panel/chart-data-processor.service';
 import { UtilitiesService } from '../../../../../core/service/utilities.service';
 import { ExportDataService } from '../../../../../core/service/export-data';
-import { Subject } from 'rxjs';
-import { IChartOptions } from '../../../../../shared/models/budget-panel/IChartOptions';
 import { FlipTableAlignment, FlipTableContent, TreeNode } from '../../../../strategic-projects/flip-table-model/flip-table.component';
+import { IChartOptions } from '../../../../../shared/models/budget-panel/IChartOptions';
 import { RequestStatus } from '../../../../strategic-projects/strategicProjects.component';
-import { finalize, takeUntil } from 'rxjs/operators';
 import { ChartDataConfig } from '../../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component';
+import { Subject } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { converterToNumber, replacePorcentage } from '../../../../../@core/utils/functionts/functionts';
 
 @Component({
-  selector: 'ngx-comparative',
-  templateUrl: './comparative.component.html',
-  styleUrls: ['./comparative.component.scss']
+  selector: 'ngx-planned-budgetary',
+  templateUrl: './planned-budgetary.component.html',
+  styleUrls: ['./planned-budgetary.component.scss']
 })
-export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
+export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
+
 
   @Input() filter: IIndicatorExecutionFilter;
-  readonly title: string = "Comparativo de Despesas";
+  readonly title: string = "Plano Orçamentário";
 
   private readonly _comunicationCardsService = inject(ComunicationCardsService);
   private readonly _indicatorExecutionService = inject(IndicatorExecutionService);
@@ -35,7 +36,7 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
 
-  private dashComparative: IDashComparativeResponse[] = [];
+  private dashPlannedBudget: IDashPlannedBudgetResponse[] = [];
 
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   requestStatusCards = {
@@ -56,13 +57,15 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['filter'].currentValue) {
-      this.getDashComparative();
+    if (changes['filter']?.currentValue) {
+      this.getDashPlannedBudget();
     }
   }
 
   ngOnInit(): void {
-    throw new Error('Method not implemented.');
+    if (this.filter) {
+      this.getDashPlannedBudget();
+    }
   }
 
   ngOnDestroy(): void {
@@ -71,24 +74,22 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
 
-  private getDashComparative(): void {
+  private getDashPlannedBudget(): void {
     this.requestStatus = RequestStatus.LOADING;
 
-    this._indicatorExecutionService.getDashSuccessPlanned(this.filter)
+    this._indicatorExecutionService.getDashPlannedBudget(this.filter)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
-          this.requestStatus = this.dashComparative ? RequestStatus.SUCCESS : RequestStatus.ERROR;
+          this.requestStatus = this.dashPlannedBudget ? RequestStatus.SUCCESS : RequestStatus.ERROR;
         })
       )
       .subscribe({
-        next: (res: IDashComparativeResponse[]) => {
-          this.dashComparative = res;
-          console.log(this.dashComparative, "dwqewqeeqw")
-          // this._comunicationCardsService.sendCardPlannedSuccess(this.dashSuccessOfSuccess)
+        next: (res: IDashPlannedBudgetResponse[]) => {
+          this.dashPlannedBudget = res;
           this.chartHeight = Math.max(
             400,
-            this.dashComparative.length * 50 + 80
+            this.dashPlannedBudget.length * 50 + 80
           );
 
           this.processChartData(res);
@@ -97,71 +98,110 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
         error: (err) => {
           console.error("Erro ao carregar Sucesso do Planejado:", err);
           this.requestStatus = RequestStatus.ERROR;
-          this.dashComparative = null;
+          this.dashPlannedBudget = null;
         }
       })
   }
 
-  private processChartData(response: IDashComparativeResponse[]): IChartOptions {
+  private processChartData(response: IDashPlannedBudgetResponse[]): void {
     if (!response || response.length === 0) {
-      return this.chartData = { data: { labels: [], datasets: [] } };
+      this.chartData = { data: { labels: [], datasets: [] } };
+      return;
     }
 
     const uniqueYears = [...new Set(response.map(item => item.year))].sort((a, b) => a - b);
-    const recentYears = uniqueYears.slice(-2); // Pega os dois anos mais recentes
-    const uniqueGnds = [...new Set(response.map(item => `${item.codGnd} - ${item.nameGnd}`))];
+    const mostRecentYear = uniqueYears[uniqueYears.length - 1];
+    const dataForRecentYear = response.filter(item => item.year === mostRecentYear);
 
-    const datasets = recentYears.map((year, index) => ({
-      label: `Liquidado ${year}`,
-      data: uniqueGnds.map(gndKey => {
-        const item = response.find(r => r.year === year && `${r.codGnd} - ${r.nameGnd}` === gndKey);
-        return item ? item.liquidated : 0;
-      }),
-      backgroundColor: this._charProcessor.colors[index % this._charProcessor.colors.length],
-    }));
+    // Agrupar e somar valores por PO para o ano atual para rankeamento
+    const poTotals = new Map<string, { codPo: string, namePo: string, nameUo: string, liquidated: number, budgeted: number, authorized: number, committed: number }>();
+    dataForRecentYear.forEach(item => {
+      const key = `${item.codPo} - ${item.namePo}`;
+      if (!poTotals.has(key)) {
+        poTotals.set(key, {
+          codPo: item.codPo,
+          namePo: item.namePo,
+          nameUo: item.nameUo || '',
+          liquidated: 0,
+          budgeted: 0,
+          authorized: 0,
+          committed: 0
+        });
+      }
+      const total = poTotals.get(key)!;
+      total.liquidated += item.liquidated;
+      total.budgeted += item.budgeted;
+      total.authorized += item.authorized;
+      total.committed += item.committed;
+    });
 
-    return this.chartData = {
+    const top5Pos = Array.from(poTotals.entries())
+      .sort((a, b) => b[1].liquidated - a[1].liquidated)
+      .slice(0, 5);
+
+    const labels = top5Pos.map(entry => entry[0]);
+
+    const datasets = [
+      {
+        label: `Orçado ${mostRecentYear}`,
+        data: top5Pos.map(entry => entry[1].budgeted),
+        backgroundColor: this._charProcessor.colors[0],
+      },
+      {
+        label: `Autorizado ${mostRecentYear}`,
+        data: top5Pos.map(entry => entry[1].authorized),
+        backgroundColor: this._charProcessor.colors[1],
+      },
+      {
+        label: `Empenhado ${mostRecentYear}`,
+        data: top5Pos.map(entry => entry[1].committed),
+        backgroundColor: this._charProcessor.colors[2],
+      },
+      {
+        label: `Liquidado ${mostRecentYear}`,
+        data: top5Pos.map(entry => entry[1].liquidated),
+        backgroundColor: this._charProcessor.colors[3],
+      }
+    ];
+
+    this.chartHeight = Math.max(400, labels.length * 50 + 80);
+
+    this.chartData = {
       data: {
-        labels: uniqueGnds,
+        labels: labels,
+        tipoTooltip: 'PO',
+        nomePO: top5Pos.map(entry => `${entry[1].codPo} - ${entry[1].namePo}`),
         datasets: datasets,
       },
     };
   }
 
-  private processTableData(response: IDashComparativeResponse[]): void {
+  private processTableData(response: IDashPlannedBudgetResponse[]): void {
     if (!response || response.length === 0) {
       this.tableContent = null;
       return;
     }
 
-    // Calcular Totais Gerais (Total de cada coluna na tabela)
     const grandTotalBudgeted = response.reduce((acc, curr) => acc + curr.budgeted, 0);
     const grandTotalAuthorized = response.reduce((acc, curr) => acc + curr.authorized, 0);
     const grandTotalCommitted = response.reduce((acc, curr) => acc + curr.committed, 0);
     const grandTotalLiquidated = response.reduce((acc, curr) => acc + curr.liquidated, 0);
 
-    const grandTotalLiquidatedPerc = grandTotalAuthorized > 0 ? (grandTotalLiquidated / grandTotalAuthorized) * 100 : 0;
-
-    // Agrupar por GND
-    const groups = new Map<string, IDashComparativeResponse[]>();
+    const groups = new Map<string, IDashPlannedBudgetResponse[]>();
     response.forEach(item => {
-      if (!groups.has(item.nameGnd)) {
-        groups.set(item.nameGnd, []);
+      if (!groups.has(item.namePo)) {
+        groups.set(item.namePo, []);
       }
-      groups.get(item.nameGnd)!.push(item);
+      groups.get(item.namePo)!.push(item);
     });
 
-    const treeNodes: TreeNode[] = Array.from(groups.entries()).map(([gnd, items]) => {
-      // Ordenar items por ano para cálculo de variação
+    const allTreeNodes: TreeNode[] = Array.from(groups.entries()).map(([poName, items]) => {
       const sortedItems = items.sort((a, b) => a.year - b.year);
-
-      // Calcular Totais do Grupo (GND)
       const totalBudgeted = sortedItems.reduce((acc, curr) => acc + curr.budgeted, 0);
       const totalAuthorized = sortedItems.reduce((acc, curr) => acc + curr.authorized, 0);
       const totalCommitted = sortedItems.reduce((acc, curr) => acc + curr.committed, 0);
       const totalLiquidated = sortedItems.reduce((acc, curr) => acc + curr.liquidated, 0);
 
-      // Calcular Variação Total do Grupo (Primeiro vs Último Ano)
       let totalVariation = '0.00 %';
       if (sortedItems.length >= 2) {
         const firstLiq = sortedItems[0].liquidated;
@@ -173,12 +213,13 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
 
       return {
         data: [
-          { propertyName: "nameGnd", value: `${gnd}` },
+          { propertyName: "namePo", value: `${poName}` },
           { propertyName: "budgeted", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalBudgeted, "R$") },
           { propertyName: "authorized", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalAuthorized, "R$") },
           { propertyName: "committed", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalCommitted, "R$") },
           { propertyName: "liquidated", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalLiquidated, "R$") },
-          { propertyName: "liquidatedVariationPreviousYear", value: totalVariation }
+          { propertyName: "liquidatedVariationPreviousYear", value: totalVariation },
+          { propertyName: "liquidatedValueRaw", value: totalLiquidated } // Helper for sorting
         ],
         children: sortedItems.map((item, idx) => {
           let variation = '0.00 %';
@@ -188,10 +229,9 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
               variation = (((item.liquidated - prevLiq) / prevLiq) * 100).toFixed(2) + ' %';
             }
           }
-
           return {
             data: [
-              { propertyName: "nameGnd", value: `Ano: ${item.year}` },
+              { propertyName: "namePo", value: `Ano: ${item.year}` },
               { propertyName: "budgeted", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.budgeted, "R$") },
               { propertyName: "authorized", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.authorized, "R$") },
               { propertyName: "committed", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.committed, "R$") },
@@ -205,109 +245,72 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
       };
     });
 
-    // Calcular Variação do Total Geral para o CARD (Anos mais recentes)
-    const years = [...new Set(response.map(i => i.year))].sort();
-    let cardVariation = 0;
-    let grandTotalVariation = '0.00 %';
+    allTreeNodes.sort((a, b) => {
+      const valA = (a.data.find(d => d.propertyName === 'liquidatedValueRaw')?.value as number) || 0;
+      const valB = (b.data.find(d => d.propertyName === 'liquidatedValueRaw')?.value as number) || 0;
+      return valB - valA;
+    });
 
-    if (years.length >= 2) {
-      const lastYear = years[years.length - 1];
-      const prevYear = years[years.length - 2];
-
-      const sumLastYear = response.filter(i => i.year === lastYear).reduce((acc, curr) => acc + curr.liquidated, 0);
-      const sumPrevYear = response.filter(i => i.year === prevYear).reduce((acc, curr) => acc + curr.liquidated, 0);
-
-      if (sumPrevYear !== 0) {
-        cardVariation = ((sumLastYear - sumPrevYear) / sumPrevYear) * 100;
-        grandTotalVariation = cardVariation.toFixed(2) + ' %';
-      }
-    }
+    const displayedTreeNodes = allTreeNodes.slice(0, 50);
 
     const grandTotalNode: TreeNode = {
       data: [
-        { propertyName: "nameGnd", value: "Total" },
+        { propertyName: "namePo", value: "Total" },
         { propertyName: "budgeted", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalBudgeted, "R$") },
         { propertyName: "authorized", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalAuthorized, "R$") },
         { propertyName: "committed", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalCommitted, "R$") },
         { propertyName: "liquidated", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalLiquidated, "R$") },
-        { propertyName: "liquidatedVariationPreviousYear", value: grandTotalVariation }
+        { propertyName: "liquidatedVariationPreviousYear", value: "" }
       ],
       children: [],
       expanded: false
     };
 
-    treeNodes.push(grandTotalNode);
-    this._utilitiesService.sortTreeNodes(treeNodes, "top");
-
-    this._comunicationCardsService.sendCardComparative(Number(cardVariation.toFixed(2)));
+    displayedTreeNodes.push(grandTotalNode);
+    this._utilitiesService.sortTreeNodes(displayedTreeNodes, "top");
 
     this.tableContent = {
       customColumn: {
-        propertyName: "nameGnd",
-        displayName: "Grupo de Despesa",
-        alignment: {
-          header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.LEFT,
-        },
+        propertyName: "namePo",
+        displayName: "Plano Orçamentário",
+        alignment: { header: FlipTableAlignment.LEFT, data: FlipTableAlignment.LEFT },
       },
       defaultColumns: [
-        {
-          propertyName: "budgeted",
-          displayName: "Orçado (R$)",
-          alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-        },
-        {
-          propertyName: "authorized",
-          displayName: "Autorizado (R$)",
-          alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-        },
-        {
-          propertyName: "committed",
-          displayName: "Empenhado (R$)",
-          alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-        },
-        {
-          propertyName: "liquidated",
-          displayName: "Liquidado (R$)",
-          alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-        },
-        {
-          propertyName: "liquidatedVariationPreviousYear",
-          displayName: "Liquidado vs Anterior (%)",
-          alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-        }
+        { propertyName: "budgeted", displayName: "Orçado (R$)", alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT } },
+        { propertyName: "authorized", displayName: "Autorizado (R$)", alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT } },
+        { propertyName: "committed", displayName: "Empenhado (R$)", alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT } },
+        { propertyName: "liquidated", displayName: "Liquidado (R$)", alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT } },
+        { propertyName: "liquidatedVariationPreviousYear", displayName: "Var. Liquidado (%)", alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT } }
       ],
-      data: treeNodes,
+      data: displayedTreeNodes,
     };
   }
 
   handleTableDownload(): void {
-    if (!this.tableContent) return;
+    if (!this.dashPlannedBudget || this.dashPlannedBudget.length === 0) return;
 
-    const dataForExport = this.tableContent.data.map(node => {
-      const row: any = {};
-      node.data.forEach(d => {
-        if (typeof d.value === 'string' && d.value.includes('R$')) {
-          row[d.propertyName] = converterToNumber(d.value);
-        } else if (typeof d.value === 'string' && d.value.includes('%')) {
-          row[d.propertyName] = replacePorcentage(d.value);
-        } else {
-          row[d.propertyName] = d.value;
-        }
-      });
-      return row;
-    });
+    const dataForExport = this.dashPlannedBudget.map(item => ({
+      year: item.year,
+      namePo: `${item.codPo} - ${item.namePo}`,
+      budgeted: item.budgeted,
+      authorized: item.authorized,
+      committed: item.committed,
+      liquidated: item.liquidated
+    }));
+
+    // Ordenar por Ano e depois por Liquidado desc
+    dataForExport.sort((a, b) => b.year - a.year || b.liquidated - a.liquidated);
 
     const columns = [
-      { key: 'nameGnd', label: 'Grupo de Despesa' },
+      { key: 'year', label: 'Ano' },
+      { key: 'namePo', label: 'Plano Orçamentário' },
       { key: 'budgeted', label: 'Orçado (R$)' },
       { key: 'authorized', label: 'Autorizado (R$)' },
       { key: 'committed', label: 'Empenhado (R$)' },
       { key: 'liquidated', label: 'Liquidado (R$)' },
-      { key: 'liquidatedVariationPreviousYear', label: 'Liquidado vs Anterior (%)' },
     ];
 
-    this._exportDataService.exportXLSXWithCustomHeaders(dataForExport, columns, `Comparativo_${new Date().getTime()}`);
+    this._exportDataService.exportXLSXWithCustomHeaders(dataForExport, columns, `Plano_Orcamentario_Completo_${new Date().getTime()}`);
   }
 
 

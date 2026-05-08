@@ -24,7 +24,6 @@ import { ComunicationCardsService } from "../../../core/service/comunication-car
 import { Subject, Subscription } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ChartMaximizeService } from "../../../core/service/chart-maximize/chart-maximize.service";
-import { Console } from "console";
 
 const DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS: IIndicatorExecutionFilter = {
   year: environment.indicatorExecutionFilter.year,
@@ -191,36 +190,36 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
 
         if (res.cardAvailableWithoutReversation !== undefined) {
-          this.statusTotal.availableWithoutReservation = res.cardAvailableWithoutReversation;
           this.requestStatus.status = RequestStatus.SUCCESS;
+          this.statusTotal.availableWithoutReservation = res.cardAvailableWithoutReversation;
         }
         else if (res.cardPlannedSuccess !== undefined) {
-          this.statusTotal.plannedSuccess = res.cardPlannedSuccess;
           this.requestStatus.status = RequestStatus.SUCCESS;
+          this.statusTotal.plannedSuccess = res.cardPlannedSuccess;
         }
         else if (res.cardComparative !== undefined) {
-          this.statusTotal.comparative = res.cardComparative;
           this.requestStatus.status = RequestStatus.SUCCESS;
+          this.statusTotal.comparative = res.cardComparative;
         }
         else if (res.cardPoWithHighestSettlement !== undefined) {
-          this.statusTotal.poWithHighestSettlement = res.cardPoWithHighestSettlement;
           this.requestStatus.status = RequestStatus.SUCCESS;
+          this.statusTotal.poWithHighestSettlement = res.cardPoWithHighestSettlement;
         }
         else if (res.cardBudgetFeasibility !== undefined) {
-          this.statusTotal.budgetaryFeasibility = res.cardBudgetFeasibility;
           this.requestStatus.status = RequestStatus.SUCCESS;
+          this.statusTotal.budgetaryFeasibility = res.cardBudgetFeasibility;
         }
         else if (res.cardFocusOnTheMission !== undefined) {
-          this.statusTotal.focusOnTheMission = res.cardFocusOnTheMission;
           this.requestStatus.status = RequestStatus.SUCCESS;
+          this.statusTotal.focusOnTheMission = res.cardFocusOnTheMission;
         }
         else if (res.cardBudgetChanges !== undefined) {
-          this.statusTotal.budgetaryChanges = res.cardBudgetChanges;
           this.requestStatus.status = RequestStatus.SUCCESS;
+          this.statusTotal.budgetaryChanges = res.cardBudgetChanges;
         }
         else if (res.cardIGO !== undefined) {
-          this.statusTotal.budgetManagementIndicator = res.cardIGO;
           this.requestStatus.status = RequestStatus.SUCCESS;
+          this.statusTotal.budgetManagementIndicator = res.cardIGO;
         }
       });
   }
@@ -614,6 +613,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     this.getCardBudgetFeasibility();
     this.getMission();
     this.getChange();
+    this.getPlannedBudgetary();
   }
 
   private getIGO() {
@@ -645,6 +645,15 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     this.indicatorExecutionService.getCardBudgetChanges(this.currentRequestParams).subscribe({
       next: (response: any) => {
         this.comunicationCardsService.sendCardBudgetChanges(response.alteracao);
+      }
+    })
+  }
+
+
+  private getPlannedBudgetary() {
+    this.indicatorExecutionService.getCardPoWithHighestSettlement(this.currentRequestParams).subscribe({
+      next: (response: any) => {
+        this.comunicationCardsService.sendCardPoWithHighestSettlement(response);
       }
     })
   }

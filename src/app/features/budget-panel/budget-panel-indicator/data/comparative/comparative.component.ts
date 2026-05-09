@@ -305,7 +305,6 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
     this._exportDataService.exportXLSXWithCustomHeaders(dataForExport, columns, `Comparativo_${new Date().getTime()}`);
   }
 
-
   onMaximizeButtonClick(chartId: string, event: boolean): void {
     this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
   }

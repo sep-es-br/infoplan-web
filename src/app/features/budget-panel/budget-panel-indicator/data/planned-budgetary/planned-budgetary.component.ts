@@ -11,7 +11,7 @@ import { IChartOptions } from '../../../../../shared/models/budget-panel/IChartO
 import { RequestStatus } from '../../../../strategic-projects/strategicProjects.component';
 import { ChartDataConfig } from '../../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component';
 import { Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { converterToNumber, replacePorcentage } from '../../../../../@core/utils/functionts/functionts';
 
 @Component({
@@ -35,6 +35,7 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
 
   chartData!: IChartOptions;
   tableContent!: FlipTableContent;
+  searchSubject = new Subject<string>();
 
   private dashPlannedBudget: IDashPlannedBudgetResponse[] = [];
 
@@ -66,6 +67,12 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
     if (this.filter) {
       this.getDashPlannedBudget();
     }
+    
+    this.searchSubject
+      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((query) => {
+        this.executarFiltroTabela(query);
+      });
   }
 
   ngOnDestroy(): void {
@@ -329,6 +336,24 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
     this._exportDataService.exportXLSXWithCustomHeaders(dataForExport, columns, `Plano_Orcamentario_Completo_${new Date().getTime()}`);
   }
 
+
+  handleSearch(search: string): void {
+    this.searchSubject.next(search);
+  }
+
+  executarFiltroTabela(search: string): void {
+    if (!this.dashPlannedBudget) return;
+    
+    const searchTerm = search ? search.toLowerCase() : '';
+    const filtered = this.dashPlannedBudget.filter((item) => {
+      const nameMatch = item.namePo ? item.namePo.toLowerCase().includes(searchTerm) : false;
+      const codMatch = item.codPo ? item.codPo.toString().toLowerCase().includes(searchTerm) : false;
+      return nameMatch || codMatch;
+    });
+    
+    this.processChartData(filtered);
+    this.processTableData(filtered);
+  }
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {
     this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);

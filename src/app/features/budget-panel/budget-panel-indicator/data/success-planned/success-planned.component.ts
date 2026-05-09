@@ -127,7 +127,7 @@ export class SuccessPlannedComponent implements OnInit, OnChanges, OnDestroy {
 
     return this.chartData = {
       data: {
-        labels: response.map((item: IDashSuccessPlannedResponse) => `${item.year} - ${item.nameGnd}`),
+        labels: response.map((item: IDashSuccessPlannedResponse) => `${item.year}|#|${item.codGnd} - ${item.nameGnd}`),
         datasets: [
           {
             label: "Empenhado",
@@ -168,10 +168,11 @@ export class SuccessPlannedComponent implements OnInit, OnChanges, OnDestroy {
     // Agrupar por GND
     const groups = new Map<string, IDashSuccessPlannedResponse[]>();
     response.forEach(item => {
-      if (!groups.has(item.nameGnd)) {
-        groups.set(item.nameGnd, []);
+      const gndKey = `${item.codGnd} - ${item.nameGnd}`;
+      if (!groups.has(gndKey)) {
+        groups.set(gndKey, []);
       }
-      groups.get(item.nameGnd)!.push(item);
+      groups.get(gndKey)!.push(item);
     });
 
     const treeNodes: TreeNode[] = Array.from(groups.entries()).map(([gnd, items]) => {
@@ -264,12 +265,12 @@ export class SuccessPlannedComponent implements OnInit, OnChanges, OnDestroy {
         },
         {
           propertyName: "liquidatedBarAuthorized",
-          displayName: "Liquidado/Autorizado (%)",
+          displayName: "Liquidado / Autorizado (%)",
           alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
         },
         {
           propertyName: "committedBarAuthorized",
-          displayName: "Empenhado/Autorizado (%)",
+          displayName: "Empenhado / Autorizado (%)",
           alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
         }
       ],
@@ -301,8 +302,8 @@ export class SuccessPlannedComponent implements OnInit, OnChanges, OnDestroy {
       { key: 'authorized', label: 'Autorizado (R$)' },
       { key: 'committed', label: 'Empenhado (R$)' },
       { key: 'liquidated', label: 'Liquidado (R$)' },
-      { key: 'liquidatedBarAuthorized', label: 'Liquidado (%)' },
-      { key: 'committedBarAuthorized', label: 'Empenhado (%)' },
+      { key: 'liquidatedBarAuthorized', label: 'Liquidado / Autorizado (%)' },
+      { key: 'committedBarAuthorized', label: 'Empenhado / Autorizado (%)' },
     ];
 
     this._exportDataService.exportXLSXWithCustomHeaders(dataForExport, columns, `Sucesso_do_Planejado_${new Date().getTime()}`);

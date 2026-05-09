@@ -277,8 +277,10 @@ input:focus {
     .portfolio-content {
       display: flex;
       align-items: center;
+      justify-content: flex-start;
       // height: 65px;
-      height: 157px;
+      height: 100%;
+      min-height: 100px;
       // max-width: 80%;
     }
 
@@ -353,7 +355,7 @@ input:focus {
       text-align: start;
       height: 100%;
       line-height: 14px;
-      padding-right: 25px;
+      padding-right: 5px;
 
       .label-title {
         font-size: 11px;
@@ -364,6 +366,46 @@ input:focus {
         font-weight: normal;
         opacity: 0.75;
         margin-bottom: 2px;
+      }
+    }
+  }
+
+  @media screen and (min-width: 1200px) and (max-width: 1300px) {
+    padding: 3px;
+
+    .icon-top-right {
+      font-size: 14px;
+      top: 5px;
+      right: 5px;
+    }
+
+    .card-content {
+      gap: 3px;
+      padding: 3px 0 3px 3px;
+
+      .number-box {
+        min-width: 60px;
+        font-size: 12px;
+        padding: 4px;
+
+        .currency {
+          font-size: 11px;
+        }
+      }
+
+      .text-section {
+        font-size: 9px;
+        line-height: 11px;
+        padding-right: 0px;
+
+        .label-title {
+          font-size: 9px;
+        }
+
+        .label-subtitle {
+          font-size: 8px;
+          margin-bottom: 0px;
+        }
       }
     }
   }
@@ -565,7 +607,7 @@ nb-tag {
   }
 
   .img-fluid {
-    width: 53% !important;
+    width: 51% !important;
     max-height: 79px;
   }
 }

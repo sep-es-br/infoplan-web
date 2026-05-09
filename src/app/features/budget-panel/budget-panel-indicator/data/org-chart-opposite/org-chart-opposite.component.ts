@@ -138,8 +138,8 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
 
     let processedLabels: string[] = [];
     const series: any[] = [];
-    const uniqueYears = Array.from(new Set(labelsRaw.map(l => l.split(' - ')[0]))).sort().reverse();
-    const uniqueGnds = Array.from(new Set(labelsRaw.map(l => l.includes(' - ') ? l.split(' - ')[1] : l))).sort();
+    const uniqueYears = Array.from(new Set(labelsRaw.map(l => l.split('|#|')[0]))).sort().reverse();
+    const uniqueGnds = Array.from(new Set(labelsRaw.map(l => l.includes('|#|') ? l.split('|#|')[1] : l))).sort();
 
     const barWidth = this.isMaximized ? 25 : 20;
 
@@ -148,12 +148,12 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
 
       uniqueGnds.forEach((gnd) => {
         const empenhadoData = labelsRaw.map((label, idx) => {
-          const currentGnd = label.includes(' - ') ? label.split(' - ')[1] : label;
+          const currentGnd = label.includes('|#|') ? label.split('|#|')[1] : label;
           return currentGnd === gnd ? datasetsRaw[0].data[idx] : null;
         });
 
         const liquidadoData = labelsRaw.map((label, idx) => {
-          const currentGnd = label.includes(' - ') ? label.split(' - ')[1] : label;
+          const currentGnd = label.includes('|#|') ? label.split('|#|')[1] : label;
           return currentGnd === gnd ? datasetsRaw[1].data[idx] : null;
         });
 
@@ -188,7 +188,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       processedLabels = [];
       uniqueGnds.forEach(gnd => {
         uniqueYears.forEach(year => {
-          processedLabels.push(`${gnd} - ${year}`);
+          processedLabels.push(`${gnd}|#|${year}`);
         });
       });
 
@@ -201,9 +201,9 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           name: `${year} (Empenhado)`,
           type: 'bar',
           data: processedLabels.map(label => {
-            const [lGnd, lYear] = label.split(' - ');
+            const [lGnd, lYear] = label.split('|#|');
             if (lYear === year.toString()) {
-              const idx = labelsRaw.findIndex(l => l === `${year} - ${lGnd}`);
+              const idx = labelsRaw.findIndex(l => l === `${year}|#|${lGnd}`);
               return idx !== -1 ? datasetsRaw[0].data[idx] : null;
             }
             return null;
@@ -220,9 +220,9 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           name: `${year} (Liquidado)`,
           type: 'bar',
           data: processedLabels.map(label => {
-            const [lGnd, lYear] = label.split(' - ');
+            const [lGnd, lYear] = label.split('|#|');
             if (lYear === year.toString()) {
-              const idx = labelsRaw.findIndex(l => l === `${year} - ${lGnd}`);
+              const idx = labelsRaw.findIndex(l => l === `${year}|#|${lGnd}`);
               return idx !== -1 ? datasetsRaw[1].data[idx] : null;
             }
             return null;
@@ -254,21 +254,23 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           const validParams = params.filter((p: any) => p.value !== null && p.value !== undefined);
           if (validParams.length === 0) return '';
 
-          const nameParts = validParams[0].name.split(' - ');
+          const nameParts = validParams[0].name.split('|#|');
           const year = this.groupingMode === 'YEAR_GND' ? nameParts[0] : (nameParts.length > 1 ? nameParts[1] : '');
           const gnd = this.groupingMode === 'YEAR_GND' ? (nameParts.length > 1 ? nameParts[1] : nameParts[0]) : nameParts[0];
 
-          const dataIndex = labelsRaw.findIndex(l => l === `${year} - ${gnd}`);
+          const dataIndex = labelsRaw.findIndex(l => l === `${year}|#|${gnd}`);
           const extra = this.chart.data.datasets[0].extra ? this.chart.data.datasets[0].extra[dataIndex] : null;
 
           if (!extra) return '';
 
-          return `<div style="line-height: 1.6;">
+          let tooltipHtml = `<div style="line-height: 1.6;">
                     <div style="font-weight: 600; font-size: 13px;">${gnd}</div>
                     <div style="margin-bottom: 8px;">Exercício ${year}</div>
-                    <div>Empenhado: <b>${this.formatCurrency(extra.committed)}</b> (${extra.percCom.toFixed(1)}%)</div>
-                    <div>Liquidado: <b>${this.formatCurrency(extra.liquidated)}</b> (${extra.percLiq.toFixed(1)}%)</div>
+                    <div>Empenhado: <b>${extra.percCom.toFixed(1)}%</b></div>
+                    <div>Liquidado: <b>${extra.percLiq.toFixed(1)}%</b></div>
                   </div>`;
+          
+          return tooltipHtml;
         }
       },
       legend: {
@@ -308,14 +310,14 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           margin: 15,
           formatter: (value: string) => {
             if (this.groupingMode === 'GND') {
-              const [gnd, year] = value.split(' - ');
+              const [gnd, year] = value.split('|#|');
               if (gnd !== this.lastGnd) {
                 this.lastGnd = gnd;
                 return gnd;
               }
               return '';
             }
-            const year = value.split(' - ')[0];
+            const year = value.split('|#|')[0];
             if (year !== this.lastYear) {
               this.lastYear = year;
               return year;

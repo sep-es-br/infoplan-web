@@ -142,26 +142,22 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
 
     const grandTotalLiquidatedPerc = grandTotalAuthorized > 0 ? (grandTotalLiquidated / grandTotalAuthorized) * 100 : 0;
 
-    // Agrupar por GND
     const groups = new Map<string, IDashComparativeResponse[]>();
     response.forEach(item => {
-      if (!groups.has(item.nameGnd)) {
-        groups.set(item.nameGnd, []);
+      const gndKey = `${item.codGnd} - ${item.nameGnd}`;
+      if (!groups.has(gndKey)) {
+        groups.set(gndKey, []);
       }
-      groups.get(item.nameGnd)!.push(item);
+      groups.get(gndKey)!.push(item);
     });
 
     const treeNodes: TreeNode[] = Array.from(groups.entries()).map(([gnd, items]) => {
-      // Ordenar items por ano para cálculo de variação
       const sortedItems = items.sort((a, b) => a.year - b.year);
 
-      // Calcular Totais do Grupo (GND)
       const totalBudgeted = sortedItems.reduce((acc, curr) => acc + curr.budgeted, 0);
       const totalAuthorized = sortedItems.reduce((acc, curr) => acc + curr.authorized, 0);
       const totalCommitted = sortedItems.reduce((acc, curr) => acc + curr.committed, 0);
       const totalLiquidated = sortedItems.reduce((acc, curr) => acc + curr.liquidated, 0);
-
-      // Calcular Variação Total do Grupo (Primeiro vs Último Ano)
       let totalVariation = '0.00 %';
       if (sortedItems.length >= 2) {
         const firstLiq = sortedItems[0].liquidated;
@@ -205,7 +201,6 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
       };
     });
 
-    // Calcular Variação do Total Geral para o CARD (Anos mais recentes)
     const years = [...new Set(response.map(i => i.year))].sort();
     let cardVariation = 0;
     let grandTotalVariation = '0.00 %';

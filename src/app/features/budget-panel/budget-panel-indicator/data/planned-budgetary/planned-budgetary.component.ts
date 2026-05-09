@@ -47,9 +47,9 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
 
   chartDataConfig: ChartDataConfig = {
     grid: {
-      top: "10%",
-      left: "0%",
-      right: "0%",
+      top: "5%",
+      left: "1%",
+      right: "5%",
       bottom: "0%",
       containLabel: true,
     },
@@ -187,12 +187,28 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
     const grandTotalCommitted = response.reduce((acc, curr) => acc + curr.committed, 0);
     const grandTotalLiquidated = response.reduce((acc, curr) => acc + curr.liquidated, 0);
 
+    const liquidatedPerYear = new Map<number, number>();
+    response.forEach(item => {
+      liquidatedPerYear.set(item.year, (liquidatedPerYear.get(item.year) || 0) + item.liquidated);
+    });
+
+    let grandTotalVariation = '0.00 %';
+    const sortedYears = Array.from(liquidatedPerYear.keys()).sort((a, b) => a - b);
+    if (sortedYears.length >= 2) {
+      const firstYearLiq = liquidatedPerYear.get(sortedYears[0]) || 0;
+      const lastYearLiq = liquidatedPerYear.get(sortedYears[sortedYears.length - 1]) || 0;
+      if (firstYearLiq !== 0) {
+        grandTotalVariation = (((lastYearLiq - firstYearLiq) / firstYearLiq) * 100).toFixed(2) + ' %';
+      }
+    }
+
     const groups = new Map<string, IDashPlannedBudgetResponse[]>();
     response.forEach(item => {
-      if (!groups.has(item.namePo)) {
-        groups.set(item.namePo, []);
+      const poKey = `${item.codPo} - ${item.namePo}`;
+      if (!groups.has(poKey)) {
+        groups.set(poKey, []);
       }
-      groups.get(item.namePo)!.push(item);
+      groups.get(poKey)!.push(item);
     });
 
     const allTreeNodes: TreeNode[] = Array.from(groups.entries()).map(([poName, items]) => {
@@ -260,7 +276,7 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
         { propertyName: "authorized", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalAuthorized, "R$") },
         { propertyName: "committed", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalCommitted, "R$") },
         { propertyName: "liquidated", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalLiquidated, "R$") },
-        { propertyName: "liquidatedVariationPreviousYear", value: "" }
+        { propertyName: "liquidatedVariationPreviousYear", value: grandTotalVariation }
       ],
       children: [],
       expanded: false

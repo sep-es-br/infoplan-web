@@ -1,3 +1,4 @@
+/* eslint-disable @angular-eslint/no-input-rename */
 import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 import { ShortNumberPipe } from '../../../@theme/pipes';

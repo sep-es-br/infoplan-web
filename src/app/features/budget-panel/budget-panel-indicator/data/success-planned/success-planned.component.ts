@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, inject, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { IDashSuccessPlannedResponse, IIndicatorExecutionFilter } from '../../../../../core/interfaces/indicator-execution/indicator-execution';
 import { of, Subject } from 'rxjs';
 import { ExportDataService } from '../../../../../core/service/export-data';
@@ -19,7 +19,7 @@ import { converterToNumber, replacePorcentage } from '../../../../../@core/utils
   templateUrl: './success-planned.component.html',
   styleUrls: ['./success-planned.component.scss']
 })
-export class SuccessPlannedComponent implements OnInit, OnChanges, OnDestroy {
+export class SuccessPlannedComponent implements OnChanges, OnDestroy {
 
   @Input() filter: IIndicatorExecutionFilter;
   readonly title: string = "Sucesso do Planejado";
@@ -64,8 +64,7 @@ export class SuccessPlannedComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  ngOnInit(): void {
-  }
+
 
   ngOnDestroy(): void {
     this.destroy$.next();

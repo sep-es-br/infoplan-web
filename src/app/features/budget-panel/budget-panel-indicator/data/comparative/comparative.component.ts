@@ -228,7 +228,7 @@ export class ComparativeComponent implements OnChanges, OnDestroy {
     treeNodes.push(grandTotalNode);
     this._utilitiesService.sortTreeNodes(treeNodes, "top");
 
-    this._comunicationCardsService.sendCardComparative(Number(cardVariation.toFixed(2)));
+    // this._comunicationCardsService.sendCardComparative(Number(cardVariation.toFixed(2)));
 
     this.tableContent = {
       customColumn: {

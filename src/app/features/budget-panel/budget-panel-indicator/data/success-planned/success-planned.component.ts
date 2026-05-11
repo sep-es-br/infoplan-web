@@ -175,13 +175,11 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
     });
 
     const treeNodes: TreeNode[] = Array.from(groups.entries()).map(([gnd, items]) => {
-      // Calcular Totais do Grupo (GND)
       const totalBudgeted = items.reduce((acc, curr) => acc + curr.budgeted, 0);
       const totalAuthorized = items.reduce((acc, curr) => acc + curr.authorized, 0);
       const totalCommitted = items.reduce((acc, curr) => acc + curr.committed, 0);
       const totalLiquidated = items.reduce((acc, curr) => acc + curr.liquidated, 0);
 
-      // Calcular Porcentagens Baseadas nos Totais do Grupo
       const totalCommittedPerc = totalAuthorized > 0 ? (totalCommitted / totalAuthorized) * 100 : 0;
       const totalLiquidatedPerc = totalAuthorized > 0 ? (totalLiquidated / totalAuthorized) * 100 : 0;
 
@@ -211,7 +209,6 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
       };
     });
 
-    // Criar o nó do Total Geral
     const grandTotalNode: TreeNode = {
       data: [
         { propertyName: "nameGnd", value: "Total" },
@@ -226,11 +223,10 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
       expanded: false
     };
 
-    // Adicionar Total Geral e ordenar para o topo
     treeNodes.push(grandTotalNode);
     this._utilitiesService.sortTreeNodes(treeNodes, "top");
 
-    this._comunicationCardsService.sendCardPlannedSuccess(Number(grandTotalLiquidatedPerc.toFixed(1)));
+    // this._comunicationCardsService.sendCardPlannedSuccess(Number(grandTotalLiquidatedPerc.toFixed(1)));
 
     this.tableContent = {
       customColumn: {

@@ -173,7 +173,6 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     this.loadUOList();
     this.loadActionList();
     this.loadFullSourceList();
-    this.getCardExecution();
   }
 
 

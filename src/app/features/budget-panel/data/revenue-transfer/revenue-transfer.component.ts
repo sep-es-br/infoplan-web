@@ -204,8 +204,6 @@ export class RevenueTransferComponent implements OnChanges, OnDestroy {
       },
     ];
 
-    console.log("Categoria", totalNodeData)
-
     anos.forEach((year) => {
       const totalAno = dados
         .filter((d) => d.year === year)

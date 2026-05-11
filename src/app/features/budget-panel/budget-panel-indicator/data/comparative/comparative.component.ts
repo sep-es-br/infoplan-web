@@ -19,7 +19,7 @@ import { converterToNumber, replacePorcentage } from '../../../../../@core/utils
   templateUrl: './comparative.component.html',
   styleUrls: ['./comparative.component.scss']
 })
-export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
+export class ComparativeComponent implements OnChanges, OnDestroy {
 
   @Input() filter: IIndicatorExecutionFilter;
   readonly title: string = "Comparativo de Despesas";
@@ -61,10 +61,6 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
-  }
-
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -84,8 +80,6 @@ export class ComparativeComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe({
         next: (res: IDashComparativeResponse[]) => {
           this.dashComparative = res;
-          console.log(this.dashComparative, "dwqewqeeqw")
-          // this._comunicationCardsService.sendCardPlannedSuccess(this.dashSuccessOfSuccess)
           this.chartHeight = Math.max(
             400,
             this.dashComparative.length * 50 + 80

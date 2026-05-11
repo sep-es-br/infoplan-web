@@ -413,6 +413,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     this.filterChanged.emit(this.currentRequestParams);
 
     this.tooltips.forEach(t => t.hide());
+    this.getCardExecution();
 
   }
 
@@ -574,6 +575,8 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       this.fullSourceSearchInput.nativeElement.value = "";
 
     this.updateActiveFilters();
+
+    this.getCardExecution();
   }
 
   closeFilterModal(): void {
@@ -614,6 +617,9 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     this.getMission();
     this.getChange();
     this.getPlannedBudgetary();
+    this.getCardAvailableWithoutReversation();
+    this.getSuccessPlanned();
+    this.getComparative();
   }
 
   private getIGO() {
@@ -640,11 +646,27 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     })
   }
 
+  private getCardAvailableWithoutReversation() {
+    this.indicatorExecutionService.getCardAvailableWithoutReversation(this.currentRequestParams).subscribe({
+      next: (response: any) => {
+        this.comunicationCardsService.sendCardAvailableWithoutReversation(response.disponivel_sem_reserva);
+      }
+    })
+  }
+
 
   private getChange() {
     this.indicatorExecutionService.getCardBudgetChanges(this.currentRequestParams).subscribe({
       next: (response: any) => {
         this.comunicationCardsService.sendCardBudgetChanges(response.alteracao);
+      }
+    })
+  }
+
+  private getSuccessPlanned() {
+    this.indicatorExecutionService.getCardPlannedSuccess(this.currentRequestParams).subscribe({
+      next: (response: any) => {
+        this.comunicationCardsService.sendCardPlannedSuccess(response.sucesso);
       }
     })
   }
@@ -657,6 +679,16 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       }
     })
   }
+
+
+  private getComparative() {
+    this.indicatorExecutionService.getCardComparative(this.currentRequestParams).subscribe({
+      next: (response: any) => {
+        this.comunicationCardsService.sendCardComparative(Number(response.comparativo.toFixed(2)));
+      }
+    })
+  }
+
 
 
 

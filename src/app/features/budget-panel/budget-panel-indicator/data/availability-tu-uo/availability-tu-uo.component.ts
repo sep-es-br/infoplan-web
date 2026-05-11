@@ -83,7 +83,7 @@ export class AvailabilityTuUoComponent implements OnInit, OnChanges, OnDestroy {
       ).subscribe({
         next: (res: IDashAvailabilityToUoResponse) => {
           this.dashAvailabilityToUo = res;
-          this._comunicationCardsService.sendCardAvailableWithoutReversation(this.dashAvailabilityToUo.availabilityWithoutReservation);
+          // this._comunicationCardsService.sendCardAvailableWithoutReversation(this.dashAvailabilityToUo.availabilityWithoutReservation);
           this.processChartData(res);
           this.processTableData(res);
         },

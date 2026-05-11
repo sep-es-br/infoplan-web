@@ -8,6 +8,7 @@ import { StrategicProjectsComponent } from "../features/strategic-projects/strat
 import { NotFoundComponent } from "./miscellaneous/not-found/not-found.component";
 import { PagesComponent } from "./pages.component";
 import { PlanejamentoOrcamentarioComponent } from "../features/planejamento-orcamentario/planejamento-orcamentario.component";
+import { NavigationBudgetPanel } from "../features/budget-panel/navigation-budget-panel/navigation-budget-panel";
 
 const routes: Routes = [
   {
@@ -30,7 +31,7 @@ const routes: Routes = [
       },
       {
         path: "execucao-orcamentaria",
-        component: BudgetPanelComponent, // Updated component reference
+        loadChildren: () =>  import('../features/budget-panel/budget-panel.module').then(m => m.BudgetPanelModule),
         data: { dataSource: "Sigefes" },
       },
       {

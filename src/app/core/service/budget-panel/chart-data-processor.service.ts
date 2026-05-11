@@ -13,7 +13,7 @@ const CHART_COLORS = [
   "#4DB6D2", "#F58B9B", "#ffd774ff", "#1791DE", "#39d898ff", "#d895ffff",
   "#b9b8b8c2", "#4afad4ff", "#ff6c84ff", "#85cea6ff", "#8EFFFD", "#849299ff",
   "#B67DAD", "#a4d1b8ff", "#A970B6", "#9089E7", "#5E9FCC", "#1BBC9C",
-  "#D9AC22", "#F77D00", "#ffaa56",
+  "#D9AC22", "#F77D00", "#ffaa56", "#8DC394", "#A68AB9"
 ];
 
 @Injectable({

@@ -478,7 +478,7 @@ chart-container.maximized::before:hover {
   border-radius: 6px !important;
 }
 
-// // Aplica esses estilos sob o tema "dark" e "cosmic"
+// Aplica esses estilos sob o tema "dark" e "cosmic"
 :host-context(.nb-theme-dark, .nb-theme-cosmic) {
 
   .sub-title-po,
@@ -539,21 +539,14 @@ nb-tag {
   background-color: var(--color-primary-500);
   color: white;
   font-size: 10px !important;
-  /* Fonte menor */
   padding: 3px 8px !important;
-  /* Padding reduzido */
   height: auto !important;
   min-height: 22px !important;
-  /* Altura menor */
   display: inline-flex !important;
-  /* Inline para ajustar ao conteúdo */
   width: auto !important;
-  /* Largura automática */
   max-width: fit-content;
-  /* Ajusta ao conteúdo */
   box-sizing: border-box;
   border-radius: 12px;
-  /* Bordas mais arredondadas */
 
   &:hover {
     background-color: var(--color-primary-600);

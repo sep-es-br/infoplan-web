@@ -204,6 +204,8 @@ export class RevenueTransferComponent implements OnChanges, OnDestroy {
       },
     ];
 
+    console.log("Categoria", totalNodeData)
+
     anos.forEach((year) => {
       const totalAno = dados
         .filter((d) => d.year === year)
@@ -282,6 +284,7 @@ export class RevenueTransferComponent implements OnChanges, OnDestroy {
       data: treeNodes,
     };
   }
+
   private calcularVariacao(
     categoria: string,
     anos: number[],

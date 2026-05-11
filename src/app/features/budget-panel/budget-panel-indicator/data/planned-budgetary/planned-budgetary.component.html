@@ -1,0 +1,10 @@
+<ngx-flip-table [showSearchField]="true" [cardTitle]="title" [tableContent]="tableContent"
+    [loadingStatus]="requestStatus" (executeDownload)="handleTableDownload()" [backCardHeight]="400"
+    (executeSearch)="handleSearch($event)" [showMaximizeButton]="true"
+    (showMaximizeButtonClick)="onMaximizeButtonClick('comparative', $event)">
+
+    <ngx-org-chart-horizontal [chart]="chartData"
+        [height]="isChartMaximized('comparative') ? calcMaximizedHeight() : 500"
+        [showMaximizeButton]="isChartMaximized('comparative')" [chartDataConfig]="chartDataConfig" card-front>
+    </ngx-org-chart-horizontal>
+</ngx-flip-table>

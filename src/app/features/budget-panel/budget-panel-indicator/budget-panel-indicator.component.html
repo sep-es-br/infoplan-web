@@ -1,0 +1,580 @@
+<div class="col-12">
+  <div class="filter-container">
+    <div class="filter-button px-2">
+      <div class="filter-tags">
+        <div *ngFor="let tag of activeFilters; let i = index">
+          <div class="filter-tag" [ngClass]="{ 'invisible-tag': showFilters }">
+            <div>
+              <div class="tag-label">{{ tag.label }}</div>
+
+              <div class="tag-value">
+                <ng-container *ngFor="let valueDisplay of tag.displayValue; let index = index">
+                  <ng-container *ngIf="valueDisplay.name?.length <= 20; else spanWithTooltip">
+                    <span>
+                      {{
+                      (index > 0 ? " " : "") +
+                      (tag.displayValue.length > 1
+                      ? valueDisplay.name + ";"
+                      : valueDisplay.name)
+                      }}
+                    </span>
+                  </ng-container>
+
+                  <ng-template #spanWithTooltip>
+                    <span [nbTooltip]="
+                      valueDisplay.fullName
+                        ? valueDisplay.fullName
+                        : valueDisplay.name
+                    ">
+                      {{
+                      (index > 0 ? " " : "") +
+                      (valueDisplay.name | TextTruncate : 17 : ";")
+                      }}
+                    </span>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+            <button *ngIf="tag.key !== 'year'" class="remove-button" (click)="removeFilter(tag.key)">
+              x
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-button">
+        <button class="filter-toggle" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
+          Filtros
+          <nb-icon [icon]="'funnel-outline'"></nb-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Painel de Filtros -->
+    <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-body">
+            <form class="w-100">
+              <div class="form-header w-100 d-flex justify-content-end">
+                <button type="button" class="btn p-0 close-filter-button" data-bs-dismiss="modal" #modalCloseButton
+                  (click)="closeFilterModal()">
+                  <nb-icon [icon]="'close-outline'"></nb-icon>
+                </button>
+              </div>
+
+              <div class="d-flex flex-column w-100">
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Ano</span>
+                    <nb-select multiple name="year" placeholder="Selecionar" size="tiny" [(selected)]="filter.year"
+                      (selectedChange)="handleFilterChange('year', $event)" #customSelect>
+                      <nb-option *ngFor="let year of yearsList" [value]="year.num">
+                        {{ year.num }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Mês</span>
+                    <nb-select multiple name="mes" placeholder="Selecionar" size="tiny" [(selected)]="filter.month"
+                      (selectedChange)="handleFilterChange('month', $event)" #customSelect>
+                      <nb-option *ngFor="let mes of monthsList" [value]="mes.num">
+                        {{ mes.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
+                    <span class="mb-1">Tipo de Fonte</span>
+                    <nb-select multiple name="tipoFonte" placeholder="Selecionar" size="tiny"
+                      [(ngModel)]="filter.typeSource" (selectedChange)="handleFilterChange('typeSource', $event)"
+                      #customSelect>
+                      <nb-option [value]="1">Caixas Tesouros</nb-option>
+                      <nb-option [value]="2">Demais Fontes</nb-option>
+                    </nb-select>
+                  </div>
+
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
+                    <span class="mb-1">Grupo de Despesa</span>
+                    <nb-select multiple name="groupExpense" placeholder="Selecionar" size="tiny"
+                      [(selected)]="filter.codGnd" (selectedChange)="handleFilterChange('groupExpense', $event)"
+                      #customSelect>
+                      <nb-option *ngFor="let grupo of groupExpenseList" [value]="grupo.id">
+                        {{ grupo.name }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-4 col-xl-3 mb-2">
+                    <span class="mb-1">Emenda parlamentar Estadual</span>
+                    <nb-select multiple name="codAmendment" placeholder="Selecionar" size="tiny"
+                      [(ngModel)]="filter.codAmendment" (selectedChange)="handleFilterChange('codAmendment', $event)"
+                      #customSelect>
+                      <nb-option [value]="1">Sem Emenda Estadual</nb-option>
+                      <nb-option [value]="2">Apenas Emenda Estadual</nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
+                    <span class="mb-1">Unidade Orçamentária</span>
+
+                    <input #uoSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth name="uoSearch"
+                      placeholder="Buscar UO..." autocomplete="off" [nbAutocomplete]="uoAutocomplete"
+                      (input)="onUOSearch($event)" fieldSize="tiny" />
+
+                    <div class="selected-items-row mt-1" *ngIf="selectedUOs.length > 0">
+                      <nb-tag *ngFor="let uo of selectedUOs" [text]="uo.uo" [removable]="true"
+                        [nbTooltip]="uo.uo + ' - ' + uo.name" (remove)="removeUO(uo.uo)" size="tiny"
+                        appearance="outline">
+                      </nb-tag>
+                    </div>
+
+                    <nb-autocomplete #uoAutocomplete (selectedChange)="onUOSelected($event)">
+                      <nb-option *ngFor="let uo of filteredUOList" [value]="uo.uo"
+                        [class.uo-selected]="isUOSelected(uo)" (mousedown)="$event.preventDefault()">
+                        <div class="option-wrapper d-flex align-items-center w-100 h-100">
+                          <nb-icon *ngIf="isUOSelected(uo)" icon="checkmark-outline" class="me-2"></nb-icon>
+                          {{ uo.uo }} - {{ uo.name }}
+                        </div>
+                      </nb-option>
+                    </nb-autocomplete>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
+                    <span class="mb-1">Ação Orçamentária</span>
+                    <input #actionSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth
+                      name="actionSearch" placeholder="Buscar ação orçamentária..." autocomplete="off"
+                      [nbAutocomplete]="actionAutocomplete" (input)="onActionSearch($event)" fieldSize="tiny" />
+
+                    <div class="selected-items-row mt-1" *ngIf="selectedActions.length > 0">
+                      <nb-tag *ngFor="let action of selectedActions" [text]="action.cod_action" [removable]="true"
+                        [nbTooltip]="action.cod_action + ' - ' + action.name_action"
+                        (remove)="removeAction(action.cod_action)" size="tiny" appearance="outline">
+                      </nb-tag>
+                    </div>
+
+                    <nb-autocomplete #actionAutocomplete (selectedChange)="onActionSelected($event)">
+                      <nb-option *ngFor="let action of filteredActionList" [value]="action.cod_action"
+                        [class.uo-selected]="isActionSelected(action)" (mousedown)="$event.preventDefault()">
+                        <div class="option-wrapper d-flex align-items-center w-100 h-100">
+                          <nb-icon *ngIf="isActionSelected(action)" icon="checkmark-outline" class="me-2"></nb-icon>
+                          {{ action.cod_action }} - {{ action.name_action }}
+                        </div>
+                      </nb-option>
+                    </nb-autocomplete>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
+                    <span class="mb-1">Fonte Completa</span>
+
+                    <input #fullSourceSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth
+                      name="fullSourceSearch" placeholder="Buscar fonte..." autocomplete="off"
+                      [nbAutocomplete]="fullSourceAutocomplete" (input)="onFullSourceSearch($event)" fieldSize="tiny" />
+
+                    <div class="selected-items-row mt-1" *ngIf="selectedFullSources.length > 0">
+                      <nb-tag *ngFor="let source of selectedFullSources" [text]="source.cod_source" [removable]="true"
+                        [nbTooltip]="source.cod_source + ' - ' + source.name_source"
+                        (remove)="removeFullSource(source.cod_source)" size="tiny" appearance="outline">
+                      </nb-tag>
+                    </div>
+
+                    <nb-autocomplete #fullSourceAutocomplete (selectedChange)="onFullSourceSelected($event)">
+                      <nb-option *ngFor="let source of filteredFullSourceList" [value]="source.cod_source"
+                        [class.uo-selected]="isFullSourceSelected(source)" (mousedown)="$event.preventDefault()">
+                        <div class="option-wrapper d-flex align-items-center w-100 h-100">
+                          <nb-icon *ngIf="isFullSourceSelected(source)" icon="checkmark-outline" class="me-2"></nb-icon>
+                          {{ source.cod_source }} - {{ source.name_source }}
+                        </div>
+                      </nb-option>
+                    </nb-autocomplete>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer d-flex flex-column flex-sm-row justify-content-center justify-content-sm-end">
+            <button class="mx-4" nbButton size="small" status="warning" outline shape="semi-round"
+              (click)="resetFilters()">
+              Restaurar Filtros
+            </button>
+            <button nbButton size="small" status="success" hero shape="semi-round" data-bs-dismiss="modal"
+              (click)="filtrar($event)">
+              Filtrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-1 g-md-1">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-2 px-1">
+      <div class="col-12 h-100">
+        <div class="card h-100">
+          <div class="card-content h-100">
+            <div class="portfolio-content w-100 h-100 d-flex justify-content-start align-items-center">
+              <img src="assets/images/app/logo-exec-orc-claro.png" alt="Logo Execução Orçamentária" class="img-fluid" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-12 col-lg-12 col-xl-10">
+      <div class="row g-1 g-md-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right available-without-reservation" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="card-content" [title]="
+                  'R$ ' +
+                  (statusTotal.availableWithoutReservation | number : '1.0-0')
+                ">
+              <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else availableWithoutReservation
+                  ">
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border total-reservation" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #availableWithoutReservation>
+                <div class="number-box available-without-reservation">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="currency">R$</div>
+                    <div class="value">
+                      {{
+                      formatNumber(statusTotal.availableWithoutReservation)
+                      }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-section available-without-reservation">
+                  <span>Disponível sem Reserva</span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right planned-success" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fas fa-chart-line"></i>
+            </div>
+
+            <div class="card-content">
+              <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else plannedSuccess
+                  ">
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border planned-success" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #plannedSuccess>
+                <div class="number-box planned-success">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">
+                      {{ statusTotal.plannedSuccess }} %
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-section planned-success">
+                  <span>Sucesso do Planejado</span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right comparative" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fas fa-arrows-up-down"></i>
+            </div>
+
+            <div class="card-content">
+              <ng-container *ngIf="requestStatus.status === 'Loading'; else comparative">
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border comparative" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #comparative>
+                <div class="number-box comparative">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">{{ statusTotal.comparative }} %</div>
+                  </div>
+                </div>
+
+                <div class="text-section comparative">
+                  <span>Comparativo</span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right po-with-highest-settlement" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fas fa-trophy"></i>
+            </div>
+
+            <div class="card-content">
+              <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else poWithHighestSettlement
+                  ">
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border poWith-highest-settlement" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #poWithHighestSettlement>
+                <div class="number-box po-with-highest-settlement">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">
+                      {{ formatNumber(statusTotal.poWithHighestSettlement.liquidado) }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-section po-with-highest-settlement d-flex flex-column justify-content-end">
+                  <span class="label-title">PO com Maior Liquidação</span>
+
+                  <span class="label-subtitle"
+                    [nbTooltip]="statusTotal.poWithHighestSettlement.cod_po + ' - ' + statusTotal.poWithHighestSettlement.nome_po">
+                    {{ statusTotal.poWithHighestSettlement.cod_po }} - {{ statusTotal.poWithHighestSettlement.nome_po |
+                    TextTruncate:20 }}
+                  </span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right budgetary-feasibility" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <div class="card-content">
+              <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else budgetaryFeasibility
+                  ">
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border budgetary-feasibility" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #budgetaryFeasibility>
+                <div class="number-box budgetary-feasibility">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">
+                      {{ statusTotal.budgetaryFeasibility }} %
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-section budgetary-feasibility">
+                  <span>Exequibilidade Orçamentária</span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right focus-on-the-mission" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fa fa-bullseye"></i>
+            </div>
+            <div class="card-content">
+              <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else focusOnTheMission
+                  ">
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border focus-on-the-mission" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #focusOnTheMission>
+                <div class="number-box focus-on-the-mission">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">
+                      {{ statusTotal.focusOnTheMission }} %
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-section focus-on-the-mission">
+                  <span>Foco na Missão</span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right budgetary-changes" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fa fa-exchange-alt"></i>
+            </div>
+            <div class="card-content">
+              <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else budgetaryChanges
+                  ">
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border budgetary-changes" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #budgetaryChanges>
+                <div class="number-box budgetary-changes">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">
+                      {{ statusTotal.budgetaryChanges }} %
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-section budgetary-changes">
+                  <span>Alterações Orçamentárias</span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right budget-management-indicator" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fa-solid fa-gears"></i>
+            </div>
+            <div class="card-content">
+              <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else budgetManagementIndicador
+                  ">
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border budget-management-indicator" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #budgetManagementIndicador>
+                <div class="number-box budget-management-indicator">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">
+                      {{ statusTotal.budgetManagementIndicator }} %
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-section budget-management-indicator">
+                  <span>Indicador de Gestão Orçamentária</span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row px-2">
+    <div class="row g-2 g-md-1 px-1">
+      <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
+        <ng-container>
+          <div class="chart-container" [class.maximized]="isChartMaximized('availability-por-uo')"
+            [class.col-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-md-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-lg-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-xl-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-xxl-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-xxxl-12]="!isChartMaximized('availability-por-uo')">
+            <ngx-availability-tu-uo class="w-100"
+              (maximizeButtonClick)="handleMaximizeButtonClick('availability-por-uo', $event)"
+              [filter]="currentRequestParams">
+
+            </ngx-availability-tu-uo>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
+        <ng-container>
+          <div class="chart-container" [class.maximized]="isChartMaximized('success-of-planned')"
+            [class.col-12]="!isChartMaximized('success-of-planned')"
+            [class.col-md-12]="!isChartMaximized('success-of-planned')"
+            [class.col-lg-12]="!isChartMaximized('success-of-planned')"
+            [class.col-xl-12]="!isChartMaximized('success-of-planned')"
+            [class.col-xxl-12]="!isChartMaximized('success-of-planned')"
+            [class.col-xxxl-12]="!isChartMaximized('success-of-planned')">
+            <ngx-success-planned class="w-100"
+              (maximizeButtonClick)="handleMaximizeButtonClick('success-of-planned', $event)"
+              [filter]="currentRequestParams">
+
+            </ngx-success-planned>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+        <ng-container>
+          <div class="chart-container" [class.maximized]="isChartMaximized('comparative')"
+            [class.col-12]="!isChartMaximized('comparative')" [class.col-md-12]="!isChartMaximized('comparative')"
+            [class.col-lg-12]="!isChartMaximized('comparative')" [class.col-xl-12]="!isChartMaximized('comparative')"
+            [class.col-xxl-12]="!isChartMaximized('comparative')"
+            [class.col-xxxl-12]="!isChartMaximized('comparative')">
+            <ngx-comparative class="w-100" (maximizeButtonClick)="handleMaximizeButtonClick('comparative', $event)"
+              [filter]="currentRequestParams"></ngx-comparative>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+        <ng-container>
+          <div class="chart-container" [class.maximized]="isChartMaximized('planned-budgetary')"
+            [class.col-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-md-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-lg-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-xl-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-xxl-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-xxxl-12]="!isChartMaximized('planned-budgetary')">
+            <ngx-planned-budgetary class="w-100"
+              (maximizeButtonClick)="handleMaximizeButtonClick('planned-budgetary', $event)"
+              [filter]="currentRequestParams"></ngx-planned-budgetary>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

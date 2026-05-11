@@ -19,7 +19,7 @@ import { converterToNumber } from '../../../../../@core/utils/functionts/functio
   templateUrl: './availability-tu-uo.component.html',
   styleUrls: ['./availability-tu-uo.component.scss']
 })
-export class AvailabilityTuUoComponent implements OnInit, OnChanges, OnDestroy {
+export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
 
 
   @Input() filter: IIndicatorExecutionFilter;
@@ -52,10 +52,6 @@ export class AvailabilityTuUoComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   private dashAvailabilityToUo: IDashAvailabilityToUoResponse;
-
-  ngOnInit(): void {
-    this.getDashAvailabilityToUo();
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {

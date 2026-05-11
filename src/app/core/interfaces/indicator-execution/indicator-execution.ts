@@ -6,7 +6,7 @@ export interface IIndicatorExecutionFilter {
   codAction: string[];
   codGnd: string[];
   codSource: string[];
-  codAmendment: string[];
+  codAmendment: string;
 }
 
 export interface IActionResponse {

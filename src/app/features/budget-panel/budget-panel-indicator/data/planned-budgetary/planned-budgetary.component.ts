@@ -64,10 +64,6 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (this.filter) {
-      this.getDashPlannedBudget();
-    }
-    
     this.searchSubject
       .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe((query) => {
@@ -343,14 +339,14 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
 
   executarFiltroTabela(search: string): void {
     if (!this.dashPlannedBudget) return;
-    
+
     const searchTerm = search ? search.toLowerCase() : '';
     const filtered = this.dashPlannedBudget.filter((item) => {
       const nameMatch = item.namePo ? item.namePo.toLowerCase().includes(searchTerm) : false;
       const codMatch = item.codPo ? item.codPo.toString().toLowerCase().includes(searchTerm) : false;
       return nameMatch || codMatch;
     });
-    
+
     this.processChartData(filtered);
     this.processTableData(filtered);
   }

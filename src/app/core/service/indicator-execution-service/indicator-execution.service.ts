@@ -169,7 +169,7 @@ export class IndicatorExecutionService {
       .set("codAction", Array.isArray(filter.codAction) ? filter.codAction.join(",") : filter.codAction)
       .set("codGnd", Array.isArray(filter.codGnd) ? filter.codGnd.join(",") : filter.codGnd)
       .set("codSource", Array.isArray(filter.codSource) ? filter.codSource.join(",") : filter.codSource)
-      .set("codAmendment", Array.isArray(filter.codAmendment) ? filter.codAmendment.join(",") : filter.codAmendment)
+      .set("codAmendment", filter.codAmendment)
       .set("typeSource", Array.isArray(filter.typeSource) ? filter.typeSource.join(",") : filter.typeSource);
     return params;
   }
@@ -183,7 +183,7 @@ export class IndicatorExecutionService {
       .set("codAction", Array.isArray(filter.codAction) ? filter.codAction.join(",") : filter.codAction)
       .set("codGnd", Array.isArray(filter.codGnd) ? filter.codGnd.join(",") : filter.codGnd)
       .set("codSource", Array.isArray(filter.codSource) ? filter.codSource.join(",") : filter.codSource)
-      .set("codAmendment", Array.isArray(filter.codAmendment) ? filter.codAmendment.join(",") : filter.codAmendment)
+      .set("codAmendment", filter.codAmendment)
       .set("typeSource", Array.isArray(filter.typeSource) ? filter.typeSource.join(",") : filter.typeSource);
 
     return params;

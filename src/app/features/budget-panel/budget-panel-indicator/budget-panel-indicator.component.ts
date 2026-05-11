@@ -33,7 +33,7 @@ const DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS: IIndicatorExecutionFilter = {
   codAction: environment.indicatorExecutionFilter.codAction.map(String),
   codSource: environment.indicatorExecutionFilter.codSource.map(String),
   codGnd: environment.indicatorExecutionFilter.codGnd.map(String),
-  codAmendment: environment.indicatorExecutionFilter.codAmendment.map(String),
+  codAmendment: environment.indicatorExecutionFilter.codAmendment.toString(),
 };
 
 interface ICardExecutionResponse {
@@ -190,36 +190,44 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
 
         if (res.cardAvailableWithoutReversation !== undefined) {
-          this.requestStatus.status = RequestStatus.SUCCESS;
           this.statusTotal.availableWithoutReservation = res.cardAvailableWithoutReversation;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+
         }
         else if (res.cardPlannedSuccess !== undefined) {
-          this.requestStatus.status = RequestStatus.SUCCESS;
           this.statusTotal.plannedSuccess = res.cardPlannedSuccess;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+
         }
         else if (res.cardComparative !== undefined) {
-          this.requestStatus.status = RequestStatus.SUCCESS;
           this.statusTotal.comparative = res.cardComparative;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+
         }
         else if (res.cardPoWithHighestSettlement !== undefined) {
-          this.requestStatus.status = RequestStatus.SUCCESS;
           this.statusTotal.poWithHighestSettlement = res.cardPoWithHighestSettlement;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+
         }
         else if (res.cardBudgetFeasibility !== undefined) {
-          this.requestStatus.status = RequestStatus.SUCCESS;
           this.statusTotal.budgetaryFeasibility = res.cardBudgetFeasibility;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+
         }
         else if (res.cardFocusOnTheMission !== undefined) {
-          this.requestStatus.status = RequestStatus.SUCCESS;
           this.statusTotal.focusOnTheMission = res.cardFocusOnTheMission;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+
         }
         else if (res.cardBudgetChanges !== undefined) {
-          this.requestStatus.status = RequestStatus.SUCCESS;
           this.statusTotal.budgetaryChanges = res.cardBudgetChanges;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+
         }
         else if (res.cardIGO !== undefined) {
-          this.requestStatus.status = RequestStatus.SUCCESS;
           this.statusTotal.budgetManagementIndicator = res.cardIGO;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+
         }
       });
   }
@@ -413,6 +421,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     this.filterChanged.emit(this.currentRequestParams);
 
     this.tooltips.forEach(t => t.hide());
+    this.getComunicationCard();
     this.getCardExecution();
 
   }
@@ -513,13 +522,10 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
 
     if (this.finalFilter.codAmendment && this.finalFilter.codAmendment.length >= 1) {
       if (!this.finalFilter.codAmendment.includes("-1")) {
-        const emendasSelecionadas = this.finalFilter.codAmendment.map(val => {
-          return { name: val === "1" ? "Sem Emenda Estadual" : "Apenas Emenda Estadual" };
-        });
         this.activeFilters.push({
           key: "codAmendment",
           label: "Emenda Parlamentar",
-          displayValue: emendasSelecionadas,
+          displayValue: [{ name: this.finalFilter.codAmendment, fullName: this.finalFilter.codAmendment === "1" ? "Sem Emenda Estadual" : "Apenas Emenda Estadual" }],
         });
       }
     }
@@ -541,7 +547,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
         } else if (origin === "fullSource") {
           this.filter.codSource = ["-1"];
         } else if (origin === "codAmendment") {
-          this.filter.codAmendment = ["-1"];
+          this.filter.codAmendment = "-1";
         }
       } else if (newValue.length > 0) {
         if (origin === "month" && this.filter.month?.includes(-1)) {
@@ -576,6 +582,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
 
     this.updateActiveFilters();
 
+    this.getComunicationCard();
     this.getCardExecution();
   }
 
@@ -604,7 +611,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     } else if (filterKey === "fullSource") {
       this.filter.codSource = ["-1"];
     } else if (filterKey === "codAmendment") {
-      this.filter.codAmendment = ["-1"];
+      this.filter.codAmendment = "-1";
     }
 
     this.filtrar();
@@ -623,68 +630,84 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
   }
 
   private getIGO() {
+    this.requestStatus.status = RequestStatus.LOADING;
     this.indicatorExecutionService.getCardIGO(this.currentRequestParams).subscribe({
       next: (response: any) => {
         this.comunicationCardsService.sendCardIGO(response.IGO);
+        this.requestStatus.status = RequestStatus.SUCCESS;
       }
     })
   }
 
   private getCardBudgetFeasibility() {
+    this.requestStatus.status = RequestStatus.LOADING;
     this.indicatorExecutionService.getCardBudgetFeasibility(this.currentRequestParams).subscribe({
       next: (response: any) => {
         this.comunicationCardsService.sendCardBudgetFeasibility(response.exequibilidade);
+        this.requestStatus.status = RequestStatus.SUCCESS;
       }
     })
   }
 
   private getMission() {
+    this.requestStatus.status = RequestStatus.LOADING;
     this.indicatorExecutionService.getCardFocusOnTheMission(this.currentRequestParams).subscribe({
       next: (response: any) => {
         this.comunicationCardsService.sendCardFocusOnTheMission(response.missao);
+        this.requestStatus.status = RequestStatus.SUCCESS;
       }
     })
   }
 
   private getCardAvailableWithoutReversation() {
+    this.requestStatus.status = RequestStatus.LOADING;
     this.indicatorExecutionService.getCardAvailableWithoutReversation(this.currentRequestParams).subscribe({
       next: (response: any) => {
         this.comunicationCardsService.sendCardAvailableWithoutReversation(response.disponivel_sem_reserva);
+        this.requestStatus.status = RequestStatus.SUCCESS;
       }
     })
   }
 
 
   private getChange() {
+    this.requestStatus.status = RequestStatus.LOADING;
     this.indicatorExecutionService.getCardBudgetChanges(this.currentRequestParams).subscribe({
       next: (response: any) => {
         this.comunicationCardsService.sendCardBudgetChanges(response.alteracao);
+        this.requestStatus.status = RequestStatus.SUCCESS;
       }
     })
   }
 
   private getSuccessPlanned() {
+    this.requestStatus.status = RequestStatus.LOADING;
     this.indicatorExecutionService.getCardPlannedSuccess(this.currentRequestParams).subscribe({
       next: (response: any) => {
         this.comunicationCardsService.sendCardPlannedSuccess(response.sucesso);
+        this.requestStatus.status = RequestStatus.SUCCESS;
       }
     })
   }
 
 
   private getPlannedBudgetary() {
+    this.requestStatus.status = RequestStatus.LOADING;
     this.indicatorExecutionService.getCardPoWithHighestSettlement(this.currentRequestParams).subscribe({
       next: (response: any) => {
         this.comunicationCardsService.sendCardPoWithHighestSettlement(response);
+        this.requestStatus.status = RequestStatus.SUCCESS;
       }
     })
   }
 
 
   private getComparative() {
+    this.requestStatus.status = RequestStatus.LOADING;
     this.indicatorExecutionService.getCardComparative(this.currentRequestParams).subscribe({
       next: (response: any) => {
         this.comunicationCardsService.sendCardComparative(Number(response.comparativo.toFixed(2)));
+        this.requestStatus.status = RequestStatus.SUCCESS;
       }
     })
   }

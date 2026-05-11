@@ -109,7 +109,7 @@
 
                   <div class="filter-entity d-flex flex-column col-12 col-md-4 col-xl-3 mb-2">
                     <span class="mb-1">Emenda parlamentar Estadual</span>
-                    <nb-select multiple name="codAmendment" placeholder="Selecionar" size="tiny"
+                    <nb-select name="codAmendment" placeholder="Selecionar" size="tiny"
                       [(ngModel)]="filter.codAmendment" (selectedChange)="handleFilterChange('codAmendment', $event)"
                       #customSelect>
                       <nb-option [value]="1">Sem Emenda Estadual</nb-option>

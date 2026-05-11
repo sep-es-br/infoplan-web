@@ -184,6 +184,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
   }
 
   getComunicationCard(): void {
+    this.requestStatus.status = RequestStatus.LOADING;
     this.subscriptionCard = this.comunicationCardsService.data$
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {

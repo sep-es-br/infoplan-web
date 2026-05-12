@@ -44,8 +44,6 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   chartOptions!: EChartsOption;
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimeout: any;
-  private lastYear: string = '';
-  private lastGnd: string = '';
 
   private colorPalette = [
     '#6385EA',
@@ -60,8 +58,9 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private themeService: NbThemeService) {
     this.themeService.onThemeChange()
       .subscribe((newTheme: { name: AvailableThemes; previous: string; }) => {
+        this.currentTheme = newTheme.name;
+        this.updateChart();
         if (this.echartsInstance) {
-          this.currentTheme = newTheme.name;
           const newStyles = getAvailableThemesStyles(newTheme.name);
           const newTextColor = newStyles.textPrimaryColor;
           const newBackgroundColor = newStyles.themePrimaryColor;
@@ -130,6 +129,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
 
     const labelsRaw = this.chart.data.labels || [];
     const datasetsRaw = this.chart.data.datasets;
+    const theme = getAvailableThemesStyles(this.currentTheme);
 
     if (labelsRaw.length === 0 || datasetsRaw.length < 2) {
       this.chartOptions = null!;
@@ -167,7 +167,18 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           barWidth: barWidth,
           barCategoryGap: '30%',
           itemStyle: { color: fadedColor, borderRadius: [0, 4, 4, 0] },
-          label: { show: true, position: 'insideRight', formatter: (p: any) => p.value !== null ? `${p.value.toFixed(1)}%` : '', color: '#777', fontSize: 10 },
+          label: {
+            show: true,
+            position: 'right',
+            formatter: (p: any) => {
+              if (p.value === null) return '';
+              const liqVal = liquidadoData[p.dataIndex];
+              if (liqVal !== null && Math.abs(p.value - liqVal) < 8) return '';
+              return `${p.value.toFixed(1).replace('.', ',')}%`;
+            },
+            color: theme.textPrimaryColor,
+            fontSize: 12,
+          },
           z: 1
         });
 
@@ -179,12 +190,17 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           barGap: '-100%',
           barCategoryGap: '30%',
           itemStyle: { color: baseColor, borderRadius: [0, 4, 4, 0] },
-          label: { show: true, position: 'inside', formatter: (p: any) => p.value !== null ? `${p.value.toFixed(1)}%` : '', color: '#fff', fontSize: 10, textBorderColor: 'rgba(0,0,0,0.5)', textBorderWidth: 1 },
+          label: {
+            show: true,
+            position: 'insideLeft',
+            formatter: (p: any) => p.value !== null ? `${p.value.toFixed(1).replace('.', ',')}%` : '',
+            color: theme.textPrimaryColor,
+            fontSize: 12,
+          },
           z: 2
         });
       });
     } else {
-      // MODO DESPESAS: Agrupar por GND, mantendo anos separados em linhas e cores por ano
       processedLabels = [];
       uniqueGnds.forEach(gnd => {
         uniqueYears.forEach(year => {
@@ -196,51 +212,67 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         const baseColor = this.colorPalette[yIdx % this.colorPalette.length];
         const fadedColor = this.getOpacityColor(baseColor, 0.4);
 
-        // Empenhado do Ano
+        const empenhadoDataYear = processedLabels.map(label => {
+          const [lGnd, lYear] = label.split('|#|');
+          if (lYear === year.toString()) {
+            const idx = labelsRaw.findIndex(l => l === `${year}|#|${lGnd}`);
+            return idx !== -1 ? datasetsRaw[0].data[idx] : null;
+          }
+          return null;
+        });
+
+        const liquidadoDataYear = processedLabels.map(label => {
+          const [lGnd, lYear] = label.split('|#|');
+          if (lYear === year.toString()) {
+            const idx = labelsRaw.findIndex(l => l === `${year}|#|${lGnd}`);
+            return idx !== -1 ? datasetsRaw[1].data[idx] : null;
+          }
+          return null;
+        });
         series.push({
           name: `${year} (Empenhado)`,
           type: 'bar',
-          data: processedLabels.map(label => {
-            const [lGnd, lYear] = label.split('|#|');
-            if (lYear === year.toString()) {
-              const idx = labelsRaw.findIndex(l => l === `${year}|#|${lGnd}`);
-              return idx !== -1 ? datasetsRaw[0].data[idx] : null;
-            }
-            return null;
-          }),
+          data: empenhadoDataYear,
           barWidth: barWidth,
           barCategoryGap: '30%',
           itemStyle: { color: fadedColor, borderRadius: [0, 4, 4, 0] },
-          label: { show: true, position: 'insideRight', formatter: (p: any) => p.value !== null ? `${p.value.toFixed(1)}%` : '', color: '#777', fontSize: 10 },
+          label: {
+            show: true,
+            position: 'right',
+            formatter: (p: any) => {
+              if (p.value === null) return '';
+              const liqVal = liquidadoDataYear[p.dataIndex];
+              if (liqVal !== null && Math.abs(p.value - liqVal) < 8) return '';
+              return `${p.value.toFixed(1).replace('.', ',')}%`;
+            },
+            color: theme.textPrimaryColor,
+            fontSize: 11,
+          },
           z: 1
         });
 
-        // Liquidado do Ano
         series.push({
           name: `${year} (Liquidado)`,
           type: 'bar',
-          data: processedLabels.map(label => {
-            const [lGnd, lYear] = label.split('|#|');
-            if (lYear === year.toString()) {
-              const idx = labelsRaw.findIndex(l => l === `${year}|#|${lGnd}`);
-              return idx !== -1 ? datasetsRaw[1].data[idx] : null;
-            }
-            return null;
-          }),
+          data: liquidadoDataYear,
           barWidth: barWidth,
           barGap: '-100%',
           barCategoryGap: '30%',
           itemStyle: { color: baseColor, borderRadius: [0, 4, 4, 0] },
-          label: { show: true, position: 'inside', formatter: (p: any) => p.value !== null ? `${p.value.toFixed(1)}%` : '', color: '#fff', fontSize: 10, textBorderColor: 'rgba(0,0,0,0.5)', textBorderWidth: 1 },
+          label: {
+            show: true,
+            position: 'insideRight',
+            formatter: (p: any) => p.value !== null ? `${p.value.toFixed(1).replace('.', ',')}%` : '',
+            color: '#000000',
+            fontSize: 11,
+            fontWeight: 'bold',
+          },
           z: 2
         });
       });
     }
 
-    const theme = getAvailableThemesStyles(this.currentTheme);
     const isMobile = window.innerWidth <= 768;
-    this.lastYear = '';
-    this.lastGnd = '';
 
     this.chartOptions = {
       tooltip: {
@@ -249,7 +281,6 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         backgroundColor: theme.themePrimaryColor,
         borderColor: theme.themePrimaryColor,
         textStyle: { color: theme.textPrimaryColor, fontSize: 12 },
-        // extraCssText: 'box-shadow: 0 0 6px rgba(0,0,0,0.1); border-radius: 4px; padding: 8px;',
         formatter: (params: any) => {
           const validParams = params.filter((p: any) => p.value !== null && p.value !== undefined);
           if (validParams.length === 0) return '';
@@ -263,13 +294,24 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
 
           if (!extra) return '';
 
-          let tooltipHtml = `<div style="line-height: 1.6;">
-                    <div style="font-weight: 600; font-size: 13px;">${gnd}</div>
-                    <div style="margin-bottom: 8px;">Exercício ${year}</div>
-                    <div>Empenhado: <b>${extra.percCom.toFixed(1)}%</b></div>
-                    <div>Liquidado: <b>${extra.percLiq.toFixed(1)}%</b></div>
-                  </div>`;
-          
+          const color = validParams[0]?.seriesName?.includes('Empenhado') ? validParams[0].color : (validParams[1]?.color || validParams[0].color);
+
+          let tooltipHtml = `
+            <div style="padding: 4px; min-width: 180px;">
+              <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px; color: ${theme.textPrimaryColor}">${gnd}</div>
+              <div style="font-size: 12px; margin-bottom: 10px; opacity: 0.8; color: ${theme.textPrimaryColor}">Exercício ${year}</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="display: inline-block; width: 10px; height: 10px; background: ${color}; opacity: 0.5; border-radius: 50%; margin-right: 8px;"></span>
+                <span style="flex: 1; font-size: 12px; color: ${theme.textPrimaryColor}">Empenhado</span>
+                <b style="font-size: 12px; color: ${theme.textPrimaryColor}">${extra.percCom.toFixed(1).replace('.', ',')}%</b>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="display: inline-block; width: 10px; height: 10px; background: ${color}; border-radius: 50%; margin-right: 8px;"></span>
+                <span style="flex: 1; font-size: 12px; color: ${theme.textPrimaryColor}">Liquidado</span>
+                <b style="font-size: 12px; color: ${theme.textPrimaryColor}">${extra.percLiq.toFixed(1).replace('.', ',')}%</b>
+              </div>
+            </div>`;
+
           return tooltipHtml;
         }
       },
@@ -293,9 +335,8 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: this.isMaximized ? 14 : 11,
-          formatter: '{value}%'
+          formatter: (value: number) => value.toString().replace('.', ',') + '%'
         },
-        splitLine: { lineStyle: { type: 'dashed', opacity: 0.1 } }
       },
       yAxis: {
         type: 'category',
@@ -308,18 +349,16 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           overflow: 'truncate',
           interval: 0,
           margin: 15,
-          formatter: (value: string) => {
+          formatter: (value: string, index: number) => {
             if (this.groupingMode === 'GND') {
               const [gnd, year] = value.split('|#|');
-              if (gnd !== this.lastGnd) {
-                this.lastGnd = gnd;
+              if (index === 0 || gnd !== processedLabels[index - 1].split('|#|')[0]) {
                 return gnd;
               }
               return '';
             }
             const year = value.split('|#|')[0];
-            if (year !== this.lastYear) {
-              this.lastYear = year;
+            if (index === 0 || year !== processedLabels[index - 1].split('|#|')[0]) {
               return year;
             }
             return '';
@@ -333,7 +372,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           type: 'slider',
           yAxisIndex: [0],
           start: 0,
-          end: (9 / processedLabels.length) * 100,
+          end: Math.min(100, (9 / processedLabels.length) * 100),
           zoomLock: true,
           orient: 'vertical',
           handleSize: '50%',
@@ -345,7 +384,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           type: 'inside',
           yAxisIndex: [0],
           start: 0,
-          end: (9 / processedLabels.length) * 100,
+          end: Math.min(100, (9 / processedLabels.length) * 100),
           zoomLock: true,
         },
       ],

@@ -48,7 +48,7 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
 
   chartDataConfig: ChartDataConfig = {
     grid: {
-      top: "5%",
+      top: "12%",
       left: "1%",
       right: "5%",
       bottom: "0%",

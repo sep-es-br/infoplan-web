@@ -43,7 +43,7 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
   };
   chartDataConfig: ChartDataConfig = {
     grid: {
-      top: "10%",
+      top: "12%",
       left: "0%",
       right: "0%",
       bottom: "0%",

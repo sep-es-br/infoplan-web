@@ -280,6 +280,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         backgroundColor: theme.themePrimaryColor,
         borderColor: theme.themePrimaryColor,
         textStyle: { color: theme.textPrimaryColor, fontSize: 12 },
+        confine: true,
         formatter: (params: any) => {
           const validParams = params.filter((p: any) => p.value !== null && p.value !== undefined);
           if (validParams.length === 0) return '';

@@ -246,7 +246,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
               return `${p.value.toFixed(1).replace('.', ',')}%`;
             },
             color: theme.textPrimaryColor,
-            fontSize: 11,
+            fontSize: 12,
           },
           z: 1
         });
@@ -261,11 +261,10 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           itemStyle: { color: baseColor, borderRadius: [0, 4, 4, 0] },
           label: {
             show: true,
-            position: 'insideRight',
+            position: 'insideLeft',
             formatter: (p: any) => p.value !== null ? `${p.value.toFixed(1).replace('.', ',')}%` : '',
-            color: '#000000',
-            fontSize: 11,
-            fontWeight: 'bold',
+            color: theme.textPrimaryColor,
+            fontSize: 12,
           },
           z: 2
         });
@@ -320,7 +319,10 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         textStyle: { color: theme.textPrimaryColor },
         bottom: 0,
         type: 'scroll',
-        padding: [5, 10]
+        padding: [5, 10],
+        pageTextStyle: { color: theme.textPrimaryColor },
+        pageIconColor: theme.textPrimaryColor,
+        pageIconInactiveColor: 'rgba(255, 255, 255, 0.2)',
       },
       grid: {
         left: '5%',

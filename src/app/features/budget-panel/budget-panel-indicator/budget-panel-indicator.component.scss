@@ -287,9 +287,9 @@ input:focus {
     .number-box {
       background-color: #005c99;
       color: white;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: bold;
-      padding: 8px;
+      padding: 5px;
       border-radius: 4px;
       display: flex;
       align-items: center;
@@ -349,7 +349,7 @@ input:focus {
       flex-direction: column;
       justify-content: flex-end;
       align-items: flex-start;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: bold;
       width: 100%;
       text-align: start;
@@ -358,7 +358,7 @@ input:focus {
       padding-right: 5px;
 
       .label-title {
-        font-size: 11px;
+        font-size: 10px;
       }
 
       .label-subtitle {
@@ -385,7 +385,7 @@ input:focus {
 
       .number-box {
         min-width: 60px;
-        font-size: 12px;
+        font-size: 11px;
         padding: 4px;
 
         .currency {
@@ -597,17 +597,34 @@ nb-tag {
   }
 }
 
-@media screen and (max-width: 1199px) {
+@media screen and (min-width: 992px) and (max-width: 1199px) {
   .portfolio-content {
     display: flex;
     align-items: center;
     // height: 65px;
+    min-height: 65px !important;
     height: 65px !important;
-    max-width: 100% !important;
+    max-width: 58% !important;
   }
 
   .img-fluid {
-    width: 51% !important;
+    width: 50% !important;
+    max-height: 79px;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .portfolio-content {
+    display: flex;
+    align-items: center;
+    // height: 65px;
+    min-height: 65px !important;
+    height: 65px !important;
+    max-width: 58% !important;
+  }
+
+  .img-fluid {
+    width: 63% !important;
     max-height: 79px;
   }
 }

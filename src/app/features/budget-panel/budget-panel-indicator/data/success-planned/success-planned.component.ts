@@ -45,8 +45,8 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
-      left: "0%",
-      right: "0%",
+      left: "5%",
+      right: "5%",
       bottom: "0%",
       containLabel: true,
     },
@@ -114,7 +114,6 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
   private processChartData(response: IDashSuccessPlannedResponse[]): IChartOptions {
     if (!response || response.length === 0) return this.chartData = { data: { labels: [], datasets: [] } };
 
-    // Pacote completo de dados para o tooltip
     const extraData = response.map(item => ({
       budgeted: item.budgeted,
       authorized: item.authorized,

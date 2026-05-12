@@ -12,7 +12,6 @@ import { RequestStatus } from '../../../../strategic-projects/strategicProjects.
 import { ChartDataConfig } from '../../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { converterToNumber, replacePorcentage } from '../../../../../@core/utils/functionts/functionts';
 
 @Component({
   selector: 'ngx-planned-budgetary',
@@ -47,10 +46,16 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
   chartHeight: number = 350;
 
   chartDataConfig: ChartDataConfig = {
+    legend: {
+      fontSize: 12,
+      itemHeight: 13,
+      itemWidth: 13,
+      itemGap: 20,
+    },
     grid: {
       top: "12%",
-      left: "1%",
-      right: "5%",
+      left: "2%",
+      right: "2%",
       bottom: "0%",
       containLabel: true,
     },

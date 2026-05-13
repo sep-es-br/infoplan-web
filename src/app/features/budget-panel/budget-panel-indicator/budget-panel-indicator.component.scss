@@ -4,25 +4,28 @@
   }
 }
 
-.execucao-orcamentaria-logo {
-  min-height: 100px;
-  padding: 1rem;
-}
+// .execucao-orcamentaria-logo {
+//   min-height: 100px;
+//   padding: 1rem;
+// }
 
-.logo-card {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
+// .logo-card {
+//   display: flex;
+//   align-items: center;
+//   height: 100%;
+// }
 
-.logo-wrapper {
-  max-height: 100%;
-  padding: 0.5rem;
-}
+// .logo-wrapper {
+//   max-height: 100%;
+//   padding: 0.5rem;
+// }
 
 .img-fluid {
-  width: 95%;
-  // max-height: 56px;
+  max-width: 100%;
+  max-height: 90%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 .execucao-orcamentaria-content {
@@ -277,11 +280,11 @@ input:focus {
     .portfolio-content {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      // height: 65px;
+      justify-content: center;
       height: 100%;
-      min-height: 100px;
-      // max-width: 80%;
+      min-height: 80px;
+      width: 100%;
+      overflow: hidden;
     }
 
     .number-box {
@@ -582,50 +585,21 @@ nb-tag {
 }
 
 
-@media screen and (max-width: 991px) {
+@media screen and (max-width: 1199px) {
   .portfolio-content {
     display: flex;
     align-items: center;
-    // height: 65px;
+    justify-content: start !important;
     height: 65px !important;
+    min-height: 62px !important;
     max-width: 100% !important;
   }
 
   .img-fluid {
-    width: 44% !important;
-    max-height: 140px;
-  }
-}
-
-@media screen and (min-width: 992px) and (max-width: 1199px) {
-  .portfolio-content {
-    display: flex;
-    align-items: center;
-    // height: 65px;
-    min-height: 65px !important;
-    height: 65px !important;
-    max-width: 58% !important;
-  }
-
-  .img-fluid {
-    width: 50% !important;
-    max-height: 79px;
-  }
-}
-
-@media screen and (max-width: 992px) {
-  .portfolio-content {
-    display: flex;
-    align-items: center;
-    // height: 65px;
-    min-height: 65px !important;
-    height: 65px !important;
-    max-width: 58% !important;
-  }
-
-  .img-fluid {
-    width: 63% !important;
-    max-height: 79px;
+    width: auto !important;
+    max-width: 90% !important;
+    max-height: 55px !important;
+    object-fit: contain;
   }
 }
 

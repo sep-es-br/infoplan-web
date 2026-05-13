@@ -142,7 +142,7 @@ export class OrgChartHorizontalComponent
       legend: {
         textStyle: {
           color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 16 : 12,
+          fontSize: this.showMaximizeButton ? 13 : 12,
         },
       },
       series: this.chart.data.datasets.map(() => ({
@@ -208,7 +208,7 @@ export class OrgChartHorizontalComponent
               dataRef.nomeUO && dataRef.nomeUO[index]
                 ? dataRef.nomeUO[index]
                 : "";
-            
+
             tituloTooltip = uo ? `${uo} - ${po} &nbsp;&nbsp;` : `${po} &nbsp;&nbsp;`;
           } else {
             const labelOriginal = params[0].name || "";

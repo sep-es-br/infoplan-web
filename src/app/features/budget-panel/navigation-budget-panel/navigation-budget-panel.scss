@@ -1,7 +1,23 @@
+:host {
+  display: block;
+}
+
+@media screen and (min-width: 992px) {
+  :host {
+    margin-top: -15px;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  :host {
+    margin-top: -4px;
+  }
+}
+
 .tag-panel {
   display: flex;
   justify-content: center;
-  // padding: 0.5rem 1rem;
+  margin-top: 0;
   gap: 8px;
 
   nb-tag {
@@ -89,6 +105,7 @@ nb-tag.disabled-tag {
     justify-content: center;
     // padding: 0.5rem 1rem;
     gap: 8px;
+
     nb-tag {
       display: flex;
       align-items: center;

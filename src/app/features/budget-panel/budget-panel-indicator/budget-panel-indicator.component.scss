@@ -349,7 +349,7 @@ input:focus {
       flex-direction: column;
       justify-content: flex-end;
       align-items: flex-start;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: bold;
       width: 100%;
       text-align: start;
@@ -363,7 +363,7 @@ input:focus {
 
       .label-subtitle {
         font-size: 9px;
-        font-weight: normal;
+        font-weight: 700;
         opacity: 0.75;
         margin-bottom: 2px;
       }
@@ -399,7 +399,7 @@ input:focus {
         padding-right: 0px;
 
         .label-title {
-          font-size: 9px;
+          font-size: 10px;
         }
 
         .label-subtitle {

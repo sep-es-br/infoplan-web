@@ -24,7 +24,7 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
 
   @Input() filter: IIndicatorExecutionFilter;
 
-  readonly title: string = "Disponibilidade por UO";
+  readonly title: string = "Disponibilidade";
 
   private readonly _comunicationCardsService = inject(ComunicationCardsService);
   private readonly _indicatorExecutionService = inject(IndicatorExecutionService);
@@ -174,7 +174,7 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
     return this.tableContent = {
       customColumn: {
         propertyName: "label",
-        displayName: `Sucesso no Planejamento - ${response[0]?.year}`,
+        displayName: `Disponibilidade`,
         alignment: {
           header: FlipTableAlignment.LEFT,
           data: FlipTableAlignment.LEFT,

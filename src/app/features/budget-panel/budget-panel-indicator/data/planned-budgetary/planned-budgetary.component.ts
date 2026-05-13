@@ -47,7 +47,7 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
 
   chartDataConfig: ChartDataConfig = {
     legend: {
-      fontSize: 12,
+      fontSize: 8,
       itemHeight: 13,
       itemWidth: 13,
       itemGap: 20,
@@ -304,7 +304,7 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
         { propertyName: "authorized", displayName: "Autorizado (R$)", alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT } },
         { propertyName: "committed", displayName: "Empenhado (R$)", alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT } },
         { propertyName: "liquidated", displayName: "Liquidado (R$)", alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT } },
-        { propertyName: "liquidatedVariationPreviousYear", displayName: "Var. Liquidado (%)", alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT } }
+        { propertyName: "liquidatedVariationPreviousYear", displayName: "Variação Liquidado (%)", alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT } }
       ],
       data: displayedTreeNodes,
     };

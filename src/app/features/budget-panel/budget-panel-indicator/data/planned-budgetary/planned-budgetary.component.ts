@@ -54,8 +54,8 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
     },
     grid: {
       top: "12%",
-      left: "2%",
-      right: "2%",
+      left: "0%",
+      right: "0%",
       bottom: "0%",
       containLabel: true,
     },

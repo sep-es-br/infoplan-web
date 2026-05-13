@@ -282,9 +282,8 @@ export class OrgChartHorizontalComponent
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: this.showMaximizeButton ? 14 : 11,
-          // margin: 15,
-          // lineHeight: 11,
-          width: 100,
+          margin: 10,
+          width: 160,
           overflow: "truncate"
         },
       },
@@ -299,6 +298,15 @@ export class OrgChartHorizontalComponent
         barCategoryGap: "20%",
         barGap: "20%",
         barMaxWidth: isMobile ? 15 : 25,
+        // label: {
+        //   show: true,
+        //   position: "insideLeft",
+        //   formatter: (params: any) => {
+        //     return this.formatValue(params.value);
+        //   },
+        //   fontSize: this.showMaximizeButton ? 13 : 10,
+        //   color: theme.textPrimaryColor,
+        // }
       })),
 
       dataZoom: [

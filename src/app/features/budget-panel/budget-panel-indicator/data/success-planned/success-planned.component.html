@@ -4,13 +4,14 @@
 
     <div card-front>
         <div class="chart-controls d-flex flex-wrap gap-3 mb-2 px-2 pb-2 border-bottom">
-            <div class="control-item d-flex align-items-center gap-2">
+            <div class="control-item d-flex align-items-center gap-3">
                 <span class="grouping-label">Agrupar por:</span>
-                <nb-select size="tiny" [selected]="groupingMode" (selectedChange)="onGroupingModeChange($event)"
-                    style="min-width: 140px;">
-                    <nb-option value="YEAR_GND">Ano</nb-option>
-                    <nb-option value="GND">Despesas</nb-option>
-                </nb-select>
+                <nb-toggle [checked]="groupingMode === 'YEAR_GND'" (checkedChange)="onGroupingModeChange('YEAR_GND')" status="primary">
+                    Ano
+                </nb-toggle>
+                <nb-toggle [checked]="groupingMode === 'GND'" (checkedChange)="onGroupingModeChange('GND')" status="primary">
+                    GND
+                </nb-toggle>
             </div>
         </div>
 

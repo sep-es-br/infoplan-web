@@ -15,7 +15,7 @@
 }
 
 .img-fluid {
-  width: 95%;
+  width: 100%;
   max-height: 56px;
 }
 
@@ -48,6 +48,7 @@
   text-align: center;
   height: 100%;
   line-height: 16px;
+
   // padding-right: 33px;
   .delivery-select {
     min-width: 200px;
@@ -112,7 +113,7 @@
       display: flex;
       align-items: center;
       height: 65px;
-      max-width: 80%;
+      max-width: 100%;
     }
 
     .number-box {
@@ -323,14 +324,12 @@ input:focus {
 
       &:hover {
         .map-icon {
-          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
         }
       }
 
       &.map-btn-clicked {
-        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-          saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
       }
     }
 
@@ -421,6 +420,7 @@ input:focus {
 
 // Aplica esses estilos sob o tema "dark" e "cosmic"
 :host-context(.nb-theme-dark, .nb-theme-cosmic) {
+
   .icon-top-right,
   .text-section {
     color: #ffffff !important;

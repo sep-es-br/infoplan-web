@@ -42,12 +42,14 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimeout: any;
 
-  private colorPalette = ['#6385EA',
-    '#53D6AA',
-    '#FFCA5F',
+  private colorPalette = [
+    '#6385EA',
+    '#36b286ff',
+    '#c0a359ff',
     '#EF8A9E',
     '#B28AFE',
-    '#59B6F9'];
+    '#54a6e1ff'
+  ];
 
   constructor(private themeService: NbThemeService) {
     this.themeService.onThemeChange().subscribe((newTheme) => {
@@ -235,7 +237,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           return html;
         }
       },
-      grid: { left: '8%', right: '8%', bottom: '5%', top: '8%', containLabel: true },
+      grid: { left: '1%', right: '5%', bottom: '0%', top: '8%', containLabel: true },
       xAxis: {
         type: 'value',
         max: 100,
@@ -252,7 +254,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           margin: 15,
           color: theme.textPrimaryColor,
           rich: {
-            mainGroup: { fontWeight: 'bold', fontSize: this.isMaximized ? 14 : 12, padding: [0, 0, 4, 0] },
+            mainGroup: { fontSize: this.isMaximized ? 14 : 12, padding: [0, 0, 4, 0] },
             subGroup: { fontSize: this.isMaximized ? 12 : 10, color: theme.textPrimaryColor }
           },
           formatter: (val: string) => {

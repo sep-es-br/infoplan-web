@@ -22,7 +22,7 @@ import { converterToNumber, replacePorcentage } from '../../../../../@core/utils
 export class SuccessPlannedComponent implements OnChanges, OnDestroy {
 
   @Input() filter: IIndicatorExecutionFilter;
-  readonly title: string = "Sucesso do Planejado";
+  readonly title: string = "Sucesso do Planejamento";
 
   private readonly _comunicationCardsService = inject(ComunicationCardsService);
   private readonly _indicatorExecutionService = inject(IndicatorExecutionService);
@@ -98,7 +98,7 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
           this.processTableData(res);
         },
         error: (err) => {
-          console.error("Erro ao carregar Sucesso do Planejado:", err);
+          console.error("Erro ao carregar Sucesso do Planejamento:", err);
           this.requestStatus = RequestStatus.ERROR;
           this.dashSuccessOfSuccess = null;
         }
@@ -300,7 +300,7 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
       { key: 'committedBarAuthorized', label: 'Empenhado / Autorizado (%)' },
     ];
 
-    this._exportDataService.exportXLSXWithCustomHeaders(dataForExport, columns, `Sucesso_do_Planejado_${new Date().getTime()}`);
+    this._exportDataService.exportXLSXWithCustomHeaders(dataForExport, columns, `Sucesso_do_Planejamento_${new Date().getTime()}`);
   }
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {

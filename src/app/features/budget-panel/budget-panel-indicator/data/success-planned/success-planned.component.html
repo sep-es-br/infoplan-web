@@ -6,7 +6,7 @@
         <div class="chart-controls toggles-container small-toggle d-flex flex-wrap gap-3 mb-2 px-2 pb-2 border-bottom">
             <div class="control-item d-flex align-items-center gap-3">
                 <span class="grouping-label">Agrupar por:</span>
-                
+
                 <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
                     <input class="form-check-input mt-0" type="checkbox" role="switch" id="toggleAno"
                         [ngModel]="groupingMode === 'YEAR_GND'"
@@ -24,7 +24,7 @@
         </div>
 
         <ngx-org-chart-opposite [chart]="chartData"
-            [height]="isChartMaximized('success-of-planned') ? calcMaximizedHeight() : 500"
+            [height]="isChartMaximized('success-of-planned') ? calcMaximizedHeight() : 502"
             [groupingMode]="groupingMode" [isMaximized]="isChartMaximized('success-of-planned')">
         </ngx-org-chart-opposite>
     </div>

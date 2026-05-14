@@ -602,13 +602,13 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       this.filter.month = environment.indicatorExecutionFilter.month;
     } else if (filterKey === "typeSource") {
       this.filter.typeSource = environment.indicatorExecutionFilter.typeSource;
-    } else if (filterKey === "uo") {
+    } else if (filterKey === "codUo") {
       this.filter.codUo = ["-1"];
       this.loadActionList();
-    } else if (filterKey === "action") {
+    } else if (filterKey === "codAction") {
       this.filter.codAction = ["-1"];
       this.loadFullSourceList();
-    } else if (filterKey === "fullSource") {
+    } else if (filterKey === "codSource") {
       this.filter.codSource = ["-1"];
     } else if (filterKey === "codAmendment") {
       this.filter.codAmendment = "-1";

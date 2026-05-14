@@ -12,11 +12,8 @@ export type GroupingMode = 'YEAR_GND' | 'GND';
 @Component({
   selector: 'ngx-org-chart-opposite',
   templateUrl: './org-chart-opposite.component.html',
-  imports: [
-    CommonModule,
-    NgxEchartsModule
-  ],
   standalone: true,
+  imports: [CommonModule, NgxEchartsModule],
   styles: [
     `
       :host {
@@ -30,8 +27,8 @@ export type GroupingMode = 'YEAR_GND' | 'GND';
         height: 100%;
         min-height: 0;
       }
-    `
-  ]
+    `,
+  ],
 })
 export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chart!: IChartOptions;
@@ -45,57 +42,22 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
   private resizeTimeout: any;
 
-  private colorPalette = [
-    '#6385EA',
+  private colorPalette = ['#6385EA',
     '#53D6AA',
     '#FFCA5F',
     '#EF8A9E',
     '#B28AFE',
-    '#59B6F9'
-  ];
-
+    '#59B6F9'];
 
   constructor(private themeService: NbThemeService) {
-    this.themeService.onThemeChange()
-      .subscribe((newTheme: { name: AvailableThemes; previous: string; }) => {
-        this.currentTheme = newTheme.name;
-        this.updateChart();
-        if (this.echartsInstance) {
-          const newStyles = getAvailableThemesStyles(newTheme.name);
-          const newTextColor = newStyles.textPrimaryColor;
-          const newBackgroundColor = newStyles.themePrimaryColor;
-
-          this.echartsInstance.setOption({
-            tooltip: {
-              textStyle: {
-                color: newTextColor,
-              },
-              backgroundColor: newBackgroundColor,
-              borderColor: newBackgroundColor,
-            },
-            legend: {
-              textStyle: {
-                color: newTextColor,
-              },
-            },
-            yAxis: {
-              axisLabel: {
-                color: newTextColor,
-              },
-            },
-            xAxis: {
-              axisLabel: {
-                color: newTextColor,
-              },
-            },
-          });
-        }
-      });
+    this.themeService.onThemeChange().subscribe((newTheme) => {
+      this.currentTheme = newTheme.name as AvailableThemes;
+      this.updateChart();
+    });
   }
 
-
   ngOnInit(): void {
-    this.currentTheme = (this.themeService.currentTheme as AvailableThemes);
+    this.currentTheme = this.themeService.currentTheme as AvailableThemes;
     this.updateChart();
   }
 
@@ -122,7 +84,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private updateChart() {
-    if (!this.chart?.data || !this.chart.data.datasets || this.chart.data.datasets.length < 2) {
+    if (!this.chart?.data?.datasets || this.chart.data.datasets.length < 2) {
       this.chartOptions = null!;
       return;
     }
@@ -130,313 +92,270 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
     const labelsRaw = this.chart.data.labels || [];
     const datasetsRaw = this.chart.data.datasets;
     const theme = getAvailableThemesStyles(this.currentTheme);
+    const getYear = (l: string) => l.split('|#|')[0]?.trim() || '';
+    const getGnd = (l: string) => l.split('|#|')[1]?.trim() || l.trim();
 
-    if (labelsRaw.length === 0 || datasetsRaw.length < 2) {
-      this.chartOptions = null!;
-      return;
-    }
+    const dataRecords: any[] = [];
+    labelsRaw.forEach((label, idx) => {
+      dataRecords.push({
+        label,
+        year: getYear(label),
+        gnd: getGnd(label),
+        emp: (datasetsRaw[0].data[idx] as number) || 0,
+        liq: (datasetsRaw[1].data[idx] as number) || 0
+      });
+    });
 
-    let processedLabels: string[] = [];
-    const series: any[] = [];
-    const uniqueYears = Array.from(new Set(labelsRaw.map(l => l.split('|#|')[0]))).sort().reverse();
-    const uniqueGnds = Array.from(new Set(labelsRaw.map(l => l.includes('|#|') ? l.split('|#|')[1] : l))).sort();
+    const uniqueYears = Array.from(new Set(dataRecords.map(r => r.year))).sort((a, b) => b.localeCompare(a));
+    const uniqueGnds = Array.from(new Set(dataRecords.map(r => r.gnd))).sort();
 
-    const barWidth = this.isMaximized ? 25 : 20;
-
+    const finalData: any[] = [];
     if (this.groupingMode === 'YEAR_GND') {
-      processedLabels = labelsRaw;
-
-      uniqueGnds.forEach((gnd) => {
-        const empenhadoData = labelsRaw.map((label, idx) => {
-          const currentGnd = label.includes('|#|') ? label.split('|#|')[1] : label;
-          return currentGnd === gnd ? datasetsRaw[0].data[idx] : null;
-        });
-
-        const liquidadoData = labelsRaw.map((label, idx) => {
-          const currentGnd = label.includes('|#|') ? label.split('|#|')[1] : label;
-          return currentGnd === gnd ? datasetsRaw[1].data[idx] : null;
-        });
-
-        const baseColor = this.getGndColor(gnd, 1);
-        const fadedColor = this.getGndColor(gnd, 0.4);
-
-        series.push({
-          name: `${gnd} (Empenhado)`,
-          type: 'bar',
-          data: empenhadoData,
-          barWidth: barWidth,
-          barCategoryGap: '30%',
-          itemStyle: { color: fadedColor, borderRadius: [0, 4, 4, 0] },
-          label: {
-            show: true,
-            position: 'right',
-            formatter: (p: any) => {
-              if (p.value === null) return '';
-              const liqVal = liquidadoData[p.dataIndex];
-              if (liqVal !== null && Math.abs(p.value - liqVal) < 8) return '';
-              return `${p.value.toFixed(1).replace('.', ',')}%`;
-            },
-            color: theme.textPrimaryColor,
-            fontSize: 12,
-          },
-          z: 1
-        });
-
-        series.push({
-          name: `${gnd} (Liquidado)`,
-          type: 'bar',
-          data: liquidadoData,
-          barWidth: barWidth,
-          barGap: '-100%',
-          barCategoryGap: '30%',
-          itemStyle: { color: baseColor, borderRadius: [0, 4, 4, 0] },
-          label: {
-            show: true,
-            position: 'insideLeft',
-            formatter: (p: any) => p.value !== null ? `${p.value.toFixed(1).replace('.', ',')}%` : '',
-            color: theme.textPrimaryColor,
-            fontSize: 12,
-          },
-          z: 2
-        });
+      uniqueYears.forEach(year => {
+        const yearGroup = dataRecords.filter(r => r.year === year).sort((a, b) => a.gnd.localeCompare(b.gnd));
+        finalData.push(...yearGroup);
       });
     } else {
-      processedLabels = [];
       uniqueGnds.forEach(gnd => {
-        uniqueYears.forEach(year => {
-          processedLabels.push(`${gnd}|#|${year}`);
-        });
-      });
-
-      uniqueYears.forEach((year, yIdx) => {
-        const baseColor = this.colorPalette[yIdx % this.colorPalette.length];
-        const fadedColor = this.getOpacityColor(baseColor, 0.4);
-
-        const empenhadoDataYear = processedLabels.map(label => {
-          const [lGnd, lYear] = label.split('|#|');
-          if (lYear === year.toString()) {
-            const idx = labelsRaw.findIndex(l => l === `${year}|#|${lGnd}`);
-            return idx !== -1 ? datasetsRaw[0].data[idx] : null;
-          }
-          return null;
-        });
-
-        const liquidadoDataYear = processedLabels.map(label => {
-          const [lGnd, lYear] = label.split('|#|');
-          if (lYear === year.toString()) {
-            const idx = labelsRaw.findIndex(l => l === `${year}|#|${lGnd}`);
-            return idx !== -1 ? datasetsRaw[1].data[idx] : null;
-          }
-          return null;
-        });
-        series.push({
-          name: `${year} (Empenhado)`,
-          type: 'bar',
-          data: empenhadoDataYear,
-          barWidth: barWidth,
-          barCategoryGap: '30%',
-          itemStyle: { color: fadedColor, borderRadius: [0, 4, 4, 0] },
-          label: {
-            show: true,
-            position: 'right',
-            formatter: (p: any) => {
-              if (p.value === null) return '';
-              const liqVal = liquidadoDataYear[p.dataIndex];
-              if (liqVal !== null && Math.abs(p.value - liqVal) < 8) return '';
-              return `${p.value.toFixed(1).replace('.', ',')}%`;
-            },
-            color: theme.textPrimaryColor,
-            fontSize: 12,
-          },
-          z: 1
-        });
-
-        series.push({
-          name: `${year} (Liquidado)`,
-          type: 'bar',
-          data: liquidadoDataYear,
-          barWidth: barWidth,
-          barGap: '-100%',
-          barCategoryGap: '30%',
-          itemStyle: { color: baseColor, borderRadius: [0, 4, 4, 0] },
-          label: {
-            show: true,
-            position: 'insideLeft',
-            formatter: (p: any) => p.value !== null ? `${p.value.toFixed(1).replace('.', ',')}%` : '',
-            color: theme.textPrimaryColor,
-            fontSize: 12,
-          },
-          z: 2
-        });
+        const gndGroup = dataRecords.filter(r => r.gnd === gnd).sort((a, b) => b.year.localeCompare(a.year));
+        finalData.push(...gndGroup);
       });
     }
 
-    const isMobile = window.innerWidth <= 768;
+    const midpointIndices = new Set<number>();
+    const groupingList = this.groupingMode === 'YEAR_GND' ? uniqueYears : uniqueGnds;
+    const getKey = (d: any) => this.groupingMode === 'YEAR_GND' ? d.year : d.gnd;
+
+    groupingList.forEach(groupKey => {
+      const indices = finalData.map((d, idx) => getKey(d) === groupKey ? idx : -1).filter(i => i !== -1);
+      if (indices.length > 0) {
+        // Encontra o meio do grupo para colocar o rótulo principal
+        midpointIndices.add(indices[Math.floor(indices.length / 2)]);
+      }
+    });
+
+    const barWidth = this.isMaximized ? 26 : 15;
+    const empSeriesData: any[] = [];
+    const liqSeriesData: any[] = [];
+
+    finalData.forEach(d => {
+      const baseColor = this.groupingMode === 'YEAR_GND'
+        ? this.getGndColor(d.gnd, 1)
+        : this.colorPalette[uniqueYears.indexOf(d.year) % this.colorPalette.length];
+
+      const faded = baseColor.startsWith('#')
+        ? this.getOpacityColor(baseColor, 0.4)
+        : baseColor.replace('rgb', 'rgba').replace(')', ', 0.4)');
+
+      empSeriesData.push({ value: d.emp, itemStyle: { color: faded } });
+      liqSeriesData.push({ value: d.liq, itemStyle: { color: baseColor } });
+    });
+    const legendData: string[] = [];
+    const legendSeries: any[] = [];
+
+    const isYearGnd = this.groupingMode === 'YEAR_GND';
+    const subGroups = isYearGnd ? uniqueGnds : uniqueYears;
+
+    subGroups.forEach(subGroup => {
+      const baseColor = isYearGnd
+        ? this.getGndColor(subGroup, 1)
+        : this.colorPalette[uniqueYears.indexOf(subGroup) % this.colorPalette.length];
+
+      const faded = baseColor.startsWith('#')
+        ? this.getOpacityColor(baseColor, 0.4)
+        : baseColor.replace('rgb', 'rgba').replace(')', ', 0.4)');
+
+      const empName = `${subGroup} (Empenhado)`;
+      const liqName = `${subGroup} (Liquidado)`;
+
+      legendData.push(empName, liqName);
+
+      legendSeries.push({
+        name: empName,
+        type: 'bar',
+        data: [],
+        itemStyle: { color: faded, borderRadius: [0, 4, 4, 0] }
+      });
+
+      legendSeries.push({
+        name: liqName,
+        type: 'bar',
+        data: [],
+        itemStyle: { color: baseColor, borderRadius: [0, 4, 4, 0] }
+      });
+    });
+
+    const maxItemsVisible = this.isMaximized ? 25 : 15;
+    const endZoomValue = Math.min(maxItemsVisible, finalData.length - 1);
 
     this.chartOptions = {
+      legend: {
+        type: 'scroll',
+        show: true,
+        top: 0,
+        icon: 'roundRect',
+        itemWidth: 12,
+        itemHeight: 12,
+        itemGap: 15,
+        textStyle: { color: theme.textPrimaryColor, fontSize: 11 },
+        pageTextStyle: { color: theme.textPrimaryColor },
+        pageIconColor: theme.textPrimaryColor,
+        pageIconInactiveColor: theme.textSecondaryColor,
+        data: legendData
+      },
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
         backgroundColor: theme.themePrimaryColor,
-        borderColor: theme.themePrimaryColor,
-        textStyle: { color: theme.textPrimaryColor, fontSize: 12 },
+        textStyle: { color: theme.textPrimaryColor },
         confine: true,
-        formatter: (params: any) => {
-          const validParams = params.filter((p: any) => p.value !== null && p.value !== undefined);
-          if (validParams.length === 0) return '';
+        borderWidth: 0,
+        padding: 5,
+        extraCssText: 'box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); border-radius: 4px;',
+        formatter: (params: any[]) => {
+          if (!params || params.length === 0) return '';
+          const p = params[0];
+          const absoluteIdx = parseInt(p.name.split('__idx__')[1], 10);
+          const d = finalData[absoluteIdx];
+          if (!d) return '';
 
-          const nameParts = validParams[0].name.split('|#|');
-          const year = this.groupingMode === 'YEAR_GND' ? nameParts[0] : (nameParts.length > 1 ? nameParts[1] : '');
-          const gnd = this.groupingMode === 'YEAR_GND' ? (nameParts.length > 1 ? nameParts[1] : nameParts[0]) : nameParts[0];
+          let html = `<div style="padding:4px">
+                        <b style="font-size:13px">${d.gnd}</b><br/>
+                        <span style="opacity:0.8">Exercício ${d.year}</span><hr style="opacity:0.2;margin:5px 0"/>`;
 
-          const dataIndex = labelsRaw.findIndex(l => l === `${year}|#|${gnd}`);
-          const extra = this.chart.data.datasets[0].extra ? this.chart.data.datasets[0].extra[dataIndex] : null;
+          params.forEach(param => {
+            if (param.seriesName.includes('(Empenhado)') || param.seriesName.includes('(Liquidado)')) return;
+            html += `<div style="margin-bottom: 2px;">
+                       <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${param.color};margin-right:5px;"></span>
+                       <b>${param.seriesName}:</b> ${param.value.toFixed(1).replace('.', ',')}%
+                     </div>`;
+          });
 
-          if (!extra) return '';
-
-          const color = validParams[0]?.seriesName?.includes('Empenhado') ? validParams[0].color : (validParams[1]?.color || validParams[0].color);
-
-          let tooltipHtml = `
-            <div style="padding: 4px; min-width: 180px;">
-              <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px; color: ${theme.textPrimaryColor}">${gnd}</div>
-              <div style="font-size: 12px; margin-bottom: 10px; opacity: 0.8; color: ${theme.textPrimaryColor}">Exercício ${year}</div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                <span style="display: inline-block; width: 10px; height: 10px; background: ${color}; opacity: 0.5; border-radius: 50%; margin-right: 8px;"></span>
-                <span style="flex: 1; font-size: 12px; color: ${theme.textPrimaryColor}">Empenhado</span>
-                <b style="font-size: 12px; color: ${theme.textPrimaryColor}">${extra.percCom.toFixed(1).replace('.', ',')}%</b>
-              </div>
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="display: inline-block; width: 10px; height: 10px; background: ${color}; border-radius: 50%; margin-right: 8px;"></span>
-                <span style="flex: 1; font-size: 12px; color: ${theme.textPrimaryColor}">Liquidado</span>
-                <b style="font-size: 12px; color: ${theme.textPrimaryColor}">${extra.percLiq.toFixed(1).replace('.', ',')}%</b>
-              </div>
-            </div>`;
-
-          return tooltipHtml;
+          html += `</div>`;
+          return html;
         }
       },
-      legend: {
-        show: true,
-        textStyle: { color: theme.textPrimaryColor },
-        bottom: 0,
-        type: 'scroll',
-        padding: [5, 10],
-        pageTextStyle: { color: theme.textPrimaryColor },
-        pageIconColor: theme.textPrimaryColor,
-        pageIconInactiveColor: 'rgba(255, 255, 255, 0.2)',
-      },
-      grid: {
-        left: '5%',
-        right: '8%',
-        bottom: '15%',
-        top: '5%',
-        containLabel: true
-      },
+      grid: { left: '8%', right: '8%', bottom: '5%', top: '8%', containLabel: true },
       xAxis: {
         type: 'value',
         max: 100,
-        axisLabel: {
-          color: theme.textPrimaryColor,
-          fontSize: this.isMaximized ? 14 : 11,
-          formatter: (value: number) => value.toString().replace('.', ',') + '%'
-        },
+        axisLabel: { formatter: '{value}%', color: theme.textPrimaryColor, fontSize: 10 },
+        splitLine: { show: true, lineStyle: { color: theme.textPrimaryColor, opacity: 0.1 } }
       },
       yAxis: {
         type: 'category',
-        data: processedLabels,
+        data: finalData.map((d, i) => `${d.label}__idx__${i}`),
         inverse: true,
+        axisLine: { show: true, lineStyle: { color: theme.textPrimaryColor, opacity: 0.3 } },
         axisLabel: {
-          color: theme.textPrimaryColor,
-          fontSize: this.isMaximized ? 12 : 10,
-          width: isMobile ? 100 : 200,
-          overflow: 'truncate',
           interval: 0,
           margin: 15,
-          formatter: (value: string, index: number) => {
-            if (this.groupingMode === 'GND') {
-              const [gnd, year] = value.split('|#|');
-              if (index === 0 || gnd !== processedLabels[index - 1].split('|#|')[0]) {
-                return gnd;
-              }
-              return '';
-            }
-            const year = value.split('|#|')[0];
-            if (index === 0 || year !== processedLabels[index - 1].split('|#|')[0]) {
-              return year;
+          color: theme.textPrimaryColor,
+          rich: {
+            mainGroup: { fontWeight: 'bold', fontSize: this.isMaximized ? 14 : 12, padding: [0, 0, 4, 0] },
+            subGroup: { fontSize: this.isMaximized ? 12 : 10, color: theme.textPrimaryColor }
+          },
+          formatter: (val: string) => {
+            const absoluteIdx = parseInt(val.split('__idx__')[1], 10);
+            const d = finalData[absoluteIdx];
+            if (!d) return '';
+            const mainLabel = this.groupingMode === 'YEAR_GND' ? d.year : d.gnd;
+
+            if (midpointIndices.has(absoluteIdx)) {
+              return `{mainGroup|${mainLabel}}`;
             }
             return '';
-          },
+          }
         },
-        axisTick: { show: false },
-        axisLine: { show: true, lineStyle: { color: theme.textPrimaryColor } }
+        axisTick: {
+          show: true,
+          length: 20, // Reduzido para não invadir muito a área do gráfico
+          lineStyle: { color: theme.textPrimaryColor, opacity: 0.4 },
+          interval: (_index: number, val: string) => {
+            if (!val) return true;
+            const absoluteIdx = parseInt(val.split('__idx__')[1], 10);
+            return absoluteIdx === 0 || getKey(finalData[absoluteIdx]) !== getKey(finalData[absoluteIdx - 1]);
+          }
+        },
+        splitLine: {
+          show: true,
+          lineStyle: { color: theme.textPrimaryColor, opacity: 0.2 },
+          interval: (_index: number, val: string) => {
+            if (!val) return true;
+            const absoluteIdx = parseInt(val.split('__idx__')[1], 10);
+            return absoluteIdx > 0 && getKey(finalData[absoluteIdx]) !== getKey(finalData[absoluteIdx - 1]);
+          }
+        }
       },
       dataZoom: [
         {
           type: 'slider',
-          yAxisIndex: [0],
-          start: 0,
-          end: Math.min(100, (9 / processedLabels.length) * 100),
-          zoomLock: true,
-          orient: 'vertical',
-          handleSize: '50%',
-          width: 0,
-          left: '97%',
-          labelFormatter: '',
+          yAxisIndex: 0,
+          right: '1%',
+          width: 10,
+          showDetail: false,
+          brushSelect: false,
+          handleSize: 0,
+          borderColor: 'transparent',
+          fillerColor: 'rgba(120, 120, 120, 0.2)',
+          backgroundColor: 'transparent',
+          startValue: 0,
+          endValue: 15
         },
         {
           type: 'inside',
-          yAxisIndex: [0],
-          start: 0,
-          end: Math.min(100, (9 / processedLabels.length) * 100),
-          zoomLock: true,
-        },
+          yAxisIndex: 0,
+          zoomOnMouseWheel: false,
+          moveOnMouseWheel: true
+        }
       ],
-      series: series
+      series: [
+        {
+          name: 'Empenhado',
+          type: 'bar',
+          barCategoryGap: '25%',
+          data: empSeriesData,
+          z: 1,
+          itemStyle: { borderRadius: [0, 4, 4, 0] },
+          label: { show: true, position: 'right', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')}%` }
+        },
+        {
+          name: 'Liquidado',
+          type: 'bar',
+          barGap: '-100%',
+          data: liqSeriesData,
+          z: 2,
+          itemStyle: { borderRadius: [0, 4, 4, 0] },
+          label: { show: true, position: 'insideLeft', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')}%` }
+        },
+        ...legendSeries
+      ]
     };
+  }
+
+  private addSeriesPair(series: any[], name: string, empData: any[], liqData: any[], color: string, faded: string, width: number, isMobile: boolean, theme: any) {
   }
 
   private getGndColor(label: string, opacity: number): string {
     const gnd = label.includes(' - ') ? label.split(' - ')[1] : label;
     let hash = 0;
-    for (let i = 0; i < gnd.length; i++) {
-      hash = gnd.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const colorIndex = Math.abs(hash) % this.colorPalette.length;
-    const color = this.colorPalette[colorIndex];
-
-    if (opacity === 1) return color;
-    return this.getOpacityColor(color, opacity);
+    for (let i = 0; i < gnd.length; i++) hash = gnd.charCodeAt(i) + ((hash << 5) - hash);
+    const color = this.colorPalette[Math.abs(hash) % this.colorPalette.length];
+    return opacity === 1 ? color : this.getOpacityColor(color, opacity);
   }
 
   private getOpacityColor(hex: string, opacity: number): string {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
+    const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
   }
 
-  private formatCurrency(value: number): string {
-    return `R$ ${value.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-  }
-
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onWindowResize() {
     clearTimeout(this.resizeTimeout);
-    this.resizeTimeout = setTimeout(() => {
-      if (this.echartsInstance) {
-        this.echartsInstance.resize();
-      }
-    }, 150);
+    this.resizeTimeout = setTimeout(() => this.echartsInstance?.resize(), 150);
   }
 
-  private resizeChart(): void {
-    if (this.echartsInstance) {
-      setTimeout(() => {
-        this.echartsInstance?.resize();
-      }, 100);
-    }
+  private resizeChart() {
+    setTimeout(() => this.echartsInstance?.resize(), 100);
   }
 }

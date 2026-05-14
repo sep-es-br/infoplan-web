@@ -229,7 +229,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
             if (param.seriesName.includes('(Empenhado)') || param.seriesName.includes('(Liquidado)')) return;
             html += `<div style="margin-bottom: 2px;">
                        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${param.color};margin-right:5px;"></span>
-                       <b>${param.seriesName}:</b> ${param.value.toFixed(1).replace('.', ',')}%
+                       <b>${param.seriesName}:</b> ${param.value.toFixed(1).replace('.', ',')} %
                      </div>`;
           });
 
@@ -241,7 +241,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       xAxis: {
         type: 'value',
         max: 100,
-        axisLabel: { formatter: '{value}%', color: theme.textPrimaryColor, fontSize: 10 },
+        axisLabel: { formatter: '{value} %', color: theme.textPrimaryColor, fontSize: 10 },
         splitLine: { show: true, lineStyle: { color: theme.textPrimaryColor, opacity: 0.1 } }
       },
       yAxis: {
@@ -319,7 +319,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           data: empSeriesData,
           z: 1,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
-          label: { show: true, position: 'right', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')}%` }
+          label: { show: true, position: 'right', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')} %` }
         },
         {
           name: 'Liquidado',
@@ -328,7 +328,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           data: liqSeriesData,
           z: 2,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
-          label: { show: true, position: 'insideLeft', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')}%` }
+          label: { show: true, position: 'insideLeft', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')} %` }
         },
         ...legendSeries
       ]

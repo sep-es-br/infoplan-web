@@ -3,15 +3,23 @@
     [showMaximizeButton]="true" (showMaximizeButtonClick)="onMaximizeButtonClick('success-of-planned', $event)">
 
     <div card-front>
-        <div class="chart-controls d-flex flex-wrap gap-3 mb-2 px-2 pb-2 border-bottom">
+        <div class="chart-controls toggles-container small-toggle d-flex flex-wrap gap-3 mb-2 px-2 pb-2 border-bottom">
             <div class="control-item d-flex align-items-center gap-3">
                 <span class="grouping-label">Agrupar por:</span>
-                <nb-toggle [checked]="groupingMode === 'YEAR_GND'" (checkedChange)="onGroupingModeChange('YEAR_GND')" status="primary">
-                    Ano
-                </nb-toggle>
-                <nb-toggle [checked]="groupingMode === 'GND'" (checkedChange)="onGroupingModeChange('GND')" status="primary">
-                    GND
-                </nb-toggle>
+                
+                <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                    <input class="form-check-input mt-0" type="checkbox" role="switch" id="toggleAno"
+                        [ngModel]="groupingMode === 'YEAR_GND'"
+                        (ngModelChange)="$event ? onGroupingModeChange('YEAR_GND') : onGroupingModeChange('GND')">
+                    <label class="form-check-label mb-0" for="toggleAno" style="color: inherit;">Ano</label>
+                </div>
+
+                <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                    <input class="form-check-input mt-0" type="checkbox" role="switch" id="toggleGnd"
+                        [ngModel]="groupingMode === 'GND'"
+                        (ngModelChange)="$event ? onGroupingModeChange('GND') : onGroupingModeChange('YEAR_GND')">
+                    <label class="form-check-label mb-0" for="toggleGnd" style="color: inherit;">GND</label>
+                </div>
             </div>
         </div>
 

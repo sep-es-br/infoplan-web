@@ -237,7 +237,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           return html;
         }
       },
-      grid: { left: '1%', right: '5%', bottom: '0%', top: '8%', containLabel: true },
+      grid: { left: '0%', right: '6%', bottom: '0%', top: '8%', containLabel: true },
       xAxis: {
         type: 'value',
         max: 100,
@@ -292,24 +292,44 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       dataZoom: [
         {
           type: 'slider',
-          yAxisIndex: 0,
-          right: '1%',
-          width: 10,
-          showDetail: false,
-          brushSelect: false,
-          handleSize: 0,
-          borderColor: 'transparent',
-          fillerColor: 'rgba(120, 120, 120, 0.2)',
-          backgroundColor: 'transparent',
+          yAxisIndex: [0],
+          start: 0,
+          zoomLock: true,
+          orient: 'vertical',
+          handleSize: '50%',
+          width: 0,
+          left: '97%',
+          labelFormatter: '',
           startValue: 0,
           endValue: 15
         },
         {
           type: 'inside',
-          yAxisIndex: 0,
+          yAxisIndex: [0],
+          start: 0,
           zoomOnMouseWheel: false,
           moveOnMouseWheel: true
-        }
+        },
+        // {
+        //   type: 'slider',
+        //   yAxisIndex: 0,
+        //   right: '1%',
+        //   width: 10,
+        //   showDetail: false,
+        //   brushSelect: false,
+        //   handleSize: 0,
+        //   borderColor: 'transparent',
+        //   fillerColor: 'rgba(120, 120, 120, 0.2)',
+        //   backgroundColor: 'transparent',
+        //   startValue: 0,
+        //   endValue: 15
+        // },
+        // {
+        //   type: 'inside',
+        //   yAxisIndex: 0,
+        //   zoomOnMouseWheel: false,
+        //   moveOnMouseWheel: true
+        // }
       ],
       series: [
         {
@@ -319,7 +339,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           data: empSeriesData,
           z: 1,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
-          label: { show: true, position: 'right', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')} %` }
+          label: { show: true, position: 'right', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')}%` }
         },
         {
           name: 'Liquidado',
@@ -328,14 +348,11 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           data: liqSeriesData,
           z: 2,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
-          label: { show: true, position: 'insideLeft', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')} %` }
+          label: { show: true, position: 'insideLeft', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')}%` }
         },
         ...legendSeries
       ]
     };
-  }
-
-  private addSeriesPair(series: any[], name: string, empData: any[], liqData: any[], color: string, faded: string, width: number, isMobile: boolean, theme: any) {
   }
 
   private getGndColor(label: string, opacity: number): string {

@@ -63,20 +63,10 @@ export class OrgChartHorizontalComponent
 
   constructor(private _themeService: NbThemeService) {
     this._themeService.onThemeChange().subscribe((newTheme) => {
-      if (this.echartsInstance) {
-        this.currentTheme = newTheme.name;
-        const newStyles = getAvailableThemesStyles(newTheme.name);
-
-        this.echartsInstance.setOption({
-          tooltip: {
-            textStyle: { color: newStyles.textPrimaryColor },
-            backgroundColor: newStyles.themePrimaryColor,
-            borderColor: newStyles.themePrimaryColor,
-          },
-          legend: { textStyle: { color: newStyles.textPrimaryColor } },
-          yAxis: { axisLabel: { color: newStyles.textPrimaryColor } },
-          xAxis: { axisLabel: { color: newStyles.textPrimaryColor } },
-        });
+      this.currentTheme = newTheme.name as AvailableThemes;
+      if (this.echartsInstance && this.chart) {
+        this.initChartOptions(this.chart);
+        this.echartsInstance.setOption(this.chartOptions);
       }
     });
   }
@@ -125,8 +115,10 @@ export class OrgChartHorizontalComponent
           color: theme.textPrimaryColor,
           // fontSize: isTablet ? 9 : isMobile ? 10 : 11,
           fontSize: this.showMaximizeButton ? 14 : 11,
-          margin: 8,
-          overflow: "truncate",
+          margin: 10,
+          width: 140,
+          lineHeight: 16,
+          overflow: "break"
           // width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
         },
       },
@@ -273,6 +265,14 @@ export class OrgChartHorizontalComponent
             return this.formatValue(value);
           },
         },
+        splitLine: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.2 },
+        },
+        axisLine: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.8 },
+        },
       },
 
       yAxis: {
@@ -283,8 +283,17 @@ export class OrgChartHorizontalComponent
           color: theme.textPrimaryColor,
           fontSize: this.showMaximizeButton ? 14 : 11,
           margin: 10,
-          width: 160,
-          overflow: "truncate"
+          width: 140,
+          lineHeight: 16,
+          overflow: "break"
+        },
+        axisLine: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.8 },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.8 },
         },
       },
 
@@ -298,15 +307,15 @@ export class OrgChartHorizontalComponent
         barCategoryGap: "20%",
         barGap: "20%",
         barMaxWidth: isMobile ? 15 : 25,
-        // label: {
-        //   show: true,
-        //   position: "insideLeft",
-        //   formatter: (params: any) => {
-        //     return this.formatValue(params.value);
-        //   },
-        //   fontSize: this.showMaximizeButton ? 13 : 10,
-        //   color: theme.textPrimaryColor,
-        // }
+        label: {
+          show: true,
+          position: "right",
+          formatter: (params: any) => {
+            return this.formatValue(params.value);
+          },
+          fontSize: this.showMaximizeButton ? 13 : 10,
+          color: theme.textPrimaryColor,
+        }
       })),
 
       dataZoom: [

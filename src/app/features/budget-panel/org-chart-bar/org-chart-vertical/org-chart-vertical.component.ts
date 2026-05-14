@@ -1,4 +1,4 @@
-﻿import {
+import {
   Component,
   Input,
   OnChanges,
@@ -63,20 +63,10 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(private _themeService: NbThemeService) {
     this._themeService.onThemeChange().subscribe((newTheme) => {
-      if (this.echartsInstance) {
-        this.currentTheme = newTheme.name;
-        const newStyles = getAvailableThemesStyles(newTheme.name);
-
-        this.echartsInstance.setOption({
-          tooltip: {
-            textStyle: { color: newStyles.textPrimaryColor },
-            backgroundColor: newStyles.themePrimaryColor,
-            borderColor: newStyles.themePrimaryColor,
-          },
-          legend: { textStyle: { color: newStyles.textPrimaryColor } },
-          yAxis: { axisLabel: { color: newStyles.textPrimaryColor } },
-          xAxis: { axisLabel: { color: newStyles.textPrimaryColor } },
-        });
+      this.currentTheme = newTheme.name as AvailableThemes;
+      if (this.echartsInstance && this.chart) {
+        this.initChartOptions(this.chart);
+        this.echartsInstance.setOption(this.chartOptions);
       }
     });
   }
@@ -144,12 +134,33 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           alignWithLabel: true,
         },
       },
+      // yAxis: {
+      //   axisLabel: {
+      //     fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
+      //     width: isMobile ? 20 : 100,
+      //     formatter: (v: number) => `${this.formatValue(v)}`,
+      //   },
+      // },
       yAxis: {
+        type: "value",
+        inverse: false,
         axisLabel: {
+          color: theme.textPrimaryColor,
           fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
           width: isMobile ? 20 : 100,
           formatter: (v: number) => `${this.formatValue(v)}`,
         },
+        splitLine: {
+          show: true,
+          lineStyle: { color: theme.textPrimaryColor, opacity: 0.1 },
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: theme.textPrimaryColor
+          }
+        },
+
       },
       legend: {
         itemWidth: this.isMaximized ? 14 : 12,
@@ -274,6 +285,19 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           width: isMobile ? 20 : 100,
           formatter: (v: number) => `${this.formatValue(v)}`,
         },
+        splitLine: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.2 },
+        },
+        axisLine: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.8 },
+        },
+        axisTick: {
+          show: true,
+          length: 5,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.8 },
+        },
       },
       series: chart.data.datasets.map((dataset, index) => ({
         name: dataset.label,
@@ -281,7 +305,15 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         data: data.map((res) => res.valores[index]),
         itemStyle: {
           color: colors[index],
-          borderWidth: 1,
+        },
+        label: {
+          show: true,
+          position: "top",
+          formatter: (params: any) => `${this.formatValue(params.value)}`,
+          fontSize: this.isMaximized ? 14 : 12,
+          color: theme.textPrimaryColor,
+          textBorderWidth: 0,
+          textBorderColor: "transparent",
         },
         barMaxWidth: isMobile ? 20 : 40,
         barCategoryGap: "20%",

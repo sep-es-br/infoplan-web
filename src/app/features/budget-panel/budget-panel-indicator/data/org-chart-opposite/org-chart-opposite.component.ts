@@ -317,7 +317,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           data: empSeriesData,
           z: 1,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
-          label: { show: true, position: 'right', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => p.value > 0 ? `${p.value.toFixed(1).replace('.', ',')}%` : '' }
+          label: { show: true, position: 'right', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')}%` }
         },
         {
           name: 'Liquidado',
@@ -326,7 +326,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           data: liqSeriesData,
           z: 2,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
-          label: { show: true, position: 'insideLeft', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => p.value > 0 ? `${p.value.toFixed(1).replace('.', ',')}%` : '' }
+          label: { show: true, position: 'insideLeft', color: theme.textPrimaryColor, fontSize: 12, formatter: (p: any) => `${p.value.toFixed(1).replace('.', ',')}%` }
         },
         ...legendSeries
       ]

@@ -237,7 +237,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           return html;
         }
       },
-      grid: { left: '8%', right: '8%', bottom: '5%', top: '8%', containLabel: true },
+      grid: { left: '1%', right: '2%', bottom: '0%', top: '8%', containLabel: true },
       xAxis: {
         type: 'value',
         max: 100,

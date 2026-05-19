@@ -1,12 +1,10 @@
-<div class="tag-panel">
+<div class="tag-panel" [class.is-sticky]="isScrolled">
   <nb-tag-list>
+    <nb-tag [class.is-sticky]="isScrolled" text="Resumo Executivo" [routerLink]="[ROUTES.EXECUCAO.RESUMO]"
+      routerLinkActive="active-tag" [routerLinkActiveOptions]="{ exact: true }" class="tag-default"></nb-tag>
 
-    <nb-tag text="Resumo Executivo" [routerLink]="[ROUTES.EXECUCAO.RESUMO]" routerLinkActive="active-tag"
-      [routerLinkActiveOptions]="{ exact: true }" class="tag-default"></nb-tag>
-
-    <nb-tag text="Indicadores" [routerLink]="[ROUTES.EXECUCAO.INDICADOR]" routerLinkActive="active-tag"
-      [routerLinkActiveOptions]="{ exact: true }" class="tag-default"></nb-tag>
-
+    <nb-tag [class.is-sticky]="isScrolled" text="Indicadores" [routerLink]="[ROUTES.EXECUCAO.INDICADOR]"
+      routerLinkActive="active-tag" [routerLinkActiveOptions]="{ exact: true }" class="tag-default"></nb-tag>
   </nb-tag-list>
 </div>
 

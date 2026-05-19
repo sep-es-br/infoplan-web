@@ -1,3 +1,82 @@
+// :host {
+//   display: block;
+//   margin-top: -15px;
+
+//   @media screen and (max-width: 991px) {
+//     margin-top: -4px;
+//   }
+// }
+
+// .tag-panel {
+//   position: sticky;
+//   top: 103px;
+//   z-index: 1000;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   width: 100%;
+//   background-color: transparent;
+//   transition: background-color 0.1s ease, backdrop-filter 0.1s ease;
+
+//   nb-tag-list {
+//     margin-top: -15px;
+//   }
+// }
+
+// nb-tag {
+//   font-size: 13px;
+//   font-weight: 700;
+//   padding: 4px 12px;
+//   border-radius: 18px;
+//   width: 156px;
+//   display: flex;
+//   justify-content: center;
+//   cursor: pointer;
+//   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+//   &.tag-default {
+//     color: #e6e0e0 !important;
+//     background-color: rgba(248, 250, 252, 0.95) !important;
+//     border: 1px solid #1e293b !important;
+//     backdrop-filter: blur(8px);
+//     -webkit-backdrop-filter: blur(8px);
+
+//     :host-context(.nb-theme-default) & {
+//       color: #3f3d3d !important;
+//       background-color: #ffffff !important;
+//       border: 1px solid #1e293b !important;
+//     }
+
+//     :host-context(.nb-theme-dark, .nb-theme-cosmic) & {
+//       color: whitesmoke !important;
+//       background-color: rgba(30, 41, 59, 0.9) !important;
+//       border: 1px solid rgb(255, 255, 255) !important;
+//     }
+
+//     &:hover {
+//       color: whitesmoke !important;
+//       background-color: #45a5c2 !important;
+//       border-color: #45a5c2 !important;
+//       transform: translateY(-2px);
+//       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+//       // :host-context(.nb-theme-dark, .nb-theme-cosmic) & {
+//       //   border-color: #45a5c2 !important;
+//       // }
+//     }
+//   }
+
+//   &.active-tag {
+//     color: white !important;
+//     background: linear-gradient(135deg, #49afce 0%, #49afce 100%) !important;
+//     border: 1px solid #1e293b !important;
+//     transform: translateY(-1px);
+//     pointer-events: none !important;
+//     cursor: default;
+//   }
+// }
+
+
 :host {
   display: block;
 }
@@ -17,15 +96,23 @@
 .tag-panel {
   display: flex;
   justify-content: center;
-  margin-top: 0;
-  gap: 8px;
+  // justify-content: center;
+  // position: sticky;
+  // top: 103px;
+  // z-index: 1000;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
+  // width: 100%;
+  // background-color: transparent;
+  // transition: background-color 0.1s ease, backdrop-filter 0.1s ease;
 
   nb-tag {
     font-size: 12px;
-    padding: 4px 12px;
+    padding: 4px 4px;
     border-radius: 8px;
     font-weight: bold;
-    width: 200px;
+    width: 142px;
     display: flex;
     justify-content: center;
 
@@ -33,6 +120,15 @@
       padding: 2px 12px;
       font-size: 11px;
     }
+
+    //   &.active-tag {
+    //     color: white !important;
+    //     background: linear-gradient(135deg, #49afce 0%, #49afce 100%) !important;
+    //     border: 1px solid #1e293b !important;
+    //     transform: translateY(-1px);
+    //     pointer-events: none !important;
+    //     cursor: default;
+    //   }
   }
 }
 
@@ -62,16 +158,22 @@
 // }
 
 nb-tag.tag-default {
-  background-color: transparent !important;
+  // background-color: transparent !important;
+  // color: #4bb6d6 !important;
+  // border: 1px solid #4bb6d6 !important;
+  // cursor: pointer !important;
+  // transition:
+  //   background-color 280ms cubic-bezier(0.4, 0, 0.2, 1),
+  //   color 280ms cubic-bezier(0.4, 0, 0.2, 1),
+  //   border-color 280ms cubic-bezier(0.4, 0, 0.2, 1),
+  //   transform 180ms ease,
+  //   box-shadow 220ms ease;
+  background-color: transparent;
   color: #4bb6d6 !important;
   border: 1px solid #4bb6d6 !important;
   cursor: pointer !important;
-  transition:
-    background-color 280ms cubic-bezier(0.4, 0, 0.2, 1),
-    color 280ms cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 280ms cubic-bezier(0.4, 0, 0.2, 1),
-    transform 180ms ease,
-    box-shadow 220ms ease;
+  transition: background-color 280ms cubic-bezier(0.4, 0, 0.2, 1), color 280ms cubic-bezier(0.4, 0, 0.2, 1), border-color 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 180ms ease, box-shadow 220ms ease;
+  // box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.5);
 }
 
 nb-tag.tag-default:hover {
@@ -90,6 +192,7 @@ nb-tag.active-tag {
     background-color 320ms cubic-bezier(0.4, 0, 0.2, 1),
     color 320ms cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none !important;
+  // box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.5);
 }
 
 nb-tag.disabled-tag {

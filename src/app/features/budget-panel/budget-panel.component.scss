@@ -243,9 +243,7 @@ input:focus {
 }
 
 .filter-container {
-  position: relative;
-  width: 100%;
-  // margin-top: -15px;
+  display: contents;
 
   .filter-button {
     display: flex;

@@ -15,35 +15,15 @@
 }
 
 .card-toggle-section {
-  // margin-top: 12px;
-  // padding-top: 12px;
   width: 100%;
 }
-
-// @keyframes closeSearch {
-//   from {
-//     width: 60%;
-//     opacity: 1;
-//   }
-//   to {
-//     width: 0;
-//     opacity: 0;
-//   }
-// }
 
 .cursor-pointer {
   cursor: pointer;
 }
 
-.cdk-table {
-  background-color: aqua;
-}
-
-// .flipcard-body, .back-container{
-// }
-
-// ::ng-deep  .back-container {
-//   height: 100% !important;
+// .cdk-table {
+//   background-color: aqua;
 // }
 
 .is-visible-card-filter {
@@ -52,7 +32,6 @@
 }
 
 .outer-card {
-  // height: 275px;
   background-color: var(--card-background-color);
   border: none;
   border-radius: 8px;
@@ -84,10 +63,6 @@
         animation: openSearch 500ms ease-out forwards;
       }
 
-      // &.closing {
-      //   animation: closeSearch 500ms ease-in forwards;
-      // }
-
       .search-input {
         transition: all 0.3s ease;
         min-width: 0;
@@ -104,14 +79,13 @@
 
     .flip-button {
       width: 15.94px;
-      // Largura do ícone de gráfico, que é maior que o ícone de tabela (15px)
-      // Ao definir a largura do ícone pra sempre ser o maior (15.94), isso impede dos outros ícones
-      // ficarem movendo pro lado toda vez que clica pra trocar a visualização
     }
   }
 
   .flip-card {
+
     .card-front,
+    .card-front-content,
     .card-back {
       border: none;
     }
@@ -125,15 +99,201 @@
     .card-back {
       height: 100vh !important;
       max-height: 80%;
-      // max-height: 308px;
+
+      .table-container {
+        overflow: auto;
+        max-height: 100%;
+        width: 100%;
+        border: 1px solid var(--divider-color);
+        border-radius: 4px;
+
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: var(--divider-color, rgba(128, 128, 128, 0.3));
+          border-radius: 10px;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+          background: var(--text-hint-color, rgba(128, 128, 128, 0.5));
+        }
+
+        .custom-grouped-table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+          background-color: transparent;
+
+          thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+
+            tr {
+              background-color: transparent;
+
+              th {
+                color: var(--text-basic-color);
+                border-top: 1px solid var(--divider-color);
+                border-bottom: 2px solid var(--divider-color, #edf2f7);
+                white-space: nowrap;
+                padding: 10px 12px;
+                background-color: transparent;
+
+                &.text-center {
+                  text-align: center;
+                }
+
+                &.font-weight-bold {
+                  font-weight: 700;
+                }
+
+                &+th {
+                  border-left: 1px solid var(--divider-color, #edf2f7);
+                }
+
+                &[colspan] {
+                  background-color: var(--table-header-background-color, rgba(128, 128, 128, 0.12));
+                  border-bottom: 1px solid var(--divider-color, #cbd5e1);
+                  color: var(--text-basic-color);
+                  font-size: 0.9rem;
+                  letter-spacing: 0.01em;
+
+                  // A borda esquerda do agrupador deve ser a linha grossa
+                  border-left: 2px solid var(--text-hint-color, #64748b) !important;
+
+                  &:nth-child(even) {
+                    background-color: rgba(128, 128, 128, 0.06);
+                  }
+                }
+              }
+
+              &:first-child th:first-child {
+                position: sticky;
+                left: 0;
+                z-index: 20;
+                background-color: var(--card-background-color);
+                min-width: 200px;
+                max-width: 350px;
+                box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+                border-right: 2px solid var(--divider-color);
+                border-left: none !important;
+              }
+
+              &:nth-child(2) th {
+                position: static;
+                border-top: 1px solid var(--divider-color);
+                font-size: 0.75rem;
+                background-color: var(--card-background-color);
+
+                &.sub-header {
+                  color: var(--text-hint-color);
+                }
+              }
+            }
+          }
+
+          tbody {
+            tr {
+              background-color: transparent;
+
+              &:hover {
+                background-color: var(--table-row-hover-background-color, rgba(128, 128, 128, 0.1));
+
+                td:first-child {
+                  background-color: inherit;
+                }
+              }
+
+              &.row-total {
+                background-color: rgba(34, 197, 94, 0.05);
+                font-weight: bold;
+
+                td {
+                  border-top: 2px solid var(--divider-color);
+                  background-color: inherit;
+                }
+              }
+
+              td {
+                padding: 10px 12px;
+                border-bottom: 1px solid var(--divider-color);
+                color: var(--text-basic-color);
+                font-size: 12.5px; // Melhorado para ficar mais visível
+                white-space: nowrap;
+                min-width: 110px;
+                background-color: transparent;
+
+                &:first-child {
+                  position: sticky;
+                  left: 0;
+                  z-index: 10;
+                  background-color: var(--card-background-color);
+                  min-width: 200px;
+                  max-width: 350px;
+                  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+                  font-weight: 500;
+                  border-right: 2px solid var(--divider-color);
+                }
+
+                &+td {
+                  border-left: 1px solid var(--divider-color);
+                }
+              }
+            }
+          }
+
+          // CLASSES DE MARCAÇÃO DINÂMICA
+          .metric-group-divider {
+            border-left: 2px solid var(--text-hint-color, #64748b) !important;
+          }
+
+          .alternate-group {
+            background-color: rgba(128, 128, 128, 0.02) !important;
+          }
+
+          &.minimized {
+            thead th {
+              font-size: 12px;
+            }
+
+            tbody td {
+              font-size: 11px;
+            }
+          }
+
+          &.maximized {
+            thead th {
+              font-size: 16px;
+            }
+
+            tbody td {
+              font-size: 14px;
+            }
+          }
+        }
+      }
 
       .flip-table {
-        width: auto;
+        width: 100%;
+        min-width: max-content;
+        border-collapse: separate;
+        border-spacing: 0;
+
+        th, td {
+          white-space: nowrap;
+        }
 
         &.minimized {
           font-family: var(--text-paragraph-font-family);
           z-index: 2;
-          // background-color: aqua;
 
           .nb-tree-grid-header-row {
             position: sticky;
@@ -143,28 +303,11 @@
 
           th {
             font-size: 13px !important;
-            // padding: 0;
             padding-left: 0.5em;
             padding-right: 0.5em;
             height: 20px;
             line-height: normal;
-          }
-
-          th:nth-child(2) {
-            // width: 25%;
-
-            @media screen and (max-width: 576px) {
-              width: 30%;
-              // font-size: 12px !important;
-            }
-          }
-
-          th:nth-child(3) {
-            // width: 20%;
-
-            @media screen and (max-width: 576px) {
-              width: 25%;
-            }
+            white-space: nowrap;
           }
 
           td {
@@ -174,17 +317,13 @@
             padding-bottom: 0;
             padding-left: 0.5em;
             height: 25px;
-          }
-
-          .icon {
-            color: var(--card-text-color);
+            white-space: nowrap;
           }
         }
 
         &.maximized {
           font-family: var(--text-paragraph-font-family);
           z-index: 2;
-          // background-color: aqua;
           max-height: 80vh !important;
 
           .nb-tree-grid-header-row {
@@ -195,29 +334,11 @@
 
           th {
             font-size: 18px !important;
-            padding: 0;
             padding-left: 0.5em;
             padding-right: 0.5em;
             height: 40px;
             line-height: normal;
-          }
-
-          th:nth-child(2) {
-            // width: 25%;
-
-            @media screen and (max-width: 576px) {
-              width: 30%;
-              // font-size: 5px !important;
-              //               font-size: 12px !important;
-            }
-          }
-
-          th:nth-child(3) {
-            // width: 20%;
-
-            @media screen and (max-width: 576px) {
-              width: 25%;
-            }
+            white-space: nowrap;
           }
 
           td {
@@ -227,13 +348,49 @@
             padding-bottom: 0;
             padding-left: 0.5em;
             height: 25px;
-          }
-
-          .icon {
-            color: var(--card-text-color);
+            white-space: nowrap;
           }
         }
+
+        .icon {
+          color: var(--card-text-color);
+        }
       }
+    }
+  }
+}
+
+// Ajustes específicos para o tema CLARO (Default) para garantir contraste
+:host-context(.nb-theme-default) {
+  .custom-grouped-table {
+    thead {
+      tr:first-child th {
+        background-color: #e2e8f0 !important;
+        color: #1e293b !important;
+        border-top: 1px solid #94a3b8 !important;
+        border-bottom: 2px solid #94a3b8 !important;
+      }
+
+      tr:nth-child(2) th {
+        background-color: #f1f5f9 !important;
+        color: #475569 !important;
+        border-bottom: 1px solid #cbd5e1 !important;
+      }
+
+      th.first-column {
+        background-color: #f8fafc !important;
+        border-right: 2px solid #94a3b8 !important;
+      }
+    }
+
+    tbody tr td:first-child {
+      background-color: #f8fafc !important;
+      border-right: 2px solid #94a3b8 !important;
+    }
+
+    // Forçar a visibilidade da divisória no tema claro
+    .metric-group-divider {
+      border-left: 2px solid #64748b !important;
     }
   }
 }

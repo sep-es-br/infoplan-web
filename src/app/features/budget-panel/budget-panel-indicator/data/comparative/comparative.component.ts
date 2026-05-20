@@ -36,6 +36,17 @@ export class ComparativeComponent implements OnChanges, OnDestroy {
   tableContent!: FlipTableContent;
 
   private dashComparative: IDashComparativeResponse[] = [];
+  allColumnsNames: string[] = [];
+  groupedHeaderColumns: string[] = [];
+  distinctYears: number[] = [];
+
+  public tableMetrics = [
+    { id: 'budgeted', label: 'Orçado' },
+    { id: 'authorized', label: 'Autorizado' },
+    { id: 'committed', label: 'Empenhado' },
+    { id: 'liquidated', label: 'Liquidado' },
+    { id: 'liquidatedVariationPreviousYear', label: 'Variação vs Anterior (%)' }
+  ];
 
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   requestStatusCards = {
@@ -123,151 +134,111 @@ export class ComparativeComponent implements OnChanges, OnDestroy {
   }
 
   private processTableData(response: IDashComparativeResponse[]): void {
-    if (!response || response.length === 0) {
-      this.tableContent = null;
-      return;
-    }
+    this.tableContent = null;
+    if (!response || response.length === 0) return;
 
-    // Calcular Totais Gerais (Total de cada coluna na tabela)
-    const grandTotalBudgeted = response.reduce((acc, curr) => acc + curr.budgeted, 0);
-    const grandTotalAuthorized = response.reduce((acc, curr) => acc + curr.authorized, 0);
-    const grandTotalCommitted = response.reduce((acc, curr) => acc + curr.committed, 0);
-    const grandTotalLiquidated = response.reduce((acc, curr) => acc + curr.liquidated, 0);
+    // 1. Anos únicos ordenados
+    this.distinctYears = Array.from(new Set(response.map(item => item.year))).sort();
 
-    const grandTotalLiquidatedPerc = grandTotalAuthorized > 0 ? (grandTotalLiquidated / grandTotalAuthorized) * 100 : 0;
-
-    const groups = new Map<string, IDashComparativeResponse[]>();
+    // 2. Agrupar por GND
+    const gndGroups = new Map<string, IDashComparativeResponse[]>();
     response.forEach(item => {
       const gndKey = `${item.codGnd} - ${item.nameGnd}`;
-      if (!groups.has(gndKey)) {
-        groups.set(gndKey, []);
-      }
-      groups.get(gndKey)!.push(item);
+      if (!gndGroups.has(gndKey)) gndGroups.set(gndKey, []);
+      gndGroups.get(gndKey)!.push(item);
     });
 
-    const treeNodes: TreeNode[] = Array.from(groups.entries()).map(([gnd, items]) => {
+    // 3. Criar as linhas planares
+    const treeNodes: TreeNode[] = Array.from(gndGroups.entries()).map(([gnd, items]) => {
       const sortedItems = items.sort((a, b) => a.year - b.year);
+      const rowData: any[] = [{ propertyName: "nameGnd", value: gnd }];
 
-      const totalBudgeted = sortedItems.reduce((acc, curr) => acc + curr.budgeted, 0);
-      const totalAuthorized = sortedItems.reduce((acc, curr) => acc + curr.authorized, 0);
-      const totalCommitted = sortedItems.reduce((acc, curr) => acc + curr.committed, 0);
-      const totalLiquidated = sortedItems.reduce((acc, curr) => acc + curr.liquidated, 0);
-      let totalVariation = '0.00 %';
-      if (sortedItems.length >= 2) {
-        const firstLiq = sortedItems[0].liquidated;
-        const lastLiq = sortedItems[sortedItems.length - 1].liquidated;
-        if (firstLiq !== 0) {
-          totalVariation = (((lastLiq - firstLiq) / firstLiq) * 100).toFixed(2) + ' %';
-        }
-      }
+      this.tableMetrics.forEach(metric => {
+        this.distinctYears.forEach((year, idx) => {
+          const match = sortedItems.find(item => item.year === year);
+          let value: any = match ? match[metric.id] : 0;
 
-      return {
-        data: [
-          { propertyName: "nameGnd", value: `${gnd}` },
-          { propertyName: "budgeted", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalBudgeted, "R$") },
-          { propertyName: "authorized", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalAuthorized, "R$") },
-          { propertyName: "committed", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalCommitted, "R$") },
-          { propertyName: "liquidated", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalLiquidated, "R$") },
-          { propertyName: "liquidatedVariationPreviousYear", value: totalVariation }
-        ],
-        children: sortedItems.map((item, idx) => {
-          let variation = '0.00 %';
-          if (idx > 0) {
-            const prevLiq = sortedItems[idx - 1].liquidated;
-            if (prevLiq !== 0) {
-              variation = (((item.liquidated - prevLiq) / prevLiq) * 100).toFixed(2) + ' %';
+          if (metric.id === 'liquidatedVariationPreviousYear') {
+            let variation = '0.0 %';
+            if (idx > 0 && match) {
+              const prevMatch = sortedItems.find(item => item.year === this.distinctYears[idx - 1]);
+              if (prevMatch && prevMatch.liquidated !== 0) {
+                variation = (((match.liquidated - prevMatch.liquidated) / prevMatch.liquidated) * 100).toFixed(1) + ' %';
+              }
             }
+            value = variation;
+          } else {
+            value = match ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(value, "R$") : 'R$ 0,00';
           }
 
-          return {
-            data: [
-              { propertyName: "nameGnd", value: `Ano: ${item.year}` },
-              { propertyName: "budgeted", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.budgeted, "R$") },
-              { propertyName: "authorized", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.authorized, "R$") },
-              { propertyName: "committed", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.committed, "R$") },
-              { propertyName: "liquidated", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.liquidated, "R$") },
-              { propertyName: "liquidatedVariationPreviousYear", value: variation }
-            ],
-            children: []
-          };
-        }),
-        expanded: false,
-      };
+          rowData.push({ propertyName: `${metric.id}_${year}`, value: value });
+        });
+      });
+
+      return { data: rowData, children: [], expanded: false };
     });
 
-    const years = [...new Set(response.map(i => i.year))].sort();
-    let cardVariation = 0;
-    let grandTotalVariation = '0.00 %';
+    // 4. Totais
+    const grandTotalData: any[] = [{ propertyName: "nameGnd", value: "Total" }];
+    this.tableMetrics.forEach(metric => {
+      this.distinctYears.forEach((year, idx) => {
+        let totalValue: any;
+        if (metric.id === 'liquidatedVariationPreviousYear') {
+          let variation = '0.0 %';
+          if (idx > 0) {
+            const sumCurrent = response.filter(i => i.year === year).reduce((acc, curr) => acc + curr.liquidated, 0);
+            const sumPrev = response.filter(i => i.year === this.distinctYears[idx - 1]).reduce((acc, curr) => acc + curr.liquidated, 0);
+            if (sumPrev !== 0) {
+              variation = (((sumCurrent - sumPrev) / sumPrev) * 100).toFixed(1) + ' %';
+            }
+          }
+          totalValue = variation;
+        } else {
+          const sum = response.filter(i => i.year === year).reduce((acc, curr) => acc + curr[metric.id], 0);
+          totalValue = this._utilitiesService.formatCurrencyUsingBrazilianStandards(sum, "R$");
+        }
+        grandTotalData.push({ propertyName: `${metric.id}_${year}`, value: totalValue });
+      });
+    });
 
-    if (years.length >= 2) {
-      const lastYear = years[years.length - 1];
-      const prevYear = years[years.length - 2];
-
-      const sumLastYear = response.filter(i => i.year === lastYear).reduce((acc, curr) => acc + curr.liquidated, 0);
-      const sumPrevYear = response.filter(i => i.year === prevYear).reduce((acc, curr) => acc + curr.liquidated, 0);
-
-      if (sumPrevYear !== 0) {
-        cardVariation = ((sumLastYear - sumPrevYear) / sumPrevYear) * 100;
-        grandTotalVariation = cardVariation.toFixed(2) + ' %';
-      }
-    }
-
-    const grandTotalNode: TreeNode = {
-      data: [
-        { propertyName: "nameGnd", value: "Total" },
-        { propertyName: "budgeted", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalBudgeted, "R$") },
-        { propertyName: "authorized", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalAuthorized, "R$") },
-        { propertyName: "committed", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalCommitted, "R$") },
-        { propertyName: "liquidated", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalLiquidated, "R$") },
-        { propertyName: "liquidatedVariationPreviousYear", value: grandTotalVariation }
-      ],
-      children: [],
-      expanded: false
-    };
-
-    treeNodes.push(grandTotalNode);
+    treeNodes.push({ data: grandTotalData, children: [], expanded: false });
     this._utilitiesService.sortTreeNodes(treeNodes, "top");
 
-    // this._comunicationCardsService.sendCardComparative(Number(cardVariation.toFixed(2)));
+    // 5. Configuração de colunas para o FlipTable
+    const dynamicDefaultColumns: any[] = [];
+    const dynamicPropsNames: string[] = [];
+    this.tableMetrics.forEach(metric => {
+      this.distinctYears.forEach(year => {
+        const propName = `${metric.id}_${year}`;
+        dynamicPropsNames.push(propName);
+        dynamicDefaultColumns.push({
+          propertyName: propName,
+          yearLabel: year.toString(),
+          alignment: { header: FlipTableAlignment.CENTER, data: FlipTableAlignment.RIGHT }
+        });
+      });
+    });
 
-    this.tableContent = {
-      customColumn: {
-        propertyName: "nameGnd",
-        displayName: "Grupo de Despesa",
-        alignment: {
-          header: FlipTableAlignment.LEFT,
-          data: FlipTableAlignment.LEFT,
+    const dynamicGroupedColumns = this.tableMetrics.map(metric => ({
+      propertyName: `header_${metric.id}`,
+      metricLabel: metric.label
+    }));
+
+    this.allColumnsNames = ["nameGnd", ...dynamicPropsNames];
+    this.groupedHeaderColumns = ["nameGnd", ...dynamicGroupedColumns.map(c => c.propertyName)];
+
+    setTimeout(() => {
+      this.tableContent = {
+        customColumn: {
+          propertyName: "nameGnd",
+          displayName: "Grupo de Despesa",
+          alignment: { header: FlipTableAlignment.LEFT, data: FlipTableAlignment.LEFT },
         },
-      },
-      defaultColumns: [
-        {
-          propertyName: "budgeted",
-          displayName: "Orçado (R$)",
-          alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-        },
-        {
-          propertyName: "authorized",
-          displayName: "Autorizado (R$)",
-          alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-        },
-        {
-          propertyName: "committed",
-          displayName: "Empenhado (R$)",
-          alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-        },
-        {
-          propertyName: "liquidated",
-          displayName: "Liquidado (R$)",
-          alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-        },
-        {
-          propertyName: "liquidatedVariationPreviousYear",
-          displayName: "Liquidado vs Anterior (%)",
-          alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-        }
-      ],
-      data: treeNodes,
-    };
+        groupedColumns: dynamicGroupedColumns,
+        defaultColumns: dynamicDefaultColumns,
+        data: treeNodes,
+      };
+    });
   }
 
   handleTableDownload(): void {

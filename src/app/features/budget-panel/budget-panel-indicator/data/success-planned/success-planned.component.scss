@@ -16,9 +16,48 @@
   }
 }
 
-
 :host-context(.nb-theme-cosmic, .nb-theme-corporate, .nb-theme-dark) {
   .grouping-label {
     color: #fff;
+  }
+}
+
+.custom-pill-toggle {
+  display: flex;
+  background-color: rgba(128, 128, 128, 0.1);
+  padding: 3px;
+  border-radius: 20px;
+  border: 1px solid var(--divider-color);
+  width: fit-content;
+
+  button {
+    background: transparent;
+    border: none;
+    padding: 3px 15px;
+    border-radius: 17px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-hint-color);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    min-width: 65px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(.active) {
+      color: var(--text-basic-color);
+    }
+
+    &.active {
+      background-color: var(--color-primary-default, #3366ff);
+      color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    &:focus {
+      outline: none;
+    }
   }
 }

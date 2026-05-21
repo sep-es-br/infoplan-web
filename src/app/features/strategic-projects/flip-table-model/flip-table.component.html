@@ -96,7 +96,7 @@
                   </tr>
                   <tr>
                     <ng-container *ngFor="let group of tableContent.groupedColumns; let gIdx = index; trackBy: trackByGroup">
-                      <th *ngFor="let col of getGroupSubColumns(gIdx); let sIdx = index; trackBy: trackByColumn" 
+                      <th *ngFor="let col of getGroupSubColumns(gIdx); let sIdx = index; trackBy: trackByColumn"
                         class="text-center font-weight-bold sub-header"
                         [ngClass]="{'metric-group-divider': gIdx > 0 && sIdx === 0}">
                         {{ col.yearLabel }}
@@ -110,9 +110,9 @@
                     <td class="text-left"
                       [ngClass]="{ 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
                       (click)="tableContent.customColumn.enableEventClick && !isRowTotal(row) ? handleCustomColumnClick(getCellValue(row.data, tableContent.customColumn.propertyName)) : null">
-                      <nb-icon 
-                        *ngIf="tableContent.customColumn.enableEventClick && !isRowTotal(row)" 
-                        [icon]="'chevron-right-outline'" 
+                      <nb-icon
+                        *ngIf="tableContent.customColumn.enableEventClick && !isRowTotal(row)"
+                        [icon]="'chevron-right-outline'"
                         class="me-1">
                       </nb-icon>
                       {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
@@ -136,26 +136,26 @@
             <div class="table-container" *ngIf="!tableContent.groupedColumns || tableContent.groupedColumns.length === 0">
               <table class="flip-table" [ngClass]="isMaximized ? 'maximized' : 'minimized'"
                 [nbTreeGrid]="tableContent.data" [nbSort]="tableContent.data" (sort)="handleSortClick($event)">
-  
+
                 <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumnsNames"></tr>
                 <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumnsNames"
                   [ngClass]="{ 'row-total': isRowTotal(row) }"></tr>
-  
+
                 <ng-container [nbTreeGridColumnDef]="tableContent.customColumn.propertyName">
                   <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef
                     style="vertical-align: middle; border-top: 1px solid var(--divider-color); border-bottom: 2px solid var(--divider-color); font-weight: bold; min-width: 250px;">
                     {{ tableContent.customColumn.displayName }}
                   </th>
-                  <td *nbTreeGridCellDef="let row" nbTreeGridCell 
+                  <td *nbTreeGridCellDef="let row" nbTreeGridCell
                       [ngClass]="{ 'font-weight-bold': isRowTotal(row), 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
                       (click)="tableContent.customColumn.enableEventClick && !isRowTotal(row) ? handleCustomColumnClick(getCellValue(row.data, tableContent.customColumn.propertyName)) : null">
-                    <nb-tree-grid-row-toggle 
-                      *ngIf="row.hasChildren()" 
+                    <nb-tree-grid-row-toggle
+                      *ngIf="row.hasChildren()"
                       [expanded]="row.expanded">
                     </nb-tree-grid-row-toggle>
-                    <nb-icon 
-                      *ngIf="!row.hasChildren() && tableContent.customColumn.enableEventClick && !isRowTotal(row)" 
-                      [icon]="'chevron-right-outline'" 
+                    <nb-icon
+                      *ngIf="!row.hasChildren() && tableContent.customColumn.enableEventClick && !isRowTotal(row)"
+                      [icon]="'chevron-right-outline'"
                       class="me-1">
                     </nb-icon>
                     <span [style.fontWeight]="getCellValue(row.data, tableContent.customColumn.propertyName) === 'Total' ? 'bold' : 'normal'">
@@ -163,7 +163,7 @@
                     </span>
                   </td>
                 </ng-container>
-  
+
                 <ng-container *ngFor="let column of tableContent.defaultColumns; trackBy: trackByColumn" [nbTreeGridColumnDef]="column.propertyName">
                   <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef
                     [style]="{'text-align': column.alignment ? column.alignment.header : 'right'}"

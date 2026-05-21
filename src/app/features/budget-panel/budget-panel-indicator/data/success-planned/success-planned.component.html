@@ -2,9 +2,7 @@
     [loadingStatus]="requestStatus" (executeDownload)="handleTableDownload()" [backCardHeight]="400"
     [groupedHeaderColumns]="groupedHeaderColumns" [distinctYears]="distinctYears" [showMaximizeButton]="true"
     (showMaximizeButtonClick)="onMaximizeButtonClick('success-of-planned', $event)">
-
-    <div card-front>
-        <div class="chart-controls toggles-container small-toggle d-flex flex-wrap gap-3 mb-2 px-2 pb-2 border-bottom">
+        <div class="chart-controls toggles-container small-toggle d-flex flex-wrap gap-3 mb-2 px-2 pb-2 border-bottom" card-front card-back>
             <div class="control-item d-flex align-items-center gap-3">
                 <span class="grouping-label">Agrupar por:</span>
 
@@ -19,7 +17,7 @@
                 </div>
             </div>
         </div>
-
+    <div card-front>
         <ngx-org-chart-opposite [chart]="chartData"
             [height]="isChartMaximized('success-of-planned') ? calcMaximizedHeight() : 493"
             [groupingMode]="groupingMode" [isMaximized]="isChartMaximized('success-of-planned')"

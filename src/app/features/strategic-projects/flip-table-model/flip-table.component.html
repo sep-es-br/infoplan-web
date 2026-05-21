@@ -80,7 +80,7 @@
       <nb-card-back>
         <nb-card class="card-back box-limited m-0 px-3" [style.max-height]="backCardHeight + 'px !important'"
           [style.height]="backCardHeight + 'px !important'">
-          <ng-container *ngIf="tableContent">
+          <ng-container *ngIf="tableContent" select="[card-back]">
             <!-- Tabela com Cabeçalho Agrupado (HTML Puro para Suporte a Colspan/Rowspan) -->
             <div class="table-container" *ngIf="tableContent.groupedColumns && tableContent.groupedColumns.length > 0">
               <table class="flip-table custom-grouped-table" [ngClass]="isMaximized ? 'maximized' : 'minimized'">

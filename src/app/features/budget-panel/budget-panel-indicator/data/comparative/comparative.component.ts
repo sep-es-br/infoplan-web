@@ -21,7 +21,7 @@ import { converterToNumber, replacePorcentage } from '../../../../../@core/utils
 })
 export class ComparativeComponent implements OnChanges, OnDestroy {
 
-  @Input() filter: IIndicatorExecutionFilter;
+  @Input() filter!: IIndicatorExecutionFilter;
   readonly title: string = "Comparativo de Despesas";
 
   private readonly _comunicationCardsService = inject(ComunicationCardsService);
@@ -58,8 +58,8 @@ export class ComparativeComponent implements OnChanges, OnDestroy {
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
-      left: "0%",
-      right: "0%",
+      left: "3%",
+      right: "3%",
       bottom: "0%",
       containLabel: true,
     },
@@ -258,16 +258,25 @@ export class ComparativeComponent implements OnChanges, OnDestroy {
       return row;
     });
 
-    const columns = [
-      { key: 'nameGnd', label: 'Grupo de Despesa' },
-      { key: 'budgeted', label: 'Orçado (R$)' },
-      { key: 'authorized', label: 'Autorizado (R$)' },
-      { key: 'committed', label: 'Empenhado (R$)' },
-      { key: 'liquidated', label: 'Liquidado (R$)' },
-      { key: 'liquidatedVariationPreviousYear', label: 'Liquidado vs Anterior (%)' },
+    const columns: Array<{ key: string; label: string }> = [
+      {
+        key: this.tableContent.customColumn.propertyName,
+        label: this.tableContent.customColumn.displayName || 'Grupo de Despesa'
+      }
     ];
 
-    this._exportDataService.exportXLSXWithCustomHeaders(dataForExport, columns, `Comparativo_${new Date().getTime()}`);
+    this.tableContent.defaultColumns.forEach(col => {
+      const metricId = col.propertyName.split('_')[0];
+      const metric = this.tableMetrics.find(m => m.id === metricId);
+      const label = metric ? `${metric.label} (${col.yearLabel})` : col.propertyName;
+      columns.push({ key: col.propertyName, label });
+    });
+
+    this._exportDataService.exportXLSXWithCustomHeaders(
+      dataForExport,
+      columns,
+      `Comparativo_${new Date().getTime()}`
+    );
   }
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {

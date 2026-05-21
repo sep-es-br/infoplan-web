@@ -107,7 +107,14 @@
                 <tbody>
                   <tr *ngFor="let row of tableContent.data; trackBy: trackByRow"
                     [ngClass]="{ 'row-total': isRowTotal(row) }">
-                    <td class="text-left">
+                    <td class="text-left"
+                      [ngClass]="{ 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
+                      (click)="tableContent.customColumn.enableEventClick && !isRowTotal(row) ? handleCustomColumnClick(getCellValue(row.data, tableContent.customColumn.propertyName)) : null">
+                      <nb-icon 
+                        *ngIf="tableContent.customColumn.enableEventClick && !isRowTotal(row)" 
+                        [icon]="'chevron-right-outline'" 
+                        class="me-1">
+                      </nb-icon>
                       {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
                     </td>
                     <ng-template ngFor let-column [ngForOf]="tableContent.defaultColumns" let-idx="index" [ngForTrackBy]="trackByColumn">
@@ -131,14 +138,26 @@
                 [nbTreeGrid]="tableContent.data" [nbSort]="tableContent.data" (sort)="handleSortClick($event)">
   
                 <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumnsNames"></tr>
-                <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumnsNames"></tr>
+                <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumnsNames"
+                  [ngClass]="{ 'row-total': isRowTotal(row) }"></tr>
   
                 <ng-container [nbTreeGridColumnDef]="tableContent.customColumn.propertyName">
                   <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef
-                    style="vertical-align: middle; border-top: 1px solid var(--divider-color); border-bottom: 2px solid var(--divider-color); font-weight: bold; width: 250px;">
+                    style="vertical-align: middle; border-top: 1px solid var(--divider-color); border-bottom: 2px solid var(--divider-color); font-weight: bold; min-width: 250px;">
                     {{ tableContent.customColumn.displayName }}
                   </th>
-                  <td *nbTreeGridCellDef="let row" nbTreeGridCell>
+                  <td *nbTreeGridCellDef="let row" nbTreeGridCell 
+                      [ngClass]="{ 'font-weight-bold': isRowTotal(row), 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
+                      (click)="tableContent.customColumn.enableEventClick && !isRowTotal(row) ? handleCustomColumnClick(getCellValue(row.data, tableContent.customColumn.propertyName)) : null">
+                    <nb-tree-grid-row-toggle 
+                      *ngIf="row.hasChildren()" 
+                      [expanded]="row.expanded">
+                    </nb-tree-grid-row-toggle>
+                    <nb-icon 
+                      *ngIf="!row.hasChildren() && tableContent.customColumn.enableEventClick && !isRowTotal(row)" 
+                      [icon]="'chevron-right-outline'" 
+                      class="me-1">
+                    </nb-icon>
                     <span [style.fontWeight]="getCellValue(row.data, tableContent.customColumn.propertyName) === 'Total' ? 'bold' : 'normal'">
                       {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
                     </span>

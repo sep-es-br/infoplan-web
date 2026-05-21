@@ -391,9 +391,30 @@ export class FlipTableComponent implements OnChanges {
     return `${formatted} ${suffix}`;
   }
 
-  isRowTotal(row: TreeNode): boolean {
-    return row.data.some(
-      (prop) => prop.propertyName === "categoria" && prop.value === "Total",
+  isRowTotal(row: any): boolean {
+    if (!row) return false;
+
+    let propList: any[] = [];
+    if (row.data) {
+      if (Array.isArray(row.data)) {
+        propList = row.data;
+      } else if (row.data.data && Array.isArray(row.data.data)) {
+        propList = row.data.data;
+      }
+    }
+
+    if (!propList || propList.length === 0) {
+      return false;
+    }
+
+    const customProp = this.tableContent?.customColumn?.propertyName;
+    return propList.some(
+      (prop) =>
+        (prop.propertyName === "categoria" ||
+         prop.propertyName === "category" ||
+         prop.propertyName === "planoOrcamentario" ||
+         prop.propertyName === customProp) &&
+        prop.value?.toString().trim().toUpperCase() === "TOTAL",
     );
   }
 

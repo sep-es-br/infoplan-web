@@ -11,7 +11,7 @@
 }
 
 .font-weight-bold {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 .card-toggle-section {
@@ -83,7 +83,6 @@
   }
 
   .flip-card {
-
     .card-front,
     .card-front-content,
     .card-back {
@@ -132,20 +131,22 @@
           background-color: transparent;
 
           thead {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-
             tr {
-              background-color: transparent;
+              background-color: var(--card-background-color);
 
               th {
                 color: var(--text-basic-color);
                 border-top: 1px solid var(--divider-color);
                 border-bottom: 2px solid var(--divider-color, #edf2f7);
                 white-space: nowrap;
-                padding: 10px 12px;
-                background-color: transparent;
+                padding: 7px 5px;
+                background-color: var(--card-background-color) !important;
+                vertical-align: middle;
+                position: sticky;
+                top: 0;
+                z-index: 20;
+                height: 35px;
+                box-sizing: border-box;
 
                 &.text-center {
                   text-align: center;
@@ -155,22 +156,32 @@
                   font-weight: 700;
                 }
 
-                &+th {
+                & + th {
                   border-left: 1px solid var(--divider-color, #edf2f7);
                 }
 
                 &[colspan] {
-                  background-color: var(--table-header-background-color, rgba(128, 128, 128, 0.12));
+                  background-color: var(--card-background-color) !important;
+                  background-image: linear-gradient(
+                    var(
+                      --table-header-background-color,
+                      rgba(128, 128, 128, 0.12)
+                    ),
+                    var(
+                      --table-header-background-color,
+                      rgba(128, 128, 128, 0.12)
+                    )
+                  );
                   border-bottom: 1px solid var(--divider-color, #cbd5e1);
                   color: var(--text-basic-color);
                   font-size: 0.9rem;
                   letter-spacing: 0.01em;
 
-                  // A borda esquerda do agrupador deve ser a linha grossa
-                  border-left: 2px solid var(--text-hint-color, #64748b) !important;
-
                   &:nth-child(even) {
-                    background-color: rgba(128, 128, 128, 0.06);
+                    background-image: linear-gradient(
+                      rgba(128, 128, 128, 0.06),
+                      rgba(128, 128, 128, 0.06)
+                    );
                   }
                 }
               }
@@ -178,20 +189,23 @@
               &:first-child th:first-child {
                 position: sticky;
                 left: 0;
-                z-index: 20;
-                background-color: var(--card-background-color);
+                top: 0;
+                z-index: 30;
+                background-color: var(--card-background-color) !important;
                 min-width: 200px;
                 max-width: 350px;
                 box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
                 border-right: 2px solid var(--divider-color);
-                border-left: none !important;
+                height: auto;
               }
 
               &:nth-child(2) th {
-                position: static;
+                position: sticky;
+                top: 35px;
+                z-index: 20;
                 border-top: 1px solid var(--divider-color);
                 font-size: 0.75rem;
-                background-color: var(--card-background-color);
+                background-color: var(--card-background-color) !important;
 
                 &.sub-header {
                   color: var(--text-hint-color);
@@ -205,7 +219,10 @@
               background-color: transparent;
 
               &:hover {
-                background-color: var(--table-row-hover-background-color, rgba(128, 128, 128, 0.1));
+                background-color: var(
+                  --table-row-hover-background-color,
+                  rgba(128, 128, 128, 0.1)
+                );
 
                 td:first-child {
                   background-color: inherit;
@@ -213,12 +230,13 @@
               }
 
               &.row-total {
-                background-color: rgba(34, 197, 94, 0.05);
-                font-weight: bold;
+                // background-color: rgba(34, 197, 94, 0.05);
+                font-weight: 800 !important;
 
                 td {
                   border-top: 2px solid var(--divider-color);
                   background-color: inherit;
+                  font-weight: bold !important;
                 }
               }
 
@@ -226,7 +244,7 @@
                 padding: 10px 12px;
                 border-bottom: 1px solid var(--divider-color);
                 color: var(--text-basic-color);
-                font-size: 12.5px; // Melhorado para ficar mais visível
+                font-size: 13px; // Melhorado para ficar mais visível
                 white-space: nowrap;
                 min-width: 110px;
                 background-color: transparent;
@@ -236,14 +254,16 @@
                   left: 0;
                   z-index: 10;
                   background-color: var(--card-background-color);
-                  min-width: 200px;
+                  min-width: 250px;
                   max-width: 350px;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
                   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
                   font-weight: 500;
                   border-right: 2px solid var(--divider-color);
                 }
 
-                &+td {
+                & + td {
                   border-left: 1px solid var(--divider-color);
                 }
               }
@@ -286,9 +306,22 @@
         min-width: max-content;
         border-collapse: separate;
         border-spacing: 0;
+        table-layout: auto !important;
 
-        th, td {
+        th,
+        td {
           white-space: nowrap;
+        }
+
+        // th:first-child,
+        // td:first-child {
+        //   min-width: 350px;
+        // }
+
+        tr.row-total {
+          td {
+            font-weight: 800 !important;
+          }
         }
 
         &.minimized {
@@ -302,7 +335,7 @@
           }
 
           th {
-            font-size: 13px !important;
+            font-size: 12px !important;
             padding-left: 0.5em;
             padding-right: 0.5em;
             height: 20px;
@@ -311,7 +344,7 @@
           }
 
           td {
-            font-size: 12px !important;
+            font-size: 11px !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;
@@ -333,7 +366,7 @@
           }
 
           th {
-            font-size: 18px !important;
+            font-size: 12px !important;
             padding-left: 0.5em;
             padding-right: 0.5em;
             height: 40px;
@@ -342,7 +375,7 @@
           }
 
           td {
-            font-size: 14px !important;
+            font-size: 12px !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;
@@ -365,27 +398,32 @@
   .custom-grouped-table {
     thead {
       tr:first-child th {
-        background-color: #e2e8f0 !important;
+        background-color: #ffffff !important;
         color: #1e293b !important;
         border-top: 1px solid #94a3b8 !important;
         border-bottom: 2px solid #94a3b8 !important;
       }
 
       tr:nth-child(2) th {
-        background-color: #f1f5f9 !important;
+        background-color: #ffffff !important;
         color: #475569 !important;
+        border-top: 1px solid #94a3b8 !important; /* Força a borda superior no tema claro */
+        border-left: 1px solid #cbd5e1 !important; /* Força a divisão entre os anos no tema claro */
         border-bottom: 1px solid #cbd5e1 !important;
       }
 
       th.first-column {
-        background-color: #f8fafc !important;
+        background-color: #ffffff !important;
+        border-top: 1px solid #94a3b8 !important;
         border-right: 2px solid #94a3b8 !important;
+        border-left: 2px solid #94a3b8 !important;
       }
     }
 
     tbody tr td:first-child {
-      background-color: #f8fafc !important;
+      background-color: #ffffff !important;
       border-right: 2px solid #94a3b8 !important;
+      border-left: 2px solid #94a3b8 !important;
     }
 
     // Forçar a visibilidade da divisória no tema claro

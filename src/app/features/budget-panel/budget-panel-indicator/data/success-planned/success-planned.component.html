@@ -22,7 +22,8 @@
 
         <ngx-org-chart-opposite [chart]="chartData"
             [height]="isChartMaximized('success-of-planned') ? calcMaximizedHeight() : 493"
-            [groupingMode]="groupingMode" [isMaximized]="isChartMaximized('success-of-planned')">
+            [groupingMode]="groupingMode" [isMaximized]="isChartMaximized('success-of-planned')"
+            [chartDataConfig]="chartDataConfig">
         </ngx-org-chart-opposite>
     </div>
 

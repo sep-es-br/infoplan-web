@@ -22,7 +22,7 @@ import { converterToNumber, replacePorcentage } from '../../../../../@core/utils
 })
 export class SuccessPlannedComponent implements OnChanges, OnDestroy {
 
-  @Input() filter: IIndicatorExecutionFilter;
+  @Input() filter!: IIndicatorExecutionFilter;
   readonly title: string = "Sucesso do Planejamento";
 
   private readonly _comunicationCardsService = inject(ComunicationCardsService);
@@ -40,7 +40,7 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
   distinctYears: number[] = [];
   groupedHeaderColumns: string[] = [];
 
-  groupingMode: 'GND' | 'YEAR_GND' = 'YEAR_GND';
+  groupingMode: 'GND' | 'YEAR_GND' = 'GND';
 
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   requestStatusCards = {
@@ -50,8 +50,8 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
-      left: "2%",
-      right: "2%",
+      left: "3%",
+      right: "5%",
       bottom: "0%",
       containLabel: true,
     },
@@ -62,8 +62,8 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
     { id: 'authorized', label: 'Autorizado' },
     { id: 'committed', label: 'Empenhado' },
     { id: 'liquidated', label: 'Liquidado' },
-    { id: 'liquidatedBarAuthorized', label: 'Liquidado / Autorizado (%)' },
-    { id: 'committedBarAuthorized', label: 'Empenhado / Autorizado (%)' }
+    { id: 'liquidatedBarAuthorized', label: 'Liq / Autorizado (%)' },
+    { id: 'committedBarAuthorized', label: 'Emp / Autorizado (%)' }
   ];
 
   chartHeight: number = 350;
@@ -117,7 +117,7 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
         error: (err) => {
           console.error("Erro ao carregar Sucesso do Planejamento:", err);
           this.requestStatus = RequestStatus.ERROR;
-          this.dashSuccessOfSuccess = null;
+          this.dashSuccessOfSuccess = of([]) as unknown as IDashSuccessPlannedResponse[]; // Garante que seja um array vazio, mesmo em caso de erro
         }
       })
   }
@@ -159,8 +159,6 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
     }
   }
 
-
-
   onGroupingModeChange(mode: 'GND' | 'YEAR_GND') {
     this.groupingMode = mode;
     if (this.fullResponseData && this.fullResponseData.length > 0) {
@@ -168,131 +166,6 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
     }
     this._cdr.markForCheck();
   }
-
-  // private processTableData(response: IDashSuccessPlannedResponse[]): void {
-  //   if (!response || response.length === 0) {
-  //     this.tableContent = null;
-  //     return;
-  //   }
-
-  //   // Calcular Totais Gerais (Total de cada coluna na tabela)
-  //   const grandTotalAuthorized = response.reduce((acc, curr) => acc + curr.authorized, 0);
-  //   const grandTotalCommitted = response.reduce((acc, curr) => acc + curr.committed, 0);
-  //   const grandTotalLiquidated = response.reduce((acc, curr) => acc + curr.liquidated, 0);
-
-  //   const grandTotalCommittedPerc = grandTotalAuthorized > 0 ? (grandTotalCommitted / grandTotalAuthorized) * 100 : 0;
-  //   const grandTotalLiquidatedPerc = grandTotalAuthorized > 0 ? (grandTotalLiquidated / grandTotalAuthorized) * 100 : 0;
-
-  //   // Agrupar por GND
-  //   const groups = new Map<string, IDashSuccessPlannedResponse[]>();
-  //   response.forEach(item => {
-  //     const gndKey = `${item.codGnd} - ${item.nameGnd}`;
-  //     if (!groups.has(gndKey)) {
-  //       groups.set(gndKey, []);
-  //     }
-  //     groups.get(gndKey)!.push(item);
-  //   });
-
-  //   const treeNodes: TreeNode[] = Array.from(groups.entries()).map(([gnd, items]) => {
-  //     const totalBudgeted = items.reduce((acc, curr) => acc + curr.budgeted, 0);
-  //     const totalAuthorized = items.reduce((acc, curr) => acc + curr.authorized, 0);
-  //     const totalCommitted = items.reduce((acc, curr) => acc + curr.committed, 0);
-  //     const totalLiquidated = items.reduce((acc, curr) => acc + curr.liquidated, 0);
-
-  //     const totalCommittedPerc = totalAuthorized > 0 ? (totalCommitted / totalAuthorized) * 100 : 0;
-  //     const totalLiquidatedPerc = totalAuthorized > 0 ? (totalLiquidated / totalAuthorized) * 100 : 0;
-
-  //     return {
-  //       data: [
-  //         { propertyName: "nameGnd", value: `${gnd}` },
-  //         // { propertyName: "budgeted", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalBudgeted, "R$") },
-  //         // { propertyName: "authorized", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalAuthorized, "R$") },
-  //         // { propertyName: "committed", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalCommitted, "R$") },
-  //         // { propertyName: "liquidated", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(totalLiquidated, "R$") },
-  //         // { propertyName: "liquidatedBarAuthorized", value: totalLiquidatedPerc.toFixed(1) + ' %' },
-  //         // { propertyName: "committedBarAuthorized", value: totalCommittedPerc.toFixed(1) + ' %' }
-  //       ],
-  //       children: items.map(item => ({
-  //         data: [
-  //           { propertyName: "nameGnd", value: `Ano: ${item.year}` },
-  //           { propertyName: "budgeted", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.budgeted, "R$") },
-  //           { propertyName: "authorized", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.authorized, "R$") },
-  //           { propertyName: "committed", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.committed, "R$") },
-  //           { propertyName: "liquidated", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.liquidated, "R$") },
-  //           { propertyName: "liquidatedBarAuthorized", value: item.liquidatedBarAuthorized.toFixed(1) + ' %' },
-  //           { propertyName: "committedBarAuthorized", value: item.committedBarAuthorized.toFixed(1) + ' %' }
-  //         ],
-  //         children: []
-  //       })),
-  //       expanded: true,
-  //     };
-  //   });
-
-  //   const grandTotalNode: TreeNode = {
-  //     data: [
-  //       { propertyName: "nameGnd", value: "Total" },
-  //       // { propertyName: "budgeted", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalBudgeted, "R$") },
-  //       // { propertyName: "authorized", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalAuthorized, "R$") },
-  //       // { propertyName: "committed", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalCommitted, "R$") },
-  //       // { propertyName: "liquidated", value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(grandTotalLiquidated, "R$") },
-  //       // { propertyName: "liquidatedBarAuthorized", value: grandTotalLiquidatedPerc.toFixed(1) + ' %' },
-  //       // { propertyName: "committedBarAuthorized", value: grandTotalCommittedPerc.toFixed(1) + ' %' }
-  //     ],
-  //     children: [],
-  //     expanded: true
-  //   };
-
-  //   treeNodes.push(grandTotalNode);
-  //   this._utilitiesService.sortTreeNodes(treeNodes, "top");
-
-  //   // this._comunicationCardsService.sendCardPlannedSuccess(Number(grandTotalLiquidatedPerc.toFixed(1)));
-
-  //   this.tableContent = {
-  //     customColumn: {
-  //       propertyName: "nameGnd",
-  //       displayName: "Grupo de Despesa",
-  //       alignment: {
-  //         header: FlipTableAlignment.LEFT,
-  //         data: FlipTableAlignment.LEFT,
-  //       },
-  //     },
-  //     defaultColumns: [
-  //       {
-  //         propertyName: "budgeted",
-  //         displayName: "Orçado (R$)",
-  //         isHtml: true,
-  //         alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-  //       },
-  //       {
-  //         propertyName: "authorized",
-  //         displayName: "Autorizado (R$)",
-  //         alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-  //       },
-  //       {
-  //         propertyName: "committed",
-  //         displayName: "Empenhado (R$)",
-  //         alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-  //       },
-  //       {
-  //         propertyName: "liquidated",
-  //         displayName: "Liquidado (R$)",
-  //         alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-  //       },
-  //       {
-  //         propertyName: "liquidatedBarAuthorized",
-  //         displayName: "Liquidado / Autorizado (%)",
-  //         alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-  //       },
-  //       {
-  //         propertyName: "committedBarAuthorized",
-  //         displayName: "Empenhado / Autorizado (%)",
-  //         alignment: { header: FlipTableAlignment.RIGHT, data: FlipTableAlignment.RIGHT },
-  //       }
-  //     ],
-  //     data: treeNodes,
-  //   };
-  // }
-
 
   private processTableData(response: IDashSuccessPlannedResponse[]): void {
     this.tableContent = null;
@@ -329,7 +202,6 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
     const dynamicPropsNames: string[] = [];
     let dynamicGroupedColumns: any[] = [];
 
-    // MODO 1: AGRUPAR POR MÉTRICA (Ex: Orçado -> 2025, 2026)
     if (this.groupingMode === 'GND') {
       this.tableMetrics.forEach(metric => {
         years.forEach(year => {
@@ -344,7 +216,6 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
         dynamicGroupedColumns.push({ propertyName: `header_${metric.id}`, metricLabel: metric.label });
       });
     }
-    // MODO 2: AGRUPAR POR ANO (Ex: 2025 -> Orçado, Autorizado, ...)
     else {
       years.forEach(year => {
         this.tableMetrics.forEach(metric => {
@@ -360,10 +231,8 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
       });
     }
 
-    // 3. Processa cada GND (O(GND * Metrics * Years))
     const treeNodes: TreeNode[] = Array.from(gndGroups.entries()).map(([gnd, items]) => {
       const rowData: any[] = [{ propertyName: "nameGnd", value: gnd }];
-      // Mapa de itens do GND por ano para lookup rápido
       const itemsMap = new Map(items.map(i => [i.year, i]));
 
       this.tableMetrics.forEach(metric => {
@@ -371,7 +240,7 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
           const match = itemsMap.get(year);
           const rawValue = match ? match[metric.id] : 0;
           const isPercentage = metric.id.toLowerCase().includes('bar') || metric.id.toLowerCase().includes('perc');
-          
+
           let value: string;
           if (isPercentage) {
             value = match ? (match[metric.id] ?? 0).toFixed(1) + ' %' : '0.0 %';
@@ -385,13 +254,12 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
       return { data: rowData, children: [], expanded: false };
     });
 
-    // 4. Processa Total Geral (O(Metrics * Years))
     const grandTotalData: any[] = [{ propertyName: "nameGnd", value: "Total" }];
     this.tableMetrics.forEach(metric => {
       years.forEach(year => {
         const isPercentage = metric.id.toLowerCase().includes('bar') || metric.id.toLowerCase().includes('perc');
         const yearTotals = totalsByYear.get(year);
-        
+
         let totalValue: string;
         if (isPercentage) {
           const baseMetric = metric.id.split('Bar')[0];
@@ -424,7 +292,7 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
       defaultColumns: dynamicDefaultColumns,
       data: treeNodes,
     };
-    
+
     this._cdr.markForCheck();
   }
   handleTableDownload(): void {
@@ -444,17 +312,32 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
       return row;
     });
 
-    const columns = [
-      { key: 'nameGnd', label: 'Grupo de Despesa' },
-      { key: 'budgeted', label: 'Orçado (R$)' },
-      { key: 'authorized', label: 'Autorizado (R$)' },
-      { key: 'committed', label: 'Empenhado (R$)' },
-      { key: 'liquidated', label: 'Liquidado (R$)' },
-      { key: 'liquidatedBarAuthorized', label: 'Liquidado / Autorizado (%)' },
-      { key: 'committedBarAuthorized', label: 'Empenhado / Autorizado (%)' },
+    const columns: Array<{ key: string; label: string }> = [
+      {
+        key: this.tableContent.customColumn.propertyName,
+        label: this.tableContent.customColumn.displayName || 'Grupo de Despesa'
+      }
     ];
 
-    this._exportDataService.exportXLSXWithCustomHeaders(dataForExport, columns, `Sucesso_do_Planejamento_${new Date().getTime()}`);
+    this.tableContent.defaultColumns.forEach(col => {
+      let label = col.propertyName;
+      if (this.groupingMode === 'GND') {
+        const metricId = col.propertyName.split('_')[0];
+        const metric = this.tableMetrics.find(m => m.id === metricId);
+        label = metric ? `${metric.label} (${col.yearLabel})` : col.propertyName;
+      } else {
+        const parts = col.propertyName.split('_');
+        const year = parts[parts.length - 1];
+        label = `${year} (${col.yearLabel})`;
+      }
+      columns.push({ key: col.propertyName, label });
+    });
+
+    this._exportDataService.exportXLSXWithCustomHeaders(
+      dataForExport,
+      columns,
+      `Sucesso_do_Planejamento_${new Date().getTime()}`
+    );
   }
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {

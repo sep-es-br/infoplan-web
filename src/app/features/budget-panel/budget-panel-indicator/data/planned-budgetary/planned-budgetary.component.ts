@@ -12,6 +12,7 @@ import { RequestStatus } from '../../../../strategic-projects/strategicProjects.
 import { ChartDataConfig } from '../../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { converterToNumber, replacePorcentage } from '../../../../../@core/utils/functionts/functionts';
 
 @Component({
   selector: 'ngx-planned-budgetary',
@@ -21,7 +22,7 @@ import { finalize, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/op
 export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
 
 
-  @Input() filter: IIndicatorExecutionFilter;
+  @Input() filter!: IIndicatorExecutionFilter;
   readonly title: string = "Plano Orçamentário";
 
   private readonly _comunicationCardsService = inject(ComunicationCardsService);
@@ -66,7 +67,7 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
     },
     grid: {
       top: "12%",
-      left: "0%",
+      left: "3%",
       right: "3%",
       bottom: "0%",
       containLabel: true,
@@ -312,30 +313,41 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   handleTableDownload(): void {
-    if (!this.dashPlannedBudget || this.dashPlannedBudget.length === 0) return;
+    if (!this.tableContent) return;
 
-    const dataForExport = this.dashPlannedBudget.map(item => ({
-      year: item.year,
-      namePo: `${item.codPo} - ${item.namePo}`,
-      budgeted: item.budgeted,
-      authorized: item.authorized,
-      committed: item.committed,
-      liquidated: item.liquidated
-    }));
+    const dataForExport = this.tableContent.data.map(node => {
+      const row: any = {};
+      node.data.forEach(d => {
+        if (typeof d.value === 'string' && d.value.includes('R$')) {
+          row[d.propertyName] = converterToNumber(d.value);
+        } else if (typeof d.value === 'string' && d.value.includes('%')) {
+          row[d.propertyName] = replacePorcentage(d.value);
+        } else {
+          row[d.propertyName] = d.value;
+        }
+      });
+      return row;
+    });
 
-    // Ordenar por Ano e depois por Liquidado desc
-    dataForExport.sort((a, b) => b.year - a.year || b.liquidated - a.liquidated);
-
-    const columns = [
-      { key: 'year', label: 'Ano' },
-      { key: 'namePo', label: 'Plano Orçamentário' },
-      { key: 'budgeted', label: 'Orçado (R$)' },
-      { key: 'authorized', label: 'Autorizado (R$)' },
-      { key: 'committed', label: 'Empenhado (R$)' },
-      { key: 'liquidated', label: 'Liquidado (R$)' },
+    const columns: Array<{ key: string; label: string }> = [
+      {
+        key: this.tableContent.customColumn.propertyName,
+        label: this.tableContent.customColumn.displayName || 'Plano Orçamentário'
+      }
     ];
 
-    this._exportDataService.exportXLSXWithCustomHeaders(dataForExport, columns, `Plano_Orcamentario_Completo_${new Date().getTime()}`);
+    this.tableContent.defaultColumns.forEach(col => {
+      const metricId = col.propertyName.split('_')[0];
+      const metric = this.tableMetrics.find(m => m.id === metricId);
+      const label = metric ? `${metric.label} (${col.yearLabel})` : col.propertyName;
+      columns.push({ key: col.propertyName, label });
+    });
+
+    this._exportDataService.exportXLSXWithCustomHeaders(
+      dataForExport,
+      columns,
+      `Plano_Orcamentario_Completo_${new Date().getTime()}`
+    );
   }
 
 

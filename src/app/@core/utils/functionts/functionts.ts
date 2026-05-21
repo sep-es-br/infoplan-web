@@ -1,12 +1,19 @@
 export const converterToNumber = (valor: string): number | null => {
   try {
-    const valorLimpo = valor
-      .replace(/^R\$\s*/, "")
-      .replace(/\./g, "")
-      .replace(",", ".");
+    if (!valor) return null;
+    // Remove all whitespace (including unicode spaces like non-breaking spaces)
+    let clean = valor.replace(/\s/g, "").replace(/[\xa0\u202f]/g, "");
+    
+    // Remove currency symbol if present
+    clean = clean.replace(/R\$/g, "");
 
-    const numero = Number(valorLimpo.trim());
+    // If there is both a dot and a comma, e.g. 1.234,56
+    // or if there is a comma, e.g. 1234,56
+    if (clean.includes(",")) {
+      clean = clean.replace(/\./g, "").replace(",", ".");
+    }
 
+    const numero = Number(clean);
     if (isNaN(numero)) return null;
 
     return Math.round(numero * 100) / 100;
@@ -23,6 +30,12 @@ export const formatCurrency = (valor: number): string => {
 };
 
 export const replacePorcentage = (value: string) : number => {
-  const transformValue = Number(value.replace("%","").trim());
-  return transformValue;
+  if (!value) return 0;
+  let clean = value.replace(/\s/g, "").replace(/[\xa0\u202f]/g, "");
+  clean = clean.replace(/%/g, "");
+  if (clean.includes(",")) {
+    clean = clean.replace(/\./g, "").replace(",", ".");
+  }
+  const transformValue = Number(clean);
+  return isNaN(transformValue) ? 0 : transformValue;
 }

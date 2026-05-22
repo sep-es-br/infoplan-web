@@ -231,7 +231,8 @@
             <div class="icon-top-right budget-management-indicator" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa-solid fa-gears"></i>
             </div>
-            <div class="card-content">
+            <div class="card-content"
+              [title]="'1° Quadrimestre 30,40%\n2° Quadrimestre 52,87%\n3° Quadrimestre 65,60%'">
               <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else budgetManagementIndicador
@@ -265,7 +266,8 @@
               <i class="fas fa-chart-line"></i>
             </div>
 
-            <div class="card-content">
+            <div class="card-content"
+              [title]="'1° Quadrimestre 28,00%\n2° Quadrimestre 60,00%\n3° Quadrimestre 85,00%'">
               <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else plannedSuccess
@@ -298,7 +300,7 @@
             <div class="icon-top-right budgetary-changes" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa fa-exchange-alt"></i>
             </div>
-            <div class="card-content">
+            <div class="card-content" [title]="'1° Quadrimestre 6,25%\n2° Quadrimestre 15,00%\n3° Quadrimestre 25,00%'">
               <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else budgetaryChanges
@@ -332,7 +334,8 @@
             <div class="icon-top-right budgetary-feasibility" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa-solid fa-scale-balanced"></i>
             </div>
-            <div class="card-content">
+            <div class="card-content"
+              [title]="'1° Quadrimestre 47,50%\n2° Quadrimestre 76,00%\n3° Quadrimestre 95,00%'">
               <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else budgetaryFeasibility
@@ -366,7 +369,8 @@
             <div class="icon-top-right focus-on-the-mission" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa fa-bullseye"></i>
             </div>
-            <div class="card-content">
+            <div class="card-content"
+              [title]="'1° Quadrimestre 30,00%\n2° Quadrimestre 48,00%\n3° Quadrimestre 60,00%'">
               <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else focusOnTheMission

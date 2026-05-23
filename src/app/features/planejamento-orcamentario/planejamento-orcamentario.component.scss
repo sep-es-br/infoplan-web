@@ -10,17 +10,12 @@
     align-items: center;
 
     &.uo-selected {
-      // font-weight: bold;
       font-size: 12px;
 
       nb-icon {
         color: #005c99;
         font-size: 1.2rem;
       }
-
-      // &:hover {
-      //   background-color: #bbdefb !important;
-      // }
     }
   }
 }
@@ -395,8 +390,8 @@
 }
 
 .autocomplete-input-uo {
-  height: 26px !important;
-  border-radius: 6px !important;
+  height: 19px !important ;
+  border-radius: 4px !important;
 }
 
 // Aplica esses estilos sob o tema "dark" e "cosmic"

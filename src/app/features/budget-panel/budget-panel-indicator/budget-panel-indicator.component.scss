@@ -4,22 +4,6 @@
   }
 }
 
-// .execucao-orcamentaria-logo {
-//   min-height: 100px;
-//   padding: 1rem;
-// }
-
-// .logo-card {
-//   display: flex;
-//   align-items: center;
-//   height: 100%;
-// }
-
-// .logo-wrapper {
-//   max-height: 100%;
-//   padding: 0.5rem;
-// }
-
 .img-fluid {
   max-width: 100%;
   max-height: 90%;
@@ -46,7 +30,6 @@ input:focus {
 .filter-container {
   position: relative;
   width: 100%;
-  // margin-top: -15px;
 
   .filter-button {
     display: flex;
@@ -180,7 +163,6 @@ input:focus {
                 height: 28px !important;
                 font-size: 12px;
                 border-radius: 4px !important;
-                // padding: 0 0.75rem;
                 line-height: normal;
               }
             }
@@ -204,7 +186,6 @@ input:focus {
   height: 100%;
   line-height: 16px;
 
-  // padding-right: 33px;
   .delivery-select {
     min-width: 200px;
   }
@@ -300,16 +281,6 @@ input:focus {
       justify-content: center;
       height: 65px;
       min-width: 80px;
-      // color: white;
-      // font-size: 16px;
-      // font-weight: bold;
-      // padding: 8px;
-      // border-radius: 4px;
-      // display: flex;
-      // align-items: center;
-      // justify-content: center;
-      // height: 65px;
-      // min-width: 40%;
 
       &.available-without-reservation {
         background-color: var(--available-without-reservation) !important;
@@ -491,8 +462,6 @@ input:focus {
 }
 
 
-// config
-
 .autocomplete-input-uo {
   border-radius: 4px !important;
 }
@@ -553,7 +522,6 @@ nb-tag {
   background-color: var(--color-primary-500);
   color: white;
   font-size: 10px !important;
-  // padding: 3px 8px !important;
   height: auto !important;
   min-height: 22px !important;
   display: inline-flex !important;
@@ -623,54 +591,4 @@ nb-tag {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-}
-
-.chart-container.maximized.col-12,
-.chart-container.maximized.col-md-12,
-.chart-container.maximized.col-lg-6,
-.chart-container.maximized.col-xl-6,
-.chart-container.maximized.col-xxl-6,
-.chart-container.maximized.col-xxxl-4 {
-  width: 100% !important;
-  max-width: none !important;
-  flex: none !important;
-}
-
-.chart-container.maximized ::ng-deep .flip-card-container,
-.chart-container.maximized ::ng-deep nb-card,
-.chart-container.maximized ::ng-deep .chart-wrapper {
-  width: 100% !important;
-  height: auto !important;
-  margin: 0 auto !important;
-
-  max-width: 98% !important;
-  max-height: 98vh !important;
-}
-
-.chart-container.maximized ::ng-deep .echarts {
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 400px !important;
-}
-
-/* ========== ANIMAÇÃO SUAVE ========== */
-
-.chart-container.maximized {
-  animation: expandChart 0.3s ease-out;
-}
-
-@keyframes expandChart {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-chart-container.maximized::before:hover {
-  transform: scale(1.1);
 }

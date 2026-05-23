@@ -19,6 +19,7 @@
 @import "./layout";
 @import "./overrides";
 @import url("./_budget-panel-cores.scss");
+@import url("./_chart-container-maximized.scss");
 
 // install the framework and custom global styles
 @include nb-install() {
@@ -43,16 +44,16 @@
 }
 
 /* Container do gráfico */
-:host ::ng-deep .echarts {
-  width: 100% !important;
-  height: 100% !important;
-}
+// :host ::ng-deep .echarts {
+//   width: 100% !important;
+//   height: 100% !important;
+// }
 
 /* Quando maximizado, força a altura */
-.chart-container.maximized ::ng-deep .echarts {
-  min-height: 500px !important;
-  height: 100% !important;
-}
+// .chart-container.maximized ::ng-deep .echarts {
+//   min-height: 500px !important;
+//   height: 100% !important;
+// }
 
 /* Container do flip-card */
 :host ::ng-deep nb-card-body {
@@ -80,7 +81,6 @@ nb-menu .menu-section-divider {
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    // letter-spacing: 0.5px;
     z-index: 1;
     color: inherit;
     letter-spacing: 2px;
@@ -89,11 +89,6 @@ nb-menu .menu-section-divider {
 }
 
 .divisor {
-  // display: flex;
-  // align-items: center;
-  // text-align: center;
-  // color: #c3c3c3;
-
   display: flex;
   align-items: center;
   text-align: center;
@@ -115,14 +110,10 @@ nb-menu .menu-section-divider {
       rgba(0, 0, 0, 0.7),
       transparent
     );
-    // rgba(0, 0, 0, 0.7)
-    // rgba(83, 106, 209, 0.8)
   }
 }
 
-// nb-sidebar.compacted .menu-section-divider .divisor-section-title .span-section-title,
 nb-sidebar.compacted .section-title {
-  // visibility: hidden;
   display: none;
   margin: 0;
 }
@@ -130,149 +121,10 @@ nb-sidebar.compacted .section-title {
 ::ng-deep nb-menu {
   .menu-item {
     a.active {
-      // Remove a borda inferior do item ativo (se for a linha azul)
       border-color: transparent !important;
     }
   }
 }
-
-// // ============================================
-// // DIVISOR GENÉRICO (Home, cards, etc.)
-// // ============================================
-
-// .divisor {
-//   display: flex;
-//   align-items: center;
-//   text-align: center;
-//   color: rgba(0, 0, 0, 0.7);
-//   text-transform: uppercase;
-//   font-size: 0.75rem;
-//   letter-spacing: 2px;
-//   font-weight: 600;
-//   margin: 1.5rem 0 1rem 0;
-
-//   &::before,
-//   &::after {
-//     content: "";
-//     flex: 1;
-//     height: 2px;
-//     background: linear-gradient(90deg,
-//         transparent,
-//         rgba(83, 106, 209, 0.8),
-//         transparent);
-//   }
-
-//   &:not(:empty)::before {
-//     margin-right: 1em;
-//   }
-
-//   &:not(:empty)::after {
-//     margin-left: 1em;
-//   }
-// }
-
-// // ============================================
-// // MENU LATERAL - ESTILOS GLOBAIS
-// // ============================================
-
-// nb-menu {
-//   .menu-item {
-//     a.active {
-//       border-color: transparent !important;
-//     }
-//   }
-
-//   // Divisor quando o menu está expandido
-//   .menu-section-divider {
-//     position: relative;
-//     margin: 1.5rem 0 0.5rem 0;
-//     text-align: center;
-//     opacity: 1;
-//     height: auto;
-//     pointer-events: none;
-//     cursor: default;
-
-//     .section-title {
-//       // padding: 0 1rem;
-//       font-size: 0.75rem;
-//       font-weight: 600;
-//       text-transform: uppercase;
-//       letter-spacing: 2px;
-//       display: inline-block;
-//     }
-
-//     .divisor {
-//       display: flex;
-//       align-items: center;
-//       margin: 0;
-
-//       &::before,
-//       &::after {
-//         content: "";
-//         flex: 1;
-//         height: 2px;
-//         background: linear-gradient(90deg,
-//             transparent,
-//             rgba(83, 106, 209, 0.8),
-//             transparent);
-//       }
-//     }
-//   }
-// }
-
-// // ============================================
-// // ✅ MENU COLAPSADO - SOLUÇÃO FINAL (FORCE HIDE)
-// // ============================================
-
-// // Esta regra ignora qualquer encapsulamento e foca no estado do sidebar
-// .compacted .menu-section-divider,
-// nb-sidebar.compacted .menu-section-divider {
-//   margin: 1rem 0 !important;
-//   padding: 0 !important;
-//   height: auto !important;
-//   overflow: hidden !important;
-
-//   // Esconde o TÍTULO (Texto) de forma absoluta
-//   .section-title,
-//   .span-section-title,
-//   span,
-//   div:not(.divisor) {
-//     display: none !important;
-//     visibility: hidden !important;
-//     opacity: 0 !important;
-//     font-size: 0 !important;
-//     width: 0 !important;
-//     height: 0 !important;
-//     margin: 0 !important;
-//     padding: 0 !important;
-//   }
-
-//   // Estiliza apenas a linha
-//   .divisor {
-//     display: flex !important;
-//     justify-content: center !important;
-//     align-items: center !important;
-//     width: 100% !important;
-
-//     &::before {
-//       content: "" !important;
-//       display: block !important;
-//       flex: 0 0 60% !important;
-//       max-width: 40px !important;
-//       height: 2px !important;
-//       background: #536ad1 !important; // Linha azul
-//       margin: 0 auto !important;
-//     }
-
-//     &::after {
-//       display: none !important;
-//     }
-//   }
-// }
-
-// // ============================================
-// // TEMAS (DARK/COSMIC) - OVERRIDES
-// // ============================================
 
 .nb-theme-dark,
 .nb-theme-cosmic {
@@ -291,7 +143,6 @@ nb-sidebar.compacted .section-title {
     }
   }
 
-  // Linha branca no menu colapsado tema dark
   .compacted .menu-section-divider .divisor::before,
   nb-sidebar.compacted .menu-section-divider .divisor::before {
     background: rgba(255, 255, 255, 0.7) !important;

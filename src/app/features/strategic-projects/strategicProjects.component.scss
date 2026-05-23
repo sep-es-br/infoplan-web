@@ -12,7 +12,8 @@ input:focus {
 }
 
 .invisible-tag {
-  visibility: hidden;
+  // visibility: hidden;
+  display: none !important;
 }
 
 @media (max-width: 767px) {

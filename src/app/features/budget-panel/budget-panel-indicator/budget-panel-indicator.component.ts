@@ -109,7 +109,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     status: RequestStatus.EMPTY,
   }
 
-  private subscriptionCard: Subscription;
+  private subscriptionCard!: Subscription;
   private destroy$ = new Subject<void>();
 
   yearsList = Array.from(

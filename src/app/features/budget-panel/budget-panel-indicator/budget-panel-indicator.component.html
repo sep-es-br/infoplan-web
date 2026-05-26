@@ -94,7 +94,7 @@
                     <nb-select multiple name="tipoFonte" placeholder="Selecionar" size="tiny"
                       [(ngModel)]="filter.typeSource" (selectedChange)="handleFilterChange('typeSource', $event)"
                       #customSelect>
-                      <nb-option [value]="1">Caixas Tesouros</nb-option>
+                      <nb-option [value]="1">Caixa do Tesouro</nb-option>
                       <nb-option [value]="2">Demais Fontes</nb-option>
                     </nb-select>
                   </div>
@@ -111,7 +111,7 @@
                     </nb-select>
                   </div>
 
-                  <div class="filter-entity d-flex flex-column col-12 col-md-4 col-xl-3 mb-2">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
                     <span class="mb-1">Emenda parlamentar Estadual</span>
                     <nb-select name="codAmendment" placeholder="Selecionar" size="tiny"
                       [(ngModel)]="filter.codAmendment" (selectedChange)="handleFilterChange('codAmendment', $event)"
@@ -229,56 +229,50 @@
         </div>
       </div>
 
-      <div class="col-12 col-md-12 col-lg-12 col-xl-10">
-        <div class="row g-1 g-md-1">
-          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
-            <div class="card">
-              <div class="icon-top-right available-without-reservation" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fa-solid fa-wallet"></i>
-              </div>
-              <div class="card-content" [title]="
-                  'R$ ' +
-                  (statusTotal.availableWithoutReservation | number : '1.0-0')
-                ">
-                <ng-container *ngIf="
+    <div class="col-12 col-md-12 col-lg-12 col-xl-10">
+      <div class="row g-1 g-md-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right budget-management-indicator" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fa-solid fa-gears"></i>
+            </div>
+            <div class="card-content"
+              [title]="'1° Quadrimestre 30,40%\n2° Quadrimestre 52,87%\n3° Quadrimestre 65,60%'">
+              <ng-container *ngIf="
                     requestStatus.status === 'Loading';
-                    else availableWithoutReservation
+                    else budgetManagementIndicador
                   ">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border total-reservation" role="status">
-                      <span class="sr-only">Carregando...</span>
-                    </div>
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border budget-management-indicator" role="status">
+                    <span class="sr-only">Carregando...</span>
                   </div>
-                </ng-container>
+                </div>
+              </ng-container>
 
-                <ng-template #availableWithoutReservation>
-                  <div class="number-box available-without-reservation">
-                    <div class="d-flex" style="flex-direction: column; align-items: start">
-                      <div class="currency">R$</div>
-                      <div class="value">
-                        {{
-                        formatNumber(statusTotal.availableWithoutReservation)
-                        }}
-                      </div>
+              <ng-template #budgetManagementIndicador>
+                <div class="number-box budget-management-indicator">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">
+                      {{ statusTotal.budgetManagementIndicator }} %
                     </div>
                   </div>
 
-                  <div class="text-section available-without-reservation">
-                    <span>Disponível sem Reserva</span>
-                  </div>
-                </ng-template>
-              </div>
+                <div class="text-section budget-management-indicator">
+                  <span>Indicador de Gestão Orçamentária</span>
+                </div>
+              </ng-template>
             </div>
           </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right planned-success" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fas fa-chart-line"></i>
+            </div>
 
-          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
-            <div class="card">
-              <div class="icon-top-right planned-success" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fas fa-chart-line"></i>
-              </div>
-
-              <div class="card-content">
-                <ng-container *ngIf="
+            <div class="card-content"
+              [title]="'1° Quadrimestre 28,00%\n2° Quadrimestre 60,00%\n3° Quadrimestre 85,00%'">
+              <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else plannedSuccess
                   ">
@@ -305,86 +299,47 @@
               </div>
             </div>
           </div>
-
-          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
-            <div class="card">
-              <div class="icon-top-right comparative" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fas fa-arrows-up-down"></i>
-              </div>
-
-              <div class="card-content">
-                <ng-container *ngIf="requestStatus.status === 'Loading'; else comparative">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border comparative" role="status">
-                      <span class="sr-only">Carregando...</span>
-                    </div>
-                  </div>
-                </ng-container>
-                <ng-template #comparative>
-                  <div class="number-box comparative">
-                    <div class="d-flex" style="flex-direction: column; align-items: start">
-                      <div class="value">{{ statusTotal.comparative }} %</div>
-                    </div>
-                  </div>
-
-                  <div class="text-section comparative">
-                    <span>Comparativo</span>
-                  </div>
-                </ng-template>
-              </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right budgetary-changes" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fa fa-exchange-alt"></i>
             </div>
-          </div>
-
-          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
-            <div class="card">
-              <div class="icon-top-right po-with-highest-settlement" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fas fa-trophy"></i>
-              </div>
-
-              <div class="card-content">
-                <ng-container *ngIf="
+            <div class="card-content" [title]="'1° Quadrimestre 6,25%\n2° Quadrimestre 15,00%\n3° Quadrimestre 25,00%'">
+              <ng-container *ngIf="
                     requestStatus.status === 'Loading';
-                    else poWithHighestSettlement
+                    else budgetaryChanges
                   ">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border poWith-highest-settlement" role="status">
-                      <span class="sr-only">Carregando...</span>
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border budgetary-changes" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #budgetaryChanges>
+                <div class="number-box budgetary-changes">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">
+                      {{ statusTotal.budgetaryChanges }} %
                     </div>
                   </div>
-                </ng-container>
 
-                <ng-template #poWithHighestSettlement>
-                  <div class="number-box po-with-highest-settlement">
-                    <div class="d-flex" style="flex-direction: column; align-items: start">
-                      <div class="currency">R$</div>
-                      <div class="value">
-                        {{ formatNumber(statusTotal.poWithHighestSettlement.liquidado) }}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="text-section po-with-highest-settlement d-flex flex-column justify-content-end">
-                    <span class="label-title">PO com Maior Liquidação</span>
-
-                    <span class="label-subtitle"
-                      [nbTooltip]="statusTotal.poWithHighestSettlement.cod_po + ' - ' + statusTotal.poWithHighestSettlement.nome_po">
-                      {{ statusTotal.poWithHighestSettlement.cod_po }} - {{ statusTotal.poWithHighestSettlement.nome_po
-                      |
-                      TextTruncate:20 }}
-                    </span>
-                  </div>
-                </ng-template>
-              </div>
+                <div class="text-section budgetary-changes">
+                  <span>Alterações Orçamentárias</span>
+                </div>
+              </ng-template>
             </div>
           </div>
 
-          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
-            <div class="card">
-              <div class="icon-top-right budgetary-feasibility" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fa-solid fa-scale-balanced"></i>
-              </div>
-              <div class="card-content">
-                <ng-container *ngIf="
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right budgetary-feasibility" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <div class="card-content"
+              [title]="'1° Quadrimestre 47,50%\n2° Quadrimestre 76,00%\n3° Quadrimestre 95,00%'">
+              <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else budgetaryFeasibility
                   ">
@@ -412,13 +367,14 @@
             </div>
           </div>
 
-          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
-            <div class="card">
-              <div class="icon-top-right focus-on-the-mission" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fa fa-bullseye"></i>
-              </div>
-              <div class="card-content">
-                <ng-container *ngIf="
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right focus-on-the-mission" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fa fa-bullseye"></i>
+            </div>
+            <div class="card-content"
+              [title]="'1° Quadrimestre 30,00%\n2° Quadrimestre 48,00%\n3° Quadrimestre 60,00%'">
+              <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else focusOnTheMission
                   ">
@@ -446,71 +402,112 @@
             </div>
           </div>
 
-          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
-            <div class="card">
-              <div class="icon-top-right budgetary-changes" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fa fa-exchange-alt"></i>
-              </div>
-              <div class="card-content">
-                <ng-container *ngIf="
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right available-without-reservation" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+
+            <div class="card-content" [title]="
+                  'R$ ' +
+                  (statusTotal.availableWithoutReservation | number : '1.0-0')
+                ">
+              <ng-container *ngIf="
                     requestStatus.status === 'Loading';
-                    else budgetaryChanges
+                    else availableWithoutReservation
                   ">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border budgetary-changes" role="status">
-                      <span class="sr-only">Carregando...</span>
-                    </div>
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border total-reservation" role="status">
+                    <span class="sr-only">Carregando...</span>
                   </div>
                 </ng-container>
 
-                <ng-template #budgetaryChanges>
-                  <div class="number-box budgetary-changes">
-                    <div class="d-flex" style="flex-direction: column; align-items: start">
-                      <div class="value">
-                        {{ statusTotal.budgetaryChanges }} %
-                      </div>
+              <ng-template #availableWithoutReservation>
+                <div class="number-box available-without-reservation">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="currency">R$</div>
+                    <div class="value">
+                      {{
+                      formatNumber(statusTotal.availableWithoutReservation)
+                      }}
                     </div>
                   </div>
 
-                  <div class="text-section budgetary-changes">
-                    <span>Alterações Orçamentárias</span>
-                  </div>
-                </ng-template>
-              </div>
+                <div class="text-section available-without-reservation">
+                  <span>Disponível sem Reserva</span>
+                </div>
+              </ng-template>
             </div>
           </div>
 
-          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
-            <div class="card">
-              <div class="icon-top-right budget-management-indicator" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fa-solid fa-gears"></i>
-              </div>
-              <div class="card-content">
-                <ng-container *ngIf="
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right comparative" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fas fa-arrows-up-down"></i>
+            </div>
+
+            <div class="card-content">
+              <ng-container *ngIf="requestStatus.status === 'Loading'; else comparative">
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border comparative" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #comparative>
+                <div class="number-box comparative">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">{{ statusTotal.comparative }} %</div>
+                  </div>
+                </div>
+
+                <div class="text-section comparative">
+                  <span>Comparativo</span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+          <div class="card">
+            <div class="icon-top-right po-with-highest-settlement" *ngIf="requestStatus.status !== 'Loading'">
+              <i class="fas fa-trophy"></i>
+            </div>
+
+            <div class="card-content" [title]="
+              'R$ ' +
+              (statusTotal?.poWithHighestSettlement?.liquidado | number : '1.2-2')
+          ">
+              <ng-container *ngIf="
                     requestStatus.status === 'Loading';
-                    else budgetManagementIndicador
+                    else poWithHighestSettlement
                   ">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border budget-management-indicator" role="status">
-                      <span class="sr-only">Carregando...</span>
-                    </div>
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border poWith-highest-settlement" role="status">
+                    <span class="sr-only">Carregando...</span>
                   </div>
                 </ng-container>
 
-                <ng-template #budgetManagementIndicador>
-                  <div class="number-box budget-management-indicator">
-                    <div class="d-flex" style="flex-direction: column; align-items: start">
-                      <div class="value">
-                        {{ statusTotal.budgetManagementIndicator }} %
-                      </div>
+              <ng-template #poWithHighestSettlement>
+                <div class="number-box po-with-highest-settlement">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="currency">R$</div>
+                    <div class="value">
+                      {{ formatNumber(statusTotal.poWithHighestSettlement.liquidado) }}
                     </div>
                   </div>
 
-                  <div class="text-section budget-management-indicator">
-                    <span>Indicador de Gestão Orçamentária</span>
-                  </div>
-                </ng-template>
-              </div>
+                <div class="text-section po-with-highest-settlement d-flex flex-column justify-content-end">
+                  <span class="label-title">PO com Maior Liquidação</span>
+
+                  <span class="label-subtitle"
+                    [nbTooltip]="statusTotal.poWithHighestSettlement.cod_po + ' - ' + statusTotal.poWithHighestSettlement.nome_po">
+                    {{ statusTotal.poWithHighestSettlement.cod_po }} - {{ statusTotal.poWithHighestSettlement.nome_po |
+                    TextTruncate:20 }}
+                  </span>
+                </div>
+              </ng-template>
             </div>
           </div>
         </div>

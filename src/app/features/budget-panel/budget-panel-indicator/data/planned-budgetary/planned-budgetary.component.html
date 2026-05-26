@@ -1,5 +1,6 @@
 <ngx-flip-table [showSearchField]="true" [cardTitle]="title" [tableContent]="tableContent"
-    [loadingStatus]="requestStatus" (executeDownload)="handleTableDownload()" [backCardHeight]="400"
+    [loadingStatus]="requestStatus" [backCardHeight]="400" (executeDownload)="handleTableDownload()"
+    [groupedHeaderColumns]="groupedHeaderColumns" [distinctYears]="distinctYears"
     (executeSearch)="handleSearch($event)" [showMaximizeButton]="true"
     (showMaximizeButtonClick)="onMaximizeButtonClick('planned-budgetary', $event)">
 

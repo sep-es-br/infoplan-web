@@ -30,7 +30,6 @@ import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
 import { RequestStatus } from "../strategicProjects.component";
 import { ShortNumberPipe } from "../../../shared/components/pipe/shortNumber-pipe";
 import { FilterStateService } from "../../../core/service/filter-state/filter-state.service";
-import { converterToNumber } from "../../../@core/utils/functionts/functionts";
 
 export interface TreeNode {
   data: Array<{
@@ -51,18 +50,27 @@ export enum FlipTableAlignment {
 export interface FlipTableColumn {
   originalPropertyName?: string;
   propertyName: string;
-  displayName: string;
+  displayName?: string;
+  yearLabel?: string;
+  metricLabel?: string;
   alignment?: {
     header: FlipTableAlignment;
     data: FlipTableAlignment;
   };
   enableEventClick?: boolean;
+  isHtml?: boolean;
+}
+
+export interface FlipTableGroupedColumn {
+  propertyName: string;
+  metricLabel: string;
 }
 
 export interface FlipTableContent {
   defaultColumns: Array<FlipTableColumn>;
   customColumn: FlipTableColumn;
   data: Array<TreeNode>;
+  groupedColumns?: Array<FlipTableGroupedColumn>;
 }
 
 export interface FlipTableCustomStyles {
@@ -125,6 +133,10 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() showMaximizeButton: boolean = false;
 
+  @Input() groupedHeaderColumns: string[] = [];
+
+  @Input() distinctYears: number[] = [];
+
   @Input() height: number = 400;
 
   @Input() outerCardHeight: number;
@@ -186,10 +198,33 @@ export class FlipTableComponent implements OnChanges {
   constructor(
     private cdr: ChangeDetectorRef,
     public _filterStateService: FilterStateService,
-  ) {}
+  ) { }
+
+  public readonly Math = Math;
 
   get allColumnsNames(): Array<string> {
     return this.allColumns.map((el) => el.propertyName);
+  }
+
+  // Calcula quantas colunas existem dentro de cada grupo superior
+  get subColumnsCount(): number {
+    if (!this.tableContent?.groupedColumns?.length) return 0;
+    return Math.floor(this.tableContent.defaultColumns.length / this.tableContent.groupedColumns.length);
+  }
+
+  // Retorna o sub-conjunto de colunas default para um grupo específico
+  getGroupSubColumns(groupIndex: number): Array<FlipTableColumn> {
+    const count = this.subColumnsCount;
+    const start = groupIndex * count;
+    return this.tableContent.defaultColumns.slice(start, start + count);
+  }
+
+  // Verifica se uma coluna deve ter o divisor de grupo (borda à esquerda)
+  isDivider(index: number): boolean {
+    if (!this.tableContent?.groupedColumns?.length) return false;
+    const count = this.subColumnsCount;
+    // O divisor aparece no início de cada grupo, exceto se houver apenas um grupo
+    return index > 0 && index % count === 0;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -202,9 +237,11 @@ export class FlipTableComponent implements OnChanges {
 
       this.tableContent.defaultColumns.forEach((el) => {
         this.columnLabels[el.propertyName] = el.displayName;
+
         this.defaultColumnsList.push({
           propertyName: el.propertyName,
           displayName: el.displayName,
+          isHtml: el.isHtml,
           alignment: {
             header: el.alignment
               ? el.alignment.header
@@ -221,6 +258,7 @@ export class FlipTableComponent implements OnChanges {
       this.allColumns = [
         {
           propertyName: customColumn.propertyName,
+          isHtml: customColumn.isHtml,
           displayName: customColumn.displayName,
           alignment: {
             header: customColumn.alignment
@@ -353,9 +391,30 @@ export class FlipTableComponent implements OnChanges {
     return `${formatted} ${suffix}`;
   }
 
-  isRowTotal(row: TreeNode): boolean {
-    return row.data.some(
-      (prop) => prop.propertyName === "categoria" && prop.value === "Total",
+  isRowTotal(row: any): boolean {
+    if (!row) return false;
+
+    let propList: any[] = [];
+    if (row.data) {
+      if (Array.isArray(row.data)) {
+        propList = row.data;
+      } else if (row.data.data && Array.isArray(row.data.data)) {
+        propList = row.data.data;
+      }
+    }
+
+    if (!propList || propList.length === 0) {
+      return false;
+    }
+
+    const customProp = this.tableContent?.customColumn?.propertyName;
+    return propList.some(
+      (prop) =>
+        (prop.propertyName === "categoria" ||
+         prop.propertyName === "category" ||
+         prop.propertyName === "planoOrcamentario" ||
+         prop.propertyName === customProp) &&
+        prop.value?.toString().trim().toUpperCase() === "TOTAL",
     );
   }
 
@@ -387,5 +446,19 @@ export class FlipTableComponent implements OnChanges {
     this.isMaximized = !this.isMaximized; // Alterna o estado
     this.showMaximizeButtonClick.emit(this.isMaximized); // Emite o estado atual
     this.cdr.detectChanges();
+  }
+
+  /* TrackBy Functions para Performance */
+  trackByGroup(index: number, group: FlipTableGroupedColumn): string {
+    return group.propertyName;
+  }
+
+  trackByColumn(index: number, column: FlipTableColumn): string {
+    return column.propertyName;
+  }
+
+  trackByRow(index: number, row: TreeNode): any {
+    // Tenta encontrar um identificador único na linha (ex: ID ou nome)
+    return row.data[0]?.value || index;
   }
 }

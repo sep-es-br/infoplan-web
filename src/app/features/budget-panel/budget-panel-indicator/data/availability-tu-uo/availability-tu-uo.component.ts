@@ -1,7 +1,7 @@
 import { Component, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { ComunicationCardsService } from '../../../../../core/service/comunication-cards/comunication-cards.service';
 import { IndicatorExecutionService } from '../../../../../core/service/indicator-execution-service/indicator-execution.service';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ChartMaximizeService } from '../../../../../core/service/chart-maximize/chart-maximize.service';
 import { UtilitiesService } from '../../../../../core/service/utilities.service';
 import { ExportDataService } from '../../../../../core/service/export-data';
@@ -87,7 +87,7 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
         error: (err) => {
           console.error("Erro ao carregar Disponibilidade de UO:", err);
           this.requestStatus = RequestStatus.ERROR;
-          this.dashAvailabilityToUo = null;
+          this.dashAvailabilityToUo = of(null) as unknown as IDashAvailabilityToUoResponse; // Define como null para evitar erros de acesso a propriedades
         }
       })
 

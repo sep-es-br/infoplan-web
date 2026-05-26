@@ -71,7 +71,7 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
     grid: {
       top: "10%",
       left: "3%",
-      right: "5%",
+      right: "9%",
       bottom: "0%",
       containLabel: true,
     },
@@ -90,7 +90,7 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
   private fullResponseData: IDashSuccessPlannedResponse[] = [];
   private dashSuccessOfSuccess: IDashSuccessPlannedResponse[] = [];
 
-  constructor() {}
+  constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"].currentValue) {

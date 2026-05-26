@@ -282,6 +282,7 @@ export class RevenueTransferComponent implements OnChanges, OnDestroy {
       data: treeNodes,
     };
   }
+
   private calcularVariacao(
     categoria: string,
     anos: number[],

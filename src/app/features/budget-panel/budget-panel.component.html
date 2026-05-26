@@ -1,6 +1,6 @@
 ﻿<div class="col-12">
   <div class="filter-container">
-    <div class="filter-button px-2">
+    <!-- <div class="filter-button px-2">
       <div class="filter-tags">
         <div *ngFor="let tag of activeFilters; let i = index">
           <div class="filter-tag" [ngClass]="{ 'invisible-tag': showFilters }">
@@ -8,40 +8,30 @@
               <div class="tag-label">{{ tag.label }}:</div>
 
               <div class="tag-value">
-                <ng-container
-                  *ngFor="let value of tag.displayValue; let index = index"
-                >
-                  <ng-container
-                    *ngIf="value.name?.length <= 20; else spanWithTooltip"
-                  >
+                <ng-container *ngFor="let value of tag.displayValue; let index = index">
+                  <ng-container *ngIf="value.name?.length <= 20; else spanWithTooltip">
                     <span>
                       {{
-                        (index > 0 ? " " : "") +
-                          (tag.displayValue.length > 1
-                            ? value.name + ";"
-                            : value.name)
+                      (index > 0 ? " " : "") +
+                      (tag.displayValue.length > 1
+                      ? value.name + ";"
+                      : value.name)
                       }}
                     </span>
                   </ng-container>
 
                   <ng-template #spanWithTooltip>
-                    <span
-                      [nbTooltip]="value.fullName ? value.fullName : value.name"
-                    >
+                    <span [nbTooltip]="value.fullName ? value.fullName : value.name">
                       {{
-                        (index > 0 ? " " : "") +
-                          (value.name | TextTruncate: 17 : ";")
+                      (index > 0 ? " " : "") +
+                      (value.name | TextTruncate : 17 : ";")
                       }}
                     </span>
                   </ng-template>
                 </ng-container>
               </div>
             </div>
-            <button
-              *ngIf="tag.key !== 'year'"
-              class="remove-button"
-              (click)="removeFilter(tag.key)"
-            >
+            <button *ngIf="tag.key !== 'year'" class="remove-button" (click)="removeFilter(tag.key)">
               x
             </button>
           </div>
@@ -49,114 +39,118 @@
       </div>
 
       <div class="filter-button">
-        <button
-          class="filter-toggle p-0"
-          type="button"
-          data-bs-toggle="modal"
-          data-bs-target="#filtrosModal"
-        >
+        <button class="filter-toggle p-0" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
           Filtros
           <nb-icon [icon]="'funnel-outline'"></nb-icon>
         </button>
       </div>
+    </div> -->
+    <div class="filter-wrapper" [class.is-sticky]="isScrolled">
+      <div class="filter-button px-2">
+        <div class="filter-tags" [class.is-sticky]="isScrolled">
+          <div *ngFor="let tag of activeFilters; let i = index">
+            <div class="filter-tag" [class.is-sticky]="isScrolled">
+              <div class="filter-tag-inner" [ngClass]="{ 'invisible-tag': showFilters }">
+                <div>
+                  <div class="tag-label">{{ tag.label }}</div>
+
+                  <div class="tag-value">
+                    <ng-container *ngFor="let valueDisplay of tag.displayValue; let index = index">
+                      <ng-container *ngIf="valueDisplay.name?.length <= 20; else spanWithTooltip">
+                        <span>
+                          {{
+                          (index > 0 ? " " : "") +
+                          (tag.displayValue.length > 1
+                          ? valueDisplay.name + ";"
+                          : valueDisplay.name)
+                          }}
+                        </span>
+                      </ng-container>
+
+                      <ng-template #spanWithTooltip>
+                        <span [nbTooltip]="
+                      valueDisplay.fullName
+                        ? valueDisplay.fullName
+                        : valueDisplay.name
+                    ">
+                          {{
+                          (index > 0 ? " " : "") +
+                          (valueDisplay.name | TextTruncate : 17 : ";")
+                          }}
+                        </span>
+                      </ng-template>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+              <button *ngIf="tag.key !== 'year'" class="remove-button" (click)="removeFilter(tag.key)">
+                x
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-button" [class.is-sticky]="isScrolled">
+          <button class="filter-toggle" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
+            Filtros
+            <nb-icon [icon]="'funnel-outline'"></nb-icon>
+          </button>
+        </div>
+      </div>
     </div>
 
+
+
     <!-- Painel de Filtros Simplificado -->
-    <div
-      class="modal fade"
-      id="filtrosModal"
-      tabindex="-1"
-      aria-labelledby="filtrosModalLabel"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-body">
             <form class="w-100">
               <div class="form-header w-100 d-flex justify-content-end">
-                <button
-                  class="btn p-0 close-filter-button"
-                  data-bs-dismiss="modal"
-                  #modalCloseButton
-                  (click)="closeFilterModal()"
-                >
+                <button class="btn p-0 close-filter-button" data-bs-dismiss="modal" #modalCloseButton
+                  (click)="closeFilterModal()">
                   <nb-icon [icon]="'close-outline'"></nb-icon>
                 </button>
               </div>
 
               <div class="d-flex flex-column w-100">
-                <div
-                  class="filter-row d-flex flex-column flex-md-row flex-wrap w-100"
-                >
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
                   <!-- Ano -->
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Ano</span>
-                    <nb-select
-                      name="ano"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.year"
-                      (selectedChange)="handleFilterChange('year', [$event])"
-                      #customSelect
-                    >
-                      <nb-option
-                        *ngFor="let ano of yearsList"
-                        [value]="ano.num"
-                        [nbTooltip]="
+                    <nb-select name="ano" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.year"
+                      (selectedChange)="handleFilterChange('year', [$event])" #customSelect>
+                      <nb-option *ngFor="let ano of yearsList" [value]="ano.num" [nbTooltip]="
                           ano.num >= 2014 && ano.num <= 2022
                             ? 'Apenas despesas'
                             : null
-                        "
-                        [nbTooltipTrigger]="
+                        " [nbTooltipTrigger]="
                           ano.num >= 2014 && ano.num <= 2022 ? 'hint' : 'noop'
-                        "
-                        [nbTooltipPlacement]="right"
-                        #tooltip="nbTooltip"
-                      >
+                        " [nbTooltipPlacement]="right" #tooltip="nbTooltip">
                         {{ ano.num }}
                       </nb-option>
                     </nb-select>
                   </div>
 
                   <!-- Mês -->
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Mês</span>
-                    <nb-select
-                      multiple
-                      name="mes"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.month"
-                      (selectedChange)="handleFilterChange('month', $event)"
-                      #customSelect
-                    >
-                      <nb-option
-                        *ngFor="let mes of monthsList"
-                        [value]="mes.num"
-                      >
+                    <nb-select multiple name="mes" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.month"
+                      (selectedChange)="handleFilterChange('month', $event)" #customSelect>
+                      <nb-option *ngFor="let mes of monthsList" [value]="mes.num">
                         {{ mes.name }}
                       </nb-option>
                     </nb-select>
                   </div>
 
                   <!-- Tipo de Fonte -->
-                  <div
-                    class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4"
-                  >
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Tipo de Fonte</span>
-                    <nb-select
-                      multiple
-                      name="tipoFonte"
-                      placeholder="Selecionar"
-                      size="tiny"
-                      [(ngModel)]="filter.sourceType"
-                      (selectedChange)="handleFilterChange('sourceType', $event)"
-                      #customSelect
-                    >
+                    <nb-select multiple name="tipoFonte" placeholder="Selecionar" size="tiny"
+                      [(ngModel)]="filter.sourceType" (selectedChange)="
+                        handleFilterChange('sourceType', $event)
+                      " #customSelect>
                       <nb-option [value]="1"> 1 - Caixa do Tesouro</nb-option>
                       <nb-option [value]="2"> 2 - Demais Fontes</nb-option>
                     </nb-select>
@@ -166,29 +160,13 @@
             </form>
           </div>
 
-          <div
-            class="modal-footer d-flex flex-column flex-sm-row justify-content-center justify-content-sm-end"
-          >
-            <button
-              class="mx-4"
-              nbButton
-              size="small"
-              status="warning"
-              outline
-              shape="semi-round"
-              (click)="resetFilters()"
-            >
+          <div class="modal-footer d-flex flex-column flex-sm-row justify-content-center justify-content-sm-end">
+            <button class="mx-4" nbButton size="small" status="warning" outline shape="semi-round"
+              (click)="resetFilters()">
               Restaurar Filtros
             </button>
-            <button
-              nbButton
-              size="small"
-              status="success"
-              hero
-              shape="semi-round"
-              data-bs-dismiss="modal"
-              (click)="filtrar($event)"
-            >
+            <button nbButton size="small" status="success" hero shape="semi-round" data-bs-dismiss="modal"
+              (click)="filtrar($event)">
               Filtrar
             </button>
           </div>
@@ -198,39 +176,24 @@
   </div>
 
   <div class="row g-2 g-md-2">
-    <div
-      class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1"
-    >
+    <div class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
       <div class="card">
         <div class="card-content">
           <div class="portfolio-content">
-            <img
-              src="assets/images/app/logo-exec-orc-claro.png"
-              alt="Logo Execução Orçamentária"
-              class="img-fluid"
-            />
+            <img src="assets/images/app/logo-exec-resumo-executivo.png"
+              alt="Logo Execução Orçamentária Resumo Orçamentário" class="img-fluid" />
           </div>
         </div>
       </div>
     </div>
 
-    <div
-      class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1"
-    >
+    <div class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
       <div class="card">
-        <div
-          class="icon-top-right prevista"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right prevista" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fa fa-crosshairs"></i>
         </div>
-        <div
-          class="card-content"
-          [title]="'R$ ' + (totals.totalPlannedRevenue | number: '1.0-0')"
-        >
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else previstaContent"
-          >
+        <div class="card-content" [title]="'R$ ' + (totals.totalPlannedRevenue | number : '1.0-0')">
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else previstaContent">
             <div class="d-flex justify-content-center align-items-center w-100">
               <div class="spinner-border total-prevista" role="status">
                 <span class="sr-only">Carregando...</span>
@@ -240,10 +203,7 @@
 
           <ng-template #previstaContent>
             <div class="number-box prevista">
-              <div
-                class="d-flex"
-                style="flex-direction: column; align-items: start"
-              >
+              <div class="d-flex" style="flex-direction: column; align-items: start">
                 <div class="currency">R$</div>
                 <div class="value">
                   {{ formatNumber(totals.totalPlannedRevenue) }}
@@ -259,23 +219,13 @@
       </div>
     </div>
 
-    <div
-      class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1"
-    >
+    <div class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
       <div class="card">
-        <div
-          class="icon-top-right realizada"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right realizada" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fa fa-check-circle"></i>
         </div>
-        <div
-          class="card-content"
-          [title]="'R$ ' + (totals.totalRealizedRevenue | number: '1.0-2')"
-        >
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else realizadaContent"
-          >
+        <div class="card-content" [title]="'R$ ' + (totals.totalRealizedRevenue | number : '1.0-2')">
+          <ng-container *ngIf="requestStatus.totals === 'Loading'; else realizadaContent">
             <div class="d-flex justify-content-center align-items-center w-100">
               <div class="spinner-border total-realizada" role="status">
                 <span class="sr-only">Carregando...</span>
@@ -285,10 +235,7 @@
 
           <ng-template #realizadaContent>
             <div class="number-box realizada">
-              <div
-                class="d-flex"
-                style="flex-direction: column; align-items: start"
-              >
+              <div class="d-flex" style="flex-direction: column; align-items: start">
                 <div class="currency">R$</div>
                 <div class="value">
                   {{ formatNumber(totals.totalRealizedRevenue) }}
@@ -304,31 +251,18 @@
       </div>
     </div>
 
-    <div
-      class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1"
-    >
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
       <div class="card">
-        <div
-          class="icon-top-right realizada-prevista"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
-          <img
-            src="assets/images/app/icone-receita-realizada-prevista.png"
-            style="width: 20px"
-          />
+        <div class="icon-top-right realizada-prevista" *ngIf="requestStatus.totals !== 'Loading'">
+          <img src="assets/images/app/icone-receita-realizada-prevista.png" style="width: 20px" />
         </div>
         <div class="card-content">
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               requestStatus.totals === 'Loading';
               else realizadaPrevistaContent
-            "
-          >
+            ">
             <div class="d-flex justify-content-center align-items-center w-100">
-              <div
-                class="spinner-border total-realizada-prevista"
-                role="status"
-              >
+              <div class="spinner-border total-realizada-prevista" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
             </div>
@@ -336,10 +270,7 @@
 
           <ng-template #realizadaPrevistaContent>
             <div class="number-box realizada-prevista">
-              <div
-                class="d-flex"
-                style="flex-direction: column; align-items: start"
-              >
+              <div class="d-flex" style="flex-direction: column; align-items: start">
                 <div class="value">
                   {{ totals.realizedVsPlannedRevenuePercentage }} %
                 </div>
@@ -354,28 +285,18 @@
       </div>
     </div>
 
-    <div
-      class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1"
-    >
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
       <div class="card">
-        <div
-          class="icon-top-right empenhada-autorizada"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right empenhada-autorizada" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fa fa-handshake"></i>
         </div>
         <div class="card-content">
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               requestStatus.totals === 'Loading';
               else empenhadaAutorizadaContent
-            "
-          >
+            ">
             <div class="d-flex justify-content-center align-items-center w-100">
-              <div
-                class="spinner-border total-empenhada-autorizada"
-                role="status"
-              >
+              <div class="spinner-border total-empenhada-autorizada" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
             </div>
@@ -383,10 +304,7 @@
 
           <ng-template #empenhadaAutorizadaContent>
             <div class="number-box empenhada-autorizada">
-              <div
-                class="d-flex"
-                style="flex-direction: column; align-items: start"
-              >
+              <div class="d-flex" style="flex-direction: column; align-items: start">
                 <div class="value">
                   {{ totals.committedVsAuthorizedExpensePercentage }} %
                 </div>
@@ -401,28 +319,18 @@
       </div>
     </div>
 
-    <div
-      class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1"
-    >
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
       <div class="card">
-        <div
-          class="icon-top-right liquidada-autorizada"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
+        <div class="icon-top-right liquidada-autorizada" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fas fa-hand-holding-usd"></i>
         </div>
         <div class="card-content">
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               requestStatus.totals === 'Loading';
               else liquidadaAutorizadaContent
-            "
-          >
+            ">
             <div class="d-flex justify-content-center align-items-center w-100">
-              <div
-                class="spinner-border total-liquidada-autorizada"
-                role="status"
-              >
+              <div class="spinner-border total-liquidada-autorizada" role="status">
                 <span class="sr-only">Carregando...</span>
               </div>
             </div>
@@ -430,10 +338,7 @@
 
           <ng-template #liquidadaAutorizadaContent>
             <div class="number-box liquidada-autorizada">
-              <div
-                class="d-flex"
-                style="flex-direction: column; align-items: start"
-              >
+              <div class="d-flex" style="flex-direction: column; align-items: start">
                 <div class="value">
                   {{ totals.liquidatedVsAuthorizedExpensePercentage }} %
                 </div>
@@ -453,202 +358,128 @@
       <div class="row g-2 g-md-1">
         <ng-container *ngIf="!isVisiblePanelExpense">
           <!-- Receita Total -->
-          <div
-            class="chart-container"
-            [class.maximized]="isChartMaximized('revenue-total')"
-            [class.col-12]="!isChartMaximized('revenue-total')"
-            [class.col-md-12]="!isChartMaximized('revenue-total')"
-            [class.col-lg-6]="!isChartMaximized('revenue-total')"
-            [class.col-xl-6]="!isChartMaximized('revenue-total')"
+          <div class="chart-container" [class.maximized]="isChartMaximized('revenue-total')"
+            [class.col-12]="!isChartMaximized('revenue-total')" [class.col-md-12]="!isChartMaximized('revenue-total')"
+            [class.col-lg-6]="!isChartMaximized('revenue-total')" [class.col-xl-6]="!isChartMaximized('revenue-total')"
             [class.col-xxl-6]="!isChartMaximized('revenue-total')"
-            [class.col-xxxl-4]="!isChartMaximized('revenue-total')"
-          >
-            <ngx-revenue-total
-              class="w-100"
-              (dataRevenueTotalCards)="(dataCards)"
-              [filter]="currentRequestParams"
-            >
+            [class.col-xxxl-4]="!isChartMaximized('revenue-total')">
+            <ngx-revenue-total class="w-100" (dataRevenueTotalCards)="(dataCards)" [filter]="currentRequestParams">
             </ngx-revenue-total>
           </div>
 
           <!-- Receita Categoria -->
-          <div
-            class="chart-container"
-            [class.maximized]="isChartMaximized('revenue-category')"
+          <div class="chart-container" [class.maximized]="isChartMaximized('revenue-category')"
             [class.col-12]="!isChartMaximized('revenue-category')"
             [class.col-md-12]="!isChartMaximized('revenue-category')"
             [class.col-lg-6]="!isChartMaximized('revenue-category')"
             [class.col-xl-6]="!isChartMaximized('revenue-category')"
             [class.col-xxl-6]="!isChartMaximized('revenue-category')"
-            [class.col-xxxl-4]="!isChartMaximized('revenue-category')"
-          >
-            <ngx-revenue-category
-              class="w-100"
-              [filter]="currentRequestParams"
-              (sendMaximizeButtonClick)="
+            [class.col-xxxl-4]="!isChartMaximized('revenue-category')">
+            <ngx-revenue-category class="w-100" [filter]="currentRequestParams" (sendMaximizeButtonClick)="
                 handleMaximizeButtonClick('revenue-category', $event)
-              "
-            >
+              ">
             </ngx-revenue-category>
           </div>
 
-          <div
-            class="chart-container"
-            [class.maximized]="isChartMaximized('revenue-origin')"
-            [class.col-12]="!isChartMaximized('revenue-origin')"
-            [class.col-md-12]="!isChartMaximized('revenue-origin')"
+          <div class="chart-container" [class.maximized]="isChartMaximized('revenue-origin')"
+            [class.col-12]="!isChartMaximized('revenue-origin')" [class.col-md-12]="!isChartMaximized('revenue-origin')"
             [class.col-lg-6]="!isChartMaximized('revenue-origin')"
             [class.col-xl-6]="!isChartMaximized('revenue-origin')"
             [class.col-xxl-6]="!isChartMaximized('revenue-origin')"
-            [class.col-xxxl-4]="!isChartMaximized('revenue-origin')"
-          >
-            <ngx-revenue-origin
-              class="w-100"
-              [filter]="currentRequestParams"
-              (sendMaximizeButtonClick)="
+            [class.col-xxxl-4]="!isChartMaximized('revenue-origin')">
+            <ngx-revenue-origin class="w-100" [filter]="currentRequestParams" (sendMaximizeButtonClick)="
                 handleMaximizeButtonClick('revenue-origin', $event)
-              "
-            >
+              ">
             </ngx-revenue-origin>
           </div>
 
           <!-- Receita Impostos -->
-          <div
-            class="chart-container"
-            [class.maximized]="isChartMaximized('revenue-taxes')"
-            [class.col-12]="!isChartMaximized('revenue-taxes')"
-            [class.col-md-12]="!isChartMaximized('revenue-taxes')"
-            [class.col-lg-6]="!isChartMaximized('revenue-taxes')"
-            [class.col-xl-6]="!isChartMaximized('revenue-taxes')"
+          <div class="chart-container" [class.maximized]="isChartMaximized('revenue-taxes')"
+            [class.col-12]="!isChartMaximized('revenue-taxes')" [class.col-md-12]="!isChartMaximized('revenue-taxes')"
+            [class.col-lg-6]="!isChartMaximized('revenue-taxes')" [class.col-xl-6]="!isChartMaximized('revenue-taxes')"
             [class.col-xxl-6]="!isChartMaximized('revenue-taxes')"
-            [class.col-xxxl-4]="!isChartMaximized('revenue-taxes')"
-          >
-            <ngx-revenue-taxes
-              class="w-100"
-              [filter]="currentRequestParams"
-              (sendMaximizeButtonClick)="
+            [class.col-xxxl-4]="!isChartMaximized('revenue-taxes')">
+            <ngx-revenue-taxes class="w-100" [filter]="currentRequestParams" (sendMaximizeButtonClick)="
                 handleMaximizeButtonClick('revenue-taxes', $event)
-              "
-            >
+              ">
             </ngx-revenue-taxes>
           </div>
 
           <!-- Receita Participação -->
-          <div
-            class="chart-container"
-            [class.maximized]="isChartMaximized('revenue-participation')"
+          <div class="chart-container" [class.maximized]="isChartMaximized('revenue-participation')"
             [class.col-12]="!isChartMaximized('revenue-participation')"
             [class.col-md-12]="!isChartMaximized('revenue-participation')"
             [class.col-lg-6]="!isChartMaximized('revenue-participation')"
             [class.col-xl-6]="!isChartMaximized('revenue-participation')"
             [class.col-xxl-6]="!isChartMaximized('revenue-participation')"
-            [class.col-xxxl-4]="!isChartMaximized('revenue-participation')"
-          >
-            <ngx-revenue-participation
-              class="w-100"
-              [filter]="currentRequestParams"
-              (sendMaximizeButtonClick)="
+            [class.col-xxxl-4]="!isChartMaximized('revenue-participation')">
+            <ngx-revenue-participation class="w-100" [filter]="currentRequestParams" (sendMaximizeButtonClick)="
                 handleMaximizeButtonClick('revenue-participation', $event)
-              "
-            >
+              ">
             </ngx-revenue-participation>
           </div>
 
           <!-- Receita ICMS -->
-          <div
-            class="chart-container"
-            [class.maximized]="isChartMaximized('revenue-icms')"
-            [class.col-12]="!isChartMaximized('revenue-icms')"
-            [class.col-md-12]="!isChartMaximized('revenue-icms')"
-            [class.col-lg-6]="!isChartMaximized('revenue-icms')"
-            [class.col-xl-6]="!isChartMaximized('revenue-icms')"
+          <div class="chart-container" [class.maximized]="isChartMaximized('revenue-icms')"
+            [class.col-12]="!isChartMaximized('revenue-icms')" [class.col-md-12]="!isChartMaximized('revenue-icms')"
+            [class.col-lg-6]="!isChartMaximized('revenue-icms')" [class.col-xl-6]="!isChartMaximized('revenue-icms')"
             [class.col-xxl-6]="!isChartMaximized('revenue-icms')"
-            [class.col-xxxl-4]="!isChartMaximized('revenue-icms')"
-          >
-            <ngx-revenue-icms
-              class="w-100"
-              [filter]="currentRequestParams"
-              (sendMaximizeButtonClick)="
+            [class.col-xxxl-4]="!isChartMaximized('revenue-icms')">
+            <ngx-revenue-icms class="w-100" [filter]="currentRequestParams" (sendMaximizeButtonClick)="
                 handleMaximizeButtonClick('revenue-icms', $event)
-              "
-            >
+              ">
             </ngx-revenue-icms>
           </div>
 
           <!-- Receita Transferência -->
-          <div
-            class="chart-container"
-            [class.maximized]="isChartMaximized('revenue-transfer')"
+          <div class="chart-container" [class.maximized]="isChartMaximized('revenue-transfer')"
             [class.col-12]="!isChartMaximized('revenue-transfer')"
             [class.col-md-12]="!isChartMaximized('revenue-transfer')"
             [class.col-lg-6]="!isChartMaximized('revenue-transfer')"
             [class.col-xl-6]="!isChartMaximized('revenue-transfer')"
             [class.col-xxl-6]="!isChartMaximized('revenue-transfer')"
-            [class.col-xxxl-6]="!isChartMaximized('revenue-transfer')"
-          >
-            <ngx-revenue-transfer
-              class="w-100"
-              [filter]="currentRequestParams"
-              (sendMaximizeButtonClick)="
+            [class.col-xxxl-6]="!isChartMaximized('revenue-transfer')">
+            <ngx-revenue-transfer class="w-100" [filter]="currentRequestParams" (sendMaximizeButtonClick)="
                 handleMaximizeButtonClick('revenue-transfer', $event)
-              "
-            >
+              ">
             </ngx-revenue-transfer>
           </div>
         </ng-container>
 
         <!-- Receita Despesa GND Total -->
-        <div
-          class="chart-container"
-          [class.maximized]="isChartMaximized('revenue-expense-gnd-total')"
+        <div class="chart-container" [class.maximized]="isChartMaximized('revenue-expense-gnd-total')"
           [class.col-12]="!isChartMaximized('revenue-expense-gnd-total')"
-          [class.col-md-12]="!isChartMaximized('revenue-expense-gnd-total')"
-          [class.col-lg-6]="
+          [class.col-md-12]="!isChartMaximized('revenue-expense-gnd-total')" [class.col-lg-6]="
             !isChartMaximized('revenue-expense-gnd-total') &&
             !isVisiblePanelExpense
-          "
-          [class.col-xl-6]="
+          " [class.col-xl-6]="
             !isChartMaximized('revenue-expense-gnd-total') &&
             !isVisiblePanelExpense
-          "
-          [class.col-xxl-6]="
+          " [class.col-xxl-6]="
             !isChartMaximized('revenue-expense-gnd-total') &&
             !isVisiblePanelExpense
-          "
-          [class.col-xxxl-6]="
+          " [class.col-xxxl-6]="
             !isChartMaximized('revenue-expense-gnd-total') &&
             !isVisiblePanelExpense
-          "
-        >
-          <ngx-revenue-expense-gnd-total
-            class="w-100"
-            (RevenueExpenseGndTotalOrcamento)="(dataCards)"
-            [filter]="currentRequestParams"
-            (sendMaximizeButtonClick)="
+          ">
+          <ngx-revenue-expense-gnd-total class="w-100" (RevenueExpenseGndTotalOrcamento)="(dataCards)"
+            [filter]="currentRequestParams" (sendMaximizeButtonClick)="
               handleMaximizeButtonClick('revenue-expense-gnd-total', $event)
-            "
-          >
+            ">
           </ngx-revenue-expense-gnd-total>
         </div>
 
         <!-- Receita Despesa GND -->
-        <div
-          class="chart-container"
-          [class.maximized]="isChartMaximized('revenue-expense-gnd')"
+        <div class="chart-container" [class.maximized]="isChartMaximized('revenue-expense-gnd')"
           [class.col-12]="!isChartMaximized('revenue-expense-gnd')"
           [class.col-md-12]="!isChartMaximized('revenue-expense-gnd')"
           [class.col-lg-12]="!isChartMaximized('revenue-expense-gnd')"
           [class.col-xl-12]="!isChartMaximized('revenue-expense-gnd')"
           [class.col-xxl-12]="!isChartMaximized('revenue-expense-gnd')"
-          [class.col-xxxl-12]="!isChartMaximized('revenue-expense-gnd')"
-        >
-          <ngx-revenue-expense-gnd
-            class="w-100"
-            [filter]="currentRequestParams"
-            (sendMaximizeButtonClick)="
+          [class.col-xxxl-12]="!isChartMaximized('revenue-expense-gnd')">
+          <ngx-revenue-expense-gnd class="w-100" [filter]="currentRequestParams" (sendMaximizeButtonClick)="
               handleMaximizeButtonClick('revenue-expense-gnd', $event)
-            "
-          >
+            ">
           </ngx-revenue-expense-gnd>
         </div>
       </div>

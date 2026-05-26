@@ -1,4 +1,4 @@
-﻿import {
+import {
   Component,
   HostListener,
   Input,
@@ -41,13 +41,12 @@ export interface ChartDataConfig {
   imports: [NgxEchartsModule, CommonModule],
 })
 export class OrgChartHorizontalComponent
-  implements OnInit, OnChanges, OnDestroy
-{
+  implements OnInit, OnChanges, OnDestroy {
   @Input() chart!: IChartOptions;
   @Input() height!: number;
   @Input() charactersPerLine!: number;
   @Input() showMaximizeButton!: boolean;
-  @Input() ChartDataConfig!: ChartDataConfig;
+  @Input() chartDataConfig!: ChartDataConfig;
 
   chartOptions!: EChartsOption;
   echartsInstance: ECharts | null = null;
@@ -64,20 +63,10 @@ export class OrgChartHorizontalComponent
 
   constructor(private _themeService: NbThemeService) {
     this._themeService.onThemeChange().subscribe((newTheme) => {
-      if (this.echartsInstance) {
-        this.currentTheme = newTheme.name;
-        const newStyles = getAvailableThemesStyles(newTheme.name);
-
-        this.echartsInstance.setOption({
-          tooltip: {
-            textStyle: { color: newStyles.textPrimaryColor },
-            backgroundColor: newStyles.themePrimaryColor,
-            borderColor: newStyles.themePrimaryColor,
-          },
-          legend: { textStyle: { color: newStyles.textPrimaryColor } },
-          yAxis: { axisLabel: { color: newStyles.textPrimaryColor } },
-          xAxis: { axisLabel: { color: newStyles.textPrimaryColor } },
-        });
+      this.currentTheme = newTheme.name as AvailableThemes;
+      if (this.echartsInstance && this.chart) {
+        this.initChartOptions(this.chart);
+        this.echartsInstance.setOption(this.chartOptions);
       }
     });
   }
@@ -94,7 +83,7 @@ export class OrgChartHorizontalComponent
     if (changes["height"]) {
       this.resizeChart();
     }
-    if(changes["showMaximizeButton"]) {
+    if (changes["showMaximizeButton"]) {
       this.showMaximizeButton = changes["showMaximizeButton"].currentValue;
       this.updateChartOnResize();
     }
@@ -126,8 +115,10 @@ export class OrgChartHorizontalComponent
           color: theme.textPrimaryColor,
           // fontSize: isTablet ? 9 : isMobile ? 10 : 11,
           fontSize: this.showMaximizeButton ? 14 : 11,
-          margin: 8,
-          overflow: "truncate",
+          margin: 10,
+          width: 140,
+          lineHeight: 16,
+          overflow: "break"
           // width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
         },
       },
@@ -143,7 +134,7 @@ export class OrgChartHorizontalComponent
       legend: {
         textStyle: {
           color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 16 : 12,
+          fontSize: this.showMaximizeButton ? 13 : 12,
         },
       },
       series: this.chart.data.datasets.map(() => ({
@@ -206,9 +197,11 @@ export class OrgChartHorizontalComponent
               (dataRef.nomePO && dataRef.nomePO[index]) ||
               "PO não identificado";
             const uo =
-              (dataRef.nomeUO && dataRef.nomeUO[index]) ||
-              "UO não identificada";
-            tituloTooltip = `${uo} - ${po} &nbsp;&nbsp;`;
+              dataRef.nomeUO && dataRef.nomeUO[index]
+                ? dataRef.nomeUO[index]
+                : "";
+
+            tituloTooltip = uo ? `${uo} - ${po} &nbsp;&nbsp;` : `${po} &nbsp;&nbsp;`;
           } else {
             const labelOriginal = params[0].name || "";
             const codigo = labelOriginal.includes(" - ")
@@ -244,9 +237,9 @@ export class OrgChartHorizontalComponent
         top: "top",
         left: "center",
         data: datasetLabels,
-        itemWidth: this.ChartDataConfig?.legend?.itemWidth || 10,
-        itemHeight: this.ChartDataConfig?.legend?.itemHeight || 10,
-        itemGap: this.ChartDataConfig?.legend?.itemGap || 20,
+        itemWidth: this.chartDataConfig?.legend?.itemWidth || 10,
+        itemHeight: this.chartDataConfig?.legend?.itemHeight || 10,
+        itemGap: this.chartDataConfig?.legend?.itemGap || 20,
         textStyle: {
           color: theme.textPrimaryColor,
           fontSize: this.showMaximizeButton ? 16 : 12,
@@ -254,11 +247,11 @@ export class OrgChartHorizontalComponent
       },
 
       grid: {
-        top: this.ChartDataConfig?.grid?.top || "5%",
-        left: this.ChartDataConfig?.grid?.left || "10%",
-        right: this.ChartDataConfig?.grid?.right || "10%",
-        bottom: this.ChartDataConfig?.grid?.bottom || "20%",
-        containLabel: this.ChartDataConfig?.grid?.containLabel || true,
+        top: this.chartDataConfig?.grid?.top || "5%",
+        left: this.chartDataConfig?.grid?.left || "10%",
+        right: this.chartDataConfig?.grid?.right || "10%",
+        bottom: this.chartDataConfig?.grid?.bottom || "20%",
+        containLabel: this.chartDataConfig?.grid?.containLabel || true,
       },
 
       xAxis: {
@@ -272,6 +265,14 @@ export class OrgChartHorizontalComponent
             return this.formatValue(value);
           },
         },
+        splitLine: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.2 },
+        },
+        axisLine: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.8 },
+        },
       },
 
       yAxis: {
@@ -280,11 +281,19 @@ export class OrgChartHorizontalComponent
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ?  14 : 11,
-          // margin: 15,
-          // lineHeight: 11,
-          width: 100,
-          overflow: "truncate"
+          fontSize: this.showMaximizeButton ? 14 : 11,
+          margin: 10,
+          width: 140,
+          lineHeight: 16,
+          overflow: "break"
+        },
+        axisLine: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.8 },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.8 },
         },
       },
 
@@ -298,6 +307,15 @@ export class OrgChartHorizontalComponent
         barCategoryGap: "20%",
         barGap: "20%",
         barMaxWidth: isMobile ? 15 : 25,
+        label: {
+          show: true,
+          position: "right",
+          formatter: (params: any) => {
+            return this.formatValue(params.value);
+          },
+          fontSize: this.showMaximizeButton ? 13 : 10,
+          color: theme.textPrimaryColor,
+        }
       })),
 
       dataZoom: [

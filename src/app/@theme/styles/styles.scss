@@ -104,12 +104,12 @@ nb-menu .menu-section-divider {
     content: "";
     flex: 1;
     height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(0, 0, 0, 0.7),
-      transparent
-    );
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(0, 0, 0, 0.7),
+        transparent);
+    // rgba(0, 0, 0, 0.7)
+    // rgba(83, 106, 209, 0.8)
   }
 }
 
@@ -126,20 +126,23 @@ nb-sidebar.compacted .section-title {
   }
 }
 
+// // ============================================
+// // TEMAS (DARK/COSMIC) - OVERRIDES
+// // ============================================
+
 .nb-theme-dark,
 .nb-theme-cosmic {
+
   .divisor,
   nb-menu .menu-section-divider .divisor {
     color: rgba(255, 255, 255, 0.9);
 
     &::before,
     &::after {
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.6),
-        transparent
-      ) !important;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.6),
+          transparent) !important;
     }
   }
 

@@ -163,6 +163,25 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
     const empSeriesData: any[] = [];
     const liqSeriesData: any[] = [];
 
+    finalData.forEach((d) => {
+      const baseColor =
+        this.groupingMode === "YEAR_GND"
+          ? this.getGndColor(d.gnd, 1)
+          : this.colorPalette[
+          uniqueYears.indexOf(d.year) % this.colorPalette.length
+          ];
+
+      const faded = baseColor.startsWith("#")
+        ? this.getOpacityColor(baseColor, 0.4)
+        : baseColor.replace("rgb", "rgba").replace(")", ", 0.4)");
+
+      empSeriesData.push({
+        value: d.emp,
+        itemStyle: { color: faded }
+      });
+      liqSeriesData.push({ value: d.liq, itemStyle: { color: baseColor } });
+    });
+
     // finalData.forEach((d) => {
     //   const baseColor =
     //     this.groupingMode === "YEAR_GND"
@@ -175,41 +194,23 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
     //     ? this.getOpacityColor(baseColor, 0.4)
     //     : baseColor.replace("rgb", "rgba").replace(")", ", 0.4)");
 
+    //   const itemLabel = d.emp >= 97
+    //     ? {
+    //         position: "insideRight",
+    //         color: "#ffffff",
+    //         distance: 8
+    //       }
+    //     : undefined;
+
     //   empSeriesData.push({
     //     value: d.emp,
-    //     itemStyle: { color: faded }
+    //     itemStyle: { color: faded },
+    //     label: itemLabel
     //   });
+
     //   liqSeriesData.push({ value: d.liq, itemStyle: { color: baseColor } });
     // });
 
-    finalData.forEach((d) => {
-      const baseColor =
-        this.groupingMode === "YEAR_GND"
-          ? this.getGndColor(d.gnd, 1)
-          : this.colorPalette[
-              uniqueYears.indexOf(d.year) % this.colorPalette.length
-            ];
-
-      const faded = baseColor.startsWith("#")
-        ? this.getOpacityColor(baseColor, 0.4)
-        : baseColor.replace("rgb", "rgba").replace(")", ", 0.4)");
-
-      const itemLabel = d.emp >= 97
-        ? {
-            position: "insideRight",
-            color: "#ffffff",
-            distance: 8
-          }
-        : undefined;
-
-      empSeriesData.push({
-        value: d.emp,
-        itemStyle: { color: faded },
-        label: itemLabel
-      });
-
-      liqSeriesData.push({ value: d.liq, itemStyle: { color: baseColor } });
-    });
     const legendData: string[] = [];
     const legendSeries: any[] = [];
 
@@ -220,8 +221,8 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       const baseColor = isYearGnd
         ? this.getGndColor(subGroup, 1)
         : this.colorPalette[
-            uniqueYears.indexOf(subGroup) % this.colorPalette.length
-          ];
+        uniqueYears.indexOf(subGroup) % this.colorPalette.length
+        ];
 
       const faded = baseColor.startsWith("#")
         ? this.getOpacityColor(baseColor, 0.4)
@@ -366,7 +367,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
             return (
               absoluteIdx === 0 ||
               getKey(finalData[absoluteIdx]) !==
-                getKey(finalData[absoluteIdx - 1])
+              getKey(finalData[absoluteIdx - 1])
             );
           },
         },
@@ -379,7 +380,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
             return (
               absoluteIdx > 0 &&
               getKey(finalData[absoluteIdx]) !==
-                getKey(finalData[absoluteIdx - 1])
+              getKey(finalData[absoluteIdx - 1])
             );
           },
         },

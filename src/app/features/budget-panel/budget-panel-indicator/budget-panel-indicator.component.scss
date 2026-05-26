@@ -4,22 +4,6 @@
   }
 }
 
-// .execucao-orcamentaria-logo {
-//   min-height: 100px;
-//   padding: 1rem;
-// }
-
-// .logo-card {
-//   display: flex;
-//   align-items: center;
-//   height: 100%;
-// }
-
-// .logo-wrapper {
-//   max-height: 100%;
-//   padding: 0.5rem;
-// }
-
 .img-fluid {
   max-width: 100%;
   max-height: 90%;
@@ -108,10 +92,6 @@ input:focus {
   }
 
   .filter-button.is-sticky {
-    // background: rgba(10, 15, 30, 0.85);
-    // border: 1px solid rgb(255, 255, 255);
-    // backdrop-filter: blur(16px);
-    // -webkit-backdrop-filter: blur(16px);
     background: rgba(10, 15, 30, 0.85);
     border: 1px solid rgb(255, 255, 255);
     border-radius: 8px;
@@ -124,11 +104,6 @@ input:focus {
 :host-context(.nb-theme-default) {
 
   .filter-tag.is-sticky {
-    // background-color: rgba(255, 255, 255, 0.9);
-    // border: 1px solid rgb(43, 42, 42) !important;
-    // box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-    // backdrop-filter: blur(8px);
-    // -webkit-backdrop-filter: blur(8px);
     background-color: rgba(255, 255, 255, 0.877) !important;
     border: 1px solid rgb(163 160 160) !important;
     box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.5);
@@ -145,11 +120,6 @@ input:focus {
 
 
   .filter-button.is-sticky {
-    // background: rgba(255, 255, 255, 0.877);
-    // border: 1px solid rgb(0, 0, 0);
-    // backdrop-filter: blur(16px);
-    // -webkit-backdrop-filter: blur(16px);
-
     background: rgba(255, 255, 255, 0.877);
     border: 1px solid rgb(173 165 165);
     backdrop-filter: blur(16px);

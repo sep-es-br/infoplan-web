@@ -25,6 +25,7 @@ import { ComunicationCardsService } from "../../../core/service/comunication-car
 import { Subject, Subscription } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ChartMaximizeService } from "../../../core/service/chart-maximize/chart-maximize.service";
+import { ScrollService } from "../../../core/service/scroll.service";
 
 const DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS: IIndicatorExecutionFilter = {
   year: environment.indicatorExecutionFilter.year,
@@ -75,6 +76,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
   private indicatorExecutionService = inject(IndicatorExecutionService);
   private comunicationCardsService = inject(ComunicationCardsService);
   private _chartMaximizeService = inject(ChartMaximizeService);
+  private _scrollService = inject(ScrollService);
 
   @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
   @ViewChild("uoSearchInput") uoSearchInput!: ElementRef<HTMLInputElement>;
@@ -92,6 +94,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
   activeFilters: ACTIVE_FILTERS[] = [];
 
   isFilterModalOpen: boolean = false;
+  isScrolled: boolean = false;
 
   uoList: IBudgetaryUnitResponse[] = [];
   filteredUOList: IBudgetaryUnitResponse[] = [];
@@ -169,39 +172,17 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     budgetManagementIndicator: 0,
   }
 
-  isScrolled = false;
-
-  private scrollHandler = (event: Event) => {
-    const target = event.target as HTMLElement | Document;
-    let newIsScrolled = this.isScrolled;
-
-    if (target instanceof HTMLElement) {
-      if (target.scrollHeight > window.innerHeight && target.scrollTop !== undefined) {
-        newIsScrolled = target.scrollTop > 20;
-      }
-    } else if (target === document) {
-      newIsScrolled = window.scrollY > 20;
-    }
-
-    if (newIsScrolled !== this.isScrolled) {
-      this.isScrolled = newIsScrolled;
-      this.cdr.detectChanges();
-    }
-  };
-
-  constructor(
-    private cdr: ChangeDetectorRef,
-  ) {
-
-  }
-
   ngOnInit(): void {
-    window.addEventListener('scroll', this.scrollHandler, true);
-
     this.loadInitialData();
     this.loadUOList();
     this.loadActionList();
     this.loadFullSourceList();
+
+    this._scrollService.isScrolled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(scrolled => {
+        this.isScrolled = scrolled;
+      });
   }
 
 
@@ -210,8 +191,6 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
 
     if (this.subscriptionCard) this.subscriptionCard.unsubscribe();
-
-    window.removeEventListener('scroll', this.scrollHandler, true);
 
   }
 
@@ -263,7 +242,6 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
         }
       });
   }
-
 
   loadInitialData(): void {
     this.currentRequestParams = { ...this.filter };

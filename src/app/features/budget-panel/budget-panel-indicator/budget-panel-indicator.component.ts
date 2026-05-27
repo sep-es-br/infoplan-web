@@ -26,6 +26,7 @@ import { Subject, Subscription } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ChartMaximizeService } from "../../../core/service/chart-maximize/chart-maximize.service";
 import { ScrollService } from "../../../core/service/scroll.service";
+import { formatNumber } from "../../../@core/utils/uitls";
 
 const DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS: IIndicatorExecutionFilter = {
   year: environment.indicatorExecutionFilter.year,
@@ -108,6 +109,8 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
   requestStatus = {
     status: RequestStatus.EMPTY,
   }
+
+  protected formatNumber = formatNumber;
 
   private subscriptionCard!: Subscription;
   private destroy$ = new Subject<void>();
@@ -720,37 +723,6 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
         this.requestStatus.status = RequestStatus.SUCCESS;
       }
     })
-  }
-
-
-
-
-  formatNumber(value: number): string {
-    if (!value || value === 0) return "R$ 0,00";
-
-    let v: number;
-    let unit = "";
-
-    if (value >= 1_000_000_000) {
-      v = value / 1_000_000_000;
-      unit = " B";
-    } else if (value >= 1_000_000) {
-      v = value / 1_000_000;
-      unit = " M";
-    } else if (value >= 1_000) {
-      v = value / 1_000;
-      unit = " K";
-    } else {
-      v = value;
-      unit = "";
-    }
-
-    const truncated = Math.trunc(v * 100) / 100;
-
-    return `${truncated.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })}${unit}`;
   }
 
   handleMaximizeButtonClick(chartId: string, event: boolean): void {

@@ -10,6 +10,7 @@ import { MiscellaneousModule } from "./miscellaneous/miscellaneous.module";
 import { PagesRoutingModule } from "./pages-routing.module";
 import { PagesComponent } from "./pages.component";
 import { PlanejamentoOrcamentarioModule } from "../features/planejamento-orcamentario/planejamento-orcamentario.module";
+import { PainelObrasModule } from "../features/painel-obras/painel-obras.module";
 
 @NgModule({
   imports: [
@@ -20,7 +21,8 @@ import { PlanejamentoOrcamentarioModule } from "../features/planejamento-orcamen
     HomeModule,
     StrategicProjectsModule,
     LoginModule,
-    PlanejamentoOrcamentarioModule
+    PlanejamentoOrcamentarioModule,
+    PainelObrasModule
   ],
   declarations: [PagesComponent],
 })

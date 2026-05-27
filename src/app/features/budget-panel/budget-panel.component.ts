@@ -31,6 +31,7 @@ import { RequestStatus } from "../strategic-projects/strategicProjects.component
 import { FilterStateService } from "../../core/service/filter-state/filter-state.service";
 import { ScrollService } from "../../core/service/scroll.service";
 import { takeUntil } from "rxjs/operators";
+import { NavigationTag } from "../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
 
 interface IDataCard {
   RevenueTotal?: IRevenueTotalBudgetExecutionResponse;

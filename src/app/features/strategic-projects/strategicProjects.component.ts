@@ -1,99 +1,126 @@
-import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { environment } from '../../../environments/environment';
-import { StrategicProjectsService } from '../../core/service/strategic-projects.service';
-import { IIdAndName } from '../../core/interfaces/id-and-name.interface';
-import { IStrategicProjectFilterDataDto, IStrategicProjectFilterValuesDto } from '../../core/interfaces/strategic-project-filter.interface';
-import { IStrategicProjectTotals } from '../../core/interfaces/strategic-project-totals.interface';
-import { IStrategicProjectTimestamp } from '../../core/interfaces/strategic-project.interface';
-import { NbSelectComponent, NbThemeService } from '@nebular/theme';
-import { AvailableThemes } from '../../@theme/theme.module';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { ChartMaximizeService, ChartMaximizeState } from '../../core/service/chart-maximize/chart-maximize.service';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from "@angular/core";
+import { environment } from "../../../environments/environment";
+import { StrategicProjectsService } from "../../core/service/strategic-projects.service";
+import { IIdAndName } from "../../core/interfaces/id-and-name.interface";
+import {
+  IStrategicProjectFilterDataDto,
+  IStrategicProjectFilterValuesDto,
+} from "../../core/interfaces/strategic-project-filter.interface";
+import { IStrategicProjectTotals } from "../../core/interfaces/strategic-project-totals.interface";
+import { IStrategicProjectTimestamp } from "../../core/interfaces/strategic-project.interface";
+import { NbSelectComponent, NbThemeService } from "@nebular/theme";
+import { AvailableThemes } from "../../@theme/theme.module";
+import { BehaviorSubject, Subject, Subscription } from "rxjs";
+import {
+  ChartMaximizeService,
+  ChartMaximizeState,
+} from "../../core/service/chart-maximize/chart-maximize.service";
+import { ScrollService } from "../../core/service/scroll.service";
+import { takeUntil } from "rxjs/operators";
 
 enum AvailableFilters {
-  PORTFOLIO = 'Portfolio',
-  DATA_INICIAL = 'Data_Inicial',
-  DATA_FINAL = 'Data_Final',
-  PREVISAO_CONCLUSAO = 'Previsao_Conclusao',
-  AREAS_TEMATICAS = 'Areas_Tematicas',
-  PROGRAMAS_ORIGINAIS = 'Programas_Originais',
-  PROJETOS = 'Projetos',
-  ENTREGAS = 'Entregas',
-  PROGRAMAS_TRANSVERSAIS = 'Programas_Transversais',
-  LOCALIDADES = 'Localidades',
-  ORGAOS = 'Orgaos',
-  ACOMPANHADO_POR = 'Acompanhado_Por',
+  PORTFOLIO = "Portfolio",
+  DATA_INICIAL = "Data_Inicial",
+  DATA_FINAL = "Data_Final",
+  PREVISAO_CONCLUSAO = "Previsao_Conclusao",
+  AREAS_TEMATICAS = "Areas_Tematicas",
+  PROGRAMAS_ORIGINAIS = "Programas_Originais",
+  PROJETOS = "Projetos",
+  ENTREGAS = "Entregas",
+  PROGRAMAS_TRANSVERSAIS = "Programas_Transversais",
+  LOCALIDADES = "Localidades",
+  ORGAOS = "Orgaos",
+  ACOMPANHADO_POR = "Acompanhado_Por",
 }
 
 export enum RequestStatus {
-  EMPTY = 'Empty',
-  LOADING = 'Loading',
-  SUCCESS = 'Success',
-  ERROR = 'Error',
+  EMPTY = "Empty",
+  LOADING = "Loading",
+  SUCCESS = "Success",
+  ERROR = "Error",
 }
 
 export interface CustomTableFilteringTrigger {
-  source: 'InvestmentBy' | 'DeliveriesBy';
-  newSelectedEntity: 'Área Temática' | 'Programa' | 'Programas Transversais' | 'Projeto' | 'Entrega';
+  source: "InvestmentBy" | "DeliveriesBy";
+  newSelectedEntity:
+    | "Área Temática"
+    | "Programa"
+    | "Programas Transversais"
+    | "Projeto"
+    | "Entrega";
 }
 
 export interface StrategicProjectsFilter {
-  portfolio: string,
-  dataInicio: string,
-  dataFim: string,
-  previsaoConclusao: string,
-  areaTematica?: Array<Number>,
-  programaOrigem?: Array<Number>,
-  projetos?: Array<Number>,
-  entregas?: Array<Number>,
-  programaTransversal?: Array<Number>,
-  localidades?: Array<Number>,
-  orgaos?: Array<Number>,
-  acompanhamentos?: Array<Number>,
+  portfolio: string;
+  dataInicio: string;
+  dataFim: string;
+  previsaoConclusao: string;
+  areaTematica?: Array<Number>;
+  programaOrigem?: Array<Number>;
+  projetos?: Array<Number>;
+  entregas?: Array<Number>;
+  programaTransversal?: Array<Number>;
+  localidades?: Array<Number>;
+  orgaos?: Array<Number>;
+  acompanhamentos?: Array<Number>;
 }
 
 @Component({
-  selector: 'ngx-strategic-projects',
-  templateUrl: './strategicProjects.component.html',
-  styleUrls: ['./strategicProjects.component.scss']
+  selector: "ngx-strategic-projects",
+  templateUrl: "./strategicProjects.component.html",
+  styleUrls: ["./strategicProjects.component.scss"],
 })
 export class StrategicProjectsComponent implements OnInit, OnDestroy {
-  @ViewChild('modalCloseButton') modalCloseButtonRef: ElementRef;
+  @ViewChild("modalCloseButton") modalCloseButtonRef: ElementRef;
 
-  @ViewChildren('customSelect') customSelectRefs: QueryList<NbSelectComponent>;
+  @ViewChildren("customSelect") customSelectRefs: QueryList<NbSelectComponent>;
 
-  @HostListener('show.bs.modal')
+  @HostListener("show.bs.modal")
   onModalOpen() {
     this.isFilterModalOpen = true;
   }
 
-  @HostListener('hide.bs.modal')
+  @HostListener("hide.bs.modal")
   onModalClose() {
     this.isFilterModalOpen = false;
   }
 
-  @HostListener('document:touchmove', ['$event'])
+  @HostListener("document:touchmove", ["$event"])
   handleDrag(event: TouchEvent) {
     if (this.isFilterModalOpen) {
       // Deve limitar essa verificação à apenas quando o modal de filtros estiver aberto
 
-      const optionListElements = document.getElementsByTagName('nb-option-list');
+      const optionListElements =
+        document.getElementsByTagName("nb-option-list");
 
       if (
         optionListElements &&
         optionListElements.length > 0 &&
-        !optionListElements[0].contains((event.target as any))
+        !optionListElements[0].contains(event.target as any)
       ) {
         // Se optionListElements possui elementos, quer dizer que tem uma lista de options (select) aberto
         // Se o evento touchmove foi disparado, e não foi dentro do select aberto, tem que fechar o select
         this.customSelectRefs
           .filter((select: NbSelectComponent) => select.isOpen)
-          .forEach((select: NbSelectComponent) => select.button.nativeElement.click());
+          .forEach((select: NbSelectComponent) =>
+            select.button.nativeElement.click(),
+          );
       }
     }
   }
 
-  private readonly chartMaximizeService: ChartMaximizeService = inject(ChartMaximizeService);
+  private readonly chartMaximizeService: ChartMaximizeService =
+    inject(ChartMaximizeService);
 
   timestamp: string;
 
@@ -111,7 +138,7 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
     portfolio: environment.strategicProjectFilter.portfolio,
     dataInicio: environment.strategicProjectFilter.dataInicio,
     dataFim: environment.strategicProjectFilter.dataFim,
-    previsaoConclusao: '',
+    previsaoConclusao: "",
     areaTematica: [],
     programaOrigem: [],
     projetos: [],
@@ -126,7 +153,7 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
     portfolio: environment.strategicProjectFilter.portfolio,
     dataInicio: environment.strategicProjectFilter.dataInicio,
     dataFim: environment.strategicProjectFilter.dataFim,
-    previsaoConclusao: '',
+    previsaoConclusao: "",
     areaTematica: [],
     programaOrigem: [],
     projetos: [],
@@ -145,18 +172,18 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
   localidadeList: IIdAndName[] = [];
   projetoList: IIdAndName[] = [];
   monthsList = [
-    { num: 1, name: 'Janeiro', disabledInicial: false, disabledFinal: false },
-    { num: 2, name: 'Fevereiro', disabledInicial: false, disabledFinal: false },
-    { num: 3, name: 'Março', disabledInicial: false, disabledFinal: false },
-    { num: 4, name: 'Abril', disabledInicial: false, disabledFinal: false },
-    { num: 5, name: 'Maio', disabledInicial: false, disabledFinal: false },
-    { num: 6, name: 'Junho', disabledInicial: false, disabledFinal: false },
-    { num: 7, name: 'Julho', disabledInicial: false, disabledFinal: false },
-    { num: 8, name: 'Agosto', disabledInicial: false, disabledFinal: false },
-    { num: 9, name: 'Setembro', disabledInicial: false, disabledFinal: false },
-    { num: 10, name: 'Outubro', disabledInicial: false, disabledFinal: false },
-    { num: 11, name: 'Novembro', disabledInicial: false, disabledFinal: false },
-    { num: 12, name: 'Dezembro', disabledInicial: false, disabledFinal: false }
+    { num: 1, name: "Janeiro", disabledInicial: false, disabledFinal: false },
+    { num: 2, name: "Fevereiro", disabledInicial: false, disabledFinal: false },
+    { num: 3, name: "Março", disabledInicial: false, disabledFinal: false },
+    { num: 4, name: "Abril", disabledInicial: false, disabledFinal: false },
+    { num: 5, name: "Maio", disabledInicial: false, disabledFinal: false },
+    { num: 6, name: "Junho", disabledInicial: false, disabledFinal: false },
+    { num: 7, name: "Julho", disabledInicial: false, disabledFinal: false },
+    { num: 8, name: "Agosto", disabledInicial: false, disabledFinal: false },
+    { num: 9, name: "Setembro", disabledInicial: false, disabledFinal: false },
+    { num: 10, name: "Outubro", disabledInicial: false, disabledFinal: false },
+    { num: 11, name: "Novembro", disabledInicial: false, disabledFinal: false },
+    { num: 12, name: "Dezembro", disabledInicial: false, disabledFinal: false },
   ];
   yearsList = [
     { num: 2020, disabledInicial: false, disabledFinal: false },
@@ -173,49 +200,63 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
     { num: 2031, disabledInicial: false, disabledFinal: false },
   ];
 
-  activeFilters: { key: string; label: string; displayValue: Array<{ name: string; fullName?: string; }>; }[] = [];
+  activeFilters: {
+    key: string;
+    label: string;
+    displayValue: Array<{ name: string; fullName?: string }>;
+  }[] = [];
 
   requestStatus = {
     totals: RequestStatus.EMPTY,
-  }
+  };
 
-  tableFilteringTrigger = new BehaviorSubject<CustomTableFilteringTrigger>(null);
+  tableFilteringTrigger = new BehaviorSubject<CustomTableFilteringTrigger>(
+    null,
+  );
 
   isFilterModalOpen: boolean = false;
-
+  isScrolled: boolean = false;
   maximizeState: ChartMaximizeState = {
     maximizedChartId: null,
     isAnyChartMaximized: false,
-    maximizedHeight: this.chartMaximizeService.getCurrentHeight()
+    maximizedHeight: this.chartMaximizeService.getCurrentHeight(),
   };
 
   private subscriptionMaximizeState!: Subscription;
 
-  get dateController(): { mesInicial: number; anoInicial: number; mesFinal: number; anoFinal: number } {
+  private readonly destroy$ = new Subject<void>();
+
+  get dateController(): {
+    mesInicial: number;
+    anoInicial: number;
+    mesFinal: number;
+    anoFinal: number;
+  } {
     return {
       mesInicial: Number(this.filter.dataInicio.slice(5, 7)),
       anoInicial: Number(this.filter.dataInicio.slice(0, 4)),
       mesFinal: Number(this.filter.dataFim.slice(5, 7)),
       anoFinal: Number(this.filter.dataFim.slice(0, 4)),
     };
-  };
+  }
 
   get portfolioLogoUrl(): string {
     const currentTheme = this.themeService.currentTheme;
     switch (currentTheme) {
       case AvailableThemes.DEFAULT:
-        return 'assets/images/app/realiza+_transparente.png';
+        return "assets/images/app/realiza+_transparente.png";
       case AvailableThemes.DARK:
       case AvailableThemes.COSMIC:
-        return 'assets/images/app/realiza+ full_white.png';
+        return "assets/images/app/realiza+ full_white.png";
       default:
-        return 'assets/images/app/realiza+_transparente.png';
+        return "assets/images/app/realiza+_transparente.png";
     }
   }
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
-    private themeService: NbThemeService
+    private themeService: NbThemeService,
+    private _scrollService: ScrollService,
   ) {
     this.loadTimestamp();
     this.updateActiveFilters();
@@ -225,12 +266,18 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscriptionMaximizeState = this.chartMaximizeService.maximizeState$.subscribe(
-      (state: ChartMaximizeState) => {
-        this.maximizeState = state;
-      }
-    );
+    this.subscriptionMaximizeState =
+      this.chartMaximizeService.maximizeState$.subscribe(
+        (state: ChartMaximizeState) => {
+          this.maximizeState = state;
+        },
+      );
 
+    this._scrollService.isScrolled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((scrolled) => {
+        this.isScrolled = scrolled;
+      });
   }
 
   ngOnDestroy(): void {
@@ -251,32 +298,39 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
     return this.chartMaximizeService.isAnyChartMaximized();
   }
 
-
   updateActiveFilters() {
-    const directValueKeys = ['portfolio', 'dataInicio', 'dataFim', 'previsaoConclusao'];
+    const directValueKeys = [
+      "portfolio",
+      "dataInicio",
+      "dataFim",
+      "previsaoConclusao",
+    ];
     const optionsMapping = {
-      areaTematica: 'areaList',
-      programaOrigem: 'programaOList',
-      programaTransversal: 'programaTList',
-      entregas: 'entregaList',
-      localidades: 'localidadeList',
-      orgaos: 'orgaoList',
-      projetos: 'projetoList',
-      acompanhamentos: 'acompanhamentoList'
+      areaTematica: "areaList",
+      programaOrigem: "programaOList",
+      programaTransversal: "programaTList",
+      entregas: "entregaList",
+      localidades: "localidadeList",
+      orgaos: "orgaoList",
+      projetos: "projetoList",
+      acompanhamentos: "acompanhamentoList",
     };
 
     this.activeFilters = Object.entries(this.finalFilter)
-      .filter(([key, value]) => value && (Array.isArray(value) ? value.length > 0 : true))
+      .filter(
+        ([key, value]) =>
+          value && (Array.isArray(value) ? value.length > 0 : true),
+      )
       .map(([key, value]) => {
-        let displayValue: Array<{ name: string; fullName?: string; }>;
+        let displayValue: Array<{ name: string; fullName?: string }>;
 
         if (directValueKeys.includes(key)) {
-          if (key === 'dataInicio' || key === 'dataFim') {
+          if (key === "dataInicio" || key === "dataFim") {
             const year = value.slice(0, 4);
             const month = value.slice(5, 7);
             displayValue = [{ name: `${month}-${year}` }];
           } else {
-            displayValue = [{ name: (value as string) }];
+            displayValue = [{ name: value as string }];
           }
         } else {
           const listKey = optionsMapping[key];
@@ -284,7 +338,8 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
 
           if (Array.isArray(value)) {
             displayValue = value.map((selectedItem, index) => {
-              const item = list?.find((item) => item.id === selectedItem) || selectedItem;
+              const item =
+                list?.find((item) => item.id === selectedItem) || selectedItem;
               let name: string = item.name;
               if (index + 1 < value.length) {
                 name = `${name}`;
@@ -292,84 +347,112 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
               return { name, fullName: item?.fullName || name };
             });
           } else {
-            const item = list?.find(item => item.id === Number(value as string));
-            displayValue = item?.name ? [{ name: item.name, fullName: item?.fullName || '' }] : [{ name: (value as string), fullName: (value as string) }];
+            const item = list?.find(
+              (item) => item.id === Number(value as string),
+            );
+            displayValue = item?.name
+              ? [{ name: item.name, fullName: item?.fullName || "" }]
+              : [{ name: value as string, fullName: value as string }];
           }
         }
 
         return {
           key,
           label: this.getFilterLabel(key),
-          displayValue
+          displayValue,
         };
       });
   }
 
-  handleFilterChange(origin: AvailableFilters | string, newValue: Array<number>) {
-    const selectedValue = Array.isArray(newValue) && newValue.length === 0 ? '' : newValue.toString();
+  handleFilterChange(
+    origin: AvailableFilters | string,
+    newValue: Array<number>,
+  ) {
+    const selectedValue =
+      Array.isArray(newValue) && newValue.length === 0
+        ? ""
+        : newValue.toString();
 
     switch (origin) {
       case AvailableFilters.AREAS_TEMATICAS:
         // Faz uma requisição para pegar uma lista de Programas, Projetos e Entregas baseado nas Áreas Temáticas selecionadas
-        this.strategicProjectsService.getProgramsProjectsDeliveries(selectedValue)
+        this.strategicProjectsService
+          .getProgramsProjectsDeliveries(selectedValue)
           .subscribe(
             (data: IStrategicProjectFilterDataDto) => {
               this.programaOList = [
-                { id: -1, name: '(Sem Programa)' },
-                ...data.programasOriginal
+                { id: -1, name: "(Sem Programa)" },
+                ...data.programasOriginal,
               ];
               this.entregaList = data.entregas;
               this.projetoList = data.projetos;
             },
             (error) => {
-              console.error('Erro ao tentar carregar Programas, Projetos e Entregas: ', error);
+              console.error(
+                "Erro ao tentar carregar Programas, Projetos e Entregas: ",
+                error,
+              );
             },
           );
         break;
       case AvailableFilters.PROGRAMAS_ORIGINAIS:
         // Faz uma requisição para pegar uma lista de Projetos e Entregas baseado nas Áreas Temáticas e Programas Originais selecionados
-        const selectedAreasTematicas = this.filter.areaTematica?.length === 0 ? '' : this.filter.areaTematica?.toString();
+        const selectedAreasTematicas =
+          this.filter.areaTematica?.length === 0
+            ? ""
+            : this.filter.areaTematica?.toString();
 
-        this.strategicProjectsService.getProjectsDeliveries(selectedAreasTematicas, selectedValue)
+        this.strategicProjectsService
+          .getProjectsDeliveries(selectedAreasTematicas, selectedValue)
           .subscribe(
             (data: IStrategicProjectFilterDataDto) => {
               this.projetoList = data.projetos;
               this.entregaList = data.entregas;
             },
             (error) => {
-              console.error('Erro ao tentar carregar Projetos e Entregas: ', error);
+              console.error(
+                "Erro ao tentar carregar Projetos e Entregas: ",
+                error,
+              );
             },
           );
         break;
       case AvailableFilters.PROJETOS:
         // Faz uma requisição para pegar uma lista de Entregas baseado nas Áreas Temáticas, Programas Originais e Projetos selecionados
-        const selectedAreas = this.filter.areaTematica?.length === 0 ? '' : this.filter.areaTematica?.toString();
-        const selectedProgramas = this.filter.programaOrigem?.length === 0 ? '' : this.filter.programaOrigem?.toString();
+        const selectedAreas =
+          this.filter.areaTematica?.length === 0
+            ? ""
+            : this.filter.areaTematica?.toString();
+        const selectedProgramas =
+          this.filter.programaOrigem?.length === 0
+            ? ""
+            : this.filter.programaOrigem?.toString();
 
-        this.strategicProjectsService.getDeliveries(selectedAreas, selectedProgramas, selectedValue)
+        this.strategicProjectsService
+          .getDeliveries(selectedAreas, selectedProgramas, selectedValue)
           .subscribe(
             (data: IStrategicProjectFilterDataDto) => {
               this.entregaList = data.entregas;
             },
             (error) => {
-              console.error('Erro ao tentar carregar Entregas: ', error);
-            }
+              console.error("Erro ao tentar carregar Entregas: ", error);
+            },
           );
         break;
-      case 'DataInicioMes':
+      case "DataInicioMes":
         let inicioMesValue = newValue[0].toString();
         if (newValue[0] < 10) inicioMesValue = `0${inicioMesValue}`;
         this.filter.dataInicio = `${this.filter.dataInicio.slice(0, 4)}-${inicioMesValue}`;
         break;
-      case 'DataInicioAno':
+      case "DataInicioAno":
         this.filter.dataInicio = `${newValue[0]}-${this.filter.dataInicio.slice(5, 7)}`;
         break;
-      case 'DataFinalMes':
+      case "DataFinalMes":
         let finalMesValue = newValue[0].toString();
         if (newValue[0] < 10) finalMesValue = `0${finalMesValue}`;
         this.filter.dataFim = `${this.filter.dataFim.slice(0, 4)}-${finalMesValue}`;
         break;
-      case 'DataFinalAno':
+      case "DataFinalAno":
         this.filter.dataFim = `${newValue[0]}-${this.filter.dataFim.slice(5, 7)}`;
         break;
       default:
@@ -381,18 +464,18 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
 
   getFilterLabel(key: string): string {
     const labels: { [key: string]: string } = {
-      portfolio: 'Portfólio',
-      dataInicio: 'De',
-      dataFim: 'Até',
-      previsaoConclusao: 'Previsão de Conclusão',
-      areaTematica: 'Área Temática',
-      programaOrigem: 'Programa Original',
-      programaTransversal: 'Programa Transversal',
-      entregas: 'Entregas',
-      localidades: 'Localidades',
-      orgaos: 'Órgãos',
-      projetos: 'Projetos',
-      acompanhamentos: 'Acompanhamentos'
+      portfolio: "Portfólio",
+      dataInicio: "De",
+      dataFim: "Até",
+      previsaoConclusao: "Previsão de Conclusão",
+      areaTematica: "Área Temática",
+      programaOrigem: "Programa Original",
+      programaTransversal: "Programa Transversal",
+      entregas: "Entregas",
+      localidades: "Localidades",
+      orgaos: "Órgãos",
+      projetos: "Projetos",
+      acompanhamentos: "Acompanhamentos",
     };
 
     return labels[key] || key;
@@ -411,7 +494,7 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
     this.closeFilterModal();
     this.finalFilter = { ...this.filter };
     this.updateActiveFilters();
-    this.loadTotals()
+    this.loadTotals();
   }
 
   loadAll(): void {
@@ -419,26 +502,34 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
       (allFilterList: IStrategicProjectFilterDataDto) => {
         this.areaList = allFilterList.area;
         this.programaOList = [
-          { id: -1, name: '(Sem Programa)', fullName: '(Sem Programa)' },
-          ...allFilterList.programasOriginal
+          { id: -1, name: "(Sem Programa)", fullName: "(Sem Programa)" },
+          ...allFilterList.programasOriginal,
         ];
         this.programaTList = allFilterList.programasTransversal;
         this.entregaList = allFilterList.entregas;
-        this.orgaoList = allFilterList.orgaos.sort((a, b) => a.name.localeCompare(b.name));
+        this.orgaoList = allFilterList.orgaos.sort((a, b) =>
+          a.name.localeCompare(b.name),
+        );
 
         // Monta a lista de localidades, ordenando por ordem alfabética todas as microregiões, e os municípios que pertencem àquela microregião
 
-        const localidadesList = [allFilterList.localidades.find((el) => el.tipo === 'ESTADO')];
+        const localidadesList = [
+          allFilterList.localidades.find((el) => el.tipo === "ESTADO"),
+        ];
 
         const microregioes = allFilterList.localidades
-          .filter((localidade) => localidade?.tipo === 'MICRORREGIÃO')
+          .filter((localidade) => localidade?.tipo === "MICRORREGIÃO")
           .sort((a, b) => a.name.localeCompare(b.name));
 
         microregioes.forEach((regiao) => {
           localidadesList.push(regiao);
 
           allFilterList.localidades
-            .filter((localidade) => localidade?.microregiaoId === regiao.microregiaoId && localidade?.name !== regiao.name)
+            .filter(
+              (localidade) =>
+                localidade?.microregiaoId === regiao.microregiaoId &&
+                localidade?.name !== regiao.name,
+            )
             .sort((a, b) => a.name.localeCompare(b.name))
             .forEach((localidade) => localidadesList.push(localidade));
         });
@@ -447,8 +538,8 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
         this.projetoList = allFilterList.projetos;
       },
       (error) => {
-        console.error('Erro ao carregar áreas temáticas:', error);
-      }
+        console.error("Erro ao carregar áreas temáticas:", error);
+      },
     );
   }
 
@@ -459,7 +550,7 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
       portfolio: environment.strategicProjectFilter.portfolio,
       dataInicio: environment.strategicProjectFilter.dataInicio,
       dataFim: environment.strategicProjectFilter.dataFim,
-      previsaoConclusao: '',
+      previsaoConclusao: "",
       areaTematica: [],
       programaOrigem: [],
       projetos: [],
@@ -480,14 +571,16 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
         this.timestamp = data.timestamp;
       },
       (error) => {
-        console.error('Erro ao carregar os totais:', error);
-      }
+        console.error("Erro ao carregar os totais:", error);
+      },
     );
   }
 
   loadTotals() {
     this.requestStatus.totals = RequestStatus.LOADING;
-    const cleanedFilter = this.strategicProjectsService.removeEmptyValues(this.finalFilter);
+    const cleanedFilter = this.strategicProjectsService.removeEmptyValues(
+      this.finalFilter,
+    );
 
     this.strategicProjectsService.getTotals(cleanedFilter).subscribe(
       (totals: IStrategicProjectTotals) => {
@@ -495,30 +588,30 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
         this.requestStatus.totals = RequestStatus.SUCCESS;
       },
       (error) => {
-        console.error('Erro ao carregar os totais:', error);
+        console.error("Erro ao carregar os totais:", error);
         this.requestStatus.totals = RequestStatus.ERROR;
-      }
+      },
     );
   }
 
   formatNumber(value: number): string {
     if (!value) {
-      return 'R$ 0';
+      return "R$ 0";
     }
 
     if (value >= 1_000_000_000) {
-      return `${(value / 1_000_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} B`;
+      return `${(value / 1_000_000_000).toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 1 })} B`;
     }
 
     if (value >= 1_000_000) {
-      return `${(value / 1_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} M`;
+      return `${(value / 1_000_000).toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 1 })} M`;
     }
 
     if (value >= 1_000) {
-      return `${(value / 1_000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} K`;
+      return `${(value / 1_000).toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} K`;
     }
 
-    return `R$ ${value.toLocaleString('pt-BR')}`;
+    return `R$ ${value.toLocaleString("pt-BR")}`;
   }
 
   openAndCloseMap() {
@@ -534,7 +627,10 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
     this.loadTotals();
   }
 
-  handleNewTableFilter(newFilter: IStrategicProjectFilterValuesDto, source: 'InvestmentBy' | 'DeliveriesBy') {
+  handleNewTableFilter(
+    newFilter: IStrategicProjectFilterValuesDto,
+    source: "InvestmentBy" | "DeliveriesBy",
+  ) {
     let newLocalFilter: any = {
       portfolio: environment.strategicProjectFilter.portfolio,
       dataInicio: environment.strategicProjectFilter.dataInicio,
@@ -544,24 +640,33 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
     let newEntityToBeDisplayed;
 
     if (newFilter.areaId) {
-      newLocalFilter = { ...newLocalFilter, areaTematica: [Number(newFilter.areaId)] };
-      newEntityToBeDisplayed = 'Programa';
+      newLocalFilter = {
+        ...newLocalFilter,
+        areaTematica: [Number(newFilter.areaId)],
+      };
+      newEntityToBeDisplayed = "Programa";
     }
     if (newFilter.programaOriginalId) {
-      newLocalFilter = { ...newLocalFilter, programaOrigem: [newFilter.programaOriginalId] };
-      newEntityToBeDisplayed = 'Projeto';
+      newLocalFilter = {
+        ...newLocalFilter,
+        programaOrigem: [newFilter.programaOriginalId],
+      };
+      newEntityToBeDisplayed = "Projeto";
     }
     if (newFilter.programaTransversalId) {
-      newLocalFilter = { ...newLocalFilter, programaTransversal: [newFilter.programaTransversalId] };
-      newEntityToBeDisplayed = 'Projeto';
+      newLocalFilter = {
+        ...newLocalFilter,
+        programaTransversal: [newFilter.programaTransversalId],
+      };
+      newEntityToBeDisplayed = "Projeto";
     }
     if (newFilter.projetoId) {
       newLocalFilter = { ...newLocalFilter, projetos: [newFilter.projetoId] };
-      newEntityToBeDisplayed = 'Entrega';
+      newEntityToBeDisplayed = "Entrega";
     }
     if (newFilter.entregaId) {
       newLocalFilter = { ...newLocalFilter, entregas: [newFilter.entregaId] };
-      newEntityToBeDisplayed = 'Entrega';
+      newEntityToBeDisplayed = "Entrega";
     }
 
     this.filter = newLocalFilter;
@@ -591,15 +696,27 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
 
     if (currentDate.anoInicial === currentDate.anoFinal) {
       // ↳ Se tiver selecionado anos iguais
-      this.monthsList.filter((month) => month.num > currentDate.mesFinal).forEach((month) => month.disabledInicial = true);
-      this.monthsList.filter((month) => month.num < currentDate.mesInicial).forEach((month) => month.disabledFinal = true);
+      this.monthsList
+        .filter((month) => month.num > currentDate.mesFinal)
+        .forEach((month) => (month.disabledInicial = true));
+      this.monthsList
+        .filter((month) => month.num < currentDate.mesInicial)
+        .forEach((month) => (month.disabledFinal = true));
 
-      this.yearsList.filter((year) => year.num > currentDate.anoFinal).forEach((year) => year.disabledInicial = true);
-      this.yearsList.filter((year) => year.num < currentDate.anoInicial).forEach((year) => year.disabledFinal = true);
+      this.yearsList
+        .filter((year) => year.num > currentDate.anoFinal)
+        .forEach((year) => (year.disabledInicial = true));
+      this.yearsList
+        .filter((year) => year.num < currentDate.anoInicial)
+        .forEach((year) => (year.disabledFinal = true));
     } else if (currentDate.mesInicial > currentDate.mesFinal) {
       // ↳ Se tiver selecionado um mês inicial posterior ao mês final (ou um mês final anterior ao mês inicial)
-      this.yearsList.filter((year) => year.num >= currentDate.anoFinal).forEach((year) => year.disabledInicial = true);
-      this.yearsList.filter((year) => year.num <= currentDate.anoInicial).forEach((year) => year.disabledFinal = true);
+      this.yearsList
+        .filter((year) => year.num >= currentDate.anoFinal)
+        .forEach((year) => (year.disabledInicial = true));
+      this.yearsList
+        .filter((year) => year.num <= currentDate.anoInicial)
+        .forEach((year) => (year.disabledFinal = true));
     } else {
       this.monthsList.forEach((month) => {
         month.disabledInicial = false;
@@ -611,8 +728,12 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
         year.disabledFinal = false;
       });
 
-      this.yearsList.filter((year) => year.num > currentDate.anoFinal).forEach((year) => year.disabledInicial = true);
-      this.yearsList.filter((year) => year.num < currentDate.anoInicial).forEach((year) => year.disabledFinal = true);
+      this.yearsList
+        .filter((year) => year.num > currentDate.anoFinal)
+        .forEach((year) => (year.disabledInicial = true));
+      this.yearsList
+        .filter((year) => year.num < currentDate.anoInicial)
+        .forEach((year) => (year.disabledFinal = true));
     }
   }
 }

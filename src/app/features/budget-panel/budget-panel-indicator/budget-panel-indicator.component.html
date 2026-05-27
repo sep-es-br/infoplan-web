@@ -214,24 +214,23 @@
     </div>
   </div>
 
-  <div class="col-12">
-    <div class="row g-1 g-md-1">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-2 px-1">
-        <div class="col-12 h-100">
-          <div class="card h-100">
-            <div class="card-content h-100">
-              <div class="portfolio-content w-100 h-100 d-flex justify-content-start align-items-center">
-                <img src="assets/images/app/logo-exec-indicadores.png" alt="Logo Execução Orçamentária Indicadores"
-                  class="img-fluid" />
-              </div>
+  <div class="row g-1 g-md-1 ">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-2 mb-2 px-1">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-content h-100">
+            <div class="portfolio-content w-100 h-100 d-flex justify-content-start align-items-center">
+              <img src="assets/images/app/LogoIndicadoresOrcamentarios.png" alt="Logo Execução Orçamentária Indicadores"
+                class="img-fluid" />
             </div>
           </div>
         </div>
       </div>
+    </div>
 
     <div class="col-12 col-md-12 col-lg-12 col-xl-10">
       <div class="row g-1 g-md-1">
-        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mb-2 px-1">
           <div class="card">
             <div class="icon-top-right budget-management-indicator" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa-solid fa-gears"></i>
@@ -256,6 +255,7 @@
                       {{ statusTotal.budgetManagementIndicator }} %
                     </div>
                   </div>
+                </div>
 
                 <div class="text-section budget-management-indicator">
                   <span>Indicador de Gestão Orçamentária</span>
@@ -264,7 +264,8 @@
             </div>
           </div>
         </div>
-        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mb-2 px-1">
           <div class="card">
             <div class="icon-top-right planned-success" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fas fa-chart-line"></i>
@@ -276,31 +277,31 @@
                     requestStatus.status === 'Loading';
                     else plannedSuccess
                   ">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border planned-success" role="status">
-                      <span class="sr-only">Carregando...</span>
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border planned-success" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #plannedSuccess>
+                <div class="number-box planned-success">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">
+                      {{ statusTotal.plannedSuccess }} %
                     </div>
                   </div>
-                </ng-container>
+                </div>
 
-                <ng-template #plannedSuccess>
-                  <div class="number-box planned-success">
-                    <div class="d-flex" style="flex-direction: column; align-items: start">
-                      <div class="value">
-                        {{ statusTotal.plannedSuccess }} %
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="text-section planned-success">
-                    <span>Sucesso do Planejamento</span>
-                  </div>
-                </ng-template>
-              </div>
+                <div class="text-section planned-success">
+                  <span>Sucesso do Planejamento</span>
+                </div>
+              </ng-template>
             </div>
           </div>
         </div>
-        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mb-2 px-1">
           <div class="card">
             <div class="icon-top-right budgetary-changes" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa fa-exchange-alt"></i>
@@ -324,6 +325,7 @@
                       {{ statusTotal.budgetaryChanges }} %
                     </div>
                   </div>
+                </div>
 
                 <div class="text-section budgetary-changes">
                   <span>Alterações Orçamentárias</span>
@@ -331,8 +333,9 @@
               </ng-template>
             </div>
           </div>
+        </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mb-2 px-1">
           <div class="card">
             <div class="icon-top-right budgetary-feasibility" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa-solid fa-scale-balanced"></i>
@@ -343,31 +346,31 @@
                     requestStatus.status === 'Loading';
                     else budgetaryFeasibility
                   ">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border budgetary-feasibility" role="status">
-                      <span class="sr-only">Carregando...</span>
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border budgetary-feasibility" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #budgetaryFeasibility>
+                <div class="number-box budgetary-feasibility">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">
+                      {{ statusTotal.budgetaryFeasibility }} %
                     </div>
                   </div>
-                </ng-container>
+                </div>
 
-                <ng-template #budgetaryFeasibility>
-                  <div class="number-box budgetary-feasibility">
-                    <div class="d-flex" style="flex-direction: column; align-items: start">
-                      <div class="value">
-                        {{ statusTotal.budgetaryFeasibility }} %
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="text-section budgetary-feasibility">
-                    <span>Exequibilidade Orçamentária</span>
-                  </div>
-                </ng-template>
-              </div>
+                <div class="text-section budgetary-feasibility">
+                  <span>Exequibilidade Orçamentária</span>
+                </div>
+              </ng-template>
             </div>
           </div>
+        </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mb-2 px-1">
           <div class="card">
             <div class="icon-top-right focus-on-the-mission" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa fa-bullseye"></i>
@@ -378,31 +381,31 @@
                     requestStatus.status === 'Loading';
                     else focusOnTheMission
                   ">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border focus-on-the-mission" role="status">
-                      <span class="sr-only">Carregando...</span>
+                <div class="d-flex justify-content-center align-items-center w-100">
+                  <div class="spinner-border focus-on-the-mission" role="status">
+                    <span class="sr-only">Carregando...</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #focusOnTheMission>
+                <div class="number-box focus-on-the-mission">
+                  <div class="d-flex" style="flex-direction: column; align-items: start">
+                    <div class="value">
+                      {{ statusTotal.focusOnTheMission }} %
                     </div>
                   </div>
-                </ng-container>
+                </div>
 
-                <ng-template #focusOnTheMission>
-                  <div class="number-box focus-on-the-mission">
-                    <div class="d-flex" style="flex-direction: column; align-items: start">
-                      <div class="value">
-                        {{ statusTotal.focusOnTheMission }} %
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="text-section focus-on-the-mission">
-                    <span>Foco na Missão</span>
-                  </div>
-                </ng-template>
-              </div>
+                <div class="text-section focus-on-the-mission">
+                  <span>Foco na Missão</span>
+                </div>
+              </ng-template>
             </div>
           </div>
+        </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mb-2 px-1">
           <div class="card">
             <div class="icon-top-right available-without-reservation" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa-solid fa-wallet"></i>
@@ -420,7 +423,8 @@
                   <div class="spinner-border total-reservation" role="status">
                     <span class="sr-only">Carregando...</span>
                   </div>
-                </ng-container>
+                </div>
+              </ng-container>
 
               <ng-template #availableWithoutReservation>
                 <div class="number-box available-without-reservation">
@@ -432,6 +436,7 @@
                       }}
                     </div>
                   </div>
+                </div>
 
                 <div class="text-section available-without-reservation">
                   <span>Disponível sem Reserva</span>
@@ -439,8 +444,9 @@
               </ng-template>
             </div>
           </div>
+        </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mb-2 px-1">
           <div class="card">
             <div class="icon-top-right comparative" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fas fa-arrows-up-down"></i>
@@ -469,7 +475,7 @@
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mb-2 px-1">
           <div class="card">
             <div class="icon-top-right po-with-highest-settlement" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fas fa-trophy"></i>
@@ -487,7 +493,8 @@
                   <div class="spinner-border poWith-highest-settlement" role="status">
                     <span class="sr-only">Carregando...</span>
                   </div>
-                </ng-container>
+                </div>
+              </ng-container>
 
               <ng-template #poWithHighestSettlement>
                 <div class="number-box po-with-highest-settlement">
@@ -497,6 +504,7 @@
                       {{ formatNumber(statusTotal.poWithHighestSettlement.liquidado) }}
                     </div>
                   </div>
+                </div>
 
                 <div class="text-section po-with-highest-settlement d-flex flex-column justify-content-end">
                   <span class="label-title">PO com Maior Liquidação</span>
@@ -513,73 +521,74 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="row px-2">
-      <div class="row g-2 g-md-1 px-1">
-        <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
-          <ng-container>
-            <div class="chart-container" [class.maximized]="isChartMaximized('availability-por-uo')"
-              [class.col-12]="!isChartMaximized('availability-por-uo')"
-              [class.col-md-12]="!isChartMaximized('availability-por-uo')"
-              [class.col-lg-12]="!isChartMaximized('availability-por-uo')"
-              [class.col-xl-12]="!isChartMaximized('availability-por-uo')"
-              [class.col-xxl-12]="!isChartMaximized('availability-por-uo')"
-              [class.col-xxxl-12]="!isChartMaximized('availability-por-uo')">
-              <ngx-availability-tu-uo class="w-100"
-                (maximizeButtonClick)="handleMaximizeButtonClick('availability-por-uo', $event)"
-                [filter]="currentRequestParams">
+  <div class="row px-2">
+    <div class="row g-2 g-md-1 px-1">
+      <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
+        <ng-container>
+          <div class="chart-container" [class.maximized]="isChartMaximized('availability-por-uo')"
+            [class.col-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-md-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-lg-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-xl-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-xxl-12]="!isChartMaximized('availability-por-uo')"
+            [class.col-xxxl-12]="!isChartMaximized('availability-por-uo')">
+            <ngx-availability-tu-uo class="w-100"
+              (maximizeButtonClick)="handleMaximizeButtonClick('availability-por-uo', $event)"
+              [filter]="currentRequestParams">
 
-              </ngx-availability-tu-uo>
-            </div>
-          </ng-container>
-        </div>
+            </ngx-availability-tu-uo>
+          </div>
+        </ng-container>
+      </div>
 
-        <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
-          <ng-container>
-            <div class="chart-container" [class.maximized]="isChartMaximized('success-of-planned')"
-              [class.col-12]="!isChartMaximized('success-of-planned')"
-              [class.col-md-12]="!isChartMaximized('success-of-planned')"
-              [class.col-lg-12]="!isChartMaximized('success-of-planned')"
-              [class.col-xl-12]="!isChartMaximized('success-of-planned')"
-              [class.col-xxl-12]="!isChartMaximized('success-of-planned')"
-              [class.col-xxxl-12]="!isChartMaximized('success-of-planned')">
-              <ngx-success-planned class="w-100"
-                (maximizeButtonClick)="handleMaximizeButtonClick('success-of-planned', $event)"
-                [filter]="currentRequestParams">
+      <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
+        <ng-container>
+          <div class="chart-container" [class.maximized]="isChartMaximized('success-of-planned')"
+            [class.col-12]="!isChartMaximized('success-of-planned')"
+            [class.col-md-12]="!isChartMaximized('success-of-planned')"
+            [class.col-lg-12]="!isChartMaximized('success-of-planned')"
+            [class.col-xl-12]="!isChartMaximized('success-of-planned')"
+            [class.col-xxl-12]="!isChartMaximized('success-of-planned')"
+            [class.col-xxxl-12]="!isChartMaximized('success-of-planned')">
+            <ngx-success-planned class="w-100"
+              (maximizeButtonClick)="handleMaximizeButtonClick('success-of-planned', $event)"
+              [filter]="currentRequestParams">
 
-              </ngx-success-planned>
-            </div>
-          </ng-container>
-        </div>
+            </ngx-success-planned>
+          </div>
+        </ng-container>
+      </div>
 
-        <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-          <ng-container>
-            <div class="chart-container" [class.maximized]="isChartMaximized('comparative')"
-              [class.col-12]="!isChartMaximized('comparative')" [class.col-md-12]="!isChartMaximized('comparative')"
-              [class.col-lg-12]="!isChartMaximized('comparative')" [class.col-xl-12]="!isChartMaximized('comparative')"
-              [class.col-xxl-12]="!isChartMaximized('comparative')"
-              [class.col-xxxl-12]="!isChartMaximized('comparative')">
-              <ngx-comparative class="w-100" (maximizeButtonClick)="handleMaximizeButtonClick('comparative', $event)"
-                [filter]="currentRequestParams"></ngx-comparative>
-            </div>
-          </ng-container>
-        </div>
+      <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+        <ng-container>
+          <div class="chart-container" [class.maximized]="isChartMaximized('comparative')"
+            [class.col-12]="!isChartMaximized('comparative')" [class.col-md-12]="!isChartMaximized('comparative')"
+            [class.col-lg-12]="!isChartMaximized('comparative')" [class.col-xl-12]="!isChartMaximized('comparative')"
+            [class.col-xxl-12]="!isChartMaximized('comparative')"
+            [class.col-xxxl-12]="!isChartMaximized('comparative')">
+            <ngx-comparative class="w-100" (maximizeButtonClick)="handleMaximizeButtonClick('comparative', $event)"
+              [filter]="currentRequestParams"></ngx-comparative>
+          </div>
+        </ng-container>
+      </div>
 
-        <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-          <ng-container>
-            <div class="chart-container" [class.maximized]="isChartMaximized('planned-budgetary')"
-              [class.col-12]="!isChartMaximized('planned-budgetary')"
-              [class.col-md-12]="!isChartMaximized('planned-budgetary')"
-              [class.col-lg-12]="!isChartMaximized('planned-budgetary')"
-              [class.col-xl-12]="!isChartMaximized('planned-budgetary')"
-              [class.col-xxl-12]="!isChartMaximized('planned-budgetary')"
-              [class.col-xxxl-12]="!isChartMaximized('planned-budgetary')">
-              <ngx-planned-budgetary class="w-100"
-                (maximizeButtonClick)="handleMaximizeButtonClick('planned-budgetary', $event)"
-                [filter]="currentRequestParams"></ngx-planned-budgetary>
-            </div>
-          </ng-container>
-        </div>
+      <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+        <ng-container>
+          <div class="chart-container" [class.maximized]="isChartMaximized('planned-budgetary')"
+            [class.col-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-md-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-lg-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-xl-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-xxl-12]="!isChartMaximized('planned-budgetary')"
+            [class.col-xxxl-12]="!isChartMaximized('planned-budgetary')">
+            <ngx-planned-budgetary class="w-100"
+              (maximizeButtonClick)="handleMaximizeButtonClick('planned-budgetary', $event)"
+              [filter]="currentRequestParams"></ngx-planned-budgetary>
+          </div>
+        </ng-container>
       </div>
     </div>
   </div>
+</div>

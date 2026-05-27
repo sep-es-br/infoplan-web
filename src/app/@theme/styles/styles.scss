@@ -20,7 +20,7 @@
 @import "./overrides";
 @import url("./_budget-panel-cores.scss");
 @import url("./_chart-container-maximized.scss");
-
+@import url("./_painel-obras-totalizadores.scss");
 // install the framework and custom global styles
 @include nb-install() {
   // framework global styles
@@ -42,18 +42,6 @@
   overflow-y: auto;
   overflow-x: auto;
 }
-
-/* Container do gráfico */
-// :host ::ng-deep .echarts {
-//   width: 100% !important;
-//   height: 100% !important;
-// }
-
-/* Quando maximizado, força a altura */
-// .chart-container.maximized ::ng-deep .echarts {
-//   min-height: 500px !important;
-//   height: 100% !important;
-// }
 
 /* Container do flip-card */
 :host ::ng-deep nb-card-body {

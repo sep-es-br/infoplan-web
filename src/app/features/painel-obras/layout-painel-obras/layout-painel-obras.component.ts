@@ -18,6 +18,7 @@ import { RouterModule } from "@angular/router";
 import { IPainelObrasRequest } from "../../../core/interfaces/painel-obras/painel-obras";
 import { environment } from "../../../../environments/environment";
 import {
+  NbButtonModule,
   NbIconModule,
   NbSelectComponent,
   NbSelectModule,
@@ -52,6 +53,7 @@ enum AvailableFilters {
     NbTagModule,
     NbIconModule,
     NbSelectModule,
+    NbButtonModule
   ],
   templateUrl: "./layout-painel-obras.component.html",
   styleUrls: ["./layout-painel-obras.component.scss"],

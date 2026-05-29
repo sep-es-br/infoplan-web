@@ -36,7 +36,7 @@ import { converterToNumber } from "../../../../@core/utils/functionts/functionts
   styleUrls: ["./revenue-expense-gnd-total.component.scss"],
 })
 export class RevenueExpenseGndTotalComponent implements OnChanges, OnDestroy {
-  @Input() filter: IBudgetExecutionRequest;
+  @Input() filter!: IBudgetExecutionRequest;
 
   readonly title: string = "Despesa Prevista x Executada";
 

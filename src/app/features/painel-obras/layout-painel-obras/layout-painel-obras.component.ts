@@ -15,7 +15,7 @@ import {
   StickyTagNavComponent,
 } from "../../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
 import { RouterModule } from "@angular/router";
-import { IPainelObrasRequest } from "../../../core/interfaces/painel-obras/painel-obras";
+import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, IPainelObrasRequest } from "../../../core/interfaces/painel-obras/painel-obras";
 import { environment } from "../../../../environments/environment";
 import {
   NbButtonModule,
@@ -31,16 +31,20 @@ import { takeUntil } from "rxjs/operators";
 import { ScrollService } from "../../../core/service/scroll.service";
 import { RequestStatus } from "../../strategic-projects/strategicProjects.component";
 import { formatNumber } from "../../../@core/utils/uitls";
+import { PainelObrasService } from "../../../core/service/painel-obras/painel-obras.service";
 
 const DEFAULT_PARAMS_PAINEL_OBRAS: IPainelObrasRequest = {
-  orgao: environment.painelObras.orgao.concat().toString(),
-  status: environment.painelObras.status.concat().toString(),
-  municipio: environment.painelObras.municipio.concat().toString(),
+  orgao: JSON.stringify(environment.painelObras.orgao),
+  status: JSON.stringify(environment.painelObras.status),
+  municipio: JSON.stringify(environment.painelObras.municipio),
+  portfolio: JSON.stringify(environment.painelObras.portifolio),
+  dataInicio: environment.painelObras.dataInicio,
+  dataFim: environment.painelObras.dataFim,
 };
 enum AvailableFilters {
-  ORGAO = "year",
-  MUNICIPIO = "month",
-  STATUS = "  ",
+  ORGAO = "orgao",
+  MUNICIPIO = "municipio",
+  STATUS = "status",
 }
 
 @Component({
@@ -58,7 +62,7 @@ enum AvailableFilters {
   templateUrl: "./layout-painel-obras.component.html",
   styleUrls: ["./layout-painel-obras.component.scss"],
 })
-export class LayoutPainelObrasComponent implements OnInit, OnDestroy{
+export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   menuPortalObras: NavigationTag[] = [
     {
       label: "Visão Geral",
@@ -79,7 +83,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy{
       visibleIn: ["/pages/painel-obras"],
     },
     {
-      label: "Carterira 2026",
+      label: "Carteira 2026",
       route: ["/pages/painel-obras/carteira"],
       exact: true,
       visibleIn: ["/pages/painel-obras"],
@@ -93,6 +97,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy{
 
   // Injeções
   private _scrollService = inject(ScrollService);
+  private _painelObrasService = inject(PainelObrasService);
 
   private destroy$ = new Subject<void>();
 
@@ -110,15 +115,11 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy{
   }[] = [];
 
   filter: IPainelObrasRequest = {
-    orgao: "",
-    municipio: "",
-    status: "",
+    ...DEFAULT_PARAMS_PAINEL_OBRAS,
   };
 
   finalFilter: IPainelObrasRequest = {
-    orgao: "",
-    municipio: "",
-    status: "",
+    ...DEFAULT_PARAMS_PAINEL_OBRAS,
   };
 
   statusTotal = {
@@ -132,7 +133,11 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy{
 
   protected formatNumber = formatNumber;
 
-  constructor() {}
+  orgaosList: IFiltroOrgao[] = [];
+  municipiosList: IFiltroMunicipio[] = [];
+  statusList: IFiltroStatus[] = [];
+
+  constructor() { }
 
   ngOnInit(): void {
     this._scrollService.isScrolled$
@@ -140,6 +145,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy{
       .subscribe((scrolled) => {
         this.isScrolled = scrolled;
       });
+    this.loadInitialData();
   }
 
   ngOnDestroy(): void {
@@ -151,6 +157,59 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy{
     this.currentRequestParams = { ...this.filter };
     this.updateActiveFilters();
     this.filterChanged.emit(this.currentRequestParams);
+    this.getRequisitionData();
+    this.getCardExecution();
+  }
+
+
+  private getRequisitionData() {
+    this.getMunicipios();
+    this.getStatus();
+    this.getOrgaos();
+  }
+
+  getMunicipios() {
+    const params: { orgao: string } = {
+      orgao: this.filter.orgao,
+    };
+    this._painelObrasService.getMunicipios(params)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.municipiosList = value;
+          this.updateActiveFilters();
+        },
+      });
+  }
+
+
+  getStatus() {
+    const params: { orgao: string; municipio: string } = {
+      orgao: this.filter.orgao,
+      municipio: this.filter.municipio,
+    };
+    this._painelObrasService.getStatus(params)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value: IFiltroStatus[]) => {
+          this.statusList = value;
+          this.updateActiveFilters();
+        }
+      }
+      );
+  }
+
+  getOrgaos() {
+    this.requestStatus.status = RequestStatus.LOADING;
+    this._painelObrasService.getOrgaos()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value: IFiltroOrgao[]) => {
+          this.orgaosList = value;
+          this.updateActiveFilters();
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        },
+      });
   }
 
   closeFilterModal() {
@@ -159,40 +218,85 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy{
   }
 
   configFilterLabel() {
-    if (this.finalFilter.orgao && this.finalFilter.orgao.length >= 1) {
+    if (this.finalFilter.portfolio && String(this.finalFilter.portfolio) !== "-1") {
+      this.activeFilters.push({
+        key: "portfolio",
+        label: "Portfólio",
+        displayValue: [{ name: this.finalFilter.portfolio }],
+      });
+    }
+
+    if (this.finalFilter.dataInicio && String(this.finalFilter.dataInicio) !== "-1") {
+      const data = new Date(this.finalFilter.dataInicio);
+      const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
+      const ano = data.getUTCFullYear();
+
+      this.activeFilters.push({
+        key: "dataInicio",
+        label: "De: ",
+        displayValue: [{ name: `${mes}/${ano}` }],
+      });
+    }
+
+    if (this.finalFilter.dataFim && String(this.finalFilter.dataFim) !== "-1") {
+      const data = new Date(this.finalFilter.dataFim);
+      const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
+      const ano = data.getUTCFullYear();
+
+      this.activeFilters.push({
+        key: "dataFim",
+        label: "Até: ",
+        displayValue: [{ name: `${mes}/${ano}` }],
+      });
+    }
+
+    if (this.finalFilter.orgao && String(this.finalFilter.orgao) !== "-1") {
+      const orgao = this.orgaosList.find(o => String(o.orgaoId) === String(this.finalFilter.orgao));
       this.activeFilters.push({
         key: "orgao",
         label: "Órgão",
-        displayValue: [{ name: this.finalFilter.orgao }],
+        displayValue: [{ name: orgao ? orgao.nome : this.finalFilter.orgao }],
       });
     }
 
-    if (this.finalFilter.municipio && this.finalFilter.municipio.length >= 1) {
+    if (this.finalFilter.municipio && String(this.finalFilter.municipio) !== "-1") {
+      const municipio = this.municipiosList.find(m => String(m.id) === String(this.finalFilter.municipio));
       this.activeFilters.push({
         key: "municipio",
         label: "Município",
-        displayValue: [{ name: this.finalFilter.municipio }],
+        displayValue: [{ name: municipio ? municipio.nome : this.finalFilter.municipio }],
       });
     }
 
-    if (this.finalFilter.status && this.finalFilter.status.length >= 1) {
+    if (this.finalFilter.status && String(this.finalFilter.status) !== "-1") {
+      const status = this.statusList.find(s => String(s.id) === String(this.finalFilter.status));
       this.activeFilters.push({
         key: "status",
         label: "Status",
-        displayValue: [{ name: this.finalFilter.status }],
+        displayValue: [{ name: status ? status.fase : this.finalFilter.status }],
       });
     }
   }
 
   handleFilterChange(origin: AvailableFilters | string, newValue: any) {
+    if (origin === "orgao") {
+      this.filter.municipio = "-1";
+      this.filter.status = "-1";
+      this.getMunicipios();
+      this.getStatus();
+    } else if (origin === "municipio") {
+      this.filter.status = "-1";
+      this.getStatus();
+    }
+
     if (Array.isArray(newValue)) {
-      if (newValue.length === 0) {
+      if (newValue.length === 1) {
         if (origin === "orgao") {
-          this.filter.orgao = "[-1]";
+          this.filter.orgao = "-1";
         } else if (origin === "municipio") {
-          this.filter.municipio = "[-1]";
+          this.filter.municipio = "-1";
         } else if (origin === "status") {
-          this.filter.status = "[-1]";
+          this.filter.status = "-1";
         }
       }
     }
@@ -212,6 +316,8 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy{
 
     this.currentRequestParams = { ...DEFAULT_PARAMS_PAINEL_OBRAS };
     this.updateActiveFilters();
+    this.getRequisitionData();
+    this.getCardExecution();
   }
 
   filtrar(event?: Event): void {
@@ -226,6 +332,9 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy{
     this.updateActiveFilters();
 
     this.filterChanged.emit(this.currentRequestParams);
+    this.tooltips.forEach(t => t.hide());
+    this.getRequisitionData();
+    this.getCardExecution();
   }
 
   filterSelection(): void {
@@ -234,5 +343,125 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy{
       municipio: this.finalFilter.municipio,
       status: this.finalFilter.status,
     };
+  }
+
+  getCardExecution() {
+    this.getContagemEntregas();
+    this.getContagemPE();
+    this.getTotalPlanejado();
+    this.getTotalRealizado();
+    this.getTotalProgramas();
+    this.getTotalProjetos();
+  }
+
+
+  getTotalProgramas() {
+    this.requestStatus.status = RequestStatus.LOADING;
+    this._painelObrasService.getTotalProgramas(this.currentRequestParams)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.statusTotal.totalizadorProgramas = value.totalPrograma;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        },
+        error: () => {
+          this.statusTotal.totalizadorProgramas = 0;
+          this.requestStatus.status = RequestStatus.ERROR;
+        }
+      });
+  }
+
+  getTotalProjetos() {
+    this.requestStatus.status = RequestStatus.LOADING;
+    this._painelObrasService.getTotalProjetos(this.currentRequestParams)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value: { totalProjetos: number }) => {
+          this.statusTotal.totalizadorProjetos = value.totalProjetos;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        },
+        error: () => {
+          this.statusTotal.totalizadorProjetos = 0;
+          this.requestStatus.status = RequestStatus.ERROR;
+        }
+      });
+  }
+
+  getTotalPlanejado() {
+    this.requestStatus.status = RequestStatus.LOADING;
+    this._painelObrasService.getTotalPlanejado(this.currentRequestParams)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.statusTotal.monitoramentoPlanejado = value.totalPlanejado;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        },
+        error: () => {
+          this.statusTotal.monitoramentoPlanejado = 0;
+          this.requestStatus.status = RequestStatus.ERROR;
+        }
+      });
+  }
+
+  getTotalRealizado() {
+    this.requestStatus.status = RequestStatus.LOADING;
+    this._painelObrasService.getTotalRealizado(this.currentRequestParams)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.statusTotal.monitoramentoRealizado = value.totalRealizado;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        },
+        error: () => {
+          this.statusTotal.monitoramentoRealizado = 0;
+          this.requestStatus.status = RequestStatus.ERROR;
+        }
+      });
+  }
+
+  getContagemPE() {
+    this.requestStatus.status = RequestStatus.LOADING;
+    this._painelObrasService.getContagemPE(this.currentRequestParams)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.statusTotal.filtroTemporalCritico = value.contagemPE;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        },
+        error: () => {
+          this.statusTotal.filtroTemporalCritico = 0;
+          this.requestStatus.status = RequestStatus.ERROR;
+        }
+      });
+  }
+
+  getContagemEntregas() {
+    this.requestStatus.status = RequestStatus.LOADING;
+    this._painelObrasService.getContagemEntregas(this.currentRequestParams)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.statusTotal.contagemEntregas = value.totalEntregas;
+          this.requestStatus.status = RequestStatus.SUCCESS;
+        },
+        error: () => {
+          this.statusTotal.contagemEntregas = 0;
+          this.requestStatus.status = RequestStatus.ERROR;
+        }
+      });
+  }
+
+
+
+  removeFilter(filterKey: string): void {
+    this.activeFilters = this.activeFilters.filter((f) => f.key !== filterKey);
+    if (filterKey === "orgao") {
+      this.filter.orgao = "-1";
+    } else if (filterKey === "municipio") {
+      this.filter.municipio = "-1";
+    } else if (filterKey === "status") {
+      this.filter.status = "-1";
+    }
+    this.filtrar();
   }
 }

@@ -1,1 +1,18 @@
-<p>visao-geral works!</p>
+  <ngx-flip-table
+  [cardTitle]="title"
+  [tableContent]="flipTableContent"
+  [backCardHeight]="350"
+  [showMaximizeButton]="true"
+  [loadingStatus]="requestStatus"
+  (executeSearch)="handleUserTableSearch($event)"
+  (executeDownload)="handleUserTableDownload()"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('quantidade-por-status', $event)"
+>
+  <ngx-pie-chart-model
+    [data]="chartData"
+    [colors]="chartColors"
+    [height]="isChartMaximized('quantidade-por-status') ? calcMaximizedHeight() : 200"
+    card-front>
+  </ngx-pie-chart-model>
+</ngx-flip-table>
+

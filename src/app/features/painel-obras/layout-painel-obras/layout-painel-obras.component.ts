@@ -32,6 +32,8 @@ import { ScrollService } from "../../../core/service/scroll.service";
 import { RequestStatus } from "../../strategic-projects/strategicProjects.component";
 import { formatNumber } from "../../../@core/utils/uitls";
 import { PainelObrasService } from "../../../core/service/painel-obras/painel-obras.service";
+import { ChartMaximizeService } from "../../../core/service/chart-maximize/chart-maximize.service";
+import { VisaoGeralComponent } from "../visao-geral/visao-geral.component";
 
 const DEFAULT_PARAMS_PAINEL_OBRAS: IPainelObrasRequest = {
   orgao: JSON.stringify(environment.painelObras.orgao),
@@ -51,8 +53,9 @@ enum AvailableFilters {
   selector: "ngx-layout-painel-obras",
   standalone: true,
   imports: [
-    CommonModule,
     StickyTagNavComponent,
+    VisaoGeralComponent,
+    CommonModule,
     RouterModule,
     NbTagModule,
     NbIconModule,
@@ -95,33 +98,21 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   @Output() filterChanged = new EventEmitter<IPainelObrasRequest>();
   @ViewChildren(NbTooltipDirective) tooltips!: QueryList<NbTooltipDirective>;
 
-  // Injeções
-  private _scrollService = inject(ScrollService);
-  private _painelObrasService = inject(PainelObrasService);
-
-  private destroy$ = new Subject<void>();
-
   currentRequestParams: IPainelObrasRequest = {
     ...DEFAULT_PARAMS_PAINEL_OBRAS,
   };
   requestStatus: { status: string } = { status: RequestStatus.EMPTY };
-
-  isScrolled = false;
-  isFilterModalOpen: boolean = false;
   activeFilters: {
     key: string;
     label: string;
     displayValue: Array<{ name: string; fullName?: string }>;
   }[] = [];
-
   filter: IPainelObrasRequest = {
     ...DEFAULT_PARAMS_PAINEL_OBRAS,
   };
-
   finalFilter: IPainelObrasRequest = {
     ...DEFAULT_PARAMS_PAINEL_OBRAS,
   };
-
   statusTotal = {
     totalizadorProgramas: 0,
     totalizadorProjetos: 0,
@@ -131,8 +122,15 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
     filtroTemporalCritico: 0,
   };
 
+  private readonly _scrollService = inject(ScrollService);
+  private readonly _painelObrasService = inject(PainelObrasService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private destroy$ = new Subject<void>();
+
   protected formatNumber = formatNumber;
 
+  isScrolled = false;
+  isFilterModalOpen: boolean = false;
   orgaosList: IFiltroOrgao[] = [];
   municipiosList: IFiltroMunicipio[] = [];
   statusList: IFiltroStatus[] = [];
@@ -451,6 +449,15 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
   }
 
+
+
+  handleMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
 
 
   removeFilter(filterKey: string): void {

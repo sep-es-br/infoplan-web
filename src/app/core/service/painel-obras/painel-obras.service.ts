@@ -86,6 +86,14 @@ export class PainelObrasService {
     );
   }
 
+
+  public getQuantidadeStatus(request: IPainelObrasRequest): Observable<{ quantidadeEntregas: number, status: string }[]> {
+    const params: HttpParams = this.returnParams(request);
+    return this._http.get<{ quantidadeEntregas: number, status: string }[]>(`${this._URI}/quantidade-por-status`, { params }).pipe(
+      catchError((err) => this.handleError(err, this._router))
+    );
+  }
+
   private returnParams(request: IPainelObrasRequest): HttpParams {
     let params = new HttpParams();
     params = params.append('orgao', request.orgao);

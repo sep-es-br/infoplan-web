@@ -72,20 +72,9 @@
           ? 'align-table-vertically'
           : ''
       " class="flip-card" [showToggleButton]="false" [flipped]="isFlipCardFlipped">
-      <nb-card-front>
-        <nb-card class="card-front px-3 pb-2 m-0">
-          <ng-content select="[card-front]"></ng-content>
-        </nb-card>
-      </nb-card-front>
-      <nb-card-back>
-        <nb-card class="card-back box-limited m-0 px-3" [style.max-height]="backCardHeight + 'px !important'"
-          [style.height]="backCardHeight + 'px !important'">
-
-          <ng-content select="[card-back]"></ng-content>
-
-          <ng-container *ngIf="tableContent">
-            <!-- Tabela com Cabeçalho Agrupado (HTML Puro para Suporte a Colspan/Rowspan) -->
-            <div class="table-container" *ngIf="tableContent.groupedColumns && tableContent.groupedColumns.length > 0">
+      <ng-template #tableTemplate>
+        <!-- Tabela com Cabeçalho Agrupado (HTML Puro para Suporte a Colspan/Rowspan) -->
+        <div class="table-container" *ngIf="tableContent.groupedColumns && tableContent.groupedColumns.length > 0">
               <table class="flip-table custom-grouped-table" [ngClass]="isMaximized ? 'maximized' : 'minimized'">
                 <thead>
                   <tr>
@@ -182,9 +171,26 @@
                 </ng-container>
               </table>
             </div>
-          </ng-container>
-        </nb-card>
-      </nb-card-back>
-    </nb-flip-card>
+          </ng-template>
+
+          <nb-card-front>
+            <nb-card class="card-front px-3 pb-2 m-0">
+              <ng-content select="[card-front]"></ng-content>
+              <ng-container *ngIf="tableOnFront && tableContent">
+                <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
+              </ng-container>
+            </nb-card>
+          </nb-card-front>
+          <nb-card-back>
+            <nb-card class="card-back box-limited m-0 px-3" [style.max-height]="backCardHeight + 'px !important'"
+              [style.height]="backCardHeight + 'px !important'">
+
+              <ng-content select="[card-back]"></ng-content>
+              <ng-container *ngIf="!tableOnFront && tableContent">
+                <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
+              </ng-container>
+            </nb-card>
+          </nb-card-back>
+        </nb-flip-card>
   </nb-card>
 </div>

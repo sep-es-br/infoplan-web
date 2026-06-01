@@ -1,18 +1,19 @@
   <ngx-flip-table
   [cardTitle]="title"
   [tableContent]="flipTableContent"
-  [backCardHeight]="350"
+  [tableOnFront]="true"
+  [backCardHeight]="400"
   [showMaximizeButton]="true"
   [loadingStatus]="requestStatus"
   (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
-  (showMaximizeButtonClick)="onMaximizeButtonClick('quantidade-por-status', $event)"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('quantidade-por-status', $event)" card-front
 >
   <ngx-pie-chart-model
     [data]="chartData"
     [colors]="chartColors"
-    [height]="isChartMaximized('quantidade-por-status') ? calcMaximizedHeight() : 200"
-    card-front>
+    [height]="isChartMaximized('quantidade-por-status') ? calcMaximizedHeight() : 400"
+    card-back>
   </ngx-pie-chart-model>
 </ngx-flip-table>
 

@@ -8,7 +8,6 @@ import { StrategicProjectsComponent } from "../features/strategic-projects/strat
 import { NotFoundComponent } from "./miscellaneous/not-found/not-found.component";
 import { PagesComponent } from "./pages.component";
 import { PlanejamentoOrcamentarioComponent } from "../features/planejamento-orcamentario/planejamento-orcamentario.component";
-import { PainelObrasComponent } from "../features/painel-obras/painel-obras.component";
 
 const routes: Routes = [
   {
@@ -41,7 +40,7 @@ const routes: Routes = [
       },
       {
         path: "painel-obras",
-        loadChildren: () => import('../features/painel-obras/painel-obras.module').then(m => m.PainelObrasModule),
+        loadChildren: () => import('../features/painel-obras/layout-painel-obras/layout-painel-obras.module').then(m => m.LayoutPainelObrasModule),
         data: { dataSource: "PMO" },
       },
       {

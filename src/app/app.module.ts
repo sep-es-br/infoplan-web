@@ -32,7 +32,6 @@ import { authInterceptor } from "./core/interceptors/auth.interceptor";
 import { registerLocaleData } from "@angular/common";
 import ptBr from "@angular/common/locales/pt";
 import { LOCALE_ID } from "@angular/core";
-import { PainelObrasComponent } from './features/painel-obras/painel-obras.component';
 
 registerLocaleData(ptBr);
 @NgModule({

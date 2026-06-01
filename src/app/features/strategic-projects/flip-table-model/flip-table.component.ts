@@ -133,6 +133,8 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() showMaximizeButton: boolean = false;
 
+  @Input() tableOnFront: boolean = false;
+
   @Input() groupedHeaderColumns: string[] = [];
 
   @Input() distinctYears: number[] = [];

@@ -1,10 +1,10 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { OrgaoComponent } from "./orgao/orgao.component";
-import { VisaoGeralComponent } from "./visao-geral/visao-geral.component";
 import { CarteiraComponent } from "./carteira/carteira.component";
 import { MunicipioComponent } from "./municipio/municipio.component";
-import { LayoutPainelObrasComponent } from "./layout-painel-obras/layout-painel-obras.component";
+import { LayoutPainelObrasComponent } from "./layout-painel-obras.component";
+import { VisaoGeralComponent } from "./visao-geral/visao-geral.component";
 
 export const routes: Routes = [
     {
@@ -41,4 +41,4 @@ export const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class PainelObrasRoutingModule {}
+export class LayoutPainelObrasRoutingModule {}

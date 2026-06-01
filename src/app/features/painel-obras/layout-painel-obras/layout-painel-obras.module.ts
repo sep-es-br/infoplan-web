@@ -1,5 +1,4 @@
 import { NgModule } from "@angular/core";
-import { PainelObrasComponent } from "./painel-obras.component";
 import { CommonModule } from "@angular/common";
 import {
   NbAutocompleteModule,
@@ -11,12 +10,11 @@ import {
   NbTagModule,
 } from "@nebular/theme";
 import { FormsModule } from "@angular/forms";
-import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
-import { ThemeModule } from "../../@theme/theme.module";
-import { PainelObrasRoutingModule } from "./painel-obras-rounting.module";
+import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
+import { ThemeModule } from "../../../@theme/theme.module";
+import { LayoutPainelObrasRoutingModule } from "./layout-painel-obras-rounting.module";
 
 @NgModule({
-  declarations: [PainelObrasComponent],
   imports: [
     CommonModule,
     NbIconModule,
@@ -30,8 +28,7 @@ import { PainelObrasRoutingModule } from "./painel-obras-rounting.module";
     ThemeModule,
     NbAutocompleteModule,
     NbTagModule,
-    PainelObrasRoutingModule
+    LayoutPainelObrasRoutingModule
   ],
-  exports: [PainelObrasComponent]
 })
-export class PainelObrasModule {}
+export class LayoutPainelObrasModule {}

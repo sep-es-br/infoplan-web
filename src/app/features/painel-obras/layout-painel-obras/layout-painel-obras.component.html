@@ -535,9 +535,8 @@
   </div>
   <div class="dashboard-graphs-container position-relative">
     <div class="dashboard-graphs-container position-relative">
-      <div class="row g-2 g-md-1">
-        <ng-container>
-          <div class="chat-container"
+      <div class="row g-1 g-md-1">
+          <div class="chart-container"
             [class.maximized]="isChartMaximized('quantidade-por-status')"
             [class.col-12]="!isChartMaximized('quantidade-por-status')"
             [class.col-md-12]="!isChartMaximized('quantidade-por-status')"
@@ -546,9 +545,8 @@
             [class.col-xxl-6]="!isChartMaximized('quantidade-por-status')"
             [class.col-xxxl-4]="!isChartMaximized('quantidade-por-status')"
           >
-            <ngx-visao-geral class="w-100" [filter]="currentRequestParams" (sendMaximizeButtonClick)="handleMaximizeButtonClick('quantidade-por-status', $event)"></ngx-visao-geral>
+            <ngx-visao-geral class="w-100" [filter]="currentRequestParams" (maximizeButtonClick)="handleMaximizeButtonClick('quantidade-por-status', $event)"></ngx-visao-geral>
           </div>
-        </ng-container>
       </div>
     </div>
   </div>

@@ -26,14 +26,14 @@ import {
   NbTooltipDirective,
 } from "@nebular/theme";
 import { CommonModule } from "@angular/common";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ScrollService } from "../../../core/service/scroll.service";
 import { RequestStatus } from "../../strategic-projects/strategicProjects.component";
 import { formatNumber } from "../../../@core/utils/uitls";
 import { PainelObrasService } from "../../../core/service/painel-obras/painel-obras.service";
-import { ChartMaximizeService } from "../../../core/service/chart-maximize/chart-maximize.service";
-import { VisaoGeralComponent } from "../visao-geral/visao-geral.component";
+import { ChartMaximizeService, ChartMaximizeState } from "../../../core/service/chart-maximize/chart-maximize.service";
+import { VisaoGeralComponent } from "./visao-geral/visao-geral.component";
 
 const DEFAULT_PARAMS_PAINEL_OBRAS: IPainelObrasRequest = {
   orgao: JSON.stringify(environment.painelObras.orgao),
@@ -134,10 +134,25 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   orgaosList: IFiltroOrgao[] = [];
   municipiosList: IFiltroMunicipio[] = [];
   statusList: IFiltroStatus[] = [];
+  private subscriptionMaximizeState!: Subscription;
 
+
+  maximizeState: ChartMaximizeState = {
+    maximizedChartId: null,
+    isAnyChartMaximized: false,
+    maximizedHeight: this._chartMaximizeService.getCurrentHeight(),
+  };
   constructor() { }
 
   ngOnInit(): void {
+
+        this.subscriptionMaximizeState =
+          this._chartMaximizeService.maximizeState$.subscribe(
+            (state: ChartMaximizeState) => {
+              this.maximizeState = state;
+            }
+          );
+
     this._scrollService.isScrolled$
       .pipe(takeUntil(this.destroy$))
       .subscribe((scrolled) => {
@@ -449,17 +464,6 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
   }
 
-
-
-  handleMaximizeButtonClick(chartId: string, event: boolean): void {
-    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
-  }
-
-  isChartMaximized(chartId: string): boolean {
-    return this._chartMaximizeService.isChartMaximized(chartId);
-  }
-
-
   removeFilter(filterKey: string): void {
     this.activeFilters = this.activeFilters.filter((f) => f.key !== filterKey);
     if (filterKey === "orgao") {
@@ -471,4 +475,20 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
     }
     this.filtrar();
   }
+
+
+  handleMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+
+  isAnyChartMaximized(): boolean {
+    return this._chartMaximizeService.isAnyChartMaximized();
+  }
+
+
 }

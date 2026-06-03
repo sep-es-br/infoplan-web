@@ -1,0 +1,368 @@
+<ngx-sticky-tag-nav [tags]="menuPortalObras"></ngx-sticky-tag-nav>
+
+<div class="col-12">
+  <div class="filter-container">
+    <div class="filter-wrapper" [class.is-sticky]="isScrolled">
+      <div class="filter-button px-2">
+        <div class="filter-tags" [class.is-sticky]="isScrolled">
+          <div *ngFor="let tag of activeFilters; let i = index">
+            <div class="filter-tag" [class.is-sticky]="isScrolled">
+              <div class="filter-tag-inner" [ngClass]="{ 'invisible-tag': showFilters }">
+                <div>
+                  <div class="tag-label">{{ tag.label }}</div>
+
+                  <div class="tag-value">
+                    <ng-container *ngFor="
+                        let valueDisplay of tag.displayValue;
+                        let index = index
+                      ">
+                      <ng-container *ngIf="
+                          valueDisplay.name?.length <= 20;
+                          else spanWithTooltip
+                        ">
+                        <span>
+                          {{
+                          (index > 0 ? " " : "") +
+                          (tag.displayValue.length > 1
+                          ? valueDisplay.name + ";"
+                          : valueDisplay.name)
+                          }}
+                        </span>
+                      </ng-container>
+
+                      <ng-template #spanWithTooltip>
+                        <span [nbTooltip]="
+                            valueDisplay.fullName
+                              ? valueDisplay.fullName
+                              : valueDisplay.name
+                          ">
+                          {{
+                          (index > 0 ? " " : "") +
+                          (valueDisplay.name | TextTruncate: 17 : ";")
+                          }}
+                        </span>
+                      </ng-template>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+              <button *ngIf="
+                  tag.key !== 'portfolio' &&
+                  tag.key !== 'dataInicio' &&
+                  tag.key !== 'dataFim'
+                " class="remove-button" (click)="removeFilter(tag.key)">
+                x
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-button" [class.is-sticky]="isScrolled">
+          <button class="filter-toggle" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
+            Filtros
+            <nb-icon [icon]="'funnel-outline'"></nb-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-body">
+            <form class="w-100">
+              <div class="form-header w-100 d-flex justify-content-end">
+                <button type="button" class="btn p-0 close-filter-button" data-bs-dismiss="modal" #modalCloseButton
+                  (click)="closeFilterModal()">
+                  <nb-icon [icon]="'close-outline'"></nb-icon>
+                </button>
+              </div>
+              <div class="d-flex flex-column w-100">
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Órgão</span>
+                    <nb-select name="orgao" placeholder="Selecionar" size="tiny" [(selected)]="filter.orgao"
+                      (selectedChange)="handleFilterChange('orgao', $event)" #customSelect>
+                      <nb-option *ngFor="let orgao of orgaosList" [value]="orgao.orgaoId">
+                        {{ orgao.nome }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Município</span>
+                    <nb-select name="municipio" placeholder="Selecionar" size="tiny" [(selected)]="filter.municipio"
+                      (selectedChange)="handleFilterChange('municipio', $event)" #customSelect>
+                      <nb-option *ngFor="let municipio of municipiosList" [value]="municipio.id">
+                        {{ municipio.nome }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3">
+                    <span class="mb-1">Status</span>
+                    <nb-select name="status" placeholder="Selecionar" size="tiny" [(selected)]="filter.status"
+                      (selectedChange)="handleFilterChange('status', $event)" #customSelect>
+                      <nb-option *ngFor="let status of statusList" [value]="status.id">
+                        {{ status.fase }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer d-flex flex-column flex-sm-row justify-content-center justify-content-sm-end">
+            <button class="mx-4" nbButton size="small" status="warning" outline shape="semi-round"
+              (click)="resetFilters()">
+              Restaurar Filtros
+            </button>
+            <button nbButton size="small" status="success" hero shape="semi-round" data-bs-dismiss="modal"
+              (click)="filtrar($event)">
+              Filtrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-1 g-md-1">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-2 mb-2 px-1">
+        <div class="card">
+          <div class="card-content h-100">
+            <div class="portfolio-content w-100 h-100 d-flex justify-content-start align-items-center">
+              <img [src]="logoPaneilObrasUrl" alt="Portal de Obras do Governo do Estado do Espírito Santo"
+                class="img-fluid" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-12 col-lg-12 col-xl-10">
+        <div class="row g-1 g-md-1">
+          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-2 px-1">
+            <div class="card">
+              <div class="icon-top-right totalizador-programas" *ngIf="requestStatus.status !== 'Loading'">
+                <i class="fas fa-layer-group"></i>
+              </div>
+              <div class="card-content" [title]="
+                  'R$ ' + (statusTotal.totalizadorProgramas | number: '1.0-0')
+                ">
+                <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else programasContent
+                  ">
+                  <div class="d-flex justify-content-center align-items-center w-100">
+                    <div class="spinner-border totalizador-programas" role="status">
+                      <span class="sr-only">Carregando...</span>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <ng-template #programasContent>
+                  <div class="number-box totalizador-programas">
+                    <div class="d-flex" style="flex-direction: column; align-items: start">
+                      <div class="value">
+                        {{ formatNumber(statusTotal.totalizadorProgramas) }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-section totalizador-programas">
+                    <span>Totalizador de Programas</span>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-2 px-1">
+            <div class="card">
+              <div class="icon-top-right totalizador-projetos" *ngIf="requestStatus.status !== 'Loading'">
+                <i class="fas fa-project-diagram"></i>
+              </div>
+              <div class="card-content" [title]="
+                  'R$ ' + (statusTotal.totalizadorProjetos | number: '1.0-0')
+                ">
+                <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else projetosContent
+                  ">
+                  <div class="d-flex justify-content-center align-items-center w-100">
+                    <div class="spinner-border totalizador-projetos" role="status">
+                      <span class="sr-only">Carregando...</span>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <ng-template #projetosContent>
+                  <div class="number-box totalizador-projetos">
+                    <div class="d-flex" style="flex-direction: column; align-items: start">
+                      <div class="value">
+                        {{ formatNumber(statusTotal.totalizadorProjetos) }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-section totalizador-projetos">
+                    <span>Totalizador de Projetos</span>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-2 px-1">
+            <div class="card">
+              <div class="icon-top-right contagem-entregas" *ngIf="requestStatus.status !== 'Loading'">
+                <i class="fas fa-box-open"></i>
+              </div>
+              <div class="card-content" [title]="statusTotal.contagemEntregas + ' Entregas'">
+                <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else contagemEntregasContent
+                  ">
+                  <div class="d-flex justify-content-center align-items-center w-100">
+                    <div class="spinner-border contagem-entregas" role="status">
+                      <span class="sr-only">Carregando...</span>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <ng-template #contagemEntregasContent>
+                  <div class="number-box contagem-entregas">
+                    <div class="d-flex" style="flex-direction: column; align-items: start">
+                      <div class="value">
+                        {{ statusTotal.contagemEntregas }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-section contagem-entregas">
+                    <span>Contagem de Entregas</span>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-2 px-1">
+            <div class="card">
+              <div class="icon-top-right monitoramento-planejado" *ngIf="requestStatus.status !== 'Loading'">
+                <i class="fas fa-money-check-alt"></i>
+              </div>
+              <div class="card-content" [title]="
+                  'R$ ' + (statusTotal.monitoramentoPlanejado | number: '1.0-0')
+                ">
+                <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else monitoramentoPlanejadoContent
+                  ">
+                  <div class="d-flex justify-content-center align-items-center w-100">
+                    <div class="spinner-border monitoramento-planejado" role="status">
+                      <span class="sr-only">Carregando...</span>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <ng-template #monitoramentoPlanejadoContent>
+                  <div class="number-box monitoramento-planejado">
+                    <div class="d-flex" style="flex-direction: column; align-items: start">
+                      <div class="value">
+                        {{ formatNumber(statusTotal.monitoramentoPlanejado) }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-section monitoramento-planejado">
+                    <span>Monitoramento Financeiro Planejado</span>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-2 px-1">
+            <div class="card">
+              <div class="icon-top-right monitoramento-realizado" *ngIf="requestStatus.status !== 'Loading'">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="card-content" [title]="
+                  'R$ ' + (statusTotal.monitoramentoRealizado | number: '1.0-0')
+                ">
+                <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else monitoramentoRealizadoContent
+                  ">
+                  <div class="d-flex justify-content-center align-items-center w-100">
+                    <div class="spinner-border monitoramento-realizado" role="status">
+                      <span class="sr-only">Carregando...</span>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <ng-template #monitoramentoRealizadoContent>
+                  <div class="number-box monitoramento-realizado">
+                    <div class="d-flex" style="flex-direction: column; align-items: start">
+                      <div class="value">
+                        {{ formatNumber(statusTotal.monitoramentoRealizado) }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-section monitoramento-realizado">
+                    <span>Monitoramento Financeiro Realizado</span>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 mb-2 px-1">
+            <div class="card">
+              <div class="icon-top-right filtro-temporal-critico" *ngIf="requestStatus.status !== 'Loading'">
+                <i class="fas fa-hourglass-half"></i>
+              </div>
+              <div class="card-content" [title]="statusTotal.filtroTemporalCritico">
+                <ng-container *ngIf="
+                    requestStatus.status === 'Loading';
+                    else filtroTemporalCriticoContent
+                  ">
+                  <div class="d-flex justify-content-center align-items-center w-100">
+                    <div class="spinner-border filtro-temporal-critico" role="status">
+                      <span class="sr-only">Carregando...</span>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <ng-template #filtroTemporalCriticoContent>
+                  <div class="number-box filtro-temporal-critico">
+                    <div class="d-flex" style="flex-direction: column; align-items: start">
+                      <div class="value">
+                        {{ statusTotal.filtroTemporalCritico }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-section filtro-temporal-critico">
+                    <span>Filtro Temporal Crítico</span>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dashboard-graphs-container">
+    <div class="dashboard-graphs-container">
+      <ng-container>
+        <router-outlet></router-outlet>
+      </ng-container>
+
+    </div>
+  </div>
+</div>
+
+<!-- <router-outlet></router-outlet> -->

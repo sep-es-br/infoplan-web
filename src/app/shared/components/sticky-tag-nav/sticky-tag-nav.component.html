@@ -1,0 +1,13 @@
+<div class="tag-panel" [class.is-sticky]="isScrolled$ | async">
+  <nb-tag-list>
+    <nb-tag
+      *ngFor="let tag of tagsFiltradas"
+      [class.is-sticky]="isScrolled$ | async"
+      [text]="tag.label"
+      [routerLink]="tag.route"
+      routerLinkActive="active-tag"
+      [routerLinkActiveOptions]="{ exact: tag.exact }"
+      class="tag-default">
+    </nb-tag>
+  </nb-tag-list>
+</div>

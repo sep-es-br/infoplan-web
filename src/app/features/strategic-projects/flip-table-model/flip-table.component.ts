@@ -133,6 +133,8 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() showMaximizeButton: boolean = false;
 
+  @Input() tableOnFront: boolean = false;
+
   @Input() groupedHeaderColumns: string[] = [];
 
   @Input() distinctYears: number[] = [];
@@ -169,6 +171,18 @@ export class FlipTableComponent implements OnChanges {
       return window.innerHeight - 80; // menos espaço para headers/borders
     } else {
       return (this.height || 400) - 30;
+    }
+  }
+
+  get deveExibirSearch(): boolean {
+    if (!this.showSearchField) {
+      return false;
+    }
+
+    if (this.tableOnFront) {
+      return !this.isFlipCardFlipped;
+    } else {
+      return this.isFlipCardFlipped;
     }
   }
 
@@ -411,9 +425,9 @@ export class FlipTableComponent implements OnChanges {
     return propList.some(
       (prop) =>
         (prop.propertyName === "categoria" ||
-         prop.propertyName === "category" ||
-         prop.propertyName === "planoOrcamentario" ||
-         prop.propertyName === customProp) &&
+          prop.propertyName === "category" ||
+          prop.propertyName === "planoOrcamentario" ||
+          prop.propertyName === customProp) &&
         prop.value?.toString().trim().toUpperCase() === "TOTAL",
     );
   }

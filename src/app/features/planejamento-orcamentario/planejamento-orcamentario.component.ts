@@ -34,6 +34,7 @@ import {
   finalize,
   takeUntil,
 } from "rxjs/operators";
+import { ScrollService } from "../../core/service/scroll.service";
 
 const DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS: IPlanejamentoOrcamentarioFilter =
 {
@@ -93,6 +94,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   }[] = [];
 
   isFilterModalOpen: boolean = false;
+  isScrolled: boolean = false;
 
   filter: IPlanejamentoOrcamentarioFilter = {
     ...DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS,
@@ -164,23 +166,14 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
   timesTamp!: string;
 
-  currentRequestParams: IPlanejamentoOrcamentarioFilter =
-    DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS;
+  currentRequestParams: IPlanejamentoOrcamentarioFilter = DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS;
 
   private _themeService: NbThemeService = inject(NbThemeService);
-
-  private readonly _chartMaximizeService: ChartMaximizeService =
-    inject(ChartMaximizeService);
-
-  private readonly _comunicationCardsService: ComunicationCardsService = inject(
-    ComunicationCardsService,
-  );
-
-  private readonly _planejamentoOrcamentarioService: PlanejamentoOrcamentarioService =
-    inject(PlanejamentoOrcamentarioService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly _planejamentoOrcamentarioService = inject(PlanejamentoOrcamentarioService);
+  private readonly _scrollService = inject(ScrollService);
 
   private readonly destroy$ = new Subject<void>();
-
   private subscription!: Subscription;
   private subscriptionMaximizeState!: Subscription;
 
@@ -233,6 +226,12 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     this.getTotais();
     this.updateActiveFilters();
     this.loadInitialData();
+
+    this._scrollService.isScrolled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(scrolled => {
+        this.isScrolled = scrolled;
+      });
   }
 
   private getListPos(ano: number, codUosList: string[]) {

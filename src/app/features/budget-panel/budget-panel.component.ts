@@ -29,6 +29,9 @@ import {
 import { BudgetPanelService } from "../../core/service/budget-panel/budget-panel.service";
 import { RequestStatus } from "../strategic-projects/strategicProjects.component";
 import { FilterStateService } from "../../core/service/filter-state/filter-state.service";
+import { ScrollService } from "../../core/service/scroll.service";
+import { takeUntil } from "rxjs/operators";
+import { NavigationTag } from "../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
 
 interface IDataCard {
   RevenueTotal?: IRevenueTotalBudgetExecutionResponse;
@@ -88,14 +91,10 @@ export class BudgetPanelComponent implements OnInit, OnDestroy {
   ];
 
   private readonly destroy$ = new Subject<void>();
-  private readonly _comunicationCardsService = inject(
-    ComunicationCardsService
-  );
-  private readonly _chartMaximizeService =
-    inject(ChartMaximizeService);
-  private readonly _execucaoOrcamentariaService = inject(
-    BudgetPanelService
-  );
+  private readonly _comunicationCardsService = inject(ComunicationCardsService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly _execucaoOrcamentariaService = inject(BudgetPanelService);
+  private readonly _scrollService = inject(ScrollService);
 
   readonly _filterStateService = inject(FilterStateService);
 
@@ -113,7 +112,10 @@ export class BudgetPanelComponent implements OnInit, OnDestroy {
   revenueExpenseGndTotalOrcamento?:
     | IRevenueExpenseGndTotalBudgetExecutionResponse[]
     | null = [];
+
+
   isFilterModalOpen: boolean = false;
+  isScrolled: boolean = false;
 
   maximizeState: ChartMaximizeState = {
     maximizedChartId: null,
@@ -201,6 +203,12 @@ export class BudgetPanelComponent implements OnInit, OnDestroy {
     );
     this.updateActiveFilters();
     this.loadInitialData();
+
+    this._scrollService.isScrolled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(scrolled => {
+        this.isScrolled = scrolled;
+      });
   }
 
   ngOnDestroy(): void {

@@ -5,13 +5,14 @@
   [tableContent]="tableContent"
   (executeDownload)="handleTableDownload()"
   (executeSearch)="handleTableSearch($event)"
-  [backCardHeight]="500"
+  [backCardHeight]="isChartMaximized('progress-bar-po') ? calcMaximizedHeight() : 500"
   [showMaximizeButton]="true"
+  [tableOnFront]="false"
   (showMaximizeButtonClick)="onMaximizeButtonClick('progress-bar-po',$event)">
   <ngx-chart-progress-bar
     [chart]="chartData"
     [chartDataConfig]="chartDataConfig"
-    [height]="isChartMaximized('progress-bar-po') ? maximizedHeight : 500"
+    [height]="isChartMaximized('progress-bar-po') ? calcMaximizedHeight() : 500"
     [showMaximizeButton]="isChartMaximized('progress-bar-po')"
     card-front>
   </ngx-chart-progress-bar>

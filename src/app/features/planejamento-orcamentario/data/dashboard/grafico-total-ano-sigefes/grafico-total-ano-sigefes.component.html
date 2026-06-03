@@ -1,19 +1,11 @@
-<ngx-flip-table
-  [cardTitle]="title"
-  [loadingStatus]="requestStatus"
-  [tableContent]="tableContent"
+<ngx-flip-table [cardTitle]="title" [loadingStatus]="requestStatus" [tableContent]="tableContent"
   (executeDownload)="handleTableDownload()"
-  [backCardHeight]="500"
-  (executeSearch)="handleTableSearch($event)"
-  [showMaximizeButton]="true"
-  [showSearchField]="false"
+  [backCardHeight]="isChartMaximized('grafico-total-ano-sigefes') ? calcMaximizedHeight() : 500"
+  (executeSearch)="handleTableSearch($event)" [showMaximizeButton]="true" [showSearchField]="false"
   (showMaximizeButtonClick)="onMaximizeButtonClick('grafico-total-ano-sigefes',$event)">
-  <ngx-org-chart-vertical
-    [chart]="chartData"
-    [chartDataConfig]="chartDataConfig"
+  <ngx-org-chart-vertical [chart]="chartData" [chartDataConfig]="chartDataConfig"
     [isMaximized]="isChartMaximized('grafico-total-ano-sigefes')"
-    [height]="isChartMaximized('grafico-total-ano-sigefes') ? maximizedHeight : 500"
-    card-front>
+    [height]="isChartMaximized('grafico-total-ano-sigefes') ? maximizedHeight : 500" card-front>
   </ngx-org-chart-vertical>
 </ngx-flip-table>
-    <!-- [ChartDataConfig]="chartDataConfig" -->
+<!-- [ChartDataConfig]="chartDataConfig" -->

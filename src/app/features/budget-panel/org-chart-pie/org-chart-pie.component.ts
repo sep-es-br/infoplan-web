@@ -1,4 +1,3 @@
-import { UtilitiesService } from "./../../../core/service/utilities.service";
 import { CommonModule } from "@angular/common";
 import {
   Component,
@@ -18,7 +17,6 @@ import {
   getAvailableThemesStyles,
 } from "../../../@theme/theme.module";
 import { ShortNumberPipe } from "../../../@theme/pipes";
-import { tooltip } from "leaflet";
 
 export interface PieChartData {
   value: number;

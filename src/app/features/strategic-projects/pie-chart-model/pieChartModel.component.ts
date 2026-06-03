@@ -126,7 +126,7 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
 
   private getResponsiveHeight(): number {
     if (!this.isMaximized) {
-      return this.height ?? 150;
+      return this.height ?? 100;
     }
 
     const w = window.innerWidth;
@@ -196,16 +196,20 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
     const screenWidth = window.innerWidth;
     const isPhone = screenWidth < 500;
 
+    const theme = getAvailableThemesStyles(this.currentTheme);
     if (this.isMaximized) {
-      // NO MODO MAXIMIZADO: Gráfico centralizado, legenda no topo à esquerda
       this.echartsInstance.setOption({
         legend: {
-          left: "left",
+          type: 'scroll',
+          left: "center",
           top: "top",
-          textStyle: { fontSize: isPhone ? 11 : 13 },
+          orient: 'horizontal',
+          textStyle: { fontSize: isPhone ? 11 : 13, color: theme.textPrimaryColor },
           itemWidth: 12,
           itemHeight: 12,
           itemGap: 12,
+          pageIconColor: theme.themePrimaryColor,
+          pageTextStyle: { color: theme.textPrimaryColor }
         },
         title: {
           left: "50%",
@@ -221,20 +225,22 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
         ],
       });
     } else {
-      // NO MODO NORMAL: Layout original com gráfico deslocado
       const currentThemeStyles = getAvailableThemesStyles(this.currentTheme);
-
       this.echartsInstance.setOption({
         legend: {
+          type: 'scroll',
           left: "left",
           top: "top",
+          orient: 'vertical',
           textStyle: {
             fontSize: this.fontSizeLegend,
             color: currentThemeStyles.textPrimaryColor
           },
           itemWidth: 10,
           itemHeight: 10,
-          itemGap: 10,
+          itemGap: 8,
+          pageIconColor: currentThemeStyles.themePrimaryColor,
+          pageTextStyle: { color: currentThemeStyles.textPrimaryColor }
         },
         title: {
           textStyle: {
@@ -442,6 +448,7 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
           },
         },
         legend: {
+          type: 'scroll',
           orient: "vertical",
           left: "left",
           top: "top",
@@ -452,7 +459,9 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
           },
           itemWidth: 10,
           itemHeight: 10,
-          itemGap: 10,
+          itemGap: 8,
+          pageIconColor: s.themePrimaryColor,
+          pageTextStyle: { color: s.textPrimaryColor }
         },
         series: [
           {

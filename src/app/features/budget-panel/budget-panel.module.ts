@@ -25,7 +25,7 @@ import { ShortNumberPipe } from "../../@theme/pipes";
 import { RevenueIcmsComponent } from "./data/revenue-icms/revenue-icms.component";
 import { ThemeModule } from "../../@theme/theme.module";
 import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
-import { NavigationBudgetPanel } from "./navigation-budget-panel/navigation-budget-panel";
+import { LayoutBudgetPanel } from "./layout/layout-budget-panel";
 import { BudgetPanelRoutingModule } from "./budget-panel-routing.module";
 import { BudgetPanelIndicatorComponent } from './budget-panel-indicator/budget-panel-indicator.component';
 import { AvailabilityTuUoComponent } from "./budget-panel-indicator/data/availability-tu-uo/availability-tu-uo.component";
@@ -34,6 +34,7 @@ import { OrgChartOppositeComponent } from './budget-panel-indicator/data/org-cha
 import { ComparativeComponent } from './budget-panel-indicator/data/comparative/comparative.component';
 import { PlannedBudgetaryComponent } from './budget-panel-indicator/data/planned-budgetary/planned-budgetary.component';
 import { OrgChartHorizontalComponent } from "./org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { StickyTagNavComponent } from "../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
 
 @NgModule({
   declarations: [
@@ -43,12 +44,12 @@ import { OrgChartHorizontalComponent } from "./org-chart-bar/org-chart-horizonta
     RevenueExpenseGndComponent,
     RevenueIcmsComponent,
     RevenueParticipationComponent,
-    NavigationBudgetPanel,
+    LayoutBudgetPanel,
     BudgetPanelIndicatorComponent,
     AvailabilityTuUoComponent,
     SuccessPlannedComponent,
     ComparativeComponent,
-    PlannedBudgetaryComponent,
+    PlannedBudgetaryComponent
   ],
   imports: [
     CommonModule,
@@ -80,7 +81,8 @@ import { OrgChartHorizontalComponent } from "./org-chart-bar/org-chart-horizonta
     BudgetPanelRoutingModule,
     NbAutocompleteModule,
     OrgChartOppositeComponent,
-    OrgChartHorizontalComponent
+    OrgChartHorizontalComponent,
+    StickyTagNavComponent
   ],
   providers: [
     ShortNumberPipe,

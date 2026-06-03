@@ -1,6 +1,6 @@
 <ngx-flip-table [cardTitle]="title" [tableContent]="flipTableContent" [tableOnFront]="true" [showSearchField]="true"
-  [backCardHeight]="isChartMaximized('total-entregas-por-orgao-execucao') ? calcMaximizedHeight() : 350"
+  [backCardHeight]="isChartMaximized('numero-entregas-por-municipio-status') ? calcMaximizedHeight() : 350"
   [showMaximizeButton]="true" [loadingStatus]="requestStatus" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
-  (showMaximizeButtonClick)="onMaximizeButtonClick('total-entregas-por-orgao-execucao', $event)" card-front>
+  (showMaximizeButtonClick)="onMaximizeButtonClick('numero-entregas-por-municipio-status', $event)" card-front>
 </ngx-flip-table>

@@ -1,36 +1,35 @@
-import { Component, EventEmitter, inject, Input, Output, SimpleChanges } from '@angular/core';
-import { IPainelObrasRequest, ITotalEntregasPorOrgao, ITotalEntregasPorOrgaoExecucao } from '../../../../../../core/interfaces/painel-obras/painel-obras';
-import { converterToNumber } from '../../../../../../@core/utils/functionts/functionts';
-import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../../../../strategic-projects/flip-table-model/flip-table.component';
-import { RequestStatus } from '../../../../../strategic-projects/strategicProjects.component';
+import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { INumeroEntregasPorMunicipioStatus, IPainelObrasRequest, ITotalEntregasPorOrgao, ITotalMunicipioStatus } from '../../../../../../core/interfaces/painel-obras/painel-obras';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { converterToNumber } from '../../../../../../@core/utils/functionts/functionts';
 import { ChartMaximizeService } from '../../../../../../core/service/chart-maximize/chart-maximize.service';
 import { ExportDataService } from '../../../../../../core/service/export-data';
 import { PainelObrasService } from '../../../../../../core/service/painel-obras/painel-obras.service';
 import { UtilitiesService } from '../../../../../../core/service/utilities.service';
+import { FlipTableContent, FlipTableAlignment, TreeNode, FlipTableComponent } from '../../../../../strategic-projects/flip-table-model/flip-table.component';
+import { RequestStatus } from '../../../../../strategic-projects/strategicProjects.component';
 
 @Component({
-  selector: 'ngx-total-entregas-por-orgao-execucao',
-  templateUrl: './total-entregas-por-orgao-execucao.component.html',
-  styleUrls: ['./total-entregas-por-orgao-execucao.component.scss'],
+  selector: 'ngx-numero-entregas-por-municipio-status',
+  templateUrl: './numero-entregas-por-municipio-status.component.html',
+  styleUrls: ['./numero-entregas-por-municipio-status.component.scss'],
   standalone: true,
   imports: [
     FlipTableComponent
   ]
 })
-export class TotalEntregasPorOrgaoExecucaoComponent {
-
+export class NumeroEntregasPorMunicipioStatusComponent implements OnChanges, OnDestroy, OnInit{
   @Input() filter!: IPainelObrasRequest;
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
-  readonly title: string = "Valor total das entregas por órgão (Execução)";
+  readonly title: string = "Valor total das entregas por município e status";
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;
   selectedMaximize: boolean = false;
 
-  private totalEntregasPorOrgaoResponse: ITotalEntregasPorOrgaoExecucao[] = [];
+  private numeroEntregasPorMunicipioStatusResponse: INumeroEntregasPorMunicipioStatus[] = [];
 
   private readonly destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
@@ -61,9 +60,9 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
   loadData() {
     this.requestStatus = RequestStatus.LOADING;
 
-    this._painelObrasService.getTotalEntregasPorOrgaoExecucao(this.filter).subscribe({
+    this._painelObrasService.getNumeroEntregasPorMunicipioStatus(this.filter).subscribe({
       next: (response) => {
-        this.totalEntregasPorOrgaoResponse = response;
+        this.numeroEntregasPorMunicipioStatusResponse = response;
         this.assembleFlipTableContent(response);
         this.requestStatus = RequestStatus.SUCCESS;
       },
@@ -78,24 +77,25 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
   }
 
 
-  handleUserTableSearch(search: string) {
+    handleUserTableSearch(search: string) {
     if (search.length > 0) {
       const preparedSearchTerm = search.toLowerCase();
-      const filteredData = this.totalEntregasPorOrgaoResponse.filter((item) =>
-        item.orgao.toLowerCase().includes(preparedSearchTerm) ||
-        item.quantidadeEntregas.toString().toLowerCase().includes(preparedSearchTerm)
+      const filteredData = this.numeroEntregasPorMunicipioStatusResponse.filter((item) =>
+        item.municipio.toLowerCase().includes(preparedSearchTerm) ||
+        item.status.toString().toLowerCase().includes(preparedSearchTerm)
       );
       this.assembleFlipTableContent(filteredData);
     } else {
-      this.assembleFlipTableContent(this.totalEntregasPorOrgaoResponse);
+      this.assembleFlipTableContent(this.numeroEntregasPorMunicipioStatusResponse);
     }
   }
 
   private executeSearch(search: string) {
     if (!search || search.length > 0) {
       const preparedSearchTerm = search.toLowerCase().trim();
-      const filteredItems = this.totalEntregasPorOrgaoResponse.filter((item) =>
-        item.orgao.toLowerCase().includes(preparedSearchTerm),
+      const filteredItems = this.numeroEntregasPorMunicipioStatusResponse.filter((item) =>
+        item.municipio.toLowerCase().includes(preparedSearchTerm) ||
+        item.status.toString().toLowerCase().includes(preparedSearchTerm)
       );
 
       this.assembleFlipTableContent(filteredItems, true);
@@ -103,7 +103,7 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
   }
 
   assembleFlipTableContent(
-    data: ITotalEntregasPorOrgaoExecucao[],
+    data: INumeroEntregasPorMunicipioStatus[],
     shouldStartExpanded: boolean = false,
   ): void {
     const standardAlignment = {
@@ -113,18 +113,13 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
 
     const tableColumns = [
       {
-        propertyName: "quantidadeEntregas",
-        displayName: "Quantidade de Entregas",
-        alignment: standardAlignment
-      },
-      {
-        propertyName: "planejado",
-        displayName: "Planejado",
+        propertyName: "status",
+        displayName: "Status",
         alignment: standardAlignment,
       },
       {
-        propertyName: "realizado",
-        displayName: "Realizado",
+        propertyName: "quantidade_entregas",
+        displayName: "Quantidade de Entregas",
         alignment: standardAlignment
       }
     ];
@@ -132,27 +127,17 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
     const finalData: Array<TreeNode> = data.map((item) => ({
       data: [
         {
-          propertyName: "quantidadeEntregas",
-          value: item.quantidadeEntregas,
-        },
-        {
-          originalPropertyName: "orgao",
+          originalPropertyName: "municipio",
           propertyName: "firstColumn",
-          value: item.orgao,
+          value: item.municipio,
         },
         {
-          propertyName: "planejado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.planejado,
-            "R$",
-          ),
+          propertyName: "status",
+          value: item.status,
         },
         {
-          propertyName: "realizado",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-            item.realizado,
-            "R$",
-          ),
+          propertyName: "quantidade_entregas",
+          value: item.quantidadeEntregas,
         },
       ],
       children: [],
@@ -162,9 +147,9 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
     this.flipTableContent = {
       defaultColumns: tableColumns,
       customColumn: {
-        originalPropertyName: "orgao",
+        originalPropertyName: "municipio",
         propertyName: "firstColumn",
-        displayName: "Órgão",
+        displayName: "Município",
         alignment: {
           header: FlipTableAlignment.CENTER,
           data: FlipTableAlignment.LEFT,
@@ -174,27 +159,23 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
     };
   }
 
-
-
   handleUserTableDownload() {
     const columns: Array<{ key: string; label: string }> = [
-      { key: "orgao", label: "Órgão" },
-      { key: "quantidadeEntregas", label: "Quantidade de Entregas" },
-      { key: "planejado", label: "Planejado" },
-      { key: "realizado", label: "Realizado" },
+      { key: "municipio", label: "Município" },
+      { key: "status", label: "Status" },
+      { key: "quantidade_entregas", label: "Quantidade de Entregas" },
     ];
 
-    const dataToExport = this.totalEntregasPorOrgaoResponse.map((item) => ({
-      orgao: item.orgao,
-      quantidadeEntregas: converterToNumber(String(item.quantidadeEntregas)),
-      planejado: converterToNumber(String(item.planejado)),
-      realizado: converterToNumber(String(item.realizado)),
+    const dataToExport = this.numeroEntregasPorMunicipioStatusResponse.map((item) => ({
+      municipio: item.municipio,
+      status: item.status,
+      quantidade_entregas: item.quantidadeEntregas,
     }));
 
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataToExport,
       columns,
-      "total_entregas_por_orgao.xlsx",
+      "numero_entregas_por_municipio_status.xlsx",
     );
   }
 
@@ -210,5 +191,4 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
   calcMaximizedHeight(): number {
     return this._chartMaximizeService.calcMaximizedHeight();
   }
-
 }

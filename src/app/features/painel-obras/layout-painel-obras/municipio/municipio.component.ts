@@ -4,15 +4,24 @@ import { takeUntil } from 'rxjs/operators';
 import { FilterManagementService } from '../../../../core/service/filter-management/filter-management.service';
 
 import { IPainelObrasRequest } from '../../../../core/interfaces/painel-obras/painel-obras';
+import { TotalEntregasPorMunicipioStatusComponent } from './data/total-entregas-por-municipio-status/total-entregas-por-municipio-status.component';
+import { NumeroEntregasPorMunicipioStatusComponent } from './data/numero-entregas-por-municipio-status/numero-entregas-por-municipio-status.component';
+import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
 @Component({
   selector: 'ngx-municipio',
   templateUrl: './municipio.component.html',
-  styleUrls: ['./municipio.component.scss']
+  styleUrls: ['./municipio.component.scss'],
+  standalone: true,
+  imports: [
+    TotalEntregasPorMunicipioStatusComponent,
+    NumeroEntregasPorMunicipioStatusComponent
+  ]
 })
 export class MunicipioComponent implements OnInit, OnDestroy {
 
   private readonly _filterManagementService = inject(FilterManagementService);
+   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private destroy$ = new Subject<void>();
 
   currentRequestParams: IPainelObrasRequest = {
@@ -39,4 +48,15 @@ export class MunicipioComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+    handleMaximizeButtonClick(chartId: string, event: boolean): void {
+    this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
+  }
+
+  isChartMaximized(chartId: string): boolean {
+    return this._chartMaximizeService.isChartMaximized(chartId);
+  }
+
+  isAnyChartMaximized(): boolean {
+    return this._chartMaximizeService.isAnyChartMaximized();
+  }
 }

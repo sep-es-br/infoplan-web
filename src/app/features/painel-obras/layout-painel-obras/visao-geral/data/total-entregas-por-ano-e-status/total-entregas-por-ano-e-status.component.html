@@ -3,8 +3,8 @@
   [showMaximizeButton]="true" [loadingStatus]="requestStatus" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
   (showMaximizeButtonClick)="onMaximizeButtonClick('total-entregas-por-ano-e-status', $event)" card-front>
-  <ngx-org-chart-vertical [chart]="charData" [chartDataConfig]="chartDataConfig"
+  <!-- <ngx-org-chart-vertical [chart]="charData" [chartDataConfig]="chartDataConfig"
     [height]="isChartMaximized('total-entregas-por-ano-e-status') ? calcMaximizedHeight() : 300"
     [isMaximized]="isChartMaximized('total-entregas-por-ano-e-status')" valueType="currency"
-    card-back></ngx-org-chart-vertical>
+    card-back></ngx-org-chart-vertical> -->
 </ngx-flip-table>

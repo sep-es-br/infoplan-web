@@ -194,8 +194,6 @@ export class TotalEntregasPorAnoEStatusComponent
       {} as Record<string, IQuantidadePorAnoEStatus[]>,
     );
 
-    console.log(groupedData);
-
     const finalData: Array<TreeNode> = Object.entries(groupedData).map(
       ([status, items]) => {
         const totalPlanejado = items.reduce((sum, i) => sum + i.planejado, 0);
@@ -346,7 +344,6 @@ export class TotalEntregasPorAnoEStatusComponent
   private executeSearch(search: string) {
     if (!search || search.length > 0) {
       const preparedSearchTerm = search.toLowerCase().trim();
-      console.log("Search term too short, resetting table content.", preparedSearchTerm);
       const filteredItems = this.quantidadePorAnStatusResponse.filter(
         (item) =>
           item.ano.toLowerCase().includes(preparedSearchTerm) ||

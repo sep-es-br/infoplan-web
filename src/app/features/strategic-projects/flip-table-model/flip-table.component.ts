@@ -174,6 +174,18 @@ export class FlipTableComponent implements OnChanges {
     }
   }
 
+  get deveExibirSearch(): boolean {
+    if (!this.showSearchField) {
+      return false;
+    }
+
+    if (this.tableOnFront) {
+      return !this.isFlipCardFlipped;
+    } else {
+      return this.isFlipCardFlipped;
+    }
+  }
+
   @Output() showMaximizeButtonClick: EventEmitter<boolean> =
     new EventEmitter<boolean>();
 
@@ -413,9 +425,9 @@ export class FlipTableComponent implements OnChanges {
     return propList.some(
       (prop) =>
         (prop.propertyName === "categoria" ||
-         prop.propertyName === "category" ||
-         prop.propertyName === "planoOrcamentario" ||
-         prop.propertyName === customProp) &&
+          prop.propertyName === "category" ||
+          prop.propertyName === "planoOrcamentario" ||
+          prop.propertyName === customProp) &&
         prop.value?.toString().trim().toUpperCase() === "TOTAL",
     );
   }

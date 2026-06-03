@@ -97,7 +97,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     if (
       changes["filter"] &&
       JSON.stringify(changes["filter"].previousValue) !==
-        JSON.stringify(changes["filter"].currentValue)
+      JSON.stringify(changes["filter"].currentValue)
     ) {
       this.loadData();
       this.title = `PO - Plano Orçamentário • Filtro Anual ${this.filter?.ano}`;
@@ -309,5 +309,9 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
       columns,
       `PO - Unidade Orçamentária.xlsx`,
     );
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 }

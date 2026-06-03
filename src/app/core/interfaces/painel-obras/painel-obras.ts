@@ -42,3 +42,10 @@ export interface IQuantidadeStatus {
   quantidadeEntregas: number;
   status: string;
 }
+
+export interface IQuantidadePorAnoEStatus {
+  ano: string;
+  status: string;
+  planejado: number;
+  realizado: number;
+}

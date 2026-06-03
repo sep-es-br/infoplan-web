@@ -10,24 +10,40 @@
       </ng-template>
 
       <div class="d-flex align-items-center justify-content-end">
-        <ng-container *ngIf="isFlipCardFlipped">
-          <ng-container *ngIf="showSearchField">
-            <ng-container *ngIf="isSearchFieldVisible">
-              <nb-form-field class="search-form-field opening">
-                <input nbInput class="search-input" type="text" shape="round" fieldSize="tiny" placeholder="Buscar"
-                  (keyup)="debounceOnInput($event)" />
-                <nb-icon nbSuffix class="close-icon" [icon]="'close-outline'" (click)="handleCloseSearchFieldClick()">
-                </nb-icon>
-              </nb-form-field>
-            </ng-container>
-
-            <ng-container *ngIf="!isSearchFieldVisible">
-              <nb-icon class="search-button m-0 ms-3 p-0" [icon]="'search-outline'"
-                (click)="isSearchFieldVisible = true">
+        <ng-container *ngIf="deveExibirSearch">
+          <ng-container *ngIf="isSearchFieldVisible">
+            <nb-form-field class="search-form-field opening">
+              <input nbInput class="search-input" type="text" shape="round" fieldSize="tiny" placeholder="Buscar"
+                (keyup)="debounceOnInput($event)" />
+              <nb-icon nbSuffix class="close-icon" [icon]="'close-outline'" (click)="handleCloseSearchFieldClick()">
               </nb-icon>
-            </ng-container>
+            </nb-form-field>
+          </ng-container>
+
+          <ng-container *ngIf="!isSearchFieldVisible">
+            <nb-icon class="search-button m-0 ms-3 p-0" [icon]="'search-outline'" (click)="isSearchFieldVisible = true">
+            </nb-icon>
           </ng-container>
         </ng-container>
+        <!-- 
+        <ng-container *ngIf="showSearchField && (!tableOnFront || !isFlipCardFlipped)">
+
+          <ng-container *ngIf="isSearchFieldVisible">
+            <nb-form-field class="search-form-field opening">
+              <input nbInput class="search-input" type="text" shape="round" fieldSize="tiny" placeholder="Buscar"
+                (keyup)="debounceOnInput($event)" />
+              <nb-icon nbSuffix class="close-icon" [icon]="'close-outline'" (click)="handleCloseSearchFieldClick()">
+              </nb-icon>
+            </nb-form-field>
+          </ng-container>
+
+          <ng-container *ngIf="!isSearchFieldVisible">
+            <nb-icon class="search-button m-0 ms-3 p-0" [icon]="'search-outline'" (click)="isSearchFieldVisible = true">
+            </nb-icon>
+          </ng-container>
+
+        </ng-container> -->
+
 
         <nb-icon class="export-button m-0 ms-3 p-0" [icon]="'cloud-download-outline'"
           (click)="handleDownloadButtonClick()" title="Download XLS">
@@ -75,122 +91,119 @@
       <ng-template #tableTemplate>
         <!-- Tabela com Cabeçalho Agrupado (HTML Puro para Suporte a Colspan/Rowspan) -->
         <div class="table-container" *ngIf="tableContent.groupedColumns && tableContent.groupedColumns.length > 0">
-              <table class="flip-table custom-grouped-table" [ngClass]="isMaximized ? 'maximized' : 'minimized'">
-                <thead>
-                  <tr>
-                    <th [attr.rowspan]="2" class="align-middle text-left font-weight-bold first-column">
-                      {{ tableContent.customColumn.displayName }}
-                    </th>
-                    <th *ngFor="let group of tableContent.groupedColumns; trackBy: trackByGroup" [attr.colspan]="subColumnsCount"
-                      class="text-center font-weight-bold">
-                      {{ group.metricLabel }}
-                    </th>
-                  </tr>
-                  <tr>
-                    <ng-container *ngFor="let group of tableContent.groupedColumns; let gIdx = index; trackBy: trackByGroup">
-                      <th *ngFor="let col of getGroupSubColumns(gIdx); let sIdx = index; trackBy: trackByColumn"
-                        class="text-center font-weight-bold sub-header"
-                        [ngClass]="{'metric-group-divider': gIdx > 0 && sIdx === 0}">
-                        {{ col.yearLabel }}
-                      </th>
-                    </ng-container>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let row of tableContent.data; trackBy: trackByRow"
-                    [ngClass]="{ 'row-total': isRowTotal(row) }">
-                    <td class="text-left"
-                      [ngClass]="{ 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
-                      (click)="tableContent.customColumn.enableEventClick && !isRowTotal(row) ? handleCustomColumnClick(getCellValue(row.data, tableContent.customColumn.propertyName)) : null">
-                      <nb-icon
-                        *ngIf="tableContent.customColumn.enableEventClick && !isRowTotal(row)"
-                        [icon]="'chevron-right-outline'"
-                        class="me-1">
-                      </nb-icon>
-                      {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
-                    </td>
-                    <ng-template ngFor let-column [ngForOf]="tableContent.defaultColumns" let-idx="index" [ngForTrackBy]="trackByColumn">
-                      <td [style.textAlign]="column.alignment?.data || 'right'"
-                        [ngClass]="{
+          <table class="flip-table custom-grouped-table" [ngClass]="isMaximized ? 'maximized' : 'minimized'">
+            <thead>
+              <tr>
+                <th [attr.rowspan]="2" class="align-middle text-left font-weight-bold first-column">
+                  {{ tableContent.customColumn.displayName }}
+                </th>
+                <th *ngFor="let group of tableContent.groupedColumns; trackBy: trackByGroup"
+                  [attr.colspan]="subColumnsCount" class="text-center font-weight-bold">
+                  {{ group.metricLabel }}
+                </th>
+              </tr>
+              <tr>
+                <ng-container
+                  *ngFor="let group of tableContent.groupedColumns; let gIdx = index; trackBy: trackByGroup">
+                  <th *ngFor="let col of getGroupSubColumns(gIdx); let sIdx = index; trackBy: trackByColumn"
+                    class="text-center font-weight-bold sub-header"
+                    [ngClass]="{'metric-group-divider': gIdx > 0 && sIdx === 0}">
+                    {{ col.yearLabel }}
+                  </th>
+                </ng-container>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of tableContent.data; trackBy: trackByRow"
+                [ngClass]="{ 'row-total': isRowTotal(row) }">
+                <td class="text-left"
+                  [ngClass]="{ 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
+                  (click)="tableContent.customColumn.enableEventClick && !isRowTotal(row) ? handleCustomColumnClick(getCellValue(row.data, tableContent.customColumn.propertyName)) : null">
+                  <nb-icon *ngIf="tableContent.customColumn.enableEventClick && !isRowTotal(row)"
+                    [icon]="'chevron-right-outline'" class="me-1">
+                  </nb-icon>
+                  {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
+                </td>
+                <ng-template ngFor let-column [ngForOf]="tableContent.defaultColumns" let-idx="index"
+                  [ngForTrackBy]="trackByColumn">
+                  <td [style.textAlign]="column.alignment?.data || 'right'" [ngClass]="{
                           'metric-group-divider': isDivider(idx),
                           'alternate-group': subColumnsCount > 0 && (Math.floor(idx / subColumnsCount) % 2 !== 0)
-                        }"
-                        [title]="getCellValue(row.data, column.propertyName)">
-                        {{ getCellValueShort(row.data, column.propertyName) }}
-                      </td>
-                    </ng-template>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Tabela Padrão nbTreeGrid (Mantida para compatibilidade) -->
-            <div class="table-container" *ngIf="!tableContent.groupedColumns || tableContent.groupedColumns.length === 0">
-              <table class="flip-table" [ngClass]="isMaximized ? 'maximized' : 'minimized'"
-                [nbTreeGrid]="tableContent.data" [nbSort]="tableContent.data" (sort)="handleSortClick($event)">
-
-                <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumnsNames"></tr>
-                <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumnsNames"
-                  [ngClass]="{ 'row-total': isRowTotal(row) }"></tr>
-
-                <ng-container [nbTreeGridColumnDef]="tableContent.customColumn.propertyName">
-                  <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef
-                    style="vertical-align: middle; border-top: 1px solid var(--divider-color); border-bottom: 2px solid var(--divider-color); font-weight: bold; min-width: 250px;">
-                    {{ tableContent.customColumn.displayName }}
-                  </th>
-                  <td *nbTreeGridCellDef="let row" nbTreeGridCell
-                      [ngClass]="{ 'font-weight-bold': isRowTotal(row), 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
-                      (click)="tableContent.customColumn.enableEventClick && !isRowTotal(row) ? handleCustomColumnClick(getCellValue(row.data, tableContent.customColumn.propertyName)) : null">
-                    <nb-tree-grid-row-toggle
-                      *ngIf="row.hasChildren()"
-                      [expanded]="row.expanded">
-                    </nb-tree-grid-row-toggle>
-                    <nb-icon
-                      *ngIf="!row.hasChildren() && tableContent.customColumn.enableEventClick && !isRowTotal(row)"
-                      [icon]="'chevron-right-outline'"
-                      class="me-1">
-                    </nb-icon>
-                    <span [style.fontWeight]="getCellValue(row.data, tableContent.customColumn.propertyName) === 'Total' ? 'bold' : 'normal'">
-                      {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
-                    </span>
-                  </td>
-                </ng-container>
-
-                <ng-container *ngFor="let column of tableContent.defaultColumns; trackBy: trackByColumn" [nbTreeGridColumnDef]="column.propertyName">
-                  <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef
-                    [style]="{'text-align': column.alignment ? column.alignment.header : 'right'}"
-                    style="border-top: 1px solid var(--divider-color); font-weight: bold; padding: 4px 8px;">
-                    {{ column.displayName }}
-                  </th>
-                  <td nbTreeGridCell *nbTreeGridCellDef="let row" class="px-1"
-                    [ngClass]="{ 'font-weight-bold': isRowTotal(row) }"
-                    [style]="{'text-align': column.alignment ? column.alignment.data : 'right'}"
-                    title="{{ getCellValue(row.data, column.propertyName) }}">
+                        }" [title]="getCellValue(row.data, column.propertyName)">
                     {{ getCellValueShort(row.data, column.propertyName) }}
                   </td>
-                </ng-container>
-              </table>
-            </div>
-          </ng-template>
+                </ng-template>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-          <nb-card-front>
-            <nb-card class="card-front px-3 pb-2 m-0">
-              <ng-content select="[card-front]"></ng-content>
-              <ng-container *ngIf="tableOnFront && tableContent">
-                <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
-              </ng-container>
-            </nb-card>
-          </nb-card-front>
-          <nb-card-back>
-            <nb-card class="card-back box-limited m-0 px-3" [style.max-height]="backCardHeight + 'px !important'"
-              [style.height]="backCardHeight + 'px !important'">
+        <!-- Tabela Padrão nbTreeGrid (Mantida para compatibilidade) -->
+        <div class="table-container" *ngIf="!tableContent.groupedColumns || tableContent.groupedColumns.length === 0">
+          <table class="flip-table" [ngClass]="isMaximized ? 'maximized' : 'minimized'" [nbTreeGrid]="tableContent.data"
+            [nbSort]="tableContent.data" (sort)="handleSortClick($event)">
 
-              <ng-content select="[card-back]"></ng-content>
-              <ng-container *ngIf="!tableOnFront && tableContent">
-                <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
-              </ng-container>
-            </nb-card>
-          </nb-card-back>
-        </nb-flip-card>
+            <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumnsNames"></tr>
+            <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumnsNames"
+              [ngClass]="{ 'row-total': isRowTotal(row) }"></tr>
+
+            <ng-container [nbTreeGridColumnDef]="tableContent.customColumn.propertyName">
+              <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef
+                style="vertical-align: middle; border-top: 1px solid var(--divider-color); border-bottom: 2px solid var(--divider-color); font-weight: bold; min-width: 250px;">
+                {{ tableContent.customColumn.displayName }}
+              </th>
+              <td *nbTreeGridCellDef="let row" nbTreeGridCell
+                [ngClass]="{ 'font-weight-bold': isRowTotal(row), 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
+                (click)="tableContent.customColumn.enableEventClick && !isRowTotal(row) ? handleCustomColumnClick(getCellValue(row.data, tableContent.customColumn.propertyName)) : null">
+                <nb-tree-grid-row-toggle *ngIf="row.hasChildren()" [expanded]="row.expanded">
+                </nb-tree-grid-row-toggle>
+                <nb-icon *ngIf="!row.hasChildren() && tableContent.customColumn.enableEventClick && !isRowTotal(row)"
+                  [icon]="'chevron-right-outline'" class="me-1">
+                </nb-icon>
+                <span
+                  [style.fontWeight]="getCellValue(row.data, tableContent.customColumn.propertyName) === 'Total' ? 'bold' : 'normal'">
+                  {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
+                </span>
+              </td>
+            </ng-container>
+
+            <ng-container *ngFor="let column of tableContent.defaultColumns; trackBy: trackByColumn"
+              [nbTreeGridColumnDef]="column.propertyName">
+              <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef
+                [style]="{'text-align': column.alignment ? column.alignment.header : 'right'}"
+                style="border-top: 1px solid var(--divider-color); font-weight: bold; padding: 4px 8px;">
+                {{ column.displayName }}
+              </th>
+              <td nbTreeGridCell *nbTreeGridCellDef="let row" class="px-1"
+                [ngClass]="{ 'font-weight-bold': isRowTotal(row) }"
+                [style]="{'text-align': column.alignment ? column.alignment.data : 'right'}"
+                title="{{ getCellValue(row.data, column.propertyName) }}">
+                {{ getCellValueShort(row.data, column.propertyName) }}
+              </td>
+            </ng-container>
+          </table>
+        </div>
+      </ng-template>
+
+      <nb-card-front>
+        <nb-card class="card-back box-limited m-0" [style.max-height]="backCardHeight + 'px !important'"
+          [style.height]="backCardHeight + 'px !important'">
+          <ng-content select="[card-front]"></ng-content>
+          <ng-container *ngIf="tableOnFront && tableContent">
+            <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
+          </ng-container>
+        </nb-card>
+      </nb-card-front>
+      <nb-card-back>
+        <nb-card class="card-back box-limited m-0" [style.max-height]="backCardHeight + 'px !important'"
+          [style.height]="backCardHeight + 'px !important'">
+
+          <ng-content select="[card-back]"></ng-content>
+          <ng-container *ngIf="!tableOnFront && tableContent">
+            <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
+          </ng-container>
+        </nb-card>
+      </nb-card-back>
+    </nb-flip-card>
   </nb-card>
 </div>

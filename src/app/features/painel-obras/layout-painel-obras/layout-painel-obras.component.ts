@@ -10,11 +10,7 @@ import {
   ViewChild,
   ViewChildren,
 } from "@angular/core";
-import {
-  NavigationTag,
-  StickyTagNavComponent,
-} from "../../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
-import { RouterModule } from "@angular/router";
+import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, IPainelObrasRequest } from "../../../core/interfaces/painel-obras/painel-obras";
 import { environment } from "../../../../environments/environment";
 import {
@@ -23,6 +19,7 @@ import {
   NbSelectComponent,
   NbSelectModule,
   NbTagModule,
+  NbThemeService,
   NbTooltipDirective,
 } from "@nebular/theme";
 import { CommonModule } from "@angular/common";
@@ -34,12 +31,22 @@ import { formatNumber } from "../../../@core/utils/uitls";
 import { PainelObrasService } from "../../../core/service/painel-obras/painel-obras.service";
 import { ChartMaximizeService, ChartMaximizeState } from "../../../core/service/chart-maximize/chart-maximize.service";
 import { VisaoGeralComponent } from "./visao-geral/visao-geral.component";
+import { NavigationTag, StickyTagNavComponent } from "../../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
+import { AvailableThemes } from "../../planejamento-orcamentario/planejamento-orcamentario.component";
+import { ShortNumberPipe } from "../../../shared/components/pipe/shortNumber-pipe";
+import { TotalEntregasFonteRecursoComponent } from "./visao-geral/data/total-entregas-fonte-recurso/total-entregas-fonte-recurso.component";
+import { TotalEntregasPorOrgaoComponent } from "./orgao/data/total-entregas-por-orgao/total-entregas-por-orgao.component";
+import { TotalEntregasPorOrgaoExecucaoComponent } from "./orgao/data/total-entregas-por-orgao-execucao/total-entregas-por-orgao-execucao.component";
+import { OrgaoComponent } from "./orgao/orgao.component";
+import { FilterManagementService } from "../../../core/service/filter-management/filter-management.service";
+
+type PaginaPainel = "visao-geral" | "orgao" | "municipio" | "carteira";
 
 const DEFAULT_PARAMS_PAINEL_OBRAS: IPainelObrasRequest = {
   orgao: JSON.stringify(environment.painelObras.orgao),
   status: JSON.stringify(environment.painelObras.status),
   municipio: JSON.stringify(environment.painelObras.municipio),
-  portfolio: JSON.stringify(environment.painelObras.portifolio),
+  portfolio: environment.painelObras.portifolio,
   dataInicio: environment.painelObras.dataInicio,
   dataFim: environment.painelObras.dataFim,
 };
@@ -55,6 +62,7 @@ enum AvailableFilters {
   imports: [
     StickyTagNavComponent,
     VisaoGeralComponent,
+    OrgaoComponent,
     CommonModule,
     RouterModule,
     NbTagModule,
@@ -74,7 +82,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       visibleIn: ["/pages/painel-obras"],
     },
     {
-      label: "Orgão",
+      label: "Órgão",
       route: ["/pages/painel-obras/orgao"],
       exact: true,
       visibleIn: ["/pages/painel-obras"],
@@ -92,6 +100,13 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       visibleIn: ["/pages/painel-obras"],
     },
   ];
+
+  private readonly logoMap: Record<PaginaPainel, string> = {
+    "visao-geral": "assets/images/app/portal-obras-visao-geral.png",
+    orgao: "assets/images/app/portal-obras-orgao.png",
+    municipio: "assets/images/app/portal-obras-municipio.png",
+    carteira: "assets/images/app/portal-obras-carteira.png",
+  };
 
   @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
   @ViewChildren("customSelect") customSelectRefs!: QueryList<NbSelectComponent>;
@@ -125,6 +140,10 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   private readonly _scrollService = inject(ScrollService);
   private readonly _painelObrasService = inject(PainelObrasService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly themeService = inject(NbThemeService);
+  private readonly _filterManagementService = inject(FilterManagementService);
+  private readonly router = inject(Router);
+
   private destroy$ = new Subject<void>();
 
   protected formatNumber = formatNumber;
@@ -142,17 +161,22 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
     isAnyChartMaximized: false,
     maximizedHeight: this._chartMaximizeService.getCurrentHeight(),
   };
+
+
+  get logoPaneilObrasUrl(): string {
+    const currentPage = this.router.url.split("/").pop() as PaginaPainel | undefined;
+
+    if (currentPage && currentPage in this.logoMap) {
+      return this.logoMap[currentPage];
+    }
+
+    return this.logoMap["visao-geral"];
+  }
+
   constructor() { }
 
   ngOnInit(): void {
-
-        this.subscriptionMaximizeState =
-          this._chartMaximizeService.maximizeState$.subscribe(
-            (state: ChartMaximizeState) => {
-              this.maximizeState = state;
-            }
-          );
-
+    // this.filterManagement( {...DEFAULT_PARAMS_PAINEL_OBRAS});
     this._scrollService.isScrolled$
       .pipe(takeUntil(this.destroy$))
       .subscribe((scrolled) => {
@@ -170,10 +194,14 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
     this.currentRequestParams = { ...this.filter };
     this.updateActiveFilters();
     this.filterChanged.emit(this.currentRequestParams);
+    this._filterManagementService.updateFilter(this.currentRequestParams);
     this.getRequisitionData();
     this.getCardExecution();
   }
 
+  filterManagement(filter: IPainelObrasRequest) {
+    this._filterManagementService.updateFilter(filter);
+  }
 
   private getRequisitionData() {
     this.getMunicipios();
@@ -326,8 +354,8 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
 
     this.filter = { ...DEFAULT_PARAMS_PAINEL_OBRAS };
     this.finalFilter = { ...DEFAULT_PARAMS_PAINEL_OBRAS };
-
     this.currentRequestParams = { ...DEFAULT_PARAMS_PAINEL_OBRAS };
+    this._filterManagementService.updateFilter({ ...DEFAULT_PARAMS_PAINEL_OBRAS });
     this.updateActiveFilters();
     this.getRequisitionData();
     this.getCardExecution();
@@ -343,9 +371,9 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
     this.filterSelection();
 
     this.updateActiveFilters();
-
     this.filterChanged.emit(this.currentRequestParams);
     this.tooltips.forEach(t => t.hide());
+    this.filterManagement(this.currentRequestParams);
     this.getRequisitionData();
     this.getCardExecution();
   }

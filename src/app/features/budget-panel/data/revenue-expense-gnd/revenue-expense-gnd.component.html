@@ -1,8 +1,7 @@
 ﻿<ngx-flip-table [cardTitle]="title" [tableContent]="tableContent" [showSearchField]="false"
   (executeDownload)="handleTableDownload()" [loadingStatus]="requestStatus" [subCardTitle]=""
-  [showMaximizeButton]="true" [backCardHeight]="308" (showMaximizeButtonClick)="
-    onMaximizeButtonClick('revenue-expense-gnd', $event)
-  ">
+  [showMaximizeButton]="true" [backCardHeight]="isChartMaximized('revenue-expense-gnd') ? calcMaximizedHeight() : 308"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('revenue-expense-gnd', $event)">
   <div class="toggles-container small-toggle" card-toggles #cardToggles>
     <div class="form-check form-switch">
       <input class="form-check-input" [(ngModel)]="toggleExecutivo" (ngModelChange)="onToggleChange('executivo')"

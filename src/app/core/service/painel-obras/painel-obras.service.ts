@@ -94,6 +94,27 @@ export class PainelObrasService {
     );
   }
 
+  public getTotalEntregasPorAnoEStatus(request: IPainelObrasRequest): Observable<{ ano: string, status: string, planejado: number, realizado: number }[]> {
+    const params: HttpParams = this.returnParams(request);
+    return this._http.get<{ ano: string, status: string, planejado: number, realizado: number }[]>(`${this._URI}/total-entregas-por-ano-e-status`, { params }).pipe(
+      catchError((err) => this.handleError(err, this._router))
+    );
+  }
+
+  public getTotalEntegasPorOrgao(request: IPainelObrasRequest): Observable<{ orgao: string, planejado: number, realizado: number }[]> {
+    const params: HttpParams = this.returnParams(request);
+    return this._http.get<{ orgao: string, planejado: number, realizado: number }[]>(`${this._URI}/total-entregas-por-orgao`, { params }).pipe(
+      catchError((err) => this.handleError(err, this._router))
+    );
+  }
+
+  public getTotalEntregasPorOrgaoExecucao(request: IPainelObrasRequest): Observable<{ orgao: string, quantidadeEntregas: number, planejado: number, realizado: number }[]> {
+    const params: HttpParams = this.returnParams(request);
+    return this._http.get<{ orgao: string, quantidadeEntregas: number, planejado: number, realizado: number }[]>(`${this._URI}/total-entregas-por-orgao-execucao`, { params }).pipe(
+      catchError((err) => this.handleError(err, this._router))
+    );
+  }
+
   private returnParams(request: IPainelObrasRequest): HttpParams {
     let params = new HttpParams();
     params = params.append('orgao', request.orgao);

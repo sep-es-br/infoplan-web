@@ -7,6 +7,7 @@ import {
   OnDestroy,
   OnInit,
   SimpleChanges,
+  inject,
 } from "@angular/core";
 import { NgxEchartsModule } from "ngx-echarts";
 import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
@@ -17,6 +18,7 @@ import {
 } from "../../../../../@theme/theme.module";
 import { ChartDataConfig } from "../../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { NbThemeService } from "@nebular/theme";
+import { UtilitiesService } from "../../../../../core/service/utilities.service";
 
 export type GroupingMode = "YEAR_GND" | "GND";
 
@@ -47,6 +49,9 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isMaximized!: boolean;
   @Input() chartDataConfig!: ChartDataConfig;
   @Input() groupingMode: GroupingMode = "YEAR_GND";
+  @Input() valueType: 'percent' | 'currency' = 'percent';
+
+  private readonly _utilitiesService = inject(UtilitiesService);
 
   echartsInstance: ECharts | null = null;
   chartOptions!: EChartsOption;
@@ -75,7 +80,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["chart"] || changes["groupingMode"] || changes["isMaximized"] || changes["chartDataConfig"]) {
+    if (changes["chart"] || changes["groupingMode"] || changes["isMaximized"] || changes["chartDataConfig"] || changes["valueType"]) {
       this.updateChart();
     }
     if (changes["height"] && this.echartsInstance) {
@@ -154,7 +159,6 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         .map((d, idx) => (getKey(d) === groupKey ? idx : -1))
         .filter((i) => i !== -1);
       if (indices.length > 0) {
-        // Encontra o meio do grupo para colocar o rótulo principal
         midpointIndices.add(indices[Math.floor(indices.length / 2)]);
       }
     });
@@ -293,9 +297,14 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
               param.seriesName.includes("(Liquidado)")
             )
               return;
+
+            const formattedValue = this.valueType === 'currency' 
+              ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(param.value, "R$")
+              : `${param.value.toFixed(1).replace(".", ",")} %`;
+
             html += `<div style="margin-bottom: 2px;">
                        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${param.color};margin-right:5px;"></span>
-                       <b>${param.seriesName}:</b> ${param.value.toFixed(1).replace(".", ",")} %
+                       <b>${param.seriesName}:</b> ${formattedValue}
                      </div>`;
           });
 
@@ -312,9 +321,13 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       },
       xAxis: {
         type: "value",
-        max: 100,
+        max: this.valueType === 'percent' ? 100 : null,
         axisLabel: {
-          formatter: "{value} %",
+          formatter: (value: number) => {
+             return this.valueType === 'percent' 
+               ? `${value} %` 
+               : this._utilitiesService.formatCurrencyUsingBrazilianStandards(value, "R$");
+          },
           color: theme.textPrimaryColor,
           fontSize: 10,
         },
@@ -420,7 +433,11 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
             position: "right",
             color: theme.textPrimaryColor,
             fontSize: 12,
-            formatter: (p: any) => `${p.value.toFixed(1).replace(".", ",")}%`,
+            formatter: (p: any) => {
+              return this.valueType === 'percent' 
+                ? `${p.value.toFixed(1).replace(".", ",")}%` 
+                : this._utilitiesService.formatCurrencyUsingBrazilianStandards(p.value, "R$");
+            },
           },
         },
         {
@@ -435,7 +452,11 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
             position: "insideLeft",
             color: theme.textPrimaryColor,
             fontSize: 12,
-            formatter: (p: any) => `${p.value.toFixed(1).replace(".", ",")}%`,
+            formatter: (p: any) => {
+              return this.valueType === 'percent' 
+                ? `${p.value.toFixed(1).replace(".", ",")}%` 
+                : this._utilitiesService.formatCurrencyUsingBrazilianStandards(p.value, "R$");
+            },
           },
         },
         ...legendSeries,

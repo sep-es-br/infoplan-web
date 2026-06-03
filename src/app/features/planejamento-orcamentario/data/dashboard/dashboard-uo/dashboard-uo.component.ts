@@ -308,4 +308,8 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
       `UO - Unidade Orçamentária.xlsx`
     );
   }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
+  }
 }

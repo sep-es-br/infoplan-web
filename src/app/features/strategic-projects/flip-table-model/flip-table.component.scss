@@ -96,8 +96,7 @@
     }
 
     .card-back {
-      height: 100vh !important;
-      max-height: 80%;
+      // Height is managed dynamically via [style.height] in the template
 
       .table-container {
         overflow: auto;
@@ -387,6 +386,34 @@
 
         .icon {
           color: var(--card-text-color);
+        }
+        /* Garantir ícones consistentes dentro da tabela (tamanho e cor) */
+        nb-icon {
+          display: inline-flex;
+          width: 20px;
+          height: 20px;
+          vertical-align: middle;
+          min-width: 20px !important;
+          min-height: 20px !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+
+        nb-icon svg,
+        nb-icon img {
+          width: 20px !important;
+          height: 20px !important;
+          fill: currentColor !important;
+        }
+        /* Também garantir para o toggle da árvore (componente Nebular) */
+        nb-tree-grid-row-toggle svg,
+        nb-tree-grid-row-toggle nb-icon svg {
+          width: 20px !important;
+          height: 20px !important;
+          min-width: 20px !important;
+          min-height: 20px !important;
+          display: block !important;
+          visibility: visible !important;
         }
       }
     }

@@ -79,7 +79,6 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
       ).subscribe({
         next: (res: IDashAvailabilityToUoResponse) => {
           this.dashAvailabilityToUo = res;
-          console.log("dados", res)
           // this._comunicationCardsService.sendCardAvailableWithoutReversation(this.dashAvailabilityToUo.availabilityWithoutReservation);
           this.processChartData(res);
           this.processTableData(res);

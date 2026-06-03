@@ -3,116 +3,60 @@ import {
   EventEmitter,
   inject,
   Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
   Output,
   SimpleChanges,
 } from "@angular/core";
 import {
-  FlipTableAlignment,
-  FlipTableComponent,
-  FlipTableContent,
-  TreeNode,
-} from "../../../../../strategic-projects/flip-table-model/flip-table.component";
-import {
   IPainelObrasRequest,
-  IQuantidadePorAnoEStatus,
+  ITotalMunicipioStatus,
 } from "../../../../../../core/interfaces/painel-obras/painel-obras";
-import { IChartOptions } from "../../../../../../shared/models/budget-panel/IChartOptions";
-import {
-  ChartDataConfig,
-  OrgChartHorizontalComponent,
-} from "../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
-import { RequestStatus } from "../../../../../strategic-projects/strategicProjects.component";
 import { Subject } from "rxjs";
-import { ChartDataProcessorService } from "../../../../../../core/service/budget-panel/chart-data-processor.service";
+import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
+import { converterToNumber } from "../../../../../../@core/utils/functionts/functionts";
 import { ChartMaximizeService } from "../../../../../../core/service/chart-maximize/chart-maximize.service";
 import { ExportDataService } from "../../../../../../core/service/export-data";
 import { PainelObrasService } from "../../../../../../core/service/painel-obras/painel-obras.service";
 import { UtilitiesService } from "../../../../../../core/service/utilities.service";
-import { OrgChartVerticalComponent } from "../../../../../budget-panel/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
-import { getStatusCategory } from "../../../../../../shared/models/painel-obras/obra-status-groups";
-import { converterToNumber } from "../../../../../../@core/utils/functionts/functionts";
-import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
+import {
+  FlipTableContent,
+  FlipTableAlignment,
+  TreeNode,
+  FlipTableComponent,
+} from "../../../../../strategic-projects/flip-table-model/flip-table.component";
+import { RequestStatus } from "../../../../../strategic-projects/strategicProjects.component";
 
 @Component({
-  selector: "ngx-total-entregas-por-ano-e-status",
-  templateUrl: "./total-entregas-por-ano-e-status.component.html",
-  styleUrls: ["./total-entregas-por-ano-e-status.component.scss"],
+  selector: "ngx-total-entregas-por-municipio-status",
+  templateUrl: "./total-entregas-por-municipio-status.component.html",
+  styleUrls: ["./total-entregas-por-municipio-status.component.scss"],
   standalone: true,
   imports: [
-    FlipTableComponent,
-    OrgChartHorizontalComponent,
-    OrgChartVerticalComponent,
+    FlipTableComponent
   ],
 })
-export class TotalEntregasPorAnoEStatusComponent
-  implements OnChanges, OnDestroy, OnInit
-{
+export class TotalEntregasPorMunicipioStatusComponent {
   @Input() filter!: IPainelObrasRequest;
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
-  readonly title: string = "Valor total das entregas por ano e status";
-  charData!: IChartOptions;
+
+  readonly title: string = "Valor total das entregas por município e status";
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;
-  chartDataConfig: ChartDataConfig = {
-    grid: {
-      top: "20%",
-      left: "2%",
-      right: "3%",
-      bottom: "0%",
-      containLabel: true,
-    },
-  };
   selectedMaximize: boolean = false;
-  chartColors: string[] = [];
-  chartData: { value: number; name: string }[] = [];
 
-  private readonly chartColorPalette: string[] = [
-    "#42726F",
-    "#00A261",
-    "#0081C1",
-    "#F38B1D",
-    "#EFCB45",
-    "#DD6B49",
-    "#6B5B95",
-    "#88B04B",
-    "#5B5EA6",
-    "#9B2335",
-  ];
-
-  private quantidadePorAnStatusResponse: {
-    ano: string;
-    status: string;
-    planejado: number;
-    realizado: number;
-  }[] = [];
-
-  currentParams!: IPainelObrasRequest;
-
+  private totalEntregasPorMunicipioStatusResponse: ITotalMunicipioStatus[] = [];
 
   private readonly destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
 
-  private readonly _chartProcessor = inject(ChartDataProcessorService);
   private readonly _exportDataService = inject(ExportDataService);
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly _utilitiesService = inject(UtilitiesService);
   private readonly _painelObrasService = inject(PainelObrasService);
 
-  constructor() {
-
-  }
-
   ngOnInit(): void {
-      this.searchSubject
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
+    this.searchSubject
+      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe((query) => {
         this.executeSearch(query);
       });
@@ -120,31 +64,23 @@ export class TotalEntregasPorAnoEStatusComponent
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"] && this.filter) {
-      this.currentParams = { ...this.filter };
       this.loadData();
     }
-    this.chartDataConfig.showMaximizeButton = this.isChartMaximized(
-      "total-entregas-por-ano-e-status",
-    );
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
   loadData() {
     this.requestStatus = RequestStatus.LOADING;
-    this.chartData = [];
-    this.chartColors = [];
 
     this._painelObrasService
-      .getTotalEntregasPorAnoEStatus(this.filter)
+      .getTotalEntregasPorMunicipioStatus(this.filter)
       .subscribe({
         next: (response) => {
-          this.quantidadePorAnStatusResponse = response;
+          this.totalEntregasPorMunicipioStatusResponse = response;
           this.assembleFlipTableContent(response);
-          this.processChartData(response);
           this.requestStatus = RequestStatus.SUCCESS;
         },
         error(err) {
@@ -157,8 +93,37 @@ export class TotalEntregasPorAnoEStatusComponent
       });
   }
 
+  handleUserTableSearch(search: string) {
+    if (search.length > 0) {
+      const preparedSearchTerm = search.toLowerCase();
+      const filteredData = this.totalEntregasPorMunicipioStatusResponse.filter(
+        (item) =>
+          item.municipio.toLowerCase().includes(preparedSearchTerm) ||
+          item.status.toString().toLowerCase().includes(preparedSearchTerm),
+      );
+      this.assembleFlipTableContent(filteredData);
+    } else {
+      this.assembleFlipTableContent(
+        this.totalEntregasPorMunicipioStatusResponse,
+      );
+    }
+  }
+
+  private executeSearch(search: string) {
+    if (!search || search.length > 0) {
+      const preparedSearchTerm = search.toLowerCase().trim();
+      const filteredItems = this.totalEntregasPorMunicipioStatusResponse.filter(
+        (item) =>
+          item.municipio.toLowerCase().includes(preparedSearchTerm) ||
+          item.status.toString().toLowerCase().includes(preparedSearchTerm),
+      );
+
+      this.assembleFlipTableContent(filteredItems, true);
+    }
+  }
+
   assembleFlipTableContent(
-    data: IQuantidadePorAnoEStatus[],
+    data: ITotalMunicipioStatus[],
     shouldStartExpanded: boolean = true,
   ): void {
     const standardAlignment = {
@@ -192,7 +157,7 @@ export class TotalEntregasPorAnoEStatusComponent
         acc[current.status].push(current);
         return acc;
       },
-      {} as Record<string, IQuantidadePorAnoEStatus[]>,
+      {} as Record<string, ITotalMunicipioStatus[]>,
     );
 
     const finalData: Array<TreeNode> = Object.entries(groupedData).map(
@@ -203,9 +168,9 @@ export class TotalEntregasPorAnoEStatusComponent
         const children = items.map((item) => ({
           data: [
             {
-              originalPropertyName: "ano",
+              originalPropertyName: "municipio",
               propertyName: "firstColumn",
-              value: item.ano,
+              value: item.municipio,
             },
             {
               propertyName: "planejado",
@@ -279,7 +244,7 @@ export class TotalEntregasPorAnoEStatusComponent
       customColumn: {
         originalPropertyName: "status",
         propertyName: "firstColumn",
-        displayName: "Status / Ano",
+        displayName: "Status",
         alignment: {
           header: FlipTableAlignment.CENTER,
           data: FlipTableAlignment.LEFT,
@@ -289,91 +254,28 @@ export class TotalEntregasPorAnoEStatusComponent
     };
   }
 
-  private processChartData(
-    response: IQuantidadePorAnoEStatus[],
-  ): IChartOptions {
-    if (!response || response.length === 0)
-      return (this.charData = { data: { labels: [], datasets: [] } });
-
-    const years = [...new Set(response.map((r) => r.ano))].sort();
-    const categories = [...years, "Total"];
-
-    // Agrupa os dados pelo status mapeado
-    const groupedByStatusCategory = response.reduce(
-      (acc, current) => {
-        const category = getStatusCategory(current.status);
-        if (!acc[category]) {
-          acc[category] = [];
-        }
-        acc[category].push(current);
-        return acc;
-      },
-      {} as Record<string, IQuantidadePorAnoEStatus[]>,
-    );
-
-    const statuses = Object.keys(groupedByStatusCategory);
-
-    const datasets = statuses.map((statusCategory, index) => ({
-      label: statusCategory,
-      data: categories.map((cat) => {
-        const items = groupedByStatusCategory[statusCategory];
-
-        if (cat === "Total") {
-          return items.reduce((sum, item) => sum + item.planejado, 0);
-        }
-
-        return items
-          .filter((item) => item.ano === cat)
-          .reduce((sum, item) => sum + item.planejado, 0);
-      }),
-      backgroundColor:
-        this.chartColorPalette[index % this.chartColorPalette.length],
-    }));
-
-    return (this.charData = {
-      data: {
-        labels: categories,
-        datasets: datasets,
-      },
-    });
-  }
-
-  handleUserTableSearch(search: string) {
-    this.searchSubject.next(search);
-  }
-
-  private executeSearch(search: string) {
-    if (!search || search.length > 0) {
-      const preparedSearchTerm = search.toLowerCase().trim();
-      const filteredItems = this.quantidadePorAnStatusResponse.filter(
-        (item) =>
-          item.ano.toLowerCase().includes(preparedSearchTerm) ||
-          item.status.toLowerCase().includes(preparedSearchTerm),
-      );
-
-      this.assembleFlipTableContent(filteredItems, true);
-    }
-  }
-
   handleUserTableDownload() {
     const columns: Array<{ key: string; label: string }> = [
-      { key: "ano", label: "Ano" },
+      { key: "municipio", label: "Município" },
       { key: "status", label: "Status" },
       { key: "planejado", label: "Planejado" },
       { key: "realizado", label: "Realizado" },
+      { key: "total", label: "Total" },
     ];
 
-    const dataToExport = this.quantidadePorAnStatusResponse.map((item) => ({
-      ano: item.ano,
-      status: item.status,
-      planejado: converterToNumber(String(item.planejado)),
-      realizado: converterToNumber(String(item.realizado)),
-    }));
+    const dataToExport = this.totalEntregasPorMunicipioStatusResponse.map(
+      (item) => ({
+        municipio: item.municipio,
+        status: item.status,
+        planejado: converterToNumber(String(item.planejado)),
+        realizado: converterToNumber(String(item.realizado)),
+      }),
+    );
 
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataToExport,
       columns,
-      "total_entregas_por_ano_e_status.xlsx",
+      "total_entregas_por_municipio_status.xlsx",
     );
   }
 

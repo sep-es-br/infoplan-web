@@ -49,3 +49,24 @@ export interface IQuantidadePorAnoEStatus {
   planejado: number;
   realizado: number;
 }
+export interface ITotalEntregasPorOrgao {
+  orgao: string;
+  quantidadeEntregas: number;
+  planejado: number;
+  realizado: number;
+}
+
+export interface ITotalEntregasPorOrgaoExecucao {
+  orgao: string;
+  quantidadeEntregas: number;
+  planejado: number;
+  realizado: number;
+}
+
+
+export interface ITotalMunicipioStatus {
+  municipio: string;
+  status: number;
+  planejado: number;
+  realizado: number;
+}

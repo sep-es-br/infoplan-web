@@ -3,7 +3,7 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpStatusCode } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
-import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, IPainelObrasRequest } from '../../interfaces/painel-obras/painel-obras';
+import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, IPainelObrasRequest, ITotalEntregasPorOrgao, ITotalEntregasPorOrgaoExecucao, ITotalMunicipioStatus } from '../../interfaces/painel-obras/painel-obras';
 import { catchError } from 'rxjs/operators';
 
 interface IFiltroStatusRequest {
@@ -22,7 +22,7 @@ export class PainelObrasService {
   constructor(
     private _http: HttpClient,
     private _router: Router
-  ) {}
+  ) { }
 
   public getOrgaos(): Observable<IFiltroOrgao[]> {
     return this._http.get<IFiltroOrgao[]>(`${this._URI}/filtros/orgaos`).pipe(
@@ -101,16 +101,23 @@ export class PainelObrasService {
     );
   }
 
-  public getTotalEntegasPorOrgao(request: IPainelObrasRequest): Observable<{ orgao: string, planejado: number, realizado: number }[]> {
+  public getTotalEntregasPorOrgao(request: IPainelObrasRequest): Observable<ITotalEntregasPorOrgao[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<{ orgao: string, planejado: number, realizado: number }[]>(`${this._URI}/total-entregas-por-orgao`, { params }).pipe(
+    return this._http.get<ITotalEntregasPorOrgao[]>(`${this._URI}/total-entregas-por-orgao`, { params }).pipe(
       catchError((err) => this.handleError(err, this._router))
     );
   }
 
-  public getTotalEntregasPorOrgaoExecucao(request: IPainelObrasRequest): Observable<{ orgao: string, quantidadeEntregas: number, planejado: number, realizado: number }[]> {
+  public getTotalEntregasPorOrgaoExecucao(request: IPainelObrasRequest): Observable<ITotalEntregasPorOrgaoExecucao[]> {
     const params: HttpParams = this.returnParams(request);
-    return this._http.get<{ orgao: string, quantidadeEntregas: number, planejado: number, realizado: number }[]>(`${this._URI}/total-entregas-por-orgao-execucao`, { params }).pipe(
+    return this._http.get<ITotalEntregasPorOrgaoExecucao[]>(`${this._URI}/total-entregas-orgao-execucao`, { params }).pipe(
+      catchError((err) => this.handleError(err, this._router))
+    );
+  }
+
+  public getTotalEntregasPorMunicipioStatus(request: IPainelObrasRequest): Observable<ITotalMunicipioStatus[]> {
+    const params: HttpParams = this.returnParams(request);
+    return this._http.get<ITotalMunicipioStatus[]>(`${this._URI}/total-entregas-por-municipio-status`, { params }).pipe(
       catchError((err) => this.handleError(err, this._router))
     );
   }

@@ -1,5 +1,5 @@
-import { Component, EventEmitter, inject, Input, Output, SimpleChanges } from '@angular/core';
-import { IPainelObrasRequest, ITotalEntregasPorOrgao, ITotalMunicipioStatus } from '../../../../../../core/interfaces/painel-obras/painel-obras';
+import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { INumeroEntregasPorMunicipioStatus, IPainelObrasRequest, ITotalEntregasPorOrgao, ITotalMunicipioStatus } from '../../../../../../core/interfaces/painel-obras/painel-obras';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { converterToNumber } from '../../../../../../@core/utils/functionts/functionts';
@@ -7,7 +7,7 @@ import { ChartMaximizeService } from '../../../../../../core/service/chart-maxim
 import { ExportDataService } from '../../../../../../core/service/export-data';
 import { PainelObrasService } from '../../../../../../core/service/painel-obras/painel-obras.service';
 import { UtilitiesService } from '../../../../../../core/service/utilities.service';
-import { FlipTableContent, FlipTableAlignment, TreeNode } from '../../../../../strategic-projects/flip-table-model/flip-table.component';
+import { FlipTableContent, FlipTableAlignment, TreeNode, FlipTableComponent } from '../../../../../strategic-projects/flip-table-model/flip-table.component';
 import { RequestStatus } from '../../../../../strategic-projects/strategicProjects.component';
 
 @Component({
@@ -16,10 +16,10 @@ import { RequestStatus } from '../../../../../strategic-projects/strategicProjec
   styleUrls: ['./numero-entregas-por-municipio-status.component.scss'],
   standalone: true,
   imports: [
-
+    FlipTableComponent
   ]
 })
-export class NumeroEntregasPorMunicipioStatusComponent {
+export class NumeroEntregasPorMunicipioStatusComponent implements OnChanges, OnDestroy, OnInit{
   @Input() filter!: IPainelObrasRequest;
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
@@ -29,7 +29,7 @@ export class NumeroEntregasPorMunicipioStatusComponent {
   flipTableContent!: FlipTableContent;
   selectedMaximize: boolean = false;
 
-  private totalEntregasPorMunicipioStatusResponse: ITotalMunicipioStatus[] = [];
+  private numeroEntregasPorMunicipioStatusResponse: INumeroEntregasPorMunicipioStatus[] = [];
 
   private readonly destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
@@ -60,9 +60,9 @@ export class NumeroEntregasPorMunicipioStatusComponent {
   loadData() {
     this.requestStatus = RequestStatus.LOADING;
 
-    this._painelObrasService.getTotalEntregasPorMunicipioStatus(this.filter).subscribe({
+    this._painelObrasService.getNumeroEntregasPorMunicipioStatus(this.filter).subscribe({
       next: (response) => {
-        this.totalEntregasPorMunicipioStatusResponse = response;
+        this.numeroEntregasPorMunicipioStatusResponse = response;
         this.assembleFlipTableContent(response);
         this.requestStatus = RequestStatus.SUCCESS;
       },
@@ -80,20 +80,20 @@ export class NumeroEntregasPorMunicipioStatusComponent {
     handleUserTableSearch(search: string) {
     if (search.length > 0) {
       const preparedSearchTerm = search.toLowerCase();
-      const filteredData = this.totalEntregasPorMunicipioStatusResponse.filter((item) =>
+      const filteredData = this.numeroEntregasPorMunicipioStatusResponse.filter((item) =>
         item.municipio.toLowerCase().includes(preparedSearchTerm) ||
         item.status.toString().toLowerCase().includes(preparedSearchTerm)
       );
       this.assembleFlipTableContent(filteredData);
     } else {
-      this.assembleFlipTableContent(this.totalEntregasPorMunicipioStatusResponse);
+      this.assembleFlipTableContent(this.numeroEntregasPorMunicipioStatusResponse);
     }
   }
 
   private executeSearch(search: string) {
     if (!search || search.length > 0) {
       const preparedSearchTerm = search.toLowerCase().trim();
-      const filteredItems = this.totalEntregasPorMunicipioStatusResponse.filter((item) =>
+      const filteredItems = this.numeroEntregasPorMunicipioStatusResponse.filter((item) =>
         item.municipio.toLowerCase().includes(preparedSearchTerm) ||
         item.status.toString().toLowerCase().includes(preparedSearchTerm)
       );
@@ -103,8 +103,8 @@ export class NumeroEntregasPorMunicipioStatusComponent {
   }
 
   assembleFlipTableContent(
-    data: ITotalMunicipioStatus[],
-    shouldStartExpanded: boolean = true,
+    data: INumeroEntregasPorMunicipioStatus[],
+    shouldStartExpanded: boolean = false,
   ): void {
     const standardAlignment = {
       header: FlipTableAlignment.CENTER,
@@ -113,118 +113,43 @@ export class NumeroEntregasPorMunicipioStatusComponent {
 
     const tableColumns = [
       {
-        propertyName: "planejado",
-        displayName: "Planejado",
+        propertyName: "status",
+        displayName: "Status",
         alignment: standardAlignment,
       },
       {
-        propertyName: "realizado",
-        displayName: "Realizado",
-        alignment: standardAlignment,
-      },
-      {
-        propertyName: "total",
-        displayName: "Total",
-        alignment: standardAlignment,
-      },
+        propertyName: "quantidade_entregas",
+        displayName: "Quantidade de Entregas",
+        alignment: standardAlignment
+      }
     ];
 
-    const groupedData = data.reduce(
-      (acc, current) => {
-        if (!acc[current.status]) {
-          acc[current.status] = [];
-        }
-        acc[current.status].push(current);
-        return acc;
-      },
-      {} as Record<string, ITotalMunicipioStatus[]>,
-    );
-
-    const finalData: Array<TreeNode> = Object.entries(groupedData).map(
-      ([status, items]) => {
-        const totalPlanejado = items.reduce((sum, i) => sum + i.planejado, 0);
-        const totalRealizado = items.reduce((sum, i) => sum + i.realizado, 0);
-
-        const children = items.map((item) => ({
-          data: [
-            {
-              originalPropertyName: "municipio",
-              propertyName: "firstColumn",
-              value: item.municipio,
-            },
-            {
-              propertyName: "planejado",
-              value:
-                this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-                  item.planejado,
-                  "R$",
-                ),
-            },
-            {
-              propertyName: "realizado",
-              value:
-                this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-                  item.realizado,
-                  "R$",
-                ),
-            },
-            {
-              propertyName: "total",
-              value:
-                this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-                  item.planejado + item.realizado,
-                  "R$",
-                ),
-            },
-          ],
-          children: [],
-          expanded: false,
-        }));
-
-        return {
-          data: [
-            {
-              originalPropertyName: "status",
-              propertyName: "firstColumn",
-              value: status,
-            },
-            {
-              propertyName: "planejado",
-              value:
-                this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-                  totalPlanejado,
-                  "R$",
-                ),
-            },
-            {
-              propertyName: "realizado",
-              value:
-                this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-                  totalRealizado,
-                  "R$",
-                ),
-            },
-            {
-              propertyName: "total",
-              value:
-                this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-                  totalPlanejado + totalRealizado,
-                  "R$",
-                ),
-            },
-          ],
-          children: children,
-          expanded: shouldStartExpanded,
-        };
-      },
-    );
+    const finalData: Array<TreeNode> = data.map((item) => ({
+      data: [
+        {
+          originalPropertyName: "municipio",
+          propertyName: "firstColumn",
+          value: item.municipio,
+        },
+        {
+          propertyName: "status",
+          value: item.status,
+        },
+        {
+          propertyName: "quantidade_entregas",
+          value: item.quantidadeEntregas,
+        },
+      ],
+      children: [],
+      expanded: shouldStartExpanded,
+    }))
 
     this.flipTableContent = {
       defaultColumns: tableColumns,
       customColumn: {
-        originalPropertyName: "status",
+        originalPropertyName: "municipio",
         propertyName: "firstColumn",
-        displayName: "Status",
+        displayName: "Município",
         alignment: {
           header: FlipTableAlignment.CENTER,
           data: FlipTableAlignment.LEFT,
@@ -234,27 +159,23 @@ export class NumeroEntregasPorMunicipioStatusComponent {
     };
   }
 
-
   handleUserTableDownload() {
     const columns: Array<{ key: string; label: string }> = [
       { key: "municipio", label: "Município" },
       { key: "status", label: "Status" },
-      { key: "planejado", label: "Planejado" },
-      { key: "realizado", label: "Realizado" },
-      { key: "total", label: "Total" },
+      { key: "quantidade_entregas", label: "Quantidade de Entregas" },
     ];
 
-    const dataToExport = this.totalEntregasPorMunicipioStatusResponse.map((item) => ({
+    const dataToExport = this.numeroEntregasPorMunicipioStatusResponse.map((item) => ({
       municipio: item.municipio,
       status: item.status,
-      planejado: converterToNumber(String(item.planejado)),
-      realizado: converterToNumber(String(item.realizado)),
+      quantidade_entregas: item.quantidadeEntregas,
     }));
 
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataToExport,
       columns,
-      "total_entregas_por_municipio_status.xlsx",
+      "numero_entregas_por_municipio_status.xlsx",
     );
   }
 

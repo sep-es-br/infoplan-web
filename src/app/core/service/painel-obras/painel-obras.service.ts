@@ -3,7 +3,7 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpStatusCode } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
-import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, IPainelObrasRequest, ITotalEntregasPorOrgao, ITotalEntregasPorOrgaoExecucao, ITotalMunicipioStatus } from '../../interfaces/painel-obras/painel-obras';
+import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, INumeroEntregasPorMunicipioStatus, IPainelObrasRequest, ITotalEntregasPorOrgao, ITotalEntregasPorOrgaoExecucao, ITotalMunicipioStatus } from '../../interfaces/painel-obras/painel-obras';
 import { catchError } from 'rxjs/operators';
 
 interface IFiltroStatusRequest {
@@ -118,6 +118,13 @@ export class PainelObrasService {
   public getTotalEntregasPorMunicipioStatus(request: IPainelObrasRequest): Observable<ITotalMunicipioStatus[]> {
     const params: HttpParams = this.returnParams(request);
     return this._http.get<ITotalMunicipioStatus[]>(`${this._URI}/total-entregas-por-municipio-status`, { params }).pipe(
+      catchError((err) => this.handleError(err, this._router))
+    );
+  }
+
+  public getNumeroEntregasPorMunicipioStatus(request: IPainelObrasRequest): Observable< INumeroEntregasPorMunicipioStatus[]> {
+    const params: HttpParams = this.returnParams(request);
+    return this._http.get<INumeroEntregasPorMunicipioStatus[]>(`${this._URI}/numero-entregas-por-status`, { params }).pipe(
       catchError((err) => this.handleError(err, this._router))
     );
   }

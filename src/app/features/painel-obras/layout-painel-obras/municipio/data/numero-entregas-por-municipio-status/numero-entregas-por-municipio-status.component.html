@@ -1,1 +1,6 @@
-<p>numero-entregas-por-municipio-status works!</p>
+<ngx-flip-table [cardTitle]="title" [tableContent]="flipTableContent" [tableOnFront]="true" [showSearchField]="true"
+  [backCardHeight]="isChartMaximized('numero-entregas-por-municipio-status') ? calcMaximizedHeight() : 350"
+  [showMaximizeButton]="true" [loadingStatus]="requestStatus" (executeSearch)="handleUserTableSearch($event)"
+  (executeDownload)="handleUserTableDownload()"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('numero-entregas-por-municipio-status', $event)" card-front>
+</ngx-flip-table>

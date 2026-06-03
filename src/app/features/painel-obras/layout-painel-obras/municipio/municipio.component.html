@@ -2,25 +2,6 @@
   <div class="row g-1 g-md-1">
     <div
       class="chart-container"
-      [class.maximized]="isChartMaximized('numero-entregas-por-municipio-status')"
-      [class.col-12]="!isChartMaximized('numero-entregas-por-municipio-status')"
-      [class.col-md-12]="!isChartMaximized('numero-entregas-por-municipio-status')"
-      [class.col-lg-6]="!isChartMaximized('numero-entregas-por-municipio-status')"
-      [class.col-xl-6]="!isChartMaximized('numero-entregas-por-municipio-status')"
-      [class.col-xxl-6]="!isChartMaximized('numero-entregas-por-municipio-status')"
-      [class.col-xxxl-6]="!isChartMaximized('numero-entregas-por-municipio-status')"
-    >
-      <ngx-numero-entregas-por-municipio-status
-        class="w-100"
-        [filter]="currentRequestParams"
-        (maximizeButtonClick)="
-          handleMaximizeButtonClick('numero-entregas-por-municipio-status', $event)
-        "
-      ></ngx-numero-entregas-por-municipio-status>
-    </div>
-
-    <div
-      class="chart-container"
       [class.maximized]="isChartMaximized('total-entregas-por-municipio-status')"
       [class.col-12]="!isChartMaximized('total-entregas-por-municipio-status')"
       [class.col-md-12]="!isChartMaximized('total-entregas-por-municipio-status')"
@@ -36,6 +17,25 @@
           handleMaximizeButtonClick('total-entregas-por-municipio-status', $event)
         "
       ></ngx-total-entregas-por-municipio-status>
+    </div>
+
+        <div
+      class="chart-container"
+      [class.maximized]="isChartMaximized('numero-entregas-por-municipio-status')"
+      [class.col-12]="!isChartMaximized('numero-entregas-por-municipio-status')"
+      [class.col-md-12]="!isChartMaximized('numero-entregas-por-municipio-status')"
+      [class.col-lg-6]="!isChartMaximized('numero-entregas-por-municipio-status')"
+      [class.col-xl-6]="!isChartMaximized('numero-entregas-por-municipio-status')"
+      [class.col-xxl-6]="!isChartMaximized('numero-entregas-por-municipio-status')"
+      [class.col-xxxl-6]="!isChartMaximized('numero-entregas-por-municipio-status')"
+    >
+      <ngx-numero-entregas-por-municipio-status
+        class="w-100"
+        [filter]="currentRequestParams"
+        (maximizeButtonClick)="
+          handleMaximizeButtonClick('numero-entregas-por-municipio-status', $event)
+        "
+      ></ngx-numero-entregas-por-municipio-status>
     </div>
   </div>
 </div>

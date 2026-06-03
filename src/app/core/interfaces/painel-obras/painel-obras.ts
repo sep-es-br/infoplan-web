@@ -62,11 +62,15 @@ export interface ITotalEntregasPorOrgaoExecucao {
   planejado: number;
   realizado: number;
 }
-
-
 export interface ITotalMunicipioStatus {
   municipio: string;
   status: number;
   planejado: number;
   realizado: number;
+}
+
+export interface INumeroEntregasPorMunicipioStatus {
+  municipio: string;
+  status: number;
+  quantidadeEntregas: number;
 }

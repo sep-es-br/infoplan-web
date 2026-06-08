@@ -3,7 +3,7 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpStatusCode } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
-import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, INumeroEntregasPorMunicipioStatus, IPainelObrasRequest, ITotalEntregasPorOrgao, ITotalEntregasPorOrgaoExecucao, ITotalMunicipioStatus } from '../../interfaces/painel-obras/painel-obras';
+import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, INumeroEntregasPorMunicipioStatus, IPainelObrasRequest, IQuantidadeMaiorEntrega, IQuantidadeMaiorEntregaPrevista, ITotalEntregaPorMes, ITotalEntregasPorOrgao, ITotalEntregasPorOrgaoExecucao, ITotalMunicipioStatus } from '../../interfaces/painel-obras/painel-obras';
 import { catchError } from 'rxjs/operators';
 
 interface IFiltroStatusRequest {
@@ -127,6 +127,27 @@ export class PainelObrasService {
     return this._http.get<INumeroEntregasPorMunicipioStatus[]>(`${this._URI}/numero-entregas-por-status`, { params }).pipe(
       catchError((err) => this.handleError(err, this._router))
     );
+  }
+
+  public getQuantidadeMaiorEntrega(request: IPainelObrasRequest) : Observable<IQuantidadeMaiorEntrega[]> {
+    const params: HttpParams = this.returnParams(request);
+    return this._http.get<IQuantidadeMaiorEntrega[]>(`${this._URI}/quantidade-maior-entrega`, { params }).pipe(
+      catchError((err) => this.handleError(err, this._router))
+    )
+  }
+
+    public getQuantidadeMaiorEntregaPrevista(request: IPainelObrasRequest) : Observable<IQuantidadeMaiorEntregaPrevista[]> {
+    const params: HttpParams = this.returnParams(request);
+    return this._http.get<IQuantidadeMaiorEntregaPrevista[]>(`${this._URI}/quantidade-maior-prevista`, { params }).pipe(
+      catchError((err) => this.handleError(err, this._router))
+    )
+  }
+
+    public getTotalEntregaPorMes(request: IPainelObrasRequest) : Observable<ITotalEntregaPorMes[]> {
+    const params: HttpParams = this.returnParams(request);
+    return this._http.get<ITotalEntregaPorMes[]>(`${this._URI}/total-entrega-por-mes`, { params }).pipe(
+      catchError((err) => this.handleError(err, this._router))
+    )
   }
 
   private returnParams(request: IPainelObrasRequest): HttpParams {

@@ -4,14 +4,14 @@
   [tableContent]="tableContent"
   [loadingStatus]="requestStatus"
   (executeDownload)="handleTableDownload()"
-  [backCardHeight]="isChartMaximized('availability-por-uo') ? calcMaximizedHeight() : 450"
+  [backCardHeight]="isChartMaximized('availability-por-uo') ? calcMaximizedHeight() : 502"
   [showMaximizeButton]="true"
   (showMaximizeButtonClick)="onMaximizeButtonClick('availability-por-uo', $event)"
 >
   <ngx-org-chart-vertical
     [chart]="chartData"
     [chartDataConfig]="chartDataConfig"
-    [height]="isChartMaximized('availability-por-uo') ? calcMaximizedHeight() : 450"
+    [height]="isChartMaximized('availability-por-uo') ? calcMaximizedHeight() : 502"
     card-front
   >
   </ngx-org-chart-vertical>

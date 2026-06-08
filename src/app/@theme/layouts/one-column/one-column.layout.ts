@@ -22,7 +22,6 @@ import { HeaderComponent } from "../../components";
       <nb-sidebar
         class="menu-sidebar"
         tag="menu-sidebar"
-        responsive
         #menuSidebar
       >
         <ng-content select="nb-menu"></ng-content>

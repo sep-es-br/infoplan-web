@@ -1,9 +1,18 @@
-<ngx-flip-table [showSearchField]="false" [cardTitle]="title" [tableContent]="tableContent"
-    [loadingStatus]="requestStatus" (executeDownload)="handleTableDownload()" [backCardHeight]="400"
-    [showMaximizeButton]="true" (showMaximizeButtonClick)="onMaximizeButtonClick('availability-por-uo', $event)">
-
-    <ngx-org-chart-vertical [chart]="chartData" [chartDataConfig]="chartDataConfig"
-        [height]="isChartMaximized('availability-por-uo') ? calcMaximizedHeight() : 548 " card-front>
-
-    </ngx-org-chart-vertical>
+<ngx-flip-table
+  [showSearchField]="false"
+  [cardTitle]="title"
+  [tableContent]="tableContent"
+  [loadingStatus]="requestStatus"
+  (executeDownload)="handleTableDownload()"
+  [backCardHeight]="isChartMaximized('availability-por-uo') ? calcMaximizedHeight() : 450"
+  [showMaximizeButton]="true"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('availability-por-uo', $event)"
+>
+  <ngx-org-chart-vertical
+    [chart]="chartData"
+    [chartDataConfig]="chartDataConfig"
+    [height]="isChartMaximized('availability-por-uo') ? calcMaximizedHeight() : 450"
+    card-front
+  >
+  </ngx-org-chart-vertical>
 </ngx-flip-table>

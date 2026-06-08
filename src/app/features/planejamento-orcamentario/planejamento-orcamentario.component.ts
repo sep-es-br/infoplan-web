@@ -26,7 +26,6 @@ import {
   ChartMaximizeState,
 } from "../../core/service/chart-maximize/chart-maximize.service";
 import { Subject, Subscription } from "rxjs";
-import { ComunicationCardsService } from "../../core/service/comunication-cards/comunication-cards.service";
 import { PlanejamentoOrcamentarioService } from "../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import {
   debounceTime,

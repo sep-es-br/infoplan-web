@@ -68,9 +68,39 @@ export interface ITotalMunicipioStatus {
   planejado: number;
   realizado: number;
 }
-
 export interface INumeroEntregasPorMunicipioStatus {
   municipio: string;
   status: number;
   quantidadeEntregas: number;
+}
+
+export interface ITotalEntregaPorMes {
+  mesNome: string;
+  planejado: number;
+  entregaNome: string;
+  municipio: string;
+  quantidadeEntregas: number;
+  maiorValorNoMes: number;
+  dataConclusaoMaiorEntrega: string;
+  valorMedioPorAcao: number;
+}
+
+export interface IQuantidadeMaiorEntrega {
+  municipio: string;
+  planejado: number;
+  quantidadeEntrega: number;
+  nomeMaiorEntrega: string;
+  orgao: string;
+  dataConclusao: string;
+  totalMaiorMunicipio: number;
+}
+
+export interface IQuantidadeMaiorEntregaPrevista {
+  orgao: string;
+  planejado: number;
+  quantidadeEntregas: number;
+  nomeMaiorEntrega: string;
+  municipio: string;
+  dataConclusao: string;
+  totalMaiorOrgao: number;
 }

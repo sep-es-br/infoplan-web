@@ -1,11 +1,26 @@
-<ngx-flip-table [showSearchField]="true" [cardTitle]="title" [tableContent]="tableContent"
-    [loadingStatus]="requestStatus" [backCardHeight]="400" (executeDownload)="handleTableDownload()"
-    [groupedHeaderColumns]="groupedHeaderColumns" [distinctYears]="distinctYears"
-    (executeSearch)="handleSearch($event)" [showMaximizeButton]="true"
-    (showMaximizeButtonClick)="onMaximizeButtonClick('planned-budgetary', $event)">
-
-    <ngx-org-chart-horizontal [chart]="chartData"
-        [height]="isChartMaximized('planned-budgetary') ? calcMaximizedHeight() : 500"
-        [showMaximizeButton]="isChartMaximized('planned-budgetary')" [chartDataConfig]="chartDataConfig" card-front>
-    </ngx-org-chart-horizontal>
+<ngx-flip-table
+  [showSearchField]="true"
+  [cardTitle]="title"
+  [tableContent]="tableContent"
+  [loadingStatus]="requestStatus"
+  [backCardHeight]="
+    isChartMaximized('planned-budgetary') ? calcMaximizedHeight() : 400
+  "
+  (executeDownload)="handleTableDownload()"
+  [groupedHeaderColumns]="groupedHeaderColumns"
+  [distinctYears]="distinctYears"
+  (executeSearch)="handleSearch($event)"
+  [showMaximizeButton]="true"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('planned-budgetary', $event)"
+>
+  <ngx-org-chart-horizontal
+    [chart]="chartData"
+    [height]="
+      isChartMaximized('planned-budgetary') ? calcMaximizedHeight() : 500
+    "
+    [showMaximizeButton]="isChartMaximized('planned-budgetary')"
+    [chartDataConfig]="chartDataConfig"
+    card-front
+  >
+  </ngx-org-chart-horizontal>
 </ngx-flip-table>

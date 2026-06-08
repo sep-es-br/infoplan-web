@@ -89,6 +89,23 @@
       border: none;
     }
 
+    /* Evitar que os containers do nb-flip-card interceptem eventos de mouse e bloqueiem o scroll */
+    ::ng-deep .front-container {
+      pointer-events: auto;
+    }
+    ::ng-deep .back-container {
+      pointer-events: none;
+    }
+    
+    &.flipped {
+      ::ng-deep .front-container {
+        pointer-events: none;
+      }
+      ::ng-deep .back-container {
+        pointer-events: auto;
+      }
+    }
+
     ::ng-deep &.align-table-vertically {
       .flipcard-body {
         align-items: center !important;

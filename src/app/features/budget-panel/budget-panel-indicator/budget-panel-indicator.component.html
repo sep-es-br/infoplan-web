@@ -532,7 +532,7 @@
             [class.col-xxl-12]="!isChartMaximized('availability-por-uo')"
             [class.col-xxxl-12]="!isChartMaximized('availability-por-uo')">
             <ngx-availability-tu-uo class="w-100"
-              (maximizeButtonClick)="handleMaximizeButtonClick('availability-por-uo', $event)"
+              (sendMaximizeButtonClick)="handleMaximizeButtonClick('availability-por-uo', $event)"
               [filter]="currentRequestParams">
 
             </ngx-availability-tu-uo>
@@ -550,7 +550,7 @@
             [class.col-xxl-12]="!isChartMaximized('success-of-planned')"
             [class.col-xxxl-12]="!isChartMaximized('success-of-planned')">
             <ngx-success-planned class="w-100"
-              (maximizeButtonClick)="handleMaximizeButtonClick('success-of-planned', $event)"
+              (sendMaximizeButtonClick)="handleMaximizeButtonClick('success-of-planned', $event)"
               [filter]="currentRequestParams">
 
             </ngx-success-planned>
@@ -565,7 +565,7 @@
             [class.col-lg-12]="!isChartMaximized('comparative')" [class.col-xl-12]="!isChartMaximized('comparative')"
             [class.col-xxl-12]="!isChartMaximized('comparative')"
             [class.col-xxxl-12]="!isChartMaximized('comparative')">
-            <ngx-comparative class="w-100" (maximizeButtonClick)="handleMaximizeButtonClick('comparative', $event)"
+            <ngx-comparative class="w-100" (sendMaximizeButtonClick)="handleMaximizeButtonClick('comparative', $event)"
               [filter]="currentRequestParams"></ngx-comparative>
           </div>
         </ng-container>
@@ -581,7 +581,7 @@
             [class.col-xxl-12]="!isChartMaximized('planned-budgetary')"
             [class.col-xxxl-12]="!isChartMaximized('planned-budgetary')">
             <ngx-planned-budgetary class="w-100"
-              (maximizeButtonClick)="handleMaximizeButtonClick('planned-budgetary', $event)"
+              (sendMaximizeButtonClick)="handleMaximizeButtonClick('planned-budgetary', $event)"
               [filter]="currentRequestParams"></ngx-planned-budgetary>
           </div>
         </ng-container>

@@ -22,7 +22,7 @@ import { converterToNumber } from '../../../../../@core/utils/functionts/functio
 export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
 
 
-  @Input() filter: IIndicatorExecutionFilter;
+  @Input() filter!: IIndicatorExecutionFilter;
 
   readonly title: string = "Disponibilidade";
 
@@ -51,7 +51,7 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
     },
   };
 
-  private dashAvailabilityToUo: IDashAvailabilityToUoResponse;
+  private dashAvailabilityToUo!: IDashAvailabilityToUoResponse;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {
@@ -211,7 +211,7 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
     })
 
 
-    this._exportDataService.exportXLSXWithCustomHeaders(data, columns, `Disponibilidade_POR_UO_${this.filter.year}.xlsx`);
+    this._exportDataService.exportXLSXWithCustomHeaders(data, columns, `disponibilidade_por_uo_${this.filter.year}.xlsx`);
   }
 
   onMaximizeButtonClick(chartId: string, event: boolean): void {
@@ -225,6 +225,5 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
   calcMaximizedHeight(): number {
     return this._chartMaximizeService.calcMaximizedHeight();
   }
-
 
 }

@@ -122,7 +122,7 @@ export const menulinks: MyCustomMenuItem[] = [
       {
     title: "Projetos",
     id: 6,
-    status: checkRoles(environment.allowedRoles.estado),
+    status: checkRoles(environment.allowedRoles.painelObras),
     name: "Painel de Obras",
     icon: "portalObras.svg",
     link: "/pages/painel-obras",

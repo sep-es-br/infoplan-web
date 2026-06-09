@@ -394,7 +394,7 @@ chart-container.maximized::before:hover {
 
 .filter-wrapper {
   position: sticky;
-  top: 84px;
+  top: 100px;
   z-index: 1000;
   width: 100%;
   background-color: transparent;
@@ -494,3 +494,6 @@ chart-container.maximized::before:hover {
     box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.5);
   }
 }
+
+
+

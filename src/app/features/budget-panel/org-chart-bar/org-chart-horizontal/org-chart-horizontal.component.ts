@@ -131,7 +131,7 @@ export class OrgChartHorizontalComponent
         axisLabel: {
           fontSize: this.showMaximizeButton ? 13 : 10,
           formatter: (value: number) => {
-            return this.valueType === 'currency' 
+            return this.valueType === 'currency'
               ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(value, "R$")
               : this.formatValue(value);
           },
@@ -200,7 +200,7 @@ export class OrgChartHorizontalComponent
 
           params.forEach((p: any) => {
             const valorRaw = p.value !== undefined && p.value !== null ? p.value : 0;
-            const valorFormatado = this.valueType === 'currency' 
+            const valorFormatado = this.valueType === 'currency'
               ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(valorRaw, "R$")
               : (this.valueType === 'percent' ? `${this.formatNumberSimple(valorRaw)}%` : this.formatNumberSimple(valorRaw));
             tooltip += `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${p.color};margin-right:5px;"></span>
@@ -241,7 +241,7 @@ export class OrgChartHorizontalComponent
           color: theme.textPrimaryColor,
           fontSize: this.showMaximizeButton ? 13 : 10,
           formatter: (value: number) => {
-            return this.valueType === 'currency' 
+            return this.valueType === 'currency'
               ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(value, "R$")
               : this.formatValue(value);
           },
@@ -293,7 +293,7 @@ export class OrgChartHorizontalComponent
           show: true,
           position: "right",
           formatter: (params: any) => {
-            return this.valueType === 'currency' 
+            return this.valueType === 'currency'
               ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(params.value, "R$")
               : this.formatValue(params.value);
           },
@@ -343,11 +343,11 @@ export class OrgChartHorizontalComponent
     const absValue = Math.abs(value);
 
     if (absValue >= 1_000_000_000_000)
-      return (value / 1_000_000_000_000).toFixed(1) + " T";
+      return (value / 1_000_000_000_000).toFixed(1).replace('.', ',') + " T";
     if (absValue >= 1_000_000_000)
-      return (value / 1_000_000_000).toFixed(1) + " B";
-    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1) + " M";
-    if (absValue >= 1_000) return (value / 1_000).toFixed(1) + " K";
+      return (value / 1_000_000_000).toFixed(1).replace('.', ',') + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.', ',') + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.', ',') + " K";
 
     return value.toString();
   }

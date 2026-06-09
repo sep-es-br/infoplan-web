@@ -64,6 +64,7 @@ export class ComparativeComponent implements OnChanges, OnDestroy {
     { id: "authorized", label: "Autorizado" },
     { id: "committed", label: "Empenhado" },
     { id: "liquidated", label: "Liquidado" },
+    { id: "paid", label: "Pago" },
     {
       id: "liquidatedVariationPreviousYear",
       label: "Variação vs Anterior (%)",
@@ -86,7 +87,7 @@ export class ComparativeComponent implements OnChanges, OnDestroy {
       containLabel: true,
     },
   };
-  constructor() {}
+  constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["filter"].currentValue) {
@@ -326,8 +327,7 @@ export class ComparativeComponent implements OnChanges, OnDestroy {
             }
           }
           totalValue = variation;
-        } else
-        {
+        } else {
           const sum = response
             .filter((i) => i.year === year)
             .reduce((acc, curr) => acc + curr[metric.id], 0);

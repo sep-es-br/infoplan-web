@@ -131,27 +131,27 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
 
   private buildTreeNode(response: IDashAvailabilityToUoResponse[]): FlipTableContent {
     const treeNodes = response.flatMap((item: IDashAvailabilityToUoResponse) => {
-      const availability = item.availability;
-      const availabilityWithoutReservation = item.availabilityWithReservation;
-      const availabilityWithReservation = item.availabilityWithReservation;
-      const committedLiquidating = item.committedToLiquidating;
+      const availability = this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.availability, "R$");
+      const availabilityWithoutReservation = this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.availabilityWithoutReservation, "R$");
+      const availabilityWithReservation = this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.availabilityWithReservation, "R$");
+      const committedLiquidating = this._utilitiesService.formatCurrencyUsingBrazilianStandards(item.committedToLiquidating, "R$");
 
       const tableNode = [
         {
           label: "Disponível",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(availability, "R$"),
+          value: availability,
         },
         {
           label: "Disponível sem Reserva",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(availabilityWithoutReservation, "R$"),
+          value: availabilityWithoutReservation,
         },
         {
           label: "Disponível com Reserva",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(availabilityWithReservation, "R$"),
+          value: availabilityWithReservation,
         },
         {
           label: "Empenhado a Liquidar",
-          value: this._utilitiesService.formatCurrencyUsingBrazilianStandards(committedLiquidating, "R$"),
+          value: committedLiquidating,
         }
       ]
 

@@ -351,12 +351,11 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
     const absValue = Math.abs(value);
 
     if (absValue >= 1_000_000_000_000)
-      return (value / 1_000_000_000_000).toFixed(1) + " T";
+      return (value / 1_000_000_000_000).toFixed(1).replace('.', ',') + " T";
     if (absValue >= 1_000_000_000)
-      return (value / 1_000_000_000).toFixed(1) + " B";
-    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1) + " M";
-    if (absValue >= 1_000) return (value / 1_000).toFixed(1) + " K";
-
+      return (value / 1_000_000_000).toFixed(1).replace('.', ',') + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.', ',') + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.', ',') + " K";
     return value.toString();
   }
 

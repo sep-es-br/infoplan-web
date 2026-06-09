@@ -507,6 +507,19 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       }
     }
 
+    if (this.finalFilter.codGnd && this.finalFilter.codGnd.length >= 1) {
+      if (!this.finalFilter.codGnd.includes("-1")) {
+        this.activeFilters.push({
+          key: 'codGnd',
+          label: "Grupo de Despesa",
+          displayValue: this.finalFilter.codGnd.map(code => {
+            const item = this.groupExpenseList.find(i => i.id === Number(code));
+            return { name: item ? `${item.id} - ${item.name}` : code };
+          })
+        });
+      }
+    }
+
     if (this.finalFilter.codAction && this.finalFilter.codAction.length >= 1) {
       if (!this.finalFilter.codAction.includes("-1")) {
         this.activeFilters.push({
@@ -561,6 +574,8 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
           this.filter.codSource = ["-1"];
         } else if (origin === "codAmendment") {
           this.filter.codAmendment = "-1";
+        } else if (origin = "groupExpense") {
+          this.filter.codGnd = ["-1"];
         }
       } else if (newValue.length > 0) {
         if (origin === "month" && this.filter.month?.includes(-1)) {
@@ -625,6 +640,8 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       this.filter.codSource = ["-1"];
     } else if (filterKey === "codAmendment") {
       this.filter.codAmendment = "-1";
+    } else if (origin = "groupExpense") {
+      this.filter.codGnd = ["-1"];
     }
 
     this.filtrar();

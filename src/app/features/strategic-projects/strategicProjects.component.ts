@@ -275,7 +275,7 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
 
     this._scrollService.isScrolled$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((scrolled) => {
+      .subscribe(scrolled => {
         this.isScrolled = scrolled;
       });
   }

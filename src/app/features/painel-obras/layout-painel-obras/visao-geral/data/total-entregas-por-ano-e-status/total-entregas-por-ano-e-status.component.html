@@ -1,10 +1,40 @@
+<ng-template #controleGrouping>
+  <div class="chart-controls toggles-container small-toggle d-flex flex-wrap gap-3 mb-2 px-2 pb-2 border-bottom">
+    <div class="control-item d-flex align-items-center gap-3">
+      <span class="grouping-label">Agrupar por:</span>
+
+      <div class="custom-pill-toggle">
+        <button type="button" [class.active]="groupingMode === 'STATUS' || groupingMode === 'STATUS'"
+          (click)="onGroupingModeChange('STATUS')">
+          STATUS
+        </button>
+        <button type="button" [class.active]="groupingMode === 'ANO' || groupingMode === 'ANO'"
+          (click)="onGroupingModeChange('ANO')">
+          Ano
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
 <ngx-flip-table [cardTitle]="title" [tableContent]="flipTableContent" [tableOnFront]="true" [showSearchField]="true"
-  [backCardHeight]="isChartMaximized('total-entregas-por-ano-e-status') ? calcMaximizedHeight() : 350"
+  [backCardHeight]="isChartMaximized('total-entregas-por-ano-e-status') ? calcMaximizedHeight() : 450"
   [showMaximizeButton]="true" [loadingStatus]="requestStatus" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
-  (showMaximizeButtonClick)="onMaximizeButtonClick('total-entregas-por-ano-e-status', $event)" card-front>
-  <!-- <ngx-org-chart-vertical [chart]="charData" [chartDataConfig]="chartDataConfig"
-    [height]="isChartMaximized('total-entregas-por-ano-e-status') ? calcMaximizedHeight() : 300"
-    [isMaximized]="isChartMaximized('total-entregas-por-ano-e-status')" valueType="currency"
-    card-back></ngx-org-chart-vertical> -->
+  (showMaximizeButtonClick)="onMaximizeButtonClick('total-entregas-por-ano-e-status', $event)">
+
+  <div card-front>
+    <ng-container *ngTemplateOutlet="controleGrouping"></ng-container>
+  </div>
+
+  <div card-back>
+    <ng-container *ngTemplateOutlet="controleGrouping"></ng-container>
+    <ngx-org-chart-vertical-grouped [chart]="chartData"
+      [style.height.px]="isChartMaximized('total-entregas-por-ano-e-status') ? calcMaximizedHeight() : 400"
+      [height]="isChartMaximized('total-entregas-por-ano-e-status') ? calcMaximizedHeight() : 400"
+      [groupingMode]="groupingMode" [isMaximized]="isChartMaximized('total-entregas-por-ano-e-status')"
+      [chartDataConfig]="chartDataConfig" majorGroupLabel="Exercício" minorGroupLabel="Status" [valueType]="'currency'"
+      empLabel="Planejado" liqLabel="Realizado">
+    </ngx-org-chart-vertical-grouped>
+  </div>
 </ngx-flip-table>

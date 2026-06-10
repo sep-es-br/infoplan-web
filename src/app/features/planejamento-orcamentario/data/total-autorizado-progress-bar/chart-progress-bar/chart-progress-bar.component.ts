@@ -9,9 +9,8 @@ import {
 } from "@angular/core";
 import { ChartDataConfig } from "../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { ECharts, EChartsOption } from "echarts";
-import { AvailableThemes } from "../../../planejamento-orcamentario.component";
 import { NbThemeService } from "@nebular/theme";
-import { getAvailableThemesStyles } from "../../../../../@theme/theme.module";
+import { getAvailableThemesStyles, AvailableThemes } from "../../../../../@theme/theme.module";
 import { CommonModule } from "@angular/common";
 import { NgxEchartsModule } from "ngx-echarts";
 import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";

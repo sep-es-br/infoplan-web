@@ -34,6 +34,7 @@ import {
   takeUntil,
 } from "rxjs/operators";
 import { ScrollService } from "../../core/service/scroll.service";
+import { AvailableThemes } from "../../@theme/theme.module";
 
 const DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS: IPlanejamentoOrcamentarioFilter =
 {
@@ -69,11 +70,7 @@ export enum RequestStatus {
   ERROR = "Error",
 }
 
-export enum AvailableThemes {
-  DEFAULT = "default",
-  DARK = "dark",
-  COSMIC = "cosmic",
-}
+
 
 @Component({
   selector: "ngx-planejamento-orcamentario-component",

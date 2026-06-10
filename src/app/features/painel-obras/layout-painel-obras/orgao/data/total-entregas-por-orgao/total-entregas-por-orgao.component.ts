@@ -21,22 +21,29 @@ import {
 } from "../../../../../strategic-projects/flip-table-model/flip-table.component";
 import { RequestStatus } from "../../../../../strategic-projects/strategicProjects.component";
 import { Subject } from "rxjs-compat";
-import { ChartDataProcessorService } from "../../../../../../core/service/budget-panel/chart-data-processor.service";
 import { ChartMaximizeService } from "../../../../../../core/service/chart-maximize/chart-maximize.service";
 import { ExportDataService } from "../../../../../../core/service/export-data";
 import { PainelObrasService } from "../../../../../../core/service/painel-obras/painel-obras.service";
 import { UtilitiesService } from "../../../../../../core/service/utilities.service";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { converterToNumber } from "../../../../../../@core/utils/functionts/functionts";
+import { OrgChartVerticalComponent } from "../../../../../budget-panel/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
+import { ChartDataProcessorService } from "../../../../../../core/service/budget-panel/chart-data-processor.service";
+import { IChartOptions } from "../../../../../../shared/models/budget-panel/IChartOptions";
+import { ChartDataConfig, OrgChartHorizontalComponent } from "../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-total-entregas-por-orgao",
   templateUrl: "./total-entregas-por-orgao.component.html",
   styleUrls: ["./total-entregas-por-orgao.component.scss"],
   standalone: true,
-  imports: [FlipTableComponent],
+  imports: [
+    FlipTableComponent,
+    OrgChartVerticalComponent,
+    OrgChartHorizontalComponent
+  ],
 })
-export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnInit{
+export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnInit {
   @Input() filter!: IPainelObrasRequest;
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
@@ -45,6 +52,17 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;
   selectedMaximize: boolean = false;
+  chartData!: IChartOptions;
+
+  chartDataConfig: ChartDataConfig = {
+    grid: {
+      top: "10%",
+      left: "1%",
+      right: "5%",
+      bottom: "2%",
+      containLabel: true,
+    },
+  };
 
   private totalEntregasPorOrgaoResponse: ITotalEntregasPorOrgao[] = [];
 
@@ -55,6 +73,7 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly _utilitiesService = inject(UtilitiesService);
   private readonly _painelObrasService = inject(PainelObrasService);
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
 
   ngOnInit(): void {
     this.searchSubject
@@ -81,6 +100,7 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
       next: (response) => {
         this.totalEntregasPorOrgaoResponse = response;
         this.assembleFlipTableContent(response);
+        this.processChart(response)
         this.requestStatus = RequestStatus.SUCCESS;
       },
       error(err) {
@@ -94,7 +114,7 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
   }
 
 
-    handleUserTableSearch(search: string) {
+  handleUserTableSearch(search: string) {
     if (search.length > 0) {
       const preparedSearchTerm = search.toLowerCase();
       const filteredData = this.totalEntregasPorOrgaoResponse.filter((item) =>
@@ -178,6 +198,38 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
         },
       },
       data: finalData,
+    };
+  }
+
+  processChart(data: ITotalEntregasPorOrgao[]): void {
+    const { labels, planejados, realizados } = data.reduce(
+      (acc, item) => {
+        acc.labels.push(item.orgao);
+        acc.planejados.push(item.planejado);
+        acc.realizados.push(item.realizado);
+        return acc;
+      },
+      { labels: [] as string[], planejados: [] as number[], realizados: [] as number[] }
+    );
+
+    const [corPlanejado, corRealizado] = this._chartProcessor.colors;
+
+    this.chartData = {
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Planejado',
+            data: planejados,
+            backgroundColor: corPlanejado,
+          },
+          {
+            label: 'Realizado',
+            data: realizados,
+            backgroundColor: corRealizado,
+          },
+        ],
+      },
     };
   }
 

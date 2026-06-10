@@ -20,11 +20,26 @@ import { ChartDataConfig } from "../../../org-chart-bar/org-chart-horizontal/org
 import { NbThemeService } from "@nebular/theme";
 import { UtilitiesService } from "../../../../../core/service/utilities.service";
 
-export type GroupingMode = "YEAR_GND" | "GND";
+export type GroupingMode =
+  "YEAR_GND" |
+  "GND" |
+  "YEAR_STATUS" |
+  "STATUS" |
+  "MUNICIPIO" |
+  "STATUS_MUNICIPIO" |
+  string;
 
 @Component({
-  selector: "ngx-org-chart-opposite",
-  templateUrl: "./org-chart-opposite.component.html",
+  selector: "ngx-org-chart-vertical-grouped",
+  template: `
+    <div
+      echarts
+      [options]="chartOptions"
+      [merge]="chartOptions"
+      class="echarts"
+      (chartInit)="onChartInit($event)"
+    ></div>
+  `,
   standalone: true,
   imports: [CommonModule, NgxEchartsModule],
   styles: [
@@ -43,13 +58,19 @@ export type GroupingMode = "YEAR_GND" | "GND";
     `,
   ],
 })
-export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
+export class OrgChartVerticalGroupedComponent
+  implements OnInit, OnChanges, OnDestroy {
   @Input() chart!: IChartOptions;
   @Input() height!: number;
   @Input() isMaximized!: boolean;
   @Input() chartDataConfig!: ChartDataConfig;
-  @Input() groupingMode: GroupingMode = "YEAR_GND";
-  @Input() valueType: 'percent' | 'currency' = 'percent';
+  @Input() groupingMode: GroupingMode = "YEAR_STATUS";
+  @Input() valueType: "percent" | "currency" = "currency";
+
+  @Input() majorGroupLabel: string = "Exercício";
+  @Input() minorGroupLabel: string = "Status";
+  @Input() empLabel: string = "Planejado";
+  @Input() liqLabel: string = "Realizado";
 
   private readonly _utilitiesService = inject(UtilitiesService);
 
@@ -65,6 +86,10 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
     "#EF8A9E",
     "#B28AFE",
     "#54a6e1ff",
+    "#42726F",
+    "#00A261",
+    "#0081C1",
+    "#F38B1D",
   ];
 
   constructor(private themeService: NbThemeService) {
@@ -80,7 +105,13 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["chart"] || changes["groupingMode"] || changes["isMaximized"] || changes["chartDataConfig"] || changes["valueType"]) {
+    if (
+      changes["chart"] ||
+      changes["groupingMode"] ||
+      changes["isMaximized"] ||
+      changes["chartDataConfig"] ||
+      changes["valueType"]
+    ) {
       this.updateChart();
     }
     if (changes["height"] && this.echartsInstance) {
@@ -110,49 +141,52 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
     const labelsRaw = this.chart.data.labels || [];
     const datasetsRaw = this.chart.data.datasets;
     const theme = getAvailableThemesStyles(this.currentTheme);
-    const getYear = (l: string) => l.split("|#|")[0]?.trim() || "";
-    const getGnd = (l: string) => l.split("|#|")[1]?.trim() || l.trim();
+    const getMajor = (l: string) => l.split("|#|")[0]?.trim() || "";
+    const getMinor = (l: string) => l.split("|#|")[1]?.trim() || l.trim();
 
     const dataRecords: any[] = [];
     labelsRaw.forEach((label, idx) => {
       dataRecords.push({
         label,
-        year: getYear(label),
-        gnd: getGnd(label),
+        major: getMajor(label),
+        minor: getMinor(label),
         emp: (datasetsRaw[0].data[idx] as number) || 0,
         liq: (datasetsRaw[1].data[idx] as number) || 0,
       });
     });
 
-    const uniqueYears = Array.from(
-      new Set(dataRecords.map((r) => r.year)),
+    const uniqueMajors = Array.from(
+      new Set(dataRecords.map((r) => r.major)),
     ).sort((a, b) => b.localeCompare(a));
-    const uniqueGnds = Array.from(
-      new Set(dataRecords.map((r) => r.gnd)),
+    const uniqueMinors = Array.from(
+      new Set(dataRecords.map((r) => r.minor)),
     ).sort();
 
     const finalData: any[] = [];
-    if (this.groupingMode === "YEAR_GND") {
-      uniqueYears.forEach((year) => {
-        const yearGroup = dataRecords
-          .filter((r) => r.year === year)
-          .sort((a, b) => a.gnd.localeCompare(b.gnd));
-        finalData.push(...yearGroup);
+    const isMajorFirst =
+      this.groupingMode === "STATUS" ||
+      this.groupingMode.startsWith("YEAR_") ||
+      this.groupingMode.includes("MAJOR");
+
+    if (isMajorFirst) {
+      uniqueMajors.forEach((major) => {
+        const majorGroup = dataRecords
+          .filter((r) => r.major === major)
+          .sort((a, b) => a.minor.localeCompare(b.minor));
+        finalData.push(...majorGroup);
       });
     } else {
-      uniqueGnds.forEach((gnd) => {
-        const gndGroup = dataRecords
-          .filter((r) => r.gnd === gnd)
-          .sort((a, b) => b.year.localeCompare(a.year));
-        finalData.push(...gndGroup);
+      uniqueMinors.forEach((minor) => {
+        const minorGroup = dataRecords
+          .filter((r) => r.minor === minor)
+          .sort((a, b) => b.major.localeCompare(a.major));
+        finalData.push(...minorGroup);
       });
     }
 
     const midpointIndices = new Set<number>();
-    const groupingList =
-      this.groupingMode === "YEAR_GND" ? uniqueYears : uniqueGnds;
-    const getKey = (d: any) =>
-      this.groupingMode === "YEAR_GND" ? d.year : d.gnd;
+    const groupingList = isMajorFirst ? uniqueMajors : uniqueMinors;
+    const getKey = (d: any) => (isMajorFirst ? d.major : d.minor);
 
     groupingList.forEach((groupKey) => {
       const indices = finalData
@@ -163,17 +197,15 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
-    const barWidth = this.isMaximized ? 26 : 15;
     const empSeriesData: any[] = [];
     const liqSeriesData: any[] = [];
 
     finalData.forEach((d) => {
-      const baseColor =
-        this.groupingMode === "YEAR_GND"
-          ? this.getGndColor(d.gnd, 1)
-          : this.colorPalette[
-          uniqueYears.indexOf(d.year) % this.colorPalette.length
-          ];
+      const baseColor = isMajorFirst
+        ? this.getGroupColor(d.minor, 1)
+        : this.colorPalette[
+        uniqueMajors.indexOf(d.major) % this.colorPalette.length
+        ];
 
       const faded = baseColor.startsWith("#")
         ? this.getOpacityColor(baseColor, 0.4)
@@ -181,7 +213,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
 
       empSeriesData.push({
         value: d.emp,
-        itemStyle: { color: faded }
+        itemStyle: { color: faded },
       });
       liqSeriesData.push({ value: d.liq, itemStyle: { color: baseColor } });
     });
@@ -189,22 +221,21 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
     const legendData: string[] = [];
     const legendSeries: any[] = [];
 
-    const isYearGnd = this.groupingMode === "YEAR_GND";
-    const subGroups = isYearGnd ? uniqueGnds : uniqueYears;
+    const subGroups = isMajorFirst ? uniqueMinors : uniqueMajors;
 
     subGroups.forEach((subGroup) => {
-      const baseColor = isYearGnd
-        ? this.getGndColor(subGroup, 1)
+      const baseColor = isMajorFirst
+        ? this.getGroupColor(subGroup, 1)
         : this.colorPalette[
-        uniqueYears.indexOf(subGroup) % this.colorPalette.length
+        uniqueMajors.indexOf(subGroup) % this.colorPalette.length
         ];
 
       const faded = baseColor.startsWith("#")
         ? this.getOpacityColor(baseColor, 0.4)
         : baseColor.replace("rgb", "rgba").replace(")", ", 0.4)");
 
-      const empName = `${subGroup} (Empenhado)`;
-      const liqName = `${subGroup} (Liquidado)`;
+      const empName = `${subGroup} (${this.empLabel})`;
+      const liqName = `${subGroup} (${this.liqLabel})`;
 
       legendData.push(empName, liqName);
 
@@ -212,19 +243,16 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         name: empName,
         type: "bar",
         data: [],
-        itemStyle: { color: faded, borderRadius: [0, 4, 4, 0] },
+        itemStyle: { color: faded, borderRadius: [4, 4, 0, 0] },
       });
 
       legendSeries.push({
         name: liqName,
         type: "bar",
         data: [],
-        itemStyle: { color: baseColor, borderRadius: [0, 4, 4, 0] },
+        itemStyle: { color: baseColor, borderRadius: [4, 4, 0, 0] },
       });
     });
-
-    const maxItemsVisible = this.isMaximized ? 25 : 15;
-    const endZoomValue = Math.min(maxItemsVisible, finalData.length - 1);
 
     this.chartOptions = {
       legend: {
@@ -259,19 +287,27 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           if (!d) return "";
 
           let html = `<div style="padding:4px">
-                        <b style="font-size:13px">${d.gnd}</b><br/>
-                        <span style="opacity:0.8">Exercício ${d.year}</span><hr style="opacity:0.2;margin:5px 0"/>`;
+                        <b style="font-size:13px">${d.minor}</b><br/>
+                        <span style="opacity:0.8">${this.majorGroupLabel} ${d.major}</span><hr style="opacity:0.2;margin:5px 0"/>`;
 
           params.forEach((param) => {
             if (
-              param.seriesName.includes("(Empenhado)") ||
-              param.seriesName.includes("(Liquidado)")
+              param.seriesName.includes(`(${this.empLabel})`) ||
+              param.seriesName.includes(`(${this.liqLabel})`)
             )
               return;
 
-            const formattedValue = this.valueType === 'currency'
-              ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(param.value, "R$")
-              : `${param.value.toFixed(1).replace(".", ",")} %`;
+            const rawValue = Array.isArray(param.value)
+              ? param.value[0]
+              : param.data?.value ?? param.value ?? 0;
+
+            const formattedValue =
+              this.valueType === "currency"
+                ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(
+                  Number(rawValue),
+                  "R$"
+                )
+                : `${Number(rawValue).toFixed(1).replace(".", ",")} %`;
 
             html += `<div style="margin-bottom: 2px;">
                        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${param.color};margin-right:5px;"></span>
@@ -284,20 +320,20 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         },
       },
       grid: {
-        left: this.chartDataConfig?.grid?.left || "5%",
-        right: this.chartDataConfig?.grid?.right || "6%",
-        bottom: this.chartDataConfig?.grid?.bottom || "0%",
-        top: this.chartDataConfig?.grid?.top || "8%",
-        containLabel: this.chartDataConfig?.grid?.containLabel ?? true,
+        left: this.chartDataConfig?.grid?.left || "2%",
+        right: this.chartDataConfig?.grid?.right || "8%",
+        bottom: this.chartDataConfig?.grid?.bottom || "5%",
+        top: this.chartDataConfig?.grid?.top || "12%",
+        containLabel: true,
       },
       xAxis: {
         type: "value",
-        max: this.valueType === 'percent' ? 100 : null,
+        max: this.valueType === "percent" ? 100 : null,
         axisLabel: {
           formatter: (value: number) => {
-            return this.valueType === 'percent'
+            return this.valueType === "percent"
               ? `${value} %`
-              : this._utilitiesService.formatCurrencyUsingBrazilianStandards(value, "R$");
+              : this.formatCompact(value);
           },
           color: theme.textPrimaryColor,
           fontSize: 10,
@@ -317,23 +353,20 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         },
         axisLabel: {
           interval: 0,
-          margin: 15,
+          margin: 20,
           color: theme.textPrimaryColor,
           rich: {
             mainGroup: {
               fontSize: this.isMaximized ? 14 : 12,
               padding: [0, 0, 4, 0],
-            },
-            subGroup: {
-              fontSize: this.isMaximized ? 12 : 10,
-              color: theme.textPrimaryColor,
+              fontWeight: "bold",
             },
           },
           formatter: (val: string) => {
             const absoluteIdx = parseInt(val.split("__idx__")[1], 10);
             const d = finalData[absoluteIdx];
             if (!d) return "";
-            const mainLabel = this.groupingMode === "YEAR_GND" ? d.year : d.gnd;
+            const mainLabel = isMajorFirst ? d.major : d.minor;
 
             if (midpointIndices.has(absoluteIdx)) {
               return `{mainGroup|${mainLabel}}`;
@@ -343,7 +376,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         },
         axisTick: {
           show: true,
-          length: 20, // Reduzido para não invadir muito a área do gráfico
+          length: 40,
           lineStyle: { color: theme.textPrimaryColor, opacity: 0.4 },
           interval: (_index: number, val: string) => {
             if (!val) return true;
@@ -393,40 +426,47 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       ],
       series: [
         {
-          name: "Empenhado",
+          name: this.empLabel,
           type: "bar",
-          barCategoryGap: "25%",
           data: empSeriesData,
           z: 1,
+          barMaxWidth: 20,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
           label: {
-            show: true,
+            show: this.isMaximized,
             position: "right",
             color: theme.textPrimaryColor,
-            fontSize: 12,
+            fontSize: 10,
             formatter: (p: any) => {
-              return this.valueType === 'percent'
-                ? `${p.value.toFixed(1).replace(".", ",")}%`
-                : this._utilitiesService.formatCurrencyUsingBrazilianStandards(p.value, "R$");
+              const val = Array.isArray(p.value)
+                ? p.value[0]
+                : p.data?.value ?? p.value ?? 0;
+              return this.valueType === "percent"
+                ? `${Number(val).toFixed(1).replace(".", ",")} %`
+                : this.formatCompact(Number(val));
             },
           },
         },
         {
-          name: "Liquidado",
+          name: this.liqLabel,
           type: "bar",
           barGap: "-100%",
           data: liqSeriesData,
           z: 2,
+          barMaxWidth: 20,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
           label: {
-            show: true,
+            show: this.isMaximized,
             position: "insideLeft",
-            color: theme.textPrimaryColor,
-            fontSize: 12,
+            color: "#fff",
+            fontSize: 10,
             formatter: (p: any) => {
-              return this.valueType === 'percent'
-                ? `${p.value.toFixed(1).replace(".", ",")}%`
-                : this._utilitiesService.formatCurrencyUsingBrazilianStandards(p.value, "R$");
+              const val = Array.isArray(p.value)
+                ? p.value[0]
+                : p.data?.value ?? p.value ?? 0;
+              return this.valueType === "percent"
+                ? `${Number(val).toFixed(1).replace(".", ",")} %`
+                : this.formatCompact(Number(val));
             },
           },
         },
@@ -435,11 +475,23 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
-  private getGndColor(label: string, opacity: number): string {
-    const gnd = label.includes(" - ") ? label.split(" - ")[1] : label;
+  private formatCompact(val: number): string {
+    if (val === 0) return "R$ 0";
+    const absVal = Math.abs(val);
+    if (absVal >= 1000000000)
+      return "R$ " + (val / 1000000000).toFixed(1).replace(".", ",") + "B";
+    if (absVal >= 1000000)
+      return "R$ " + (val / 1000000).toFixed(1).replace(".", ",") + "M";
+    if (absVal >= 1000)
+      return "R$ " + (val / 1000).toFixed(1).replace(".", ",") + "K";
+    return "R$ " + val.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+  }
+
+  private getGroupColor(label: string, opacity: number): string {
+    const cleanLabel = label.includes(" - ") ? label.split(" - ")[1] : label;
     let hash = 0;
-    for (let i = 0; i < gnd.length; i++)
-      hash = gnd.charCodeAt(i) + ((hash << 5) - hash);
+    for (let i = 0; i < cleanLabel.length; i++)
+      hash = cleanLabel.charCodeAt(i) + ((hash << 5) - hash);
     const color = this.colorPalette[Math.abs(hash) % this.colorPalette.length];
     return opacity === 1 ? color : this.getOpacityColor(color, opacity);
   }

@@ -35,6 +35,8 @@ input:focus {
 
     .filter-tags {
       display: flex;
+      flex: 1;
+      min-width: 0;
       overflow-x: auto;
       white-space: nowrap;
       gap: 8px;

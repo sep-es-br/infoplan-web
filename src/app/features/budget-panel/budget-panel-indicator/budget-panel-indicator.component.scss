@@ -140,15 +140,15 @@ input:focus {
 
     .filter-tags {
       display: flex;
+      flex: 1;
+      min-width: 0;
       overflow-x: auto;
       white-space: nowrap;
       gap: 8px;
       padding: 6px 0;
       scrollbar-width: thin;
       scrollbar-color: #005c99 transparent;
-      display: flex;
       flex-wrap: wrap;
-      flex: 1;
 
       .filter-tag {
         background-color: var(--card-background-color);

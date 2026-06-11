@@ -564,21 +564,16 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (
-      this.finalFilter.codAmendment &&
-      this.finalFilter.codAmendment.length >= 1
-    ) {
-      if (!this.finalFilter.codAmendment.includes("-1")) {
+    if (this.finalFilter.codAmendment !== undefined && this.finalFilter.codAmendment !== null && String(this.finalFilter.codAmendment).length >= 1) {
+      const codAmStr = String(this.finalFilter.codAmendment);
+      if (codAmStr !== "-1") {
         this.activeFilters.push({
           key: "codAmendment",
           label: "Emenda Parlamentar",
           displayValue: [
             {
-              name: this.finalFilter.codAmendment,
-              fullName:
-                this.finalFilter.codAmendment === "1"
-                  ? "Sem Emenda Estadual"
-                  : "Apenas Emenda Estadual",
+              name: codAmStr === "1" ? "Sem Emenda Estadual" : "Apenas Emenda Estadual",
+              fullName: codAmStr === "1" ? "Sem Emenda Estadual" : "Apenas Emenda Estadual",
             },
           ],
         });

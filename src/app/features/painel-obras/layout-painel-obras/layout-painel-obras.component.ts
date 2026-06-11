@@ -32,11 +32,6 @@ import { PainelObrasService } from "../../../core/service/painel-obras/painel-ob
 import { ChartMaximizeService, ChartMaximizeState } from "../../../core/service/chart-maximize/chart-maximize.service";
 import { VisaoGeralComponent } from "./visao-geral/visao-geral.component";
 import { NavigationTag, StickyTagNavComponent } from "../../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
-import { AvailableThemes } from "../../planejamento-orcamentario/planejamento-orcamentario.component";
-import { ShortNumberPipe } from "../../../shared/components/pipe/shortNumber-pipe";
-import { TotalEntregasFonteRecursoComponent } from "./visao-geral/data/total-entregas-fonte-recurso/total-entregas-fonte-recurso.component";
-import { TotalEntregasPorOrgaoComponent } from "./orgao/data/total-entregas-por-orgao/total-entregas-por-orgao.component";
-import { TotalEntregasPorOrgaoExecucaoComponent } from "./orgao/data/total-entregas-por-orgao-execucao/total-entregas-por-orgao-execucao.component";
 import { OrgaoComponent } from "./orgao/orgao.component";
 import { FilterManagementService } from "../../../core/service/filter-management/filter-management.service";
 
@@ -61,8 +56,6 @@ enum AvailableFilters {
   standalone: true,
   imports: [
     StickyTagNavComponent,
-    VisaoGeralComponent,
-    OrgaoComponent,
     CommonModule,
     RouterModule,
     NbTagModule,

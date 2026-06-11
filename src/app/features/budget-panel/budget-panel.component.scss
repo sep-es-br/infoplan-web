@@ -11,6 +11,7 @@ input:focus {
   z-index: 1000;
   width: 100%;
   background-color: transparent;
+    padding: 6px 6px;
 }
 
 .filter-button-box {
@@ -22,7 +23,7 @@ input:focus {
   top: 131px;
   width: fit-content;
   // margin: 0 auto;
-  padding: 6px 12px;
+  // padding: 6px 12px;
   border-radius: 2px;
   z-index: 1000;
   display: flex;
@@ -428,7 +429,7 @@ nb-tooltip {
       border: none;
       background-color: transparent;
       padding-bottom: 10px;
-      padding-top: 10px;
+      padding-top: 8px;
       cursor: pointer;
       z-index: 1;
       border-radius: 4px;

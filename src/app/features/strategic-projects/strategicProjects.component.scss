@@ -23,15 +23,22 @@ input:focus {
 }
 
 .filter-container {
-  position: relative;
-  width: 100%;
-  margin-top: -15px;
+    display: contents;
+  // position: relative;
+  // width: 100%;
+  // margin-top: -15px;
 
   .filter-button {
-    display: flex;
+    // display: flex;
+    // justify-content: space-between;
+    // align-items: center;
+    // gap: 5px;
+
+        display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 5px;
+    padding: 0px !important;
 
     .filter-tags {
       display: flex;
@@ -335,12 +342,18 @@ nb-option-list {
   // padding: 1rem !important;
   margin: 0 !important;
   flex: none !important;
-  overflow: none !important;
+  overflow: visible !important;
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
 
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+}
+
+/* Allow position:sticky to work by ensuring ancestor containers
+   don't clip overflow. Overrides global rule in styles.scss. */
+:host ::ng-deep nb-card-body {
+  overflow: visible !important;
 }
 
 .chart-container.maximized.col-12,
@@ -393,13 +406,13 @@ chart-container.maximized::before:hover {
   transform: scale(1.1);
 }
 
-
 .filter-wrapper {
   position: sticky;
-  top: 100px;
+  top: 75px;
   z-index: 1000;
   width: 100%;
   background-color: transparent;
+  padding: 6px 6px;
 }
 
 .filter-button-box {
@@ -410,16 +423,13 @@ chart-container.maximized::before:hover {
   position: sticky;
   top: 131px;
   width: fit-content;
-  // margin: 0 auto;
-  padding: 6px 12px;
   border-radius: 2px;
   z-index: 1000;
   display: flex;
-  // align-items: center;
   gap: 0.75rem;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-
+  padding: 0 0 0 8px !important;
   background: rgba(227, 230, 240, 0.85);
   border: 1px solid rgba(0, 0, 0, 0.15);
 }
@@ -465,6 +475,7 @@ chart-container.maximized::before:hover {
     border-radius: 8px;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    padding: 0 0 0 8px !important;
     box-shadow: 2px 3px 10px lightgray;
   }
 }
@@ -493,9 +504,8 @@ chart-container.maximized::before:hover {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-radius: 8px;
+    padding: 0 0 0 8px !important;
     box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.5);
   }
 }
-
-
 

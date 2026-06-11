@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   inject,
@@ -22,7 +23,6 @@ import {
 import { IChartOptions } from "../../../../../../shared/models/budget-panel/IChartOptions";
 import {
   ChartDataConfig,
-  OrgChartHorizontalComponent,
 } from "../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { RequestStatus } from "../../../../../strategic-projects/strategicProjects.component";
 import { Subject } from "rxjs";
@@ -31,10 +31,11 @@ import { ChartMaximizeService } from "../../../../../../core/service/chart-maxim
 import { ExportDataService } from "../../../../../../core/service/export-data";
 import { PainelObrasService } from "../../../../../../core/service/painel-obras/painel-obras.service";
 import { UtilitiesService } from "../../../../../../core/service/utilities.service";
-import { OrgChartVerticalComponent } from "../../../../../budget-panel/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
-import { getStatusCategory } from "../../../../../../shared/models/painel-obras/obra-status-groups";
 import { converterToNumber } from "../../../../../../@core/utils/functionts/functionts";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
+import { OrgChartOppositeComponent } from "../../../../../budget-panel/budget-panel-indicator/data/org-chart-opposite/org-chart-opposite.component";
+import { OrgChartVerticalGroupedComponent } from "../../../../../budget-panel/budget-panel-indicator/data/org-chart-vertical-grouped/org-chart-vertical-grouped.component";
+import { CommonModule, NgTemplateOutlet } from "@angular/common";
 
 @Component({
   selector: "ngx-total-entregas-por-ano-e-status",
@@ -42,24 +43,26 @@ import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
   styleUrls: ["./total-entregas-por-ano-e-status.component.scss"],
   standalone: true,
   imports: [
+    CommonModule,
     FlipTableComponent,
-    OrgChartHorizontalComponent,
-    OrgChartVerticalComponent,
+    OrgChartOppositeComponent,
+    OrgChartVerticalGroupedComponent,
+    NgTemplateOutlet
   ],
 })
 export class TotalEntregasPorAnoEStatusComponent
-  implements OnChanges, OnDestroy, OnInit
-{
+  implements OnChanges, OnDestroy, OnInit {
   @Input() filter!: IPainelObrasRequest;
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
+
   readonly title: string = "Valor total das entregas por ano e status";
-  charData!: IChartOptions;
+
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;
   chartDataConfig: ChartDataConfig = {
     grid: {
-      top: "20%",
+      top: "10%",
       left: "2%",
       right: "3%",
       bottom: "0%",
@@ -68,7 +71,9 @@ export class TotalEntregasPorAnoEStatusComponent
   };
   selectedMaximize: boolean = false;
   chartColors: string[] = [];
-  chartData: { value: number; name: string }[] = [];
+  chartData!: IChartOptions;
+  groupingMode: "STATUS" | "ANO" | string = "STATUS";
+
 
   private readonly chartColorPalette: string[] = [
     "#42726F",
@@ -101,13 +106,14 @@ export class TotalEntregasPorAnoEStatusComponent
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly _utilitiesService = inject(UtilitiesService);
   private readonly _painelObrasService = inject(PainelObrasService);
+  private readonly _cdr = inject(ChangeDetectorRef);
 
   constructor() {
 
   }
 
   ngOnInit(): void {
-      this.searchSubject
+    this.searchSubject
       .pipe(
         debounceTime(400),
         distinctUntilChanged(),
@@ -135,7 +141,7 @@ export class TotalEntregasPorAnoEStatusComponent
 
   loadData() {
     this.requestStatus = RequestStatus.LOADING;
-    this.chartData = [];
+    this.chartData = { data: { labels: [], datasets: [] } } as IChartOptions;
     this.chartColors = [];
 
     this._painelObrasService
@@ -144,7 +150,7 @@ export class TotalEntregasPorAnoEStatusComponent
         next: (response) => {
           this.quantidadePorAnStatusResponse = response;
           this.assembleFlipTableContent(response);
-          this.processChartData(response);
+          this.chartData = this.processChartData(response);
           this.requestStatus = RequestStatus.SUCCESS;
         },
         error(err) {
@@ -155,6 +161,15 @@ export class TotalEntregasPorAnoEStatusComponent
           // this.requestStatus = RequestStatus.ERROR;
         },
       });
+  }
+
+  onGroupingModeChange(group: "YEAR_STATUS" | "YEAR_ANO" | "ANO" | "STATUS" | string) {
+    this.groupingMode = group;
+    if (this.quantidadePorAnStatusResponse && this.quantidadePorAnStatusResponse.length > 0) {
+      this.assembleFlipTableContent(this.quantidadePorAnStatusResponse);
+    }
+
+    this._cdr.markForCheck();
   }
 
   assembleFlipTableContent(
@@ -184,28 +199,33 @@ export class TotalEntregasPorAnoEStatusComponent
       },
     ];
 
+    const isGroupingByYear = this.groupingMode.startsWith('YEAR_') || this.groupingMode === 'ANO';
+    const groupField = isGroupingByYear ? 'ano' : 'status';
+    const childField = isGroupingByYear ? 'status' : 'ano';
+
     const groupedData = data.reduce(
-      (acc, current) => {
-        if (!acc[current.status]) {
-          acc[current.status] = [];
+      (acc, current: any) => {
+        const key = current[groupField];
+        if (!acc[key]) {
+          acc[key] = [];
         }
-        acc[current.status].push(current);
+        acc[key].push(current);
         return acc;
       },
       {} as Record<string, IQuantidadePorAnoEStatus[]>,
     );
 
     const finalData: Array<TreeNode> = Object.entries(groupedData).map(
-      ([status, items]) => {
+      ([groupValue, items]) => {
         const totalPlanejado = items.reduce((sum, i) => sum + i.planejado, 0);
         const totalRealizado = items.reduce((sum, i) => sum + i.realizado, 0);
 
-        const children = items.map((item) => ({
+        const children = items.map((item: any) => ({
           data: [
             {
-              originalPropertyName: "ano",
+              originalPropertyName: childField,
               propertyName: "firstColumn",
-              value: item.ano,
+              value: item[childField],
             },
             {
               propertyName: "planejado",
@@ -239,9 +259,9 @@ export class TotalEntregasPorAnoEStatusComponent
         return {
           data: [
             {
-              originalPropertyName: "status",
+              originalPropertyName: groupField,
               propertyName: "firstColumn",
-              value: status,
+              value: groupValue,
             },
             {
               propertyName: "planejado",
@@ -277,9 +297,9 @@ export class TotalEntregasPorAnoEStatusComponent
     this.flipTableContent = {
       defaultColumns: tableColumns,
       customColumn: {
-        originalPropertyName: "status",
+        originalPropertyName: groupField,
         propertyName: "firstColumn",
-        displayName: "Status / Ano",
+        displayName: isGroupingByYear ? "Ano / Status" : "Status / Ano",
         alignment: {
           header: FlipTableAlignment.CENTER,
           data: FlipTableAlignment.LEFT,
@@ -293,49 +313,25 @@ export class TotalEntregasPorAnoEStatusComponent
     response: IQuantidadePorAnoEStatus[],
   ): IChartOptions {
     if (!response || response.length === 0)
-      return (this.charData = { data: { labels: [], datasets: [] } });
+      return { data: { labels: [], datasets: [] } } as IChartOptions;
 
-    const years = [...new Set(response.map((r) => r.ano))].sort();
-    const categories = [...years, "Total"];
-
-    // Agrupa os dados pelo status mapeado
-    const groupedByStatusCategory = response.reduce(
-      (acc, current) => {
-        const category = getStatusCategory(current.status);
-        if (!acc[category]) {
-          acc[category] = [];
-        }
-        acc[category].push(current);
-        return acc;
-      },
-      {} as Record<string, IQuantidadePorAnoEStatus[]>,
-    );
-
-    const statuses = Object.keys(groupedByStatusCategory);
-
-    const datasets = statuses.map((statusCategory, index) => ({
-      label: statusCategory,
-      data: categories.map((cat) => {
-        const items = groupedByStatusCategory[statusCategory];
-
-        if (cat === "Total") {
-          return items.reduce((sum, item) => sum + item.planejado, 0);
-        }
-
-        return items
-          .filter((item) => item.ano === cat)
-          .reduce((sum, item) => sum + item.planejado, 0);
-      }),
-      backgroundColor:
-        this.chartColorPalette[index % this.chartColorPalette.length],
-    }));
-
-    return (this.charData = {
+    return {
       data: {
-        labels: categories,
-        datasets: datasets,
+        labels: response.map(
+          (item: IQuantidadePorAnoEStatus) => `${item.ano}|#|${item.status}`,
+        ),
+        datasets: [
+          {
+            label: "Planejado",
+            data: response.map((item) => item.planejado),
+          },
+          {
+            label: "Realizado",
+            data: response.map((item) => item.realizado),
+          },
+        ],
       },
-    });
+    };
   }
 
   handleUserTableSearch(search: string) {

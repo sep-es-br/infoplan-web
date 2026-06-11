@@ -146,9 +146,7 @@
               <div class="icon-top-right totalizador-programas" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-layer-group"></i>
               </div>
-              <div class="card-content" [title]="
-                  'R$ ' + (statusTotal.totalizadorProgramas | number: '1.0-0')
-                ">
+              <div class="card-content" [title]="statusTotal.totalizadorProgramas">
                 <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else programasContent
@@ -164,7 +162,7 @@
                   <div class="number-box totalizador-programas">
                     <div class="d-flex" style="flex-direction: column; align-items: start">
                       <div class="value">
-                        {{ formatNumber(statusTotal.totalizadorProgramas) }}
+                        {{ statusTotal.totalizadorProgramas }}
                       </div>
                     </div>
                   </div>
@@ -182,9 +180,7 @@
               <div class="icon-top-right totalizador-projetos" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-project-diagram"></i>
               </div>
-              <div class="card-content" [title]="
-                  'R$ ' + (statusTotal.totalizadorProjetos | number: '1.0-0')
-                ">
+              <div class="card-content" [title]="statusTotal.totalizadorProjetos">
                 <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else projetosContent
@@ -200,7 +196,7 @@
                   <div class="number-box totalizador-projetos">
                     <div class="d-flex" style="flex-direction: column; align-items: start">
                       <div class="value">
-                        {{ formatNumber(statusTotal.totalizadorProjetos) }}
+                        {{ statusTotal.totalizadorProjetos }}
                       </div>
                     </div>
                   </div>

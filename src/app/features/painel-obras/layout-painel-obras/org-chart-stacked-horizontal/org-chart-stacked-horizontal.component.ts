@@ -1,0 +1,208 @@
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, inject, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import * as echarts from 'echarts';
+import { ChartDataConfig } from '../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component';
+import { NbThemeService } from '@nebular/theme';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { getAvailableThemesStyles, AvailableThemes } from '../../../../@theme/theme.module';
+import { UtilitiesService } from '../../../../core/service/utilities.service';
+import { IChartOptions } from '../../../../shared/models/budget-panel/IChartOptions';
+import { NgxEchartsModule } from 'ngx-echarts';
+import { EChartsOption } from 'echarts';
+
+@Component({
+  selector: 'ngx-org-chart-stacked-horizontal',
+  standalone: true,
+  imports: [NgxEchartsModule, CommonModule],
+  template: `<div
+  echarts
+  class="echart"
+  [options]="chartOptions"
+  [style.height.px]="height"
+  (chartInit)="onChartInit($event)"
+></div>
+`,
+  styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class OrgChartStackedHorizontalComponent implements OnChanges, OnDestroy {
+  @Input() chart!: IChartOptions;
+  @Input() chartDataConfig?: ChartDataConfig;
+  @Input() height: number = 400;
+  @Input() valueType: 'currency' | 'percent' | 'number' = 'number';
+  @Input() isMaximized: boolean = false;
+
+  private readonly _utilitiesService = inject(UtilitiesService);
+  private readonly _themeService = inject(NbThemeService);
+  private readonly destroy$ = new Subject<void>();
+  private currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
+
+  echartsInstance: echarts.ECharts | null = null;
+  chartOptions!: EChartsOption;
+  private readonly colorPalette: string[] = [
+    '#3366ff', '#00d68f', '#ffaa00', '#ff3d71', '#0095ff',
+    '#7b51db', '#ff708d', '#2ce6f8', '#ffc940', '#42aaff'
+  ];
+
+  constructor() {
+    this._themeService.getJsTheme()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(theme => {
+        this.currentTheme = theme.name as AvailableThemes;
+        this.updateChart();
+      });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['chart'] || changes['isMaximized'] || changes['height']) {
+      this.updateChart();
+    }
+
+    if (changes["height"] && this.echartsInstance) {
+      this.resizeChart();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  onChartInit(chartInstance: echarts.ECharts) {
+    this.echartsInstance = chartInstance;
+    this.resizeChart();
+  }
+
+  private updateChart(): void {
+    if (!this.chart?.data?.labels || !this.chart?.data?.datasets) return;
+
+    const theme = getAvailableThemesStyles(this.currentTheme);
+    const datasetsRaw = this.chart.data.datasets;
+    const labels = this.chart.data.labels;
+
+    const series = datasetsRaw.map((ds, idx) => ({
+      name: ds.label,
+      type: 'bar',
+      stack: 'total',
+      barMaxWidth: 25,
+      emphasis: { focus: 'series' },
+      data: ds.data,
+      itemStyle: {
+        color: this.colorPalette[idx % this.colorPalette.length],
+        borderRadius: idx === datasetsRaw.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0]
+      },
+      label: {
+        show: this.isMaximized,
+        position: 'inside',
+        formatter: (p: any) => p.value > 0 ? p.value : '',
+        color: '#fff',
+        fontSize: 10
+      }
+    }));
+
+    this.chartOptions = {
+      backgroundColor: 'transparent',
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        backgroundColor: theme.themePrimaryColor,
+        textStyle: { color: theme.textPrimaryColor },
+        confine: true,
+        formatter: (params: any[]) => {
+          let html = `<div style="padding:4px"><b>${params[0].name}</b><hr style="opacity:0.2;margin:5px 0"/>`;
+          let total = 0;
+          params.forEach(p => {
+            if (p.value > 0) {
+              const val = this.formatValue(p.value);
+              html += `<div style="margin-bottom:2px">
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${p.color};margin-right:5px"></span>
+                <b>${p.seriesName}:</b> ${val}
+              </div>`;
+              total += p.value;
+            }
+          });
+          html += `<hr style="opacity:0.2;margin:5px 0"/><b>Total: ${this.formatValue(total)}</b></div>`;
+          return html;
+        }
+      },
+      legend: {
+        type: 'scroll',
+        top: 0,
+        textStyle: { color: theme.textPrimaryColor },
+        pageIconColor: theme.textPrimaryColor,
+        pageTextStyle: { color: theme.textPrimaryColor }
+      },
+      grid: {
+        left: '2%',
+        right: '4%',
+        bottom: '3%',
+        top: '12%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'value',
+        axisLabel: { color: theme.textPrimaryColor, fontSize: 10 },
+        splitLine: { lineStyle: { color: theme.textPrimaryColor, opacity: 0.1 } }
+      },
+      yAxis: {
+        type: 'category',
+        data: labels,
+        inverse: true,
+        axisLabel: { color: theme.textPrimaryColor, fontSize: 11 },
+        axisLine: { lineStyle: { color: theme.textPrimaryColor, opacity: 0.2 } }
+      },
+      dataZoom: [
+        {
+          type: "slider",
+          yAxisIndex: [0],
+          start: 0,
+          zoomLock: true,
+          orient: "vertical",
+          handleSize: "50%",
+          width: 0,
+          left: "97%",
+          labelFormatter: "",
+          startValue: 0,
+          endValue: 15,
+        },
+        {
+          type: "inside",
+          yAxisIndex: [0],
+          start: 0,
+          zoomOnMouseWheel: false,
+          moveOnMouseWheel: true,
+        },
+      ],
+      series: series as any
+    };
+
+    if (this.echartsInstance) {
+      this.echartsInstance.setOption(this.chartOptions, true);
+    }
+  }
+
+  private formatValue(val: number): string {
+    if (this.valueType === 'currency') {
+      return this._utilitiesService.formatCurrencyUsingBrazilianStandards(val, 'R$');
+    }
+    return val.toLocaleString('pt-BR');
+  }
+
+  private resizeChart() {
+    setTimeout(() => this.echartsInstance?.resize(), 100);
+  }
+}

@@ -9,6 +9,9 @@ import { ChartMaximizeService } from '../../../../../../core/service/chart-maxim
 import { ExportDataService } from '../../../../../../core/service/export-data';
 import { PainelObrasService } from '../../../../../../core/service/painel-obras/painel-obras.service';
 import { UtilitiesService } from '../../../../../../core/service/utilities.service';
+import { IChartOptions } from '../../../../../../shared/models/budget-panel/IChartOptions';
+import { ChartDataConfig, OrgChartHorizontalComponent } from '../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component';
+import { ChartDataProcessorService } from '../../../../../../core/service/budget-panel/chart-data-processor.service';
 
 @Component({
   selector: 'ngx-total-entregas-por-orgao-execucao',
@@ -16,7 +19,8 @@ import { UtilitiesService } from '../../../../../../core/service/utilities.servi
   styleUrls: ['./total-entregas-por-orgao-execucao.component.scss'],
   standalone: true,
   imports: [
-    FlipTableComponent
+    FlipTableComponent,
+    OrgChartHorizontalComponent
   ]
 })
 export class TotalEntregasPorOrgaoExecucaoComponent {
@@ -30,6 +34,19 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
   flipTableContent!: FlipTableContent;
   selectedMaximize: boolean = false;
 
+
+  chartData!: IChartOptions;
+
+  chartDataConfig: ChartDataConfig = {
+    grid: {
+      top: "10%",
+      left: "1%",
+      right: "5%",
+      bottom: "2%",
+      containLabel: true,
+    },
+  };
+
   private totalEntregasPorOrgaoResponse: ITotalEntregasPorOrgaoExecucao[] = [];
 
   private readonly destroy$ = new Subject<void>();
@@ -39,6 +56,7 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly _utilitiesService = inject(UtilitiesService);
   private readonly _painelObrasService = inject(PainelObrasService);
+  private readonly _chartProcessor = inject(ChartDataProcessorService);
 
   ngOnInit(): void {
     this.searchSubject
@@ -65,6 +83,7 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
       next: (response) => {
         this.totalEntregasPorOrgaoResponse = response;
         this.assembleFlipTableContent(response);
+        this.processChart(response);
         this.requestStatus = RequestStatus.SUCCESS;
       },
       error(err) {
@@ -77,6 +96,38 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
     });
   }
 
+  processChart(data: ITotalEntregasPorOrgaoExecucao[]): void {
+    const { labels, planejados, realizados, totalEntregas } = data.reduce(
+      (acc, item) => {
+        acc.labels.push(item.orgao);
+        acc.planejados.push(item.planejado);
+        acc.realizados.push(item.realizado);
+        acc.totalEntregas.push(item.quantidadeEntregas);
+        return acc;
+      },
+      { labels: [] as string[], planejados: [] as number[], realizados: [] as number[], totalEntregas: [] as number[] }
+    );
+
+    const [corPlanejado, corRealizado, corTotalEntregas] = this._chartProcessor.colors;
+
+    this.chartData = {
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Planejado',
+            data: planejados,
+            backgroundColor: corPlanejado,
+          },
+          {
+            label: 'Realizado',
+            data: realizados,
+            backgroundColor: corRealizado,
+          }
+        ],
+      },
+    };
+  }
 
   handleUserTableSearch(search: string) {
     if (search.length > 0) {

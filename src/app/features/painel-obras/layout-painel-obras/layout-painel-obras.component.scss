@@ -20,12 +20,15 @@
   }
 }
 
+
 .filter-wrapper {
   position: sticky;
+  flex-wrap: wrap;
   top: 84px;
   z-index: 1000;
   width: 100%;
   background-color: transparent;
+  padding: 6px 6px;
 }
 
 .filter-button-box {
@@ -34,10 +37,10 @@
 
 .filter-button.is-sticky {
   position: sticky;
-  top: 131px;
+  top: 132px;
   width: fit-content;
   // margin: 0 auto;
-  padding: 6px 12px;
+  // padding: 6px 12px;
   border-radius: 2px;
   z-index: 1000;
   display: flex;
@@ -51,8 +54,8 @@
 }
 
 .filter-tag.is-sticky {
-  display: inline-flex;
-  flex-wrap: wrap;
+  display: flex;
+  // flex-wrap: wrap;
   // align-items: center;
   gap: 12px;
   padding: 8px 5px;
@@ -140,10 +143,10 @@
       overflow-x: auto;
       white-space: nowrap;
       gap: 8px;
-      padding: 6px 0;
+      // padding: 6px 0;
       scrollbar-width: thin;
       scrollbar-color: #005c99 transparent;
-      flex-wrap: wrap;
+      // flex-wrap: wrap;
 
       .filter-tag {
         background-color: var(--card-background-color);
@@ -222,7 +225,7 @@
       border: none;
       background-color: transparent;
       padding-bottom: 10px;
-      padding-top: 10px;
+      padding-top: 8px;
       cursor: pointer;
       z-index: 1;
       border-radius: 4px;

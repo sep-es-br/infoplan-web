@@ -22,10 +22,11 @@
 
 .filter-wrapper {
   position: sticky;
-  top: 69px;
+  top: 75px;
   z-index: 1000;
   width: 100%;
   background-color: transparent;
+  padding: 6px 6px;
 }
 
 .filter-button-box {
@@ -36,12 +37,9 @@
   position: sticky;
   top: 131px;
   width: fit-content;
-  // margin: 0 auto;
-  padding: 6px 12px;
   border-radius: 2px;
   z-index: 1000;
   display: flex;
-  // align-items: center;
   gap: 0.75rem;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -163,7 +161,7 @@
       overflow-x: auto;
       white-space: nowrap;
       gap: 8px;
-      padding: 6px 0px;
+      // padding: 6px 0px;
       scrollbar-width: thin;
       scrollbar-color: #005c99 transparent;
 

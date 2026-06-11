@@ -39,9 +39,9 @@ export class QuantidadePorStatusComponent implements OnChanges, OnDestroy {
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
-      left: "2%",
-      right: "3%",
-      bottom: "0%",
+      left: "3%",
+      right: "5%",
+      bottom: "3%",
       containLabel: true,
     },
   };

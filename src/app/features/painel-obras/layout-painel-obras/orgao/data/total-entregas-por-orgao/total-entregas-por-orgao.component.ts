@@ -57,13 +57,12 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
-      left: "1%",
+      left: "3%",
       right: "5%",
-      bottom: "2%",
+      bottom: "3%",
       containLabel: true,
     },
   };
-
   private totalEntregasPorOrgaoResponse: ITotalEntregasPorOrgao[] = [];
 
   private readonly destroy$ = new Subject<void>();

@@ -1,8 +1,12 @@
 import {
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   inject,
   Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
   Output,
   SimpleChanges,
 } from "@angular/core";
@@ -24,6 +28,10 @@ import {
   FlipTableComponent,
 } from "../../../../../strategic-projects/flip-table-model/flip-table.component";
 import { RequestStatus } from "../../../../../strategic-projects/strategicProjects.component";
+import { OrgChartVerticalGroupedComponent } from "../../../org-chart-vertical-grouped/org-chart-vertical-grouped.component";
+import { NgTemplateOutlet } from "@angular/common";
+import { ChartDataConfig } from "../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import { IChartOptions } from "../../../../../../shared/models/budget-panel/IChartOptions";
 
 @Component({
   selector: "ngx-total-entregas-por-municipio-status",
@@ -31,18 +39,34 @@ import { RequestStatus } from "../../../../../strategic-projects/strategicProjec
   styleUrls: ["./total-entregas-por-municipio-status.component.scss"],
   standalone: true,
   imports: [
-    FlipTableComponent
+    FlipTableComponent,
+    OrgChartVerticalGroupedComponent,
+    NgTemplateOutlet,
   ],
 })
-export class TotalEntregasPorMunicipioStatusComponent {
+export class TotalEntregasPorMunicipioStatusComponent
+  implements OnInit, OnChanges, OnDestroy
+{
   @Input() filter!: IPainelObrasRequest;
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
   readonly title: string = "Valor total das entregas por município e status";
+
+  groupingMode: "MUNICIPIO" | "STATUS" | string = "MUNICIPIO";
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;
   selectedMaximize: boolean = false;
+  chartData!: IChartOptions;
+  chartDataConfig: ChartDataConfig = {
+    grid: {
+      top: "10%",
+      left: "3%",
+      right: "5%",
+      bottom: "3%",
+      containLabel: true,
+    },
+  };
 
   private totalEntregasPorMunicipioStatusResponse: ITotalMunicipioStatus[] = [];
 
@@ -53,6 +77,7 @@ export class TotalEntregasPorMunicipioStatusComponent {
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly _utilitiesService = inject(UtilitiesService);
   private readonly _painelObrasService = inject(PainelObrasService);
+  private readonly _cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.searchSubject
@@ -81,6 +106,7 @@ export class TotalEntregasPorMunicipioStatusComponent {
         next: (response) => {
           this.totalEntregasPorMunicipioStatusResponse = response;
           this.assembleFlipTableContent(response);
+          this.chartData = this.processChartData(response);
           this.requestStatus = RequestStatus.SUCCESS;
         },
         error(err) {
@@ -91,6 +117,52 @@ export class TotalEntregasPorMunicipioStatusComponent {
           // this.requestStatus = RequestStatus.ERROR;
         },
       });
+  }
+
+    private processChartData(
+      response: ITotalMunicipioStatus[],
+    ): IChartOptions {
+      if (!response || response.length === 0)
+        return { data: { labels: [], datasets: [] } } as IChartOptions;
+  
+      return {
+        data: {
+          labels: response.map(
+            (item: ITotalMunicipioStatus) => `${item.municipio}|#|${item.status}`,
+          ),
+          datasets: [
+            {
+              label: "Planejado",
+              data: response.map((item) => item.planejado),
+            },
+            {
+              label: "Realizado",
+              data: response.map((item) => item.realizado),
+            },
+          ],
+        },
+      };
+    }
+
+  onGroupingModeChange(
+    group:
+      | "MUNICIPIO_STATUS"
+      | "STATUS_MUNICIPIO"
+      | "MUNICIPIO"
+      | "STATUS"
+      | string,
+  ) {
+    this.groupingMode = group;
+    if (
+      this.totalEntregasPorMunicipioStatusResponse &&
+      this.totalEntregasPorMunicipioStatusResponse.length > 0
+    ) {
+      this.assembleFlipTableContent(
+        this.totalEntregasPorMunicipioStatusResponse,
+      );
+    }
+
+    this._cdr.markForCheck();
   }
 
   handleUserTableSearch(search: string) {
@@ -149,28 +221,50 @@ export class TotalEntregasPorMunicipioStatusComponent {
       },
     ];
 
-    const groupedData = data.reduce(
-      (acc, current) => {
-        if (!acc[current.status]) {
-          acc[current.status] = [];
-        }
-        acc[current.status].push(current);
-        return acc;
-      },
-      {} as Record<string, ITotalMunicipioStatus[]>,
-    );
+
+        const isGroupingByYear =
+      (this.groupingMode && this.groupingMode.startsWith && this.groupingMode.startsWith('MUNICIPIO_')) ||
+      (this.groupingMode && this.groupingMode.startsWith && this.groupingMode.startsWith('STATUS_')) ||
+      this.groupingMode === 'MUNICIPIO';
+    // use actual object keys (lowercase) — data items have 'municipio' and 'status'
+    const groupField = isGroupingByYear ? 'municipio' : 'status';
+    const childField = isGroupingByYear ? 'status' : 'municipio';
+
+
+        const groupedData = data.reduce(
+          (acc, current: any) => {
+            const key = current[groupField];
+            if (!acc[key]) {
+              acc[key] = [];
+            }
+            acc[key].push(current);
+            return acc;
+          },
+          {} as Record<string, ITotalMunicipioStatus[]>,
+        );
+
+    // const groupedData = data.reduce(
+    //   (acc, current) => {
+    //     if (!acc[current.status]) {
+    //       acc[current.status] = [];
+    //     }
+    //     acc[current.status].push(current);
+    //     return acc;
+    //   },
+    //   {} as Record<string, ITotalMunicipioStatus[]>,
+    // );
 
     const finalData: Array<TreeNode> = Object.entries(groupedData).map(
-      ([status, items]) => {
+      ([groupKey, items]) => {
         const totalPlanejado = items.reduce((sum, i) => sum + i.planejado, 0);
         const totalRealizado = items.reduce((sum, i) => sum + i.realizado, 0);
 
-        const children = items.map((item) => ({
+        const children = items.map((item: any) => ({
           data: [
             {
-              originalPropertyName: "municipio",
+              originalPropertyName: childField,
               propertyName: "firstColumn",
-              value: item.municipio,
+              value: item[childField],
             },
             {
               propertyName: "planejado",
@@ -204,9 +298,9 @@ export class TotalEntregasPorMunicipioStatusComponent {
         return {
           data: [
             {
-              originalPropertyName: "status",
+              originalPropertyName: groupField,
               propertyName: "firstColumn",
-              value: status,
+              value: groupKey,
             },
             {
               propertyName: "planejado",
@@ -242,9 +336,9 @@ export class TotalEntregasPorMunicipioStatusComponent {
     this.flipTableContent = {
       defaultColumns: tableColumns,
       customColumn: {
-        originalPropertyName: "status",
+        originalPropertyName: groupField,
         propertyName: "firstColumn",
-        displayName: "Status",
+        displayName: groupField === 'municipio' ? 'Município' : 'Status',
         alignment: {
           header: FlipTableAlignment.CENTER,
           data: FlipTableAlignment.LEFT,
@@ -269,6 +363,7 @@ export class TotalEntregasPorMunicipioStatusComponent {
         status: item.status,
         planejado: converterToNumber(String(item.planejado)),
         realizado: converterToNumber(String(item.realizado)),
+        total: item.planejado + item.realizado
       }),
     );
 

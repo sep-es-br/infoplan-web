@@ -215,7 +215,7 @@
         <div class="icon-top-right planejado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">monitoring</span>
         </div>
-        <div class="card-content" [title]="'R$ ' + (totals.totalPlanejado | number: '1.2-2')">
+        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalPlanejado | number: '1.2-2')" nbTooltipPlacement="bottom">
           <ng-container *ngIf="requestStatus.totals === 'Loading'; else planejadoContent">
             <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-planejado" role="status">
@@ -248,7 +248,7 @@
         <div class="icon-top-right contratado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">handshake</span>
         </div>
-        <div class="card-content" [title]="'R$ ' + (totals.totalContratado | number: '1.2-2')">
+        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalContratado | number: '1.2-2')" nbTooltipPlacement="bottom">
           <ng-container *ngIf="requestStatus.totals === 'Loading'; else contratadoContent">
             <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-contratado" role="status">
@@ -261,7 +261,7 @@
             <div class="number-box contratado">
               <div class="d-flex flex-column align-items-start">
                 <div class="currency">R$</div>
-                <div class="value" [title]="'R$ ' + (totals.totalContratado | number: '1.2-2')">
+                <div class="value">
                   {{ formatNumber(totals.totalContratado) }}
                 </div>
               </div>
@@ -281,7 +281,7 @@
         <div class="icon-top-right autorizado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">check_circle</span>
         </div>
-        <div class="card-content" [title]="'R$ ' + (totals.totalAutorizado | number: '1.2-2')">
+        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalAutorizado | number: '1.2-2')" nbTooltipPlacement="bottom">
           <ng-container *ngIf="requestStatus.totals === 'Loading'; else autorizadoContent">
             <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-autorizado" role="status">
@@ -313,7 +313,7 @@
         <div class="icon-top-right empenhado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">gavel</span>
         </div>
-        <div class="card-content" [title]="'R$ ' + (totals.totalEmpenhado | number: '1.2-2')">
+        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalEmpenhado | number: '1.2-2')" nbTooltipPlacement="bottom">
           <ng-container *ngIf="requestStatus.totals === 'Loading'; else empenhadoContent">
             <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-empenhado" role="status">
@@ -346,7 +346,7 @@
         <div class="icon-top-right liquidado" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">checkbook</span>
         </div>
-        <div class="card-content" [title]="'R$ ' + (totals.totalLiquidado | number: '1.2-2')">
+        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalLiquidado | number: '1.2-2')" nbTooltipPlacement="bottom">
           <ng-container *ngIf="requestStatus.totals === 'Loading'; else liquidadoContent">
             <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-liquidado" role="status">
@@ -379,13 +379,15 @@
         <div class="icon-top-right pago" *ngIf="requestStatus.totals !== 'Loading'">
           <span class="material-symbols-outlined">paid</span>
         </div>
-        <div class="card-content" [title]="
+        <div class="card-content" [nbTooltip]="
             'Pago R$ ' +
             (totals.totalPago | number: '1.2-2') +
             '\n' +
             'Pago com Rap R$ ' +
             (totals.totalRestosAPagar | number: '1.2-2')
-          ">
+          " 
+          nbTooltipPlacement="bottom"
+          nbTooltipClass="tooltip-respeita-linha">
           <ng-container *ngIf="requestStatus.totals === 'Loading'; else pagoContent">
             <div class="d-flex justify-content-center align-items-center w-100 h-100">
               <div class="spinner-border total-pago" role="status">

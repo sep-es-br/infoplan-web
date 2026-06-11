@@ -1,12 +1,12 @@
 <ngx-flip-table [cardTitle]="title" [tableContent]="flipTableContent" [tableOnFront]="true" [showSearchField]="true"
-  [backCardHeight]="isChartMaximized('numero-entregas-por-municipio-status') ? calcMaximizedHeight() : 400"
+  [backCardHeight]="isChartMaximized('numero-entregas-por-municipio-status') ? calcMaximizedHeight() : 450"
   [showMaximizeButton]="true" [loadingStatus]="requestStatus" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
   (showMaximizeButtonClick)="onMaximizeButtonClick('numero-entregas-por-municipio-status', $event)" card-front>
 
   <div card-back>
     <ngx-org-chart-stacked-horizontal [chart]="chartData"
-      [height]="isChartMaximized('numero-entregas-por-municipio-status') ? calcMaximizedHeight() : 400"
+      [height]="isChartMaximized('numero-entregas-por-municipio-status') ? calcMaximizedHeight() : 450"
       [isMaximized]="isChartMaximized('numero-entregas-por-municipio-status')" [chartDataConfig]="chartDataConfig"
       valueType="number">
     </ngx-org-chart-stacked-horizontal>

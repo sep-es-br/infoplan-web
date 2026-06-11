@@ -7,7 +7,16 @@
   [loadingStatus]="requestStatus"
   (executeDownload)="handleTableDownload()"
   (executeSearch)="handleUserTableSearch($event)"
-  [backCardHeight]="isChartMaximized('quantidade-maior-entrega') ? calcMaximizedHeight() : 308"
-  (showMaximizeButtonClick)="onMaximizeButtonClick('quantidade-maior-entrega', $event)" card-front>
+  [backCardHeight]="isChartMaximized('quantidade-maior-entrega') ? calcMaximizedHeight() : 400"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('quantidade-maior-entrega', $event)" card-front
+  >
 
+    <ngx-org-chart-horizontal
+    [chart]="chartData"
+    [height]="isChartMaximized('quantidade-maior-entrega') ? calcMaximizedHeight() : 400"
+    [chartDataConfig]="chartDataConfig"
+    [valueType]="'currency'"
+    card-back
+  >
+  </ngx-org-chart-horizontal>
 </ngx-flip-table>

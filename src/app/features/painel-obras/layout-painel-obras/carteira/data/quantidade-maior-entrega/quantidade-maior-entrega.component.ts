@@ -22,7 +22,10 @@ import { ExportDataService } from "../../../../../../core/service/export-data";
 import { PainelObrasService } from "../../../../../../core/service/painel-obras/painel-obras.service";
 import { UtilitiesService } from "../../../../../../core/service/utilities.service";
 import { IChartOptions } from "../../../../../../shared/models/budget-panel/IChartOptions";
-import { ChartDataConfig } from "../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import {
+  ChartDataConfig,
+  OrgChartHorizontalComponent,
+} from "../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import {
   FlipTableContent,
   FlipTableAlignment,
@@ -37,9 +40,7 @@ import { RequestStatus } from "../../../../../strategic-projects/strategicProjec
   templateUrl: "./quantidade-maior-entrega.component.html",
   styleUrls: ["./quantidade-maior-entrega.component.scss"],
   standalone: true,
-  imports: [
-    FlipTableComponent
-  ],
+  imports: [FlipTableComponent, OrgChartHorizontalComponent],
 })
 export class QuantidadeMaiorEntregaComponent
   implements OnInit, OnChanges, OnDestroy
@@ -59,13 +60,12 @@ export class QuantidadeMaiorEntregaComponent
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
-      left: "2%",
-      right: "0%",
-      bottom: "0%",
+      left: "3%",
+      right: "5%",
+      bottom: "3%",
       containLabel: true,
     },
   };
-
   private quantidadeMaiorPorMunicipio: IQuantidadeMaiorEntrega[] = [];
 
   private readonly destroy$ = new Subject<void>();
@@ -99,23 +99,53 @@ export class QuantidadeMaiorEntregaComponent
   loadData() {
     this.requestStatus = RequestStatus.LOADING;
 
-    this._painelObrasService
-      .getQuantidadeMaiorEntrega(this.filter)
-      .subscribe({
-        next: (response) => {
-          this.quantidadeMaiorPorMunicipio = response;
-          this.assembleFlipTableContent(response);
-          // this.processData(response);
-          this.requestStatus = RequestStatus.SUCCESS;
-        },
-        error(err) {
-          console.error(
-            "Erro ao carregar os dados das quantidade de entregras prevista por órgão: ",
-            err,
-          );
-          // this.requestStatus = RequestStatus.ERROR;
-        },
-      });
+    this._painelObrasService.getQuantidadeMaiorEntrega(this.filter).subscribe({
+      next: (response) => {
+        this.quantidadeMaiorPorMunicipio = response;
+        this.assembleFlipTableContent(response);
+        const dados = this.processData(response);
+        this.chartData = dados;
+        this.requestStatus = RequestStatus.SUCCESS;
+      },
+      error(err) {
+        console.error(
+          "Erro ao carregar os dados das quantidade de entregras prevista por órgão: ",
+          err,
+        );
+        // this.requestStatus = RequestStatus.ERROR;
+      },
+    });
+  }
+
+  processData(response: IQuantidadeMaiorEntrega[]): IChartOptions {
+    if (!response || response.length === 0)
+      return { data: { labels: [], datasets: [] } } as IChartOptions;
+
+    const top10 = [...response]
+      .sort((a, b) => b.totalMaiorMunicipio - a.totalMaiorMunicipio)
+      .slice(0, 10);
+
+    const labels = top10.map((item) => item.orgao);
+    const primary = top10.map((item) => item.totalMaiorMunicipio);
+    const secondary = top10.map((item) => item.planejado);
+
+    return {
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Município com maior valor",
+            data: primary,
+            backgroundColor: this._chartProcessor.colors[0],
+          },
+          {
+            label: "planejado",
+            data: secondary,
+            backgroundColor: this._chartProcessor.colors[1],
+          },
+        ],
+      },
+    } as IChartOptions;
   }
 
   assembleFlipTableContent(
@@ -259,7 +289,7 @@ export class QuantidadeMaiorEntregaComponent
 
   handleTableDownload() {
     const columns: Array<{ key: string; label: string }> = [
-            {
+      {
         key: "municipio",
         label: "Município",
       },

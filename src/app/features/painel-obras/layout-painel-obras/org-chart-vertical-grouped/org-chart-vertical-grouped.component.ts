@@ -10,15 +10,15 @@ import {
   inject,
 } from "@angular/core";
 import { NgxEchartsModule } from "ngx-echarts";
-import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
+import { IChartOptions } from "../../../../shared/models/budget-panel/IChartOptions";
 import { ECharts, EChartsOption } from "echarts";
 import {
   AvailableThemes,
   getAvailableThemesStyles,
-} from "../../../../../@theme/theme.module";
-import { ChartDataConfig } from "../../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+} from "../../../../@theme/theme.module";
+import { ChartDataConfig } from "../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { NbThemeService } from "@nebular/theme";
-import { UtilitiesService } from "../../../../../core/service/utilities.service";
+import { UtilitiesService } from "../../../../core/service/utilities.service";
 
 export type GroupingMode =
   "YEAR_GND" |
@@ -134,21 +134,12 @@ export class OrgChartVerticalGroupedComponent
 
   private updateChart() {
     if (!this.chart?.data?.datasets || this.chart.data.datasets.length < 2) {
-      console.warn('OrgChartVerticalGrouped: insufficient datasets', {
-        chart: this.chart,
-      });
       this.chartOptions = null!;
       return;
     }
 
     const labelsRaw = this.chart.data.labels || [];
     const datasetsRaw = this.chart.data.datasets;
-    console.debug('OrgChartVerticalGrouped:updateChart', {
-      labelsLength: labelsRaw.length,
-      datasetsLength: datasetsRaw.length,
-      datasets0Length: datasetsRaw[0]?.data?.length,
-      datasets1Length: datasetsRaw[1]?.data?.length,
-    });
     const theme = getAvailableThemesStyles(this.currentTheme);
     // Determine whether the grouping mode expects the MAJOR to be
     // the first part of the label (before |#|) or the second part.
@@ -500,7 +491,6 @@ export class OrgChartVerticalGroupedComponent
         ...legendSeries,
       ],
     };
-    console.debug('OrgChartVerticalGrouped: chartOptions set', { chartOptions: this.chartOptions });
   }
 
   private formatCompact(val: number): string {

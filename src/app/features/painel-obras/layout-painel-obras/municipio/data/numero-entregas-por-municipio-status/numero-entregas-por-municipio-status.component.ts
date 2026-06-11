@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { INumeroEntregasPorMunicipioStatus, IPainelObrasRequest, ITotalEntregasPorOrgao, ITotalMunicipioStatus } from '../../../../../../core/interfaces/painel-obras/painel-obras';
+import { INumeroEntregasPorMunicipioStatus, IPainelObrasRequest} from '../../../../../../core/interfaces/painel-obras/painel-obras';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { ChartMaximizeService } from '../../../../../../core/service/chart-maximize/chart-maximize.service';
@@ -8,7 +8,6 @@ import { PainelObrasService } from '../../../../../../core/service/painel-obras/
 import { UtilitiesService } from '../../../../../../core/service/utilities.service';
 import { FlipTableContent, FlipTableAlignment, TreeNode, FlipTableComponent } from '../../../../../strategic-projects/flip-table-model/flip-table.component';
 import { RequestStatus } from '../../../../../strategic-projects/strategicProjects.component';
-import { NgTemplateOutlet } from '@angular/common';
 import { IChartOptions } from '../../../../../../shared/models/budget-panel/IChartOptions';
 import { ChartDataConfig } from '../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component';
 import { OrgChartStackedHorizontalComponent } from '../../../org-chart-stacked-horizontal/org-chart-stacked-horizontal.component';
@@ -37,13 +36,12 @@ export class NumeroEntregasPorMunicipioStatusComponent implements OnChanges, OnD
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
-      left: "2%",
-      right: "3%",
-      bottom: "0%",
+      left: "3%",
+      right: "5%",
+      bottom: "3%",
       containLabel: true,
     },
   };
-
   chartData!: IChartOptions;
   groupingMode: "STATUS" | "MUNICIPIO" | string = "STATUS";
 

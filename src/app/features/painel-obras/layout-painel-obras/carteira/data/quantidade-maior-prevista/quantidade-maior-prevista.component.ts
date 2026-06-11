@@ -11,9 +11,7 @@ import {
 } from "@angular/core";
 import {
   IPainelObrasRequest,
-  IQuantidadeMaiorEntrega,
   IQuantidadeMaiorEntregaPrevista,
-  ITotalEntregaPorMes,
 } from "../../../../../../core/interfaces/painel-obras/painel-obras";
 import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
@@ -23,7 +21,10 @@ import { ExportDataService } from "../../../../../../core/service/export-data";
 import { PainelObrasService } from "../../../../../../core/service/painel-obras/painel-obras.service";
 import { UtilitiesService } from "../../../../../../core/service/utilities.service";
 import { IChartOptions } from "../../../../../../shared/models/budget-panel/IChartOptions";
-import { ChartDataConfig } from "../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import {
+  ChartDataConfig,
+  OrgChartHorizontalComponent,
+} from "../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import {
   FlipTableAlignment,
   FlipTableColumn,
@@ -38,7 +39,7 @@ import { RequestStatus } from "../../../../../strategic-projects/strategicProjec
   templateUrl: "./quantidade-maior-prevista.component.html",
   styleUrls: ["./quantidade-maior-prevista.component.scss"],
   standalone: true,
-  imports: [FlipTableComponent],
+  imports: [FlipTableComponent, OrgChartHorizontalComponent],
 })
 export class QuantidadeMaiorPrevistaComponent
   implements OnInit, OnDestroy, OnChanges
@@ -58,9 +59,9 @@ export class QuantidadeMaiorPrevistaComponent
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
-      left: "2%",
-      right: "0%",
-      bottom: "0%",
+      left: "3%",
+      right: "5%",
+      bottom: "3%",
       containLabel: true,
     },
   };
@@ -104,8 +105,9 @@ export class QuantidadeMaiorPrevistaComponent
         next: (response) => {
           this.quantidadeMaiorPorOrgao = response;
           this.assembleFlipTableContent(response);
-          // this.processData(response);
-          this.requestStatus = RequestStatus.SUCCESS;
+         const dados = this.processData(response);
+         this.chartData = dados;
+         this.requestStatus = RequestStatus.SUCCESS;
         },
         error(err) {
           console.error(
@@ -115,6 +117,37 @@ export class QuantidadeMaiorPrevistaComponent
           // this.requestStatus = RequestStatus.ERROR;
         },
       });
+  }
+
+  processData(response: IQuantidadeMaiorEntregaPrevista[]): IChartOptions {
+    if (!response || response.length === 0)
+      return { data: { labels: [], datasets: [] } } as IChartOptions;
+
+    const top10 = [...response]
+      .sort((a, b) => b.totalMaiorOrgao - a.totalMaiorOrgao)
+      .slice(0, 10);
+
+    const labels = top10.map((item) => item.orgao);
+    const primary = top10.map((item) => item.totalMaiorOrgao);
+    const secondary = top10.map((item) => item.planejado);
+
+    return {
+      data: {
+        labels,
+        datasets: [
+          { 
+            label: "Órgão com maior valor", 
+            data: primary,
+            backgroundColor: this._chartProcessor.colors[0], 
+          },
+          { 
+            label: "planejado", 
+            data:  secondary,
+            backgroundColor: this._chartProcessor.colors[1],
+          }
+        ],
+      },
+    } as IChartOptions;
   }
 
   assembleFlipTableContent(
@@ -256,7 +289,7 @@ export class QuantidadeMaiorPrevistaComponent
     return this._chartMaximizeService.calcMaximizedHeight();
   }
 
-    handleTableDownload() {
+  handleTableDownload() {
     const columns: Array<{ key: string; label: string }> = [
       {
         key: "orgao",
@@ -295,13 +328,13 @@ export class QuantidadeMaiorPrevistaComponent
       entrega_maior_valor: item.nomeMaiorEntrega,
       municipio: item.municipio,
       data_conclusao: item.dataConclusao,
-      maior_valor_orgao: item.totalMaiorOrgao
-    }))
+      maior_valor_orgao: item.totalMaiorOrgao,
+    }));
 
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataToExport,
       columns,
-      "Quantidade_Maior_Entrega_Por_Òrgão.xlsx"
-    )
+      "Quantidade_Maior_Entrega_Por_Òrgão.xlsx",
+    );
   }
 }

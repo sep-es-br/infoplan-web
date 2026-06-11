@@ -146,7 +146,7 @@
               <div class="icon-top-right totalizador-programas" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-layer-group"></i>
               </div>
-              <div class="card-content" [title]="statusTotal.totalizadorProgramas">
+              <div class="card-content" [nbTooltip]="statusTotal.totalizadorProgramas" nbTooltipPlacement="bottom">
                 <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else programasContent
@@ -180,7 +180,7 @@
               <div class="icon-top-right totalizador-projetos" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-project-diagram"></i>
               </div>
-              <div class="card-content" [title]="statusTotal.totalizadorProjetos">
+              <div class="card-content" [nbTooltip]="statusTotal.totalizadorProjetos" nbTooltipPlacement="bottom">
                 <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else projetosContent
@@ -214,7 +214,7 @@
               <div class="icon-top-right contagem-entregas" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-box-open"></i>
               </div>
-              <div class="card-content" [title]="statusTotal.contagemEntregas + ' Entregas'">
+              <div class="card-content" [nbTooltip]="statusTotal.contagemEntregas + ' Entregas'" nbTooltipPlacement="bottom">
                 <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else contagemEntregasContent
@@ -248,9 +248,9 @@
               <div class="icon-top-right monitoramento-planejado" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-money-check-alt"></i>
               </div>
-              <div class="card-content" [title]="
+              <div class="card-content" [nbTooltip]="
                   'R$ ' + (statusTotal.monitoramentoPlanejado | number: '1.0-0')
-                ">
+                " nbTooltipPlacement="bottom">
                 <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else monitoramentoPlanejadoContent
@@ -284,9 +284,9 @@
               <div class="icon-top-right monitoramento-realizado" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-chart-line"></i>
               </div>
-              <div class="card-content" [title]="
+              <div class="card-content" [nbTooltip]="
                   'R$ ' + (statusTotal.monitoramentoRealizado | number: '1.0-0')
-                ">
+                " nbTooltipPlacement="bottom">
                 <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else monitoramentoRealizadoContent
@@ -320,7 +320,7 @@
               <div class="icon-top-right filtro-temporal-critico" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-hourglass-half"></i>
               </div>
-              <div class="card-content" [title]="statusTotal.filtroTemporalCritico">
+              <div class="card-content" [nbTooltip]="statusTotal.filtroTemporalCritico" nbTooltipPlacement="bottom">
                 <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else filtroTemporalCriticoContent

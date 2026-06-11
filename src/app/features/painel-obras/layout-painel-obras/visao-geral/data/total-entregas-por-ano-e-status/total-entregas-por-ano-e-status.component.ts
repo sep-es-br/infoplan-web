@@ -34,7 +34,7 @@ import { UtilitiesService } from "../../../../../../core/service/utilities.servi
 import { converterToNumber } from "../../../../../../@core/utils/functionts/functionts";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { OrgChartOppositeComponent } from "../../../../../budget-panel/budget-panel-indicator/data/org-chart-opposite/org-chart-opposite.component";
-import { OrgChartVerticalGroupedComponent } from "../../../../../budget-panel/budget-panel-indicator/data/org-chart-vertical-grouped/org-chart-vertical-grouped.component";
+import { OrgChartVerticalGroupedComponent } from "../../../org-chart-vertical-grouped/org-chart-vertical-grouped.component";
 import { CommonModule, NgTemplateOutlet } from "@angular/common";
 
 @Component({
@@ -63,9 +63,9 @@ export class TotalEntregasPorAnoEStatusComponent
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
-      left: "2%",
-      right: "3%",
-      bottom: "0%",
+      left: "3%",
+      right: "5%",
+      bottom: "3%",
       containLabel: true,
     },
   };

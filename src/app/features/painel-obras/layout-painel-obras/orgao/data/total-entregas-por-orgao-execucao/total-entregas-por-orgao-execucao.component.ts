@@ -36,13 +36,12 @@ export class TotalEntregasPorOrgaoExecucaoComponent {
 
 
   chartData!: IChartOptions;
-
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
-      left: "1%",
+      left: "3%",
       right: "5%",
-      bottom: "2%",
+      bottom: "3%",
       containLabel: true,
     },
   };

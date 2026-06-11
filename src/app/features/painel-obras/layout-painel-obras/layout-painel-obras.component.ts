@@ -21,6 +21,7 @@ import {
   NbTagModule,
   NbThemeService,
   NbTooltipDirective,
+  NbTooltipModule,
 } from "@nebular/theme";
 import { CommonModule } from "@angular/common";
 import { Subject, Subscription } from "rxjs";
@@ -61,7 +62,8 @@ enum AvailableFilters {
     NbTagModule,
     NbIconModule,
     NbSelectModule,
-    NbButtonModule
+    NbButtonModule,
+    NbTooltipModule
   ],
   templateUrl: "./layout-painel-obras.component.html",
   styleUrls: ["./layout-painel-obras.component.scss"],

@@ -142,9 +142,15 @@ export class OrgChartStackedHorizontalComponent implements OnChanges, OnDestroy 
       legend: {
         type: 'scroll',
         top: 0,
-        textStyle: { color: theme.textPrimaryColor },
+        show: true,
+        icon: "roundRect",
+        itemWidth: 12,
+        itemHeight: 12,
+        itemGap: 10,
+        textStyle: { color: theme.textPrimaryColor, fontSize: 11 },
+        pageTextStyle: { color: theme.textPrimaryColor },
         pageIconColor: theme.textPrimaryColor,
-        pageTextStyle: { color: theme.textPrimaryColor }
+        pageIconInactiveColor: theme.textSecondaryColor,
       },
       grid: {
         left: '2%',

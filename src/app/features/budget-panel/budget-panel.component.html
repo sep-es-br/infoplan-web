@@ -144,7 +144,7 @@
         <div class="icon-top-right prevista" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fa fa-crosshairs"></i>
         </div>
-        <div class="card-content" [title]="'R$ ' + (totals.totalPlannedRevenue | number : '1.0-0')">
+        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalPlannedRevenue | number : '1.0-0')"  nbTooltipPlacement="bottom" > 
           <ng-container *ngIf="requestStatus.totals === 'Loading'; else previstaContent">
             <div class="d-flex justify-content-center align-items-center w-100">
               <div class="spinner-border total-prevista" role="status">
@@ -176,7 +176,7 @@
         <div class="icon-top-right realizada" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fa fa-check-circle"></i>
         </div>
-        <div class="card-content" [title]="'R$ ' + (totals.totalRealizedRevenue | number : '1.0-2')">
+        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalRealizedRevenue | number : '1.0-2')"  nbTooltipPlacement="bottom" >
           <ng-container *ngIf="requestStatus.totals === 'Loading'; else realizadaContent">
             <div class="d-flex justify-content-center align-items-center w-100">
               <div class="spinner-border total-realizada" role="status">

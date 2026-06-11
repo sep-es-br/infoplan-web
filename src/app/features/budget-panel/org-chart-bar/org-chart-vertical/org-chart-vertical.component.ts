@@ -134,13 +134,6 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           alignWithLabel: true,
         },
       },
-      // yAxis: {
-      //   axisLabel: {
-      //     fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
-      //     width: isMobile ? 20 : 100,
-      //     formatter: (v: number) => `${this.formatValue(v)}`,
-      //   },
-      // },
       yAxis: {
         type: "value",
         inverse: false,

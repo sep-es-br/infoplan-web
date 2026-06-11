@@ -104,7 +104,6 @@ export class QuantidadeMaiorEntregaComponent
       .subscribe({
         next: (response) => {
           this.quantidadeMaiorPorMunicipio = response;
-          console.log("Dados", response);
           this.assembleFlipTableContent(response);
           // this.processData(response);
           this.requestStatus = RequestStatus.SUCCESS;

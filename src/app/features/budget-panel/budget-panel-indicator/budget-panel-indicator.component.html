@@ -489,27 +489,26 @@
                     style="flex-direction: column; align-items: start"
                   >
                     <div class="value">
-                      {{ statusTotal.budgetManagementIndicator }} %
+                      {{ statusTotal.budgetManagementIndicator.IGO }} %
                     </div>
                   </div>
                 </div>
 
                 <div class="text-section budget-management-indicator">
-                  <div>
+                  <div *ngIf="statusTotal.budgetManagementIndicator.nota !== null">
                     <span
                       class="label-subtitle"
                       [nbTooltip]="
                         ' Nota ' +
-                        computeGrade(
-                          statusTotal.budgetManagementIndicator
+                        (
+                          statusTotal.budgetManagementIndicator.nota
                         )
                       "
                     >
                       Nota
                       {{
-                        computeGrade(
-                          statusTotal.budgetManagementIndicator
-                        )
+                        
+                          statusTotal.budgetManagementIndicator.nota
                       }}
                     </span>
                   </div>

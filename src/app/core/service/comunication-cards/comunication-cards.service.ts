@@ -15,7 +15,7 @@ interface IDataCard {
   cardBudgetFeasibility?: number | null;
   cardFocusOnTheMission?: number | null;
   cardBudgetChanges?: number | null;
-  cardIGO?: number | null;
+  cardIGO?: { IGO: number | null, nota: string };
 }
 
 @Injectable({
@@ -80,7 +80,7 @@ export class ComunicationCardsService {
     this.dataSubject.next({ cardBudgetChanges })
   }
 
-  sendCardIGO(cardIGO: number) {
+  sendCardIGO(cardIGO: { IGO: number, nota: string}) {
     this.dataSubject.next({ cardIGO })
   }
 

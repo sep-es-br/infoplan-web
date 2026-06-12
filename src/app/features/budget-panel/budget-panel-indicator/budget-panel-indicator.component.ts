@@ -184,7 +184,10 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     budgetaryFeasibility: 0,
     focusOnTheMission: 0,
     budgetaryChanges: 0,
-    budgetManagementIndicator: 0,
+    budgetManagementIndicator: {
+      igo: 0,
+      nota: ""
+    },
   };
 
   ngOnInit(): void {
@@ -693,7 +696,8 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       .getCardIGO(this.currentRequestParams)
       .subscribe({
         next: (response: any) => {
-          this.comunicationCardsService.sendCardIGO(response.IGO);
+          console.log("dasdsadasdas", response)
+          this.comunicationCardsService.sendCardIGO(response);
           this.requestStatus.status = RequestStatus.SUCCESS;
         },
       });
@@ -809,15 +813,15 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     return this._chartMaximizeService.isAnyChartMaximized();
   }
 
-  computeGrade(value: number): string {
-    if (value === null || value === undefined || isNaN(Number(value))) {
-      return "—";
-    }
+  // computeGrade(value: number): string {
+  //   if (value === null || value === undefined || isNaN(Number(value))) {
+  //     return "—";
+  //   }
 
-    const v = Number(value);
-    if (v >= 95) return "A";
-    if (v >= 80) return "B";
+  //   const v = Number(value);
+  //   if (v >= 95) return "A";
+  //   if (v >= 80) return "B";
 
-    return "C"; // Se for menor que 80, será C
-  }
+  //   return "C"; // Se for menor que 80, será C
+  // }
 }

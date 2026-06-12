@@ -108,9 +108,9 @@ export class IndicatorExecutionService {
       .pipe(catchError((err) => this.handleError(err, this._router)));
   }
 
-  public getCardIGO(filter: IIndicatorExecutionFilter): Observable<number> {
+  public getCardIGO(filter: IIndicatorExecutionFilter): Observable<{IGO: number, nota: string }> {
     return this._http
-      .get<number>(`${this._URI}/card-totais-IGO`, {
+      .get<{IGO: number, nota: string }>(`${this._URI}/card-totais-IGO`, {
         params: this.paramsFilterGeneral(filter),
       })
       .pipe(catchError((err) => this.handleError(err, this._router)));

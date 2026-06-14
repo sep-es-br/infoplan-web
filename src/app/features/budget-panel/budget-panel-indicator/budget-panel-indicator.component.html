@@ -232,7 +232,7 @@
                     />
 
                     <div
-                      class="selected-items-row mt-1"
+                      class="selected-items-row"
                       *ngIf="selectedUOs.length > 0"
                     >
                       <nb-tag
@@ -242,7 +242,7 @@
                         [nbTooltip]="uo.uo + ' - ' + uo.name"
                         (remove)="removeUO(uo.uo)"
                         size="tiny"
-                        appearance="outline"
+                        appearance="filled"
                       >
                       </nb-tag>
                     </div>
@@ -290,7 +290,7 @@
                     />
 
                     <div
-                      class="selected-items-row mt-1"
+                      class="selected-items-row"
                       *ngIf="selectedActions.length > 0"
                     >
                       <nb-tag
@@ -302,7 +302,7 @@
                         "
                         (remove)="removeAction(action.cod_action)"
                         size="tiny"
-                        appearance="outline"
+                        appearance="filled"
                       >
                       </nb-tag>
                     </div>
@@ -351,7 +351,7 @@
                     />
 
                     <div
-                      class="selected-items-row mt-1"
+                      class="selected-items-row"
                       *ngIf="selectedFullSources.length > 0"
                     >
                       <nb-tag
@@ -363,7 +363,7 @@
                         "
                         (remove)="removeFullSource(source.cod_source)"
                         size="tiny"
-                        appearance="outline"
+                        appearance="filled"
                       >
                       </nb-tag>
                     </div>

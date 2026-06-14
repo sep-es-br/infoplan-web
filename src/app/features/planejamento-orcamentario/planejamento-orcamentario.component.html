@@ -117,7 +117,7 @@
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">UO</span>
 
-                    <input class="autocomplete-input-uo" type="text" nbInput fullWidth name="uoSearch"
+                    <input #uoSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth name="uoSearch"
                       placeholder="Buscar UO..." autocomplete="off" [nbAutocomplete]="autoUo" [(ngModel)]="uoSearchTerm"
                       (input)="onUOSearch($event)" fieldSize="tiny" />
 
@@ -174,7 +174,7 @@
                         !filter.uo.includes(-1) &&
                         (!POList || POList.length === 0)
                       " class="text-info-custom small mt-1">
-                      PO da(s) UO(s) {{ filter.uo.join(', ') }} ainda não cadastrada
+                      PO(s) da(s) UO(s) {{ filter.uo.join(', ') }} ainda não cadastrada(s)
                     </div>
                   </div>
                 </div>

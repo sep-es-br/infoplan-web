@@ -79,6 +79,7 @@ export enum RequestStatus {
 })
 export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
+  @ViewChild("uoSearchInput") uoSearchInput!: ElementRef<HTMLInputElement>;
   @ViewChildren("customSelect") customSelectRefs!: QueryList<NbSelectComponent>;
   @ViewChild(NbAutocompleteDirective) autocomplete!: NbAutocompleteDirective<any>;
   @Output() filterChanged = new EventEmitter<IPlanejamentoOrcamentarioFilter>();
@@ -725,6 +726,10 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this._processingUO = false;
+      if (this.uoSearchInput) {
+        this.uoSearchInput.nativeElement.value = "";
+        this.uoSearchInput.nativeElement.focus();
+      }
       // Força o menu a permanecer aberto (útil para seleção via teclado/Enter)
       if (this.autocomplete) {
         this.autocomplete.show();

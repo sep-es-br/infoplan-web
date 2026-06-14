@@ -390,6 +390,15 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       this.filter.codUo = ["-1"];
     }
 
+    // Limpa o campo e recarrega lista completa para permitir nova busca
+    setTimeout(() => {
+      if (this.uoSearchInput) {
+        this.uoSearchInput.nativeElement.value = "";
+        this.filteredUOList = [...this.uoList];
+        this.uoSearchInput.nativeElement.focus();
+      }
+    }, 50);
+
     this.loadActionList();
   }
 
@@ -411,6 +420,15 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       this.filter.codAction = ["-1"];
     }
 
+    // Limpa o campo e recarrega lista completa para permitir nova busca
+    setTimeout(() => {
+      if (this.actionSearchInput) {
+        this.actionSearchInput.nativeElement.value = "";
+        this.filteredActionList = [...this.actionList];
+        this.actionSearchInput.nativeElement.focus();
+      }
+    }, 50);
+
     this.loadFullSourceList();
   }
 
@@ -431,6 +449,15 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     if (this.filter.codSource.length === 0) {
       this.filter.codSource = ["-1"];
     }
+
+    // Limpa o campo e recarrega lista completa para permitir nova busca
+    setTimeout(() => {
+      if (this.fullSourceSearchInput) {
+        this.fullSourceSearchInput.nativeElement.value = "";
+        this.filteredFullSourceList = [...this.fullSourceList];
+        this.fullSourceSearchInput.nativeElement.focus();
+      }
+    }, 50);
   }
 
   filtrar(event?: Event): void {
@@ -696,7 +723,6 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
       .getCardIGO(this.currentRequestParams)
       .subscribe({
         next: (response: any) => {
-          console.log("dasdsadasdas", response)
           this.comunicationCardsService.sendCardIGO(response);
           this.requestStatus.status = RequestStatus.SUCCESS;
         },

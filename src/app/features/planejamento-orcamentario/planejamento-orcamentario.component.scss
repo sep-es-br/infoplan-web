@@ -250,47 +250,47 @@
       border-radius: 4px;
     }
   }
+}
 
-  .modal {
-    .modal-dialog {
-      max-width: 70vw;
-      justify-self: center;
+::ng-deep #filtrosModal {
+  .modal-dialog {
+    max-width: 70vw;
+    justify-self: center;
 
-      .modal-content {
-        width: 70vw;
-        background-color: var(--card-background-color);
-        color: var(--card-text-color);
+    .modal-content {
+      width: 70vw;
+      background-color: var(--card-background-color);
+      color: var(--card-text-color);
 
-        .modal-body {
-          .close-filter-button {
-            color: var(--card-text-color);
-          }
+      .modal-body {
+        .close-filter-button {
+          color: var(--card-text-color);
+        }
 
-          .filter-row {
-            margin-bottom: 0.75em;
+        .filter-row {
+          margin-bottom: 0.75em;
 
-            .filter-entity {
-              padding-left: 0.5rem;
-              padding-right: 0.5rem;
+          .filter-entity {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
 
-              span {
-                font-size: 12px;
-              }
+            span {
+              font-size: 12px;
+            }
 
-              nb-select,
-              input {
-                width: 100%;
-                max-width: 100%;
-                height: 2.5em;
-                font-size: 12px;
-              }
+            nb-select,
+            input {
+              width: 100%;
+              max-width: 100%;
+              height: 2.5em;
+              font-size: 12px;
             }
           }
         }
+      }
 
-        .modal-footer {
-          border: none;
-        }
+      .modal-footer {
+        border: none;
       }
     }
   }

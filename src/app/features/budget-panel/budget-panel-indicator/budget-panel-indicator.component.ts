@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -72,7 +73,7 @@ enum AvailableFilters {
   templateUrl: "./budget-panel-indicator.component.html",
   styleUrls: ["./budget-panel-indicator.component.scss"],
 })
-export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
+export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterViewInit {
   private indicatorExecutionService = inject(IndicatorExecutionService);
   private comunicationCardsService = inject(ComunicationCardsService);
   private _chartMaximizeService = inject(ChartMaximizeService);
@@ -208,6 +209,18 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
 
     if (this.subscriptionCard) this.subscriptionCard.unsubscribe();
+
+    const modal = document.getElementById("filtrosModal");
+    if (modal && modal.parentNode === document.body) {
+      document.body.removeChild(modal);
+    }
+  }
+
+  ngAfterViewInit(): void {
+    const modal = document.getElementById("filtrosModal");
+    if (modal && modal.parentNode !== document.body) {
+      document.body.appendChild(modal);
+    }
   }
 
   getComunicationCard(): void {

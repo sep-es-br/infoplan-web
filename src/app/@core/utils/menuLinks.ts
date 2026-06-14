@@ -119,7 +119,7 @@ export const menulinks: MyCustomMenuItem[] = [
     section: "projetos",
   },
 
-      {
+  {
     title: "Projetos",
     id: 6,
     status: checkRoles(environment.allowedRoles.painelObras),

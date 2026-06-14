@@ -33,11 +33,11 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
 
   @Input() colors:  string[] = [];
 
-  @Input() height: number;
+  @Input() height!: number;
 
-  @Input() width: number;
+  @Input() width!: number;
 
-  @Input() customConfig: HorizontalBarChartCustomConfig;
+  @Input() customConfig!: HorizontalBarChartCustomConfig;
 
   @Output() barClick = new EventEmitter<HorizontalBarChartBarClick>();
 

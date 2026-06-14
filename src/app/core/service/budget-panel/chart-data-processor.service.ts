@@ -1,4 +1,4 @@
-﻿import { IRevenueExpenseGndTotalBudgetExecutionResponse } from "./../../interfaces/budget-panel/budget-panel";
+import { IRevenueExpenseGndTotalBudgetExecutionResponse } from "./../../interfaces/budget-panel/budget-panel";
 import { Injectable } from "@angular/core";
 import { IChartOptions } from "../../../shared/models/budget-panel/IChartOptions";
 import { PieChartData } from "../../../features/budget-panel/org-chart-pie/org-chart-pie.component";
@@ -171,8 +171,8 @@ export class ChartDataProcessorService {
       data: {
         labels: categorias,
         datasets: [
-          { label: `${ano}`, data: dadosPrevisao, backgroundColor: this.colors[1] },
-          { label: `${ano}`, data: dadosArrecadacao, backgroundColor: this.colors[0] },
+          { label: `Previsão ${ano}`, data: dadosPrevisao, backgroundColor: this.colors[1] },
+          { label: `Arrecadação ${ano}`, data: dadosArrecadacao, backgroundColor: this.colors[0] },
         ],
       },
     };

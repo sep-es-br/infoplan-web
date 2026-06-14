@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { IPainelObrasRequest, ITotalEntregasPorOrgao, ITotalEntregasPorOrgaoExecucao } from '../../../../../../core/interfaces/painel-obras/painel-obras';
 import { converterToNumber } from '../../../../../../@core/utils/functionts/functionts';
 import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } from '../../../../../strategic-projects/flip-table-model/flip-table.component';
@@ -23,7 +23,7 @@ import { ChartDataProcessorService } from '../../../../../../core/service/budget
     OrgChartHorizontalComponent
   ]
 })
-export class TotalEntregasPorOrgaoExecucaoComponent {
+export class TotalEntregasPorOrgaoExecucaoComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() filter!: IPainelObrasRequest;
   @Output() maximizeButtonClick = new EventEmitter<boolean>();

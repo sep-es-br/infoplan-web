@@ -130,11 +130,7 @@ export class OrgChartHorizontalComponent
       xAxis: {
         axisLabel: {
           fontSize: this.showMaximizeButton ? 13 : 10,
-          formatter: (value: number) => {
-            return this.valueType === 'currency'
-              ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(value, "R$")
-              : this.formatValue(value);
-          },
+          formatter: (value: number) => this.formatAxisValue(value),
         },
       },
       legend: {
@@ -202,7 +198,7 @@ export class OrgChartHorizontalComponent
             const valorRaw = p.value !== undefined && p.value !== null ? p.value : 0;
             const valorFormatado = this.valueType === 'currency'
               ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(valorRaw, "R$")
-              : (this.valueType === 'percent' ? `${this.formatNumberSimple(valorRaw)}%` : this.formatNumberSimple(valorRaw));
+              : (this.valueType === 'percent' ? `${this.formatNumberSimple(valorRaw)}%` : this._utilitiesService.formatCurrencyUsingBrazilianStandards(valorRaw, "R$"));
             tooltip += `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${p.color};margin-right:5px;"></span>
                         <b>${p.seriesName}:</b> ${valorFormatado} </br>`;
           });
@@ -240,11 +236,7 @@ export class OrgChartHorizontalComponent
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: this.showMaximizeButton ? 13 : 10,
-          formatter: (value: number) => {
-            return this.valueType === 'currency'
-              ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(value, "R$")
-              : this.formatValue(value);
-          },
+          formatter: (value: number) => this.formatAxisValue(value),
         },
         splitLine: {
           show: true,
@@ -292,12 +284,8 @@ export class OrgChartHorizontalComponent
         label: {
           show: true,
           position: "right",
-          formatter: (params: any) => {
-            return this.valueType === 'currency'
-              ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(params.value, "R$")
-              : this.formatValue(params.value);
-          },
-          fontSize: this.showMaximizeButton ? 13 : 10,
+          formatter: (params: any) => this.formatAxisValue(params.value),
+          fontSize: this.showMaximizeButton ? 13 : 9 ,
           color: theme.textPrimaryColor,
         }
       })),
@@ -354,5 +342,26 @@ export class OrgChartHorizontalComponent
 
   private formatNumberSimple(value: number): string {
     return new Intl.NumberFormat("pt-BR").format(value);
+  }
+
+  private formatAxisValue(value: number): string {
+    const absValue = Math.abs(value);
+
+    if (this.valueType === 'currency') {
+      const sign = value < 0 ? '-' : '';
+      const v = Math.abs(value);
+      if (v >= 1_000_000_000_000) return `${sign}R$ ${ (v / 1_000_000_000_000).toFixed(1).replace('.', ',') } T`;
+      if (v >= 1_000_000_000) return `${sign}R$ ${ (v / 1_000_000_000).toFixed(1).replace('.', ',') } B`;
+      if (v >= 1_000_000) return `${sign}R$ ${ (v / 1_000_000).toFixed(1).replace('.', ',') } M`;
+      if (v >= 1_000) return `${sign}R$ ${ (v / 1_000).toFixed(1).replace('.', ',') } K`;
+
+      return `${sign} ${this.formatNumberSimple(v)}`;
+    }
+
+    if (this.valueType === 'percent') {
+      return `${this.formatNumberSimple(value)}%`;
+    }
+
+    return this.formatValue(value);
   }
 }

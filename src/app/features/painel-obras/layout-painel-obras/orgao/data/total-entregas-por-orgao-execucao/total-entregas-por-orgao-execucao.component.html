@@ -3,7 +3,12 @@
   [showMaximizeButton]="true" [loadingStatus]="requestStatus" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
   (showMaximizeButtonClick)="onMaximizeButtonClick('total-entregas-por-orgao-execucao', $event)" card-front>
-  <ngx-org-chart-horizontal [chart]="chartData" [chartDataConfig]="chartDataConfig" [showMaximizeButton]="true"
+  <ngx-org-chart-horizontal 
+    [chart]="chartData" 
+    [chartDataConfig]="chartDataConfig" 
+    [showMaximizeButton]="isChartMaximized('total-entregas-por-orgao-execucao')"
+     [height]="isChartMaximized('total-entregas-por-orgao-execucao') ? calcMaximizedHeight() : 400"
+    [valueType]="'currency'"
     (maximizeButtonClick)="onMaximizeButtonClick('total-entregas-por-orgao-execucao', $event)" card-back>
   </ngx-org-chart-horizontal>
 </ngx-flip-table>

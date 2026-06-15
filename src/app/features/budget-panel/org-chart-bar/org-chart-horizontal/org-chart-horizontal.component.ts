@@ -350,10 +350,10 @@ export class OrgChartHorizontalComponent
     if (this.valueType === 'currency') {
       const sign = value < 0 ? '-' : '';
       const v = Math.abs(value);
-      if (v >= 1_000_000_000_000) return `${sign}R$ ${ (v / 1_000_000_000_000).toFixed(1).replace('.', ',') } T`;
-      if (v >= 1_000_000_000) return `${sign}R$ ${ (v / 1_000_000_000).toFixed(1).replace('.', ',') } B`;
-      if (v >= 1_000_000) return `${sign}R$ ${ (v / 1_000_000).toFixed(1).replace('.', ',') } M`;
-      if (v >= 1_000) return `${sign}R$ ${ (v / 1_000).toFixed(1).replace('.', ',') } K`;
+      if (v >= 1_000_000_000_000) return `${sign} ${ (v / 1_000_000_000_000).toFixed(1).replace('.', ',') } T`;
+      if (v >= 1_000_000_000) return `${sign} ${ (v / 1_000_000_000).toFixed(1).replace('.', ',') } B`;
+      if (v >= 1_000_000) return `${sign} ${ (v / 1_000_000).toFixed(1).replace('.', ',') } M`;
+      if (v >= 1_000) return `${sign} ${ (v / 1_000).toFixed(1).replace('.', ',') } K`;
 
       return `${sign} ${this.formatNumberSimple(v)}`;
     }

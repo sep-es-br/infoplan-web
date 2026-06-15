@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { ScrollService } from '../../../core/service/scroll.service';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, HostBinding, Input, OnInit } from '@angular/core';
 import { NbIconModule, NbListModule, NbTagModule } from '@nebular/theme';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -30,12 +30,15 @@ export class StickyTagNavComponent implements OnInit {
 
   tagsFiltradas: NavigationTag[] = [];
 
+  @HostBinding('class.is-sticky')
+  isScrolled: boolean = false;
   isScrolled$: Observable<boolean>;
 
   constructor(
     private _scrollService: ScrollService,
     private router: Router) {
     this.isScrolled$ = this._scrollService.isScrolled$;
+    this.isScrolled$.subscribe(scrolled => this.isScrolled = scrolled);
   }
 
 

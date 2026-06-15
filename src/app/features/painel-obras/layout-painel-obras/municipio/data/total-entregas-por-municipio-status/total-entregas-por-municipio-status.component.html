@@ -32,7 +32,7 @@
   <div card-back>
     <ng-container *ngTemplateOutlet="controleGrouping"></ng-container>
     <ngx-org-chart-vertical-grouped [chart]="chartData"
-      [style.height.px]="isChartMaximized('total-entregas-por-municipio-status') ? calcMaximizedHeight() : 400"
+      [style.height.px]="isChartMaximized('total-entregas-por-municipio-status') ? 630 : 400"
       [height]="isChartMaximized('total-entregas-por-municipio-status') ? calcMaximizedHeight() : 400"
       [groupingMode]="groupingMode" [isMaximized]="isChartMaximized('total-entregas-por-municipio-status')"
       [chartDataConfig]="chartDataConfig" majorGroupLabel="Exercício" minorGroupLabel="Status" [valueType]="'currency'"

@@ -29,6 +29,11 @@
   width: 100%;
   background-color: transparent;
   padding: 6px 6px;
+  transition: top 0.3s ease-in-out;
+
+  @media screen and (max-width: 768px) {
+    top: 154px; // Header + tags no mobile
+  }
 }
 
 .filter-button-box {
@@ -38,6 +43,10 @@
 .filter-button.is-sticky {
   position: sticky;
   top: 132px;
+
+  @media screen and (max-width: 768px) {
+    top: 190px;
+  }
   width: fit-content;
   // margin: 0 auto;
   // padding: 6px 12px;

@@ -413,6 +413,11 @@ chart-container.maximized::before:hover {
   width: 100%;
   background-color: transparent;
   padding: 6px 6px;
+  transition: top 0.3s ease-in-out;
+
+  @media screen and (max-width: 768px) {
+    top: 154px;
+  }
 }
 
 .filter-button-box {
@@ -422,6 +427,10 @@ chart-container.maximized::before:hover {
 .filter-button.is-sticky {
   position: sticky;
   top: 131px;
+
+  @media screen and (max-width: 768px) {
+    top: 190px;
+  }
   width: fit-content;
   border-radius: 2px;
   z-index: 1000;

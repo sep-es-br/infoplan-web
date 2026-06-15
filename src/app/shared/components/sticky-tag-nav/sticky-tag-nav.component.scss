@@ -1,11 +1,11 @@
 @media screen and (min-width: 992px) {
-  :host {
+  :host:not(.is-sticky) {
     margin-top: -15px;
   }
 }
 
 @media screen and (max-width: 991px) {
-  :host {
+  :host:not(.is-sticky) {
     margin-top: -4px;
   }
 }
@@ -13,6 +13,28 @@
 .tag-panel {
   display: flex;
   justify-content: center;
+  transition: top 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  width: 100%;
+
+  &.is-sticky {
+    position: sticky;
+    top: 80px;
+    z-index: 1001;
+    background-color: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 10px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    @media screen and (max-width: 991px) {
+      top: 66px; // Ajuste para header mobile
+    }
+    
+    :host-context(.nb-theme-dark, .nb-theme-cosmic) & {
+      background-color: rgba(21, 26, 48, 0.98);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+  }
 
   nb-tag {
     font-size: 12px;

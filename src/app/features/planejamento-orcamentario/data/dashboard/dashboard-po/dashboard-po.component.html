@@ -6,6 +6,7 @@
   (showMaximizeButtonClick)="onMaximizeButtonClick('dashboard-po',$event)">
   <ngx-org-chart-horizontal
   [chart]="chartData"
+  [valueType]="'currency'"
   [height]="isChartMaximized('dashboard-po') ? maximizedHeight : 500"
     [chartDataConfig]="chartDataConfig" card-front>
   </ngx-org-chart-horizontal>

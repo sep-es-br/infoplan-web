@@ -54,7 +54,7 @@ export class RevenueTaxesComponent implements OnChanges, OnDestroy {
     grid: {
       top: "10%",
       left: "2%",
-      right: "3%",
+      right: "5%",
       bottom: "0%",
       containLabel: true,
     },

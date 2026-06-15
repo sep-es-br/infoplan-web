@@ -65,7 +65,7 @@ export class DashboardPoComponent implements OnInit, OnChanges, OnDestroy {
     grid: {
       top: "10%",
       left: "2%",
-      right: "2%",
+      right: "5%",
       bottom: "0%",
       containLabel: true,
     },

@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { ScrollService } from '../../../core/service/scroll.service';
-import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import { Component, HostBinding, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { NbIconModule, NbListModule, NbTagModule } from '@nebular/theme';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -25,7 +25,7 @@ export interface NavigationTag {
   ],
   styleUrls: ['./sticky-tag-nav.component.scss']
 })
-export class StickyTagNavComponent implements OnInit {
+export class StickyTagNavComponent implements OnInit, OnChanges {
   @Input() tags: NavigationTag[] = [];
 
   tagsFiltradas: NavigationTag[] = [];
@@ -39,6 +39,13 @@ export class StickyTagNavComponent implements OnInit {
     private router: Router) {
     this.isScrolled$ = this._scrollService.isScrolled$;
     this.isScrolled$.subscribe(scrolled => this.isScrolled = scrolled);
+  }
+
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tags']) {
+      this.filtrarTagsPorRota();
+    }
   }
 
 

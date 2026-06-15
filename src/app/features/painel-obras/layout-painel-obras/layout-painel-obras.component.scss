@@ -32,7 +32,7 @@
   transition: top 0.3s ease-in-out;
 
   @media screen and (max-width: 768px) {
-    top: 132px; // Header + tags no mobile
+    top: 90px; // Header + tags no mobile
   }
 }
 
@@ -47,6 +47,7 @@
   @media screen and (max-width: 768px) {
     top: 180px;
   }
+
   width: fit-content;
   // margin: 0 auto;
   // padding: 6px 12px;
@@ -347,86 +348,86 @@
       &.filtro-temporal-critico {
         color: var(--filtro-temporal-critico) !important;
       }
-      }
-
-      .sr-only,
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
     }
 
-    .portfolio-content {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-    }
-
-    .number-box {
-      background-color: #005c99;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      padding: 8px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 65px;
-      min-width: 40%;
-
-      &.logo {
-        color: #000480 !important;
-      }
-
-      &.totalizador-programas {
-        background-color: var(--totalizador-programas) !important;
-      }
-
-      &.totalizador-projetos {
-        background-color: var(--totalizador-projetos) !important;
-      }
-
-      &.contagem-entregas {
-        background-color: var(--contagem-entregas) !important;
-      }
-
-      &.monitoramento-planejado {
-        background-color: var(--monitoramento-planejado) !important;
-      }
-
-      &.monitoramento-realizado {
-        background-color: var(--monitoramento-realizado) !important;
-      }
-
-      &.filtro-temporal-critico {
-        background-color: var(--filtro-temporal-critico) !important;
-      }
-
-      .currency {
-        font-size: 14px;
-      }
-    }
-
-    .text-section {
-      display: flex;
-      align-items: end;
-      font-size: 11px;
-      font-weight: bold;
-
-      flex: 1;
-      min-width: 0;
-      word-break: break-word;
-      overflow-wrap: anywhere;
+    .sr-only,
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
   }
+
+  .portfolio-content {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .number-box {
+    background-color: #005c99;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 65px;
+    min-width: 40%;
+
+    &.logo {
+      color: #000480 !important;
+    }
+
+    &.totalizador-programas {
+      background-color: var(--totalizador-programas) !important;
+    }
+
+    &.totalizador-projetos {
+      background-color: var(--totalizador-projetos) !important;
+    }
+
+    &.contagem-entregas {
+      background-color: var(--contagem-entregas) !important;
+    }
+
+    &.monitoramento-planejado {
+      background-color: var(--monitoramento-planejado) !important;
+    }
+
+    &.monitoramento-realizado {
+      background-color: var(--monitoramento-realizado) !important;
+    }
+
+    &.filtro-temporal-critico {
+      background-color: var(--filtro-temporal-critico) !important;
+    }
+
+    .currency {
+      font-size: 14px;
+    }
+  }
+
+  .text-section {
+    display: flex;
+    align-items: end;
+    font-size: 11px;
+    font-weight: bold;
+
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+}
 
 :host-context(.nb-theme-default, .nb-theme-dark, .nb-theme-cosmic) {
   .icon-top-right {
@@ -507,5 +508,3 @@
     object-fit: contain;
   }
 }
-
-

@@ -61,10 +61,17 @@ export class StickyTagNavComponent implements OnInit, OnChanges {
 
 
   filtrarTagsPorRota() {
-    const urlAtual = this.router.url;
+    const urlAtual = this.router.url.split('?')[0]; // Ignora query params
+    if (!this.tags || this.tags.length === 0) return;
+
     this.tagsFiltradas = this.tags.filter(tag => {
-      if (!tag.visibleIn) return true;
-      return tag.visibleIn.some((rota: string) => urlAtual.includes(rota));
+      if (!tag.visibleIn || tag.visibleIn.length === 0) return true;
+      return tag.visibleIn.some((rota: string) => urlAtual === rota || urlAtual.startsWith(rota));
     });
+
+    // Fallback: se a filtragem removeu tudo, mostra todas (melhor ver tudo do que nada sumir)
+    if (this.tagsFiltradas.length === 0) {
+      this.tagsFiltradas = [...this.tags];
+    }
   }
 }

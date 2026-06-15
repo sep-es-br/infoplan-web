@@ -1,12 +1,16 @@
 @media screen and (min-width: 992px) {
-  :host:not(.is-sticky) {
-    margin-top: -15px;
+  :host {
+    display: block;
+    width: 100%;
+    z-index: 1010;
   }
 }
 
 @media screen and (max-width: 991px) {
-  :host:not(.is-sticky) {
-    margin-top: -4px;
+  :host {
+    display: block;
+    width: 100%;
+    z-index: 1010;
   }
 }
 
@@ -17,7 +21,7 @@
   width: 100%;
 
   &.is-sticky {
-    z-index: 1001;
+    z-index: 1010;
     transition: opacity 0.3s ease;
     
     // Comportamento sticky removido conforme solicitado

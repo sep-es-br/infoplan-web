@@ -1,6 +1,7 @@
 ::ng-deep .tooltip-respeita-linha {
   white-space: pre-line !important;
 }
+
 ::ng-deep {
   .cdk-overlay-container {
     z-index: 1060;
@@ -48,6 +49,7 @@
   @media screen and (max-width: 768px) {
     top: 180px;
   }
+
   width: fit-content;
   border-radius: 2px;
   z-index: 1000;
@@ -507,7 +509,7 @@
 }
 
 .autocomplete-input-uo {
-  height: 19px !important ;
+  height: 19px !important;
   border-radius: 4px !important;
 }
 
@@ -550,7 +552,7 @@
 
 @media (min-width: 1440px) {
   .container {
-    max-width: 1800px;
+    max-width: 95%;
   }
 }
 

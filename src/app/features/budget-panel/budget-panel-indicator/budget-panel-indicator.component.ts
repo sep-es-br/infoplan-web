@@ -510,11 +510,11 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
   }
 
   configFilterLabel() {
-    if (this.finalFilter.year && this.finalFilter.year.length >= 1) {
+    if (this.finalFilter?.year && this.finalFilter?.year.length >= 1) {
       this.activeFilters.push({
         key: "year",
         label: "Ano",
-        displayValue: [{ name: this.finalFilter.year.join(", ") }],
+        displayValue: [{ name: this.finalFilter?.year.join(", ") }],
       });
     }
 

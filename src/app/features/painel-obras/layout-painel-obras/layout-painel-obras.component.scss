@@ -32,7 +32,7 @@
   transition: top 0.3s ease-in-out;
 
   @media screen and (max-width: 768px) {
-    top: 154px; // Header + tags no mobile
+    top: 90px; // Header no mobile
   }
 }
 
@@ -45,7 +45,7 @@
   top: 132px;
 
   @media screen and (max-width: 768px) {
-    top: 190px;
+    top: 140px;
   }
   width: fit-content;
   // margin: 0 auto;

@@ -30,7 +30,10 @@ import { converterToNumber } from "../../../../../../@core/utils/functionts/func
 import { OrgChartVerticalComponent } from "../../../../../budget-panel/org-chart-bar/org-chart-vertical/org-chart-vertical.component";
 import { ChartDataProcessorService } from "../../../../../../core/service/budget-panel/chart-data-processor.service";
 import { IChartOptions } from "../../../../../../shared/models/budget-panel/IChartOptions";
-import { ChartDataConfig, OrgChartHorizontalComponent } from "../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
+import {
+  ChartDataConfig,
+  OrgChartHorizontalComponent,
+} from "../../../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 
 @Component({
   selector: "ngx-total-entregas-por-orgao",
@@ -40,10 +43,12 @@ import { ChartDataConfig, OrgChartHorizontalComponent } from "../../../../../bud
   imports: [
     FlipTableComponent,
     OrgChartVerticalComponent,
-    OrgChartHorizontalComponent
+    OrgChartHorizontalComponent,
   ],
 })
-export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnInit {
+export class TotalEntregasPorOrgaoComponent
+  implements OnChanges, OnDestroy, OnInit
+{
   @Input() filter!: IPainelObrasRequest;
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
@@ -99,7 +104,7 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
       next: (response) => {
         this.totalEntregasPorOrgaoResponse = response;
         this.assembleFlipTableContent(response);
-        this.processChart(response)
+        this.processChart(response);
         this.requestStatus = RequestStatus.SUCCESS;
       },
       error(err) {
@@ -112,13 +117,16 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
     });
   }
 
-
   handleUserTableSearch(search: string) {
     if (search.length > 0) {
       const preparedSearchTerm = search.toLowerCase();
-      const filteredData = this.totalEntregasPorOrgaoResponse.filter((item) =>
-        item.orgao.toLowerCase().includes(preparedSearchTerm) ||
-        item.quantidadeEntregas.toString().toLowerCase().includes(preparedSearchTerm)
+      const filteredData = this.totalEntregasPorOrgaoResponse.filter(
+        (item) =>
+          item.orgao.toLowerCase().includes(preparedSearchTerm) ||
+          item.quantidadeEntregas
+            .toString()
+            .toLowerCase()
+            .includes(preparedSearchTerm),
       );
       this.assembleFlipTableContent(filteredData);
     } else {
@@ -148,6 +156,11 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
 
     const tableColumns = [
       {
+        propertyName: "quantidade_entregas",
+        displayName: "Quantidade Entregas",
+        alignment: standardAlignment,
+      },
+      {
         propertyName: "planejado",
         displayName: "Planejado",
         alignment: standardAlignment,
@@ -155,8 +168,8 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
       {
         propertyName: "realizado",
         displayName: "Realizado",
-        alignment: standardAlignment
-      }
+        alignment: standardAlignment,
+      },
     ];
 
     const finalData: Array<TreeNode> = data.map((item) => ({
@@ -165,6 +178,10 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
           originalPropertyName: "orgao",
           propertyName: "firstColumn",
           value: item.orgao,
+        },
+        {
+          propertyName: "quantidade_entregas",
+          value: item.quantidadeEntregas,
         },
         {
           propertyName: "planejado",
@@ -183,7 +200,7 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
       ],
       children: [],
       expanded: shouldStartExpanded,
-    }))
+    }));
 
     this.flipTableContent = {
       defaultColumns: tableColumns,
@@ -208,7 +225,11 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
         acc.realizados.push(item.realizado);
         return acc;
       },
-      { labels: [] as string[], planejados: [] as number[], realizados: [] as number[] }
+      {
+        labels: [] as string[],
+        planejados: [] as number[],
+        realizados: [] as number[],
+      },
     );
 
     const [corPlanejado, corRealizado] = this._chartProcessor.colors;
@@ -218,12 +239,12 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
         labels,
         datasets: [
           {
-            label: 'Planejado',
+            label: "Planejado",
             data: planejados,
             backgroundColor: corPlanejado,
           },
           {
-            label: 'Realizado',
+            label: "Realizado",
             data: realizados,
             backgroundColor: corRealizado,
           },
@@ -235,6 +256,7 @@ export class TotalEntregasPorOrgaoComponent implements OnChanges, OnDestroy, OnI
   handleUserTableDownload() {
     const columns: Array<{ key: string; label: string }> = [
       { key: "orgao", label: "Órgão" },
+      { key: "quantidadeEntregas", label: "Quantidade Entregas" },
       { key: "planejado", label: "Planejado" },
       { key: "realizado", label: "Realizado" },
     ];

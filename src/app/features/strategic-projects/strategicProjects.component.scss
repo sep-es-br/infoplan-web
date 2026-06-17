@@ -23,7 +23,7 @@ input:focus {
 }
 
 .filter-container {
-    display: contents;
+  display: contents;
   // position: relative;
   // width: 100%;
   // margin-top: -15px;
@@ -34,7 +34,7 @@ input:focus {
     // align-items: center;
     // gap: 5px;
 
-        display: flex;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 5px;
@@ -112,14 +112,12 @@ input:focus {
 
       &:hover {
         .map-icon {
-          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
         }
       }
 
       &.map-btn-clicked {
-        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
-          saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
       }
     }
 
@@ -316,6 +314,7 @@ nb-option-list {
 
 // Aplica esses estilos sob o tema "dark" e "cosmic"
 :host-context(.nb-theme-dark, .nb-theme-cosmic) {
+
   .icon-top-right,
   .text-section {
     color: #ffffff !important;
@@ -324,7 +323,7 @@ nb-option-list {
 
 @media (min-width: 1440px) {
   .container {
-    max-width: 1800px;
+    max-width: 95%;
   }
 }
 
@@ -342,12 +341,17 @@ nb-option-list {
   // padding: 1rem !important;
   margin: 0 !important;
   flex: none !important;
-  overflow: visible !important;
+  overflow: hidden !important;
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
 
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+
+  // Garante que o corpo do card não scrolle quando maximizado
+  ::ng-deep nb-card-body {
+    overflow: hidden !important;
+  }
 }
 
 /* Allow position:sticky to work by ensuring ancestor containers
@@ -413,6 +417,11 @@ chart-container.maximized::before:hover {
   width: 100%;
   background-color: transparent;
   padding: 6px 6px;
+  transition: top 0.3s ease-in-out;
+
+  @media screen and (max-width: 768px) {
+    top: 90px;
+  }
 }
 
 .filter-button-box {
@@ -506,4 +515,3 @@ chart-container.maximized::before:hover {
     box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.5);
   }
 }
-

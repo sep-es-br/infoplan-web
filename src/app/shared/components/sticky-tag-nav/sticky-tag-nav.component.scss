@@ -1,18 +1,31 @@
 @media screen and (min-width: 992px) {
   :host {
-    margin-top: -15px;
+    display: block;
+    width: 100%;
+    z-index: 1010;
   }
 }
 
 @media screen and (max-width: 991px) {
   :host {
-    margin-top: -4px;
+    display: block;
+    width: 100%;
+    z-index: 1010;
   }
 }
 
 .tag-panel {
   display: flex;
   justify-content: center;
+  transition: top 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  width: 100%;
+
+  &.is-sticky {
+    z-index: 1010;
+    transition: opacity 0.3s ease;
+    
+    // Comportamento sticky removido conforme solicitado
+  }
 
   nb-tag {
     font-size: 12px;

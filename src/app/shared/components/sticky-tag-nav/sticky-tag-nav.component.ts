@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { ScrollService } from '../../../core/service/scroll.service';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, HostBinding, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { NbIconModule, NbListModule, NbTagModule } from '@nebular/theme';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -25,17 +25,27 @@ export interface NavigationTag {
   ],
   styleUrls: ['./sticky-tag-nav.component.scss']
 })
-export class StickyTagNavComponent implements OnInit {
+export class StickyTagNavComponent implements OnInit, OnChanges {
   @Input() tags: NavigationTag[] = [];
 
   tagsFiltradas: NavigationTag[] = [];
 
+  @HostBinding('class.is-sticky')
+  isScrolled: boolean = false;
   isScrolled$: Observable<boolean>;
 
   constructor(
     private _scrollService: ScrollService,
     private router: Router) {
     this.isScrolled$ = this._scrollService.isScrolled$;
+    this.isScrolled$.subscribe(scrolled => this.isScrolled = scrolled);
+  }
+
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tags']) {
+      this.filtrarTagsPorRota();
+    }
   }
 
 
@@ -51,10 +61,17 @@ export class StickyTagNavComponent implements OnInit {
 
 
   filtrarTagsPorRota() {
-    const urlAtual = this.router.url;
+    const urlAtual = this.router.url.split('?')[0]; // Ignora query params
+    if (!this.tags || this.tags.length === 0) return;
+
     this.tagsFiltradas = this.tags.filter(tag => {
-      if (!tag.visibleIn) return true;
-      return tag.visibleIn.some((rota: string) => urlAtual.includes(rota));
+      if (!tag.visibleIn || tag.visibleIn.length === 0) return true;
+      return tag.visibleIn.some((rota: string) => urlAtual === rota || urlAtual.startsWith(rota));
     });
+
+    // Fallback: se a filtragem removeu tudo, mostra todas (melhor ver tudo do que nada sumir)
+    if (this.tagsFiltradas.length === 0) {
+      this.tagsFiltradas = [...this.tags];
+    }
   }
 }

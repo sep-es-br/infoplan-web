@@ -38,7 +38,7 @@ import {
   styleUrls: ["./revenue-expense-gnd.component.scss"],
 })
 export class RevenueExpenseGndComponent implements OnChanges, OnDestroy {
-  @Input() filter: IBudgetExecutionRequest;
+  @Input() filter!: IBudgetExecutionRequest;
 
   readonly title: string = "Despesa por GND";
 
@@ -56,13 +56,13 @@ export class RevenueExpenseGndComponent implements OnChanges, OnDestroy {
   public toggleExecutivo = true;
   public toggleDemaisPoderes = true;
 
-  chartData: IChartOptions;
+  chartData!: IChartOptions;
   tableContent: FlipTableContent | null = null;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "20%",
-      left: "0%",
+      left: "1%",
       right: "0%",
       bottom: "0%",
       containLabel: true,

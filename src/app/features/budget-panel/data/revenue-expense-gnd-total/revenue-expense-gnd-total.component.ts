@@ -36,7 +36,7 @@ import { converterToNumber } from "../../../../@core/utils/functionts/functionts
   styleUrls: ["./revenue-expense-gnd-total.component.scss"],
 })
 export class RevenueExpenseGndTotalComponent implements OnChanges, OnDestroy {
-  @Input() filter: IBudgetExecutionRequest;
+  @Input() filter!: IBudgetExecutionRequest;
 
   readonly title: string = "Despesa Prevista x Executada";
 
@@ -46,7 +46,7 @@ export class RevenueExpenseGndTotalComponent implements OnChanges, OnDestroy {
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "25%",
-      left: "0%",
+      left: "1%",
       right: "0%",
       bottom: "0%",
       containLabel: true,
@@ -110,6 +110,7 @@ export class RevenueExpenseGndTotalComponent implements OnChanges, OnDestroy {
   public isAtLeastOneToggleActive(): boolean {
     return this.toggleExecutivo || this.toggleDemaisPoderes;
   }
+
   onMaximizeButtonClick(chartId: string, event: boolean): void {
     this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
   }

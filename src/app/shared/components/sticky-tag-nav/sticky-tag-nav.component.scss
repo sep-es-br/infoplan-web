@@ -1,0 +1,119 @@
+@media screen and (min-width: 992px) {
+  :host {
+    display: block;
+    width: 100%;
+    z-index: 1010;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  :host {
+    display: block;
+    width: 100%;
+    z-index: 1010;
+  }
+}
+
+.tag-panel {
+  display: flex;
+  justify-content: center;
+  transition: top 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  width: 100%;
+
+  &.is-sticky {
+    z-index: 1010;
+    transition: opacity 0.3s ease;
+    
+    // Comportamento sticky removido conforme solicitado
+  }
+
+  nb-tag {
+    font-size: 12px;
+    padding: 4px 4px;
+    border-radius: 8px;
+    font-weight: bold;
+    width: 142px;
+    // width: 102px;
+    display: flex;
+    justify-content: center;
+
+    @media screen and (max-width: 576px) {
+      padding: 2px 12px;
+      font-size: 11px;
+    }
+  }
+}
+
+nb-tag.tag-default {
+  background-color: transparent;
+  color: #4bb6d6 !important;
+  border: 1px solid #4bb6d6 !important;
+  cursor: pointer !important;
+  transition:
+    background-color 280ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 280ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 280ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 180ms ease,
+    box-shadow 220ms ease;
+}
+
+nb-tag.tag-default:hover {
+  background-color: #eaf6fb !important;
+  transform: translateY(-0.5px);
+  box-shadow: 0 2px 6px rgba(75, 182, 214, 0.15) !important;
+}
+
+nb-tag.active-tag {
+  background-color: #4bb6d6 !important;
+  color: white !important;
+  border-color: #4bb6d6 !important;
+  box-shadow: 0 1px 4px rgba(75, 182, 214, 0.2);
+  transform: none !important;
+  transition:
+    background-color 320ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none !important;
+}
+
+nb-tag.disabled-tag {
+  pointer-events: none !important;
+  opacity: 0.6 !important;
+  cursor: default !important;
+  filter: grayscale(20%) !important;
+}
+
+@media screen and (max-width: 684px) {
+  .tag-panel {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0px 6px 11px;
+  }
+
+  ::ng-deep nb-tag-list {
+    width: 100%;
+    display: block !important; 
+  }
+
+  ::ng-deep .nb-tag-list-tags-wrapper {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important; 
+    justify-content: center;
+    width: 100%;
+  }
+
+  ::ng-deep nb-tag {
+    flex: 0 0 calc(50% - 4px) !important; 
+    max-width: calc(50% - 4px) !important;
+    
+    box-sizing: border-box !important; 
+    
+    margin: 0 !important; 
+    padding: 6px !important;
+    
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+}

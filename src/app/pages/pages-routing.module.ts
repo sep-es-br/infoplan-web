@@ -30,7 +30,7 @@ const routes: Routes = [
       },
       {
         path: "execucao-orcamentaria",
-        component: BudgetPanelComponent, // Updated component reference
+        loadChildren: () =>  import('../features/budget-panel/budget-panel.module').then(m => m.BudgetPanelModule),
         data: { dataSource: "Sigefes" },
       },
       {
@@ -38,6 +38,11 @@ const routes: Routes = [
         component: PlanejamentoOrcamentarioComponent,
         data: { dataSource: "SPO" },
       },
+      // {
+      //   path: "painel-obras",
+      //   loadChildren: () => import('../features/painel-obras/layout-painel-obras/layout-painel-obras.module').then(m => m.LayoutPainelObrasModule),
+      //   data: { dataSource: "PMO" },
+      // },
       {
         path: "",
         redirectTo: "home",

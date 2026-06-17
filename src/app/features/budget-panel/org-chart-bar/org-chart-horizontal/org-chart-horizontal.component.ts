@@ -1,4 +1,4 @@
-﻿import {
+import {
   Component,
   HostListener,
   Input,
@@ -7,6 +7,7 @@
   OnDestroy,
   SimpleChanges,
   AfterViewInit,
+  inject,
 } from "@angular/core";
 import { NbThemeService } from "@nebular/theme";
 import { ECharts, EChartsOption } from "echarts";
@@ -17,6 +18,8 @@ import {
 import { IChartOptions } from "../../../../shared/models/budget-panel/IChartOptions";
 import { CommonModule } from "@angular/common";
 import { NgxEchartsModule } from "ngx-echarts";
+import { UtilitiesService } from "../../../../core/service/utilities.service";
+
 export interface ChartDataConfig {
   legend?: {
     fontSize?: number | string;
@@ -33,6 +36,7 @@ export interface ChartDataConfig {
   };
   showMaximizeButton?: boolean;
 }
+
 @Component({
   selector: "ngx-org-chart-horizontal",
   templateUrl: "./org-chart-horizontal.component.html",
@@ -41,13 +45,15 @@ export interface ChartDataConfig {
   imports: [NgxEchartsModule, CommonModule],
 })
 export class OrgChartHorizontalComponent
-  implements OnInit, OnChanges, OnDestroy
-{
+  implements OnInit, OnChanges, OnDestroy {
   @Input() chart!: IChartOptions;
   @Input() height!: number;
   @Input() charactersPerLine!: number;
   @Input() showMaximizeButton!: boolean;
-  @Input() ChartDataConfig!: ChartDataConfig;
+  @Input() chartDataConfig!: ChartDataConfig;
+  @Input() valueType: 'percent' | 'currency' = 'percent';
+
+  private readonly _utilitiesService = inject(UtilitiesService);
 
   chartOptions!: EChartsOption;
   echartsInstance: ECharts | null = null;
@@ -64,20 +70,10 @@ export class OrgChartHorizontalComponent
 
   constructor(private _themeService: NbThemeService) {
     this._themeService.onThemeChange().subscribe((newTheme) => {
-      if (this.echartsInstance) {
-        this.currentTheme = newTheme.name;
-        const newStyles = getAvailableThemesStyles(newTheme.name);
-
-        this.echartsInstance.setOption({
-          tooltip: {
-            textStyle: { color: newStyles.textPrimaryColor },
-            backgroundColor: newStyles.themePrimaryColor,
-            borderColor: newStyles.themePrimaryColor,
-          },
-          legend: { textStyle: { color: newStyles.textPrimaryColor } },
-          yAxis: { axisLabel: { color: newStyles.textPrimaryColor } },
-          xAxis: { axisLabel: { color: newStyles.textPrimaryColor } },
-        });
+      this.currentTheme = newTheme.name as AvailableThemes;
+      if (this.echartsInstance && this.chart) {
+        this.initChartOptions(this.chart);
+        this.echartsInstance.setOption(this.chartOptions);
       }
     });
   }
@@ -88,13 +84,13 @@ export class OrgChartHorizontalComponent
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["chart"] && this.chart) {
+    if ((changes["chart"] && this.chart) || changes["valueType"]) {
       this.initChartOptions(this.chart);
     }
     if (changes["height"]) {
       this.resizeChart();
     }
-    if(changes["showMaximizeButton"]) {
+    if (changes["showMaximizeButton"]) {
       this.showMaximizeButton = changes["showMaximizeButton"].currentValue;
       this.updateChartOnResize();
     }
@@ -124,26 +120,23 @@ export class OrgChartHorizontalComponent
       yAxis: {
         axisLabel: {
           color: theme.textPrimaryColor,
-          // fontSize: isTablet ? 9 : isMobile ? 10 : 11,
           fontSize: this.showMaximizeButton ? 14 : 11,
-          margin: 8,
-          overflow: "truncate",
-          // width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
+          margin: 10,
+          width: 140,
+          lineHeight: 16,
+          overflow: "break"
         },
       },
       xAxis: {
         axisLabel: {
-          // fontSize: isTablet ? 9 : isMobile ? 10 : 11,
           fontSize: this.showMaximizeButton ? 13 : 10,
-          formatter: (value: number) => {
-            return this.formatValue(value);
-          },
+          formatter: (value: number) => this.formatAxisValue(value),
         },
       },
       legend: {
         textStyle: {
           color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 16 : 12,
+          fontSize: this.showMaximizeButton ? 13 : 12,
         },
       },
       series: this.chart.data.datasets.map(() => ({
@@ -155,15 +148,13 @@ export class OrgChartHorizontalComponent
   }
 
   initChartOptions(chart: IChartOptions) {
-    if (!chart?.data || chart.data.datasets.length < 2) {
+    if (!chart?.data || chart.data.datasets.length === 0) {
       this.chartOptions = null!;
       return;
     }
 
     const theme = getAvailableThemesStyles(this.currentTheme);
-
     const datasetLabels = chart.data.datasets.map((dataset) => dataset.label);
-
     const labels = chart.data.labels as string[];
 
     const data = labels.map((label: string, i: number) => ({
@@ -199,42 +190,20 @@ export class OrgChartHorizontalComponent
 
           if (!dataRef) return "";
 
-          let tituloTooltip = "";
+          let tituloTooltip = params[0].name || "";
 
-          if (dataRef.tipoTooltip === "PO") {
-            const po =
-              (dataRef.nomePO && dataRef.nomePO[index]) ||
-              "PO não identificado";
-            const uo =
-              (dataRef.nomeUO && dataRef.nomeUO[index]) ||
-              "UO não identificada";
-            tituloTooltip = `${uo} - ${po} &nbsp;&nbsp;`;
-          } else {
-            const labelOriginal = params[0].name || "";
-            const codigo = labelOriginal.includes(" - ")
-              ? labelOriginal.split(" - ")[0].trim()
-              : labelOriginal.trim();
-
-            const uo =
-              dataRef.nomeUO && dataRef.nomeUO[index]
-                ? String(dataRef.nomeUO[index]).trim()
-                : "";
-            let partes = [];
-            if (codigo) partes.push(`${codigo} - `);
-            if (uo) partes.push(`${uo} &nbsp;&nbsp;`);
-
-            tituloTooltip = partes.join(" ");
-          }
-
-          let tooltip = `${tituloTooltip} </br>`;
+          let tooltip = `<div style="padding:4px"><b style="font-size:13px">${tituloTooltip}</b> </br>`;
 
           params.forEach((p: any) => {
-            const valorRaw =
-              p.value !== undefined && p.value !== null ? p.value : 0;
-            const valorFormatado = this.formatNumber(valorRaw);
-            tooltip += `${p.seriesName}: ${valorFormatado} </br>`;
+            const valorRaw = p.value !== undefined && p.value !== null ? p.value : 0;
+            const valorFormatado = this.valueType === 'currency'
+              ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(valorRaw, "R$")
+              : (this.valueType === 'percent' ? `${this.formatNumberSimple(valorRaw)}%` : this._utilitiesService.formatCurrencyUsingBrazilianStandards(valorRaw, "R$"));
+            tooltip += `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${p.color};margin-right:5px;"></span>
+                        <b>${p.seriesName}:</b> ${valorFormatado} </br>`;
           });
 
+          tooltip += `</div>`;
           return tooltip;
         },
       },
@@ -244,9 +213,9 @@ export class OrgChartHorizontalComponent
         top: "top",
         left: "center",
         data: datasetLabels,
-        itemWidth: this.ChartDataConfig?.legend?.itemWidth || 10,
-        itemHeight: this.ChartDataConfig?.legend?.itemHeight || 10,
-        itemGap: this.ChartDataConfig?.legend?.itemGap || 20,
+        itemWidth: this.chartDataConfig?.legend?.itemWidth || 10,
+        itemHeight: this.chartDataConfig?.legend?.itemHeight || 10,
+        itemGap: this.chartDataConfig?.legend?.itemGap || 20,
         textStyle: {
           color: theme.textPrimaryColor,
           fontSize: this.showMaximizeButton ? 16 : 12,
@@ -254,11 +223,11 @@ export class OrgChartHorizontalComponent
       },
 
       grid: {
-        top: this.ChartDataConfig?.grid?.top || "5%",
-        left: this.ChartDataConfig?.grid?.left || "10%",
-        right: this.ChartDataConfig?.grid?.right || "10%",
-        bottom: this.ChartDataConfig?.grid?.bottom || "20%",
-        containLabel: this.ChartDataConfig?.grid?.containLabel || true,
+        top: this.chartDataConfig?.grid?.top || "15%",
+        left: this.chartDataConfig?.grid?.left || "10%",
+        right: this.chartDataConfig?.grid?.right || "10%",
+        bottom: this.chartDataConfig?.grid?.bottom || "10%",
+        containLabel: this.chartDataConfig?.grid?.containLabel || true,
       },
 
       xAxis: {
@@ -266,11 +235,16 @@ export class OrgChartHorizontalComponent
         scale: true,
         axisLabel: {
           color: theme.textPrimaryColor,
-          // fontSize: isMobile ? 8 : 10,
           fontSize: this.showMaximizeButton ? 13 : 10,
-          formatter: (value: number) => {
-            return this.formatValue(value);
-          },
+          formatter: (value: number) => this.formatAxisValue(value),
+        },
+        splitLine: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.2 },
+        },
+        axisLine: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.8 },
         },
       },
 
@@ -280,11 +254,19 @@ export class OrgChartHorizontalComponent
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ?  14 : 11,
-          // margin: 15,
-          // lineHeight: 11,
-          width: 100,
-          overflow: "truncate"
+          fontSize: this.showMaximizeButton ? 14 : 11,
+          margin: 10,
+          width: 140,
+          lineHeight: 16,
+          overflow: "break"
+        },
+        axisLine: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.8 },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: { color: theme.textSecondaryColor, opacity: 0.8 },
         },
       },
 
@@ -293,11 +275,19 @@ export class OrgChartHorizontalComponent
         type: "bar",
         data: data.map((d) => d.valores[index]),
         itemStyle: {
-          color: colors[index]
+          color: colors[index],
+          borderRadius: [0, 4, 4, 0],
         },
         barCategoryGap: "20%",
         barGap: "20%",
         barMaxWidth: isMobile ? 15 : 25,
+        label: {
+          show: true,
+          position: "right",
+          formatter: (params: any) => this.formatAxisValue(params.value),
+          fontSize: this.showMaximizeButton ? 13 : 9 ,
+          color: theme.textPrimaryColor,
+        }
       })),
 
       dataZoom: [
@@ -341,18 +331,37 @@ export class OrgChartHorizontalComponent
     const absValue = Math.abs(value);
 
     if (absValue >= 1_000_000_000_000)
-      return (value / 1_000_000_000_000).toFixed(1) + " T";
+      return (value / 1_000_000_000_000).toFixed(1).replace('.', ',') + " T";
     if (absValue >= 1_000_000_000)
-      return (value / 1_000_000_000).toFixed(1) + " B";
-    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1) + " M";
-    if (absValue >= 1_000) return (value / 1_000).toFixed(1) + " K";
+      return (value / 1_000_000_000).toFixed(1).replace('.', ',') + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.', ',') + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.', ',') + " K";
 
     return value.toString();
   }
-  private formatNumber(value: number): string {
-    return `R$ ${value.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
+
+  private formatNumberSimple(value: number): string {
+    return new Intl.NumberFormat("pt-BR").format(value);
+  }
+
+  private formatAxisValue(value: number): string {
+    const absValue = Math.abs(value);
+
+    if (this.valueType === 'currency') {
+      const sign = value < 0 ? '-' : '';
+      const v = Math.abs(value);
+      if (v >= 1_000_000_000_000) return `${sign} ${ (v / 1_000_000_000_000).toFixed(1).replace('.', ',') } T`;
+      if (v >= 1_000_000_000) return `${sign} ${ (v / 1_000_000_000).toFixed(1).replace('.', ',') } B`;
+      if (v >= 1_000_000) return `${sign} ${ (v / 1_000_000).toFixed(1).replace('.', ',') } M`;
+      if (v >= 1_000) return `${sign} ${ (v / 1_000).toFixed(1).replace('.', ',') } K`;
+
+      return `${sign} ${this.formatNumberSimple(v)}`;
+    }
+
+    if (this.valueType === 'percent') {
+      return `${this.formatNumberSimple(value)}%`;
+    }
+
+    return this.formatValue(value);
   }
 }

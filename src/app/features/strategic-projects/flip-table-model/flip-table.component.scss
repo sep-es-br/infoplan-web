@@ -11,39 +11,19 @@
 }
 
 .font-weight-bold {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 .card-toggle-section {
-  // margin-top: 12px;
-  // padding-top: 12px;
   width: 100%;
 }
-
-// @keyframes closeSearch {
-//   from {
-//     width: 60%;
-//     opacity: 1;
-//   }
-//   to {
-//     width: 0;
-//     opacity: 0;
-//   }
-// }
 
 .cursor-pointer {
   cursor: pointer;
 }
 
-.cdk-table {
-  background-color: aqua;
-}
-
-// .flipcard-body, .back-container{
-// }
-
-// ::ng-deep  .back-container {
-//   height: 100% !important;
+// .cdk-table {
+//   background-color: aqua;
 // }
 
 .is-visible-card-filter {
@@ -52,7 +32,6 @@
 }
 
 .outer-card {
-  // height: 275px;
   background-color: var(--card-background-color);
   border: none;
   border-radius: 8px;
@@ -84,10 +63,6 @@
         animation: openSearch 500ms ease-out forwards;
       }
 
-      // &.closing {
-      //   animation: closeSearch 500ms ease-in forwards;
-      // }
-
       .search-input {
         transition: all 0.3s ease;
         min-width: 0;
@@ -104,16 +79,34 @@
 
     .flip-button {
       width: 15.94px;
-      // Largura do ícone de gráfico, que é maior que o ícone de tabela (15px)
-      // Ao definir a largura do ícone pra sempre ser o maior (15.94), isso impede dos outros ícones
-      // ficarem movendo pro lado toda vez que clica pra trocar a visualização
     }
   }
 
   .flip-card {
+
     .card-front,
+    .card-front-content,
     .card-back {
       border: none;
+    }
+
+    /* Evitar que os containers do nb-flip-card interceptem eventos de mouse e bloqueiem o scroll */
+    ::ng-deep .front-container {
+      pointer-events: auto;
+    }
+
+    ::ng-deep .back-container {
+      pointer-events: none;
+    }
+
+    &.flipped {
+      ::ng-deep .front-container {
+        pointer-events: none;
+      }
+
+      ::ng-deep .back-container {
+        pointer-events: auto;
+      }
     }
 
     ::ng-deep &.align-table-vertically {
@@ -123,17 +116,234 @@
     }
 
     .card-back {
-      height: 100vh !important;
-      max-height: 80%;
-      // max-height: 308px;
+      // Height is managed dynamically via [style.height] in the template
+
+      .table-container {
+        overflow: auto;
+        max-height: 100%;
+        width: 100%;
+        border: 1px solid var(--divider-color);
+        border-radius: 4px;
+
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: var(--divider-color, rgba(128, 128, 128, 0.3));
+          border-radius: 10px;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+          background: var(--text-hint-color, rgba(128, 128, 128, 0.5));
+        }
+
+        .custom-grouped-table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+          background-color: transparent;
+
+          thead {
+            tr {
+              background-color: var(--card-background-color);
+
+              th {
+                color: var(--text-basic-color);
+                border-top: 1px solid var(--divider-color);
+                border-bottom: 2px solid var(--divider-color, #edf2f7);
+                white-space: nowrap;
+                padding: 7px 5px;
+                background-color: var(--card-background-color) !important;
+                vertical-align: middle;
+                position: sticky;
+                top: 0;
+                z-index: 20;
+                height: 35px;
+                box-sizing: border-box;
+
+                &.text-center {
+                  text-align: center;
+                }
+
+                &.font-weight-bold {
+                  font-weight: 700;
+                }
+
+                &+th {
+                  border-left: 1px solid var(--divider-color, #edf2f7);
+                }
+
+                &[colspan] {
+                  background-color: var(--card-background-color) !important;
+                  // background-image: linear-gradient(
+                  //   var(
+                  //     --table-header-background-color,
+                  //     rgba(128, 128, 128, 0.12)
+                  //   ),
+                  //   var(
+                  //     --table-header-background-color,
+                  //     rgba(128, 128, 128, 0.12)
+                  //   )
+                  // );
+                  border-bottom: 1px solid var(--divider-color, #cbd5e1);
+                  color: var(--text-basic-color);
+                  font-size: 0.9rem;
+                  letter-spacing: 0.01em;
+
+                  &:nth-child(even) {
+                    // background-image: linear-gradient(
+                    //   rgba(128, 128, 128, 0.06),
+                    //   rgba(128, 128, 128, 0.06)
+                    // );
+                  }
+                }
+              }
+
+              &:first-child th:first-child {
+                position: sticky;
+                left: 0;
+                top: 0;
+                z-index: 30;
+                background-color: var(--card-background-color) !important;
+                min-width: 200px;
+                max-width: 350px;
+                box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+                border-right: 2px solid var(--divider-color);
+                height: auto;
+              }
+
+              &:nth-child(2) th {
+                position: sticky;
+                top: 35px;
+                z-index: 20;
+                border-top: 1px solid var(--divider-color);
+                font-size: 0.75rem;
+                background-color: var(--card-background-color) !important;
+
+                &.sub-header {
+                  color: var(--text-hint-color);
+                }
+              }
+            }
+          }
+
+          tbody {
+            tr {
+              background-color: transparent;
+
+              &:hover {
+                background-color: var(--table-row-hover-background-color,
+                    rgba(128, 128, 128, 0.1));
+
+                td:first-child {
+                  background-color: inherit;
+                }
+              }
+
+              &.row-total {
+                // background-color: rgba(34, 197, 94, 0.05);
+                font-weight: 800 !important;
+
+                td {
+                  border-top: 2px solid var(--divider-color);
+                  background-color: inherit;
+                  font-weight: bold !important;
+                }
+              }
+
+              td {
+                padding: 7px 5px;
+                border-bottom: 1px solid var(--divider-color);
+                color: var(--text-basic-color);
+                font-size: 13px; // Melhorado para ficar mais visível
+                white-space: nowrap;
+                min-width: 110px;
+                background-color: transparent;
+
+                &:first-child {
+                  position: sticky;
+                  left: 0;
+                  z-index: 10;
+                  background-color: var(--card-background-color);
+                  min-width: 250px;
+                  max-width: 350px;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+                  font-weight: 500;
+                  border-right: 2px solid var(--divider-color);
+                }
+
+                &+td {
+                  border-left: 1px solid var(--divider-color);
+                }
+              }
+            }
+          }
+
+          // CLASSES DE MARCAÇÃO DINÂMICA
+          .metric-group-divider {
+            border-left: 2px solid var(--text-hint-color, #64748b) !important;
+          }
+
+          .alternate-group {
+            background-color: rgba(128, 128, 128, 0.02) !important;
+          }
+
+          &.minimized {
+            thead th {
+              font-size: 12px;
+            }
+
+            tbody td {
+              font-size: 11px;
+            }
+          }
+
+          &.maximized {
+            thead th {
+              font-size: 16px;
+            }
+
+            tbody td {
+              font-size: 14px;
+            }
+          }
+        }
+      }
 
       .flip-table {
-        width: auto;
+        width: 100%;
+        min-width: max-content;
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: auto !important;
+
+        th,
+        td {
+          white-space: nowrap;
+        }
+
+        // th:first-child,
+        // td:first-child {
+        //   min-width: 350px;
+        // }
+
+        tr.row-total {
+          td {
+            font-weight: 800 !important;
+          }
+        }
 
         &.minimized {
           font-family: var(--text-paragraph-font-family);
           z-index: 2;
-          // background-color: aqua;
 
           .nb-tree-grid-header-row {
             position: sticky;
@@ -142,49 +352,28 @@
           }
 
           th {
-            font-size: 13px !important;
-            // padding: 0;
+            font-size: 12px !important;
             padding-left: 0.5em;
             padding-right: 0.5em;
             height: 20px;
             line-height: normal;
-          }
-
-          th:nth-child(2) {
-            // width: 25%;
-
-            @media screen and (max-width: 576px) {
-              width: 30%;
-              // font-size: 12px !important;
-            }
-          }
-
-          th:nth-child(3) {
-            // width: 20%;
-
-            @media screen and (max-width: 576px) {
-              width: 25%;
-            }
+            white-space: nowrap;
           }
 
           td {
-            font-size: 12px !important;
+            font-size: 11px !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;
             padding-left: 0.5em;
             height: 25px;
-          }
-
-          .icon {
-            color: var(--card-text-color);
+            white-space: nowrap;
           }
         }
 
         &.maximized {
           font-family: var(--text-paragraph-font-family);
           z-index: 2;
-          // background-color: aqua;
           max-height: 80vh !important;
 
           .nb-tree-grid-header-row {
@@ -194,46 +383,102 @@
           }
 
           th {
-            font-size: 18px !important;
-            padding: 0;
+            font-size: 16px !important;
             padding-left: 0.5em;
             padding-right: 0.5em;
             height: 40px;
             line-height: normal;
-          }
-
-          th:nth-child(2) {
-            // width: 25%;
-
-            @media screen and (max-width: 576px) {
-              width: 30%;
-              // font-size: 5px !important;
-              //               font-size: 12px !important;
-            }
-          }
-
-          th:nth-child(3) {
-            // width: 20%;
-
-            @media screen and (max-width: 576px) {
-              width: 25%;
-            }
+            white-space: nowrap;
           }
 
           td {
-            font-size: 14px !important;
+            font-size: 16px !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;
             padding-left: 0.5em;
             height: 25px;
-          }
-
-          .icon {
-            color: var(--card-text-color);
+            white-space: nowrap;
           }
         }
+
+        .icon {
+          color: var(--card-text-color);
+        }
+
+        /* Garantir ícones consistentes dentro da tabela (tamanho e cor) */
+        nb-icon {
+          display: inline-flex;
+          width: 20px;
+          height: 20px;
+          vertical-align: middle;
+          min-width: 20px !important;
+          min-height: 20px !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+
+        nb-icon svg,
+        nb-icon img {
+          width: 20px !important;
+          height: 20px !important;
+          fill: currentColor !important;
+        }
+
+        /* Também garantir para o toggle da árvore (componente Nebular) */
+        nb-tree-grid-row-toggle svg,
+        nb-tree-grid-row-toggle nb-icon svg {
+          width: 20px !important;
+          height: 20px !important;
+          min-width: 20px !important;
+          min-height: 20px !important;
+          display: block !important;
+          visibility: visible !important;
+        }
       }
+    }
+  }
+}
+
+// Ajustes específicos para o tema CLARO (Default) para garantir contraste
+:host-context(.nb-theme-default) {
+  .custom-grouped-table {
+    thead {
+      tr:first-child th {
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+        border-top: 1px solid #94a3b8 !important;
+        border-bottom: 2px solid #94a3b8 !important;
+        border-right: 2px solid #94a3b8 !important;
+      }
+
+      tr:nth-child(2) th {
+        background-color: #ffffff !important;
+        color: #475569 !important;
+        border-top: 1px solid #94a3b8 !important;
+        /* Força a borda superior no tema claro */
+        border-left: 1px solid #cbd5e1 !important;
+        /* Força a divisão entre os anos no tema claro */
+        border-bottom: 1px solid #cbd5e1 !important;
+      }
+
+      th.first-column {
+        background-color: #ffffff !important;
+        border-top: 1px solid #94a3b8 !important;
+        border-right: 2px solid #94a3b8 !important;
+        border-left: 2px solid #94a3b8 !important;
+      }
+    }
+
+    tbody tr td:first-child {
+      background-color: #ffffff !important;
+      border-right: 2px solid #94a3b8 !important;
+      border-left: 2px solid #94a3b8 !important;
+    }
+
+    // Forçar a visibilidade da divisória no tema claro
+    .metric-group-divider {
+      border-left: 2px solid #64748b !important;
     }
   }
 }

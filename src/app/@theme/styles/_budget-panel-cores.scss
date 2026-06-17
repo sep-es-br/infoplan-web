@@ -1,8 +1,16 @@
 :root {
-  --receita-prevista:#4DB6D2;
-  --receita-realizada:#F58B9B;
-  --receita-realizada-prevista:#af9552;
-  --despesa-empenhada-autorizada:#549b7f;
-  --despesa-liquida-autorizada:#A671C4;
+  --receita-prevista: #4DB6D2;
+  --receita-realizada: #F58B9B;
+  --receita-realizada-prevista: #af9552;
+  --despesa-empenhada-autorizada: #549b7f;
+  --despesa-liquida-autorizada: #A671C4;
   --text-color: whitesmoke;
+  --available-without-reservation: #F58B9B;
+  --planned-success: #af9552;
+  --comparative: #808a9f;
+  --po-with-highest-settlement: #a2acc0;
+  --budgetary-feasibility: #799fe0;
+  --focus-on-the-mission: #76b2c7;
+  --budgetary-changes: #8992e5;
+  --budget-management-indicator: #a77fe1;
 }

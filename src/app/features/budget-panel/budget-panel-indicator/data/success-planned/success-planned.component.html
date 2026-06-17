@@ -1,0 +1,47 @@
+<ng-template #meusControles>
+  <div class="chart-controls toggles-container small-toggle d-flex flex-wrap gap-3 mb-2 px-2 pb-2 border-bottom">
+    <div class="control-item d-flex align-items-center gap-3">
+      <span class="grouping-label">Agrupar por:</span>
+
+      <div class="custom-pill-toggle">
+        <button type="button" [class.active]="groupingMode === 'GND'" (click)="onGroupingModeChange('GND')">
+          GND
+        </button>
+        <button type="button" [class.active]="groupingMode === 'YEAR_GND'" (click)="onGroupingModeChange('YEAR_GND')">
+          Ano
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ngx-flip-table
+  [showSearchField]="false"
+  [cardTitle]="title"
+  [tableContent]="tableContent"
+  [loadingStatus]="requestStatus"
+  (executeDownload)="handleTableDownload()"
+  [backCardHeight]="isChartMaximized('success-of-planned') ? calcMaximizedHeight() : 502"
+  [tableOnFront]="false"
+  [groupedHeaderColumns]="groupedHeaderColumns"
+  [distinctYears]="distinctYears"
+  [showMaximizeButton]="true"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('success-of-planned', $event)">
+
+  <div card-front>
+    <ng-container *ngTemplateOutlet="meusControles"></ng-container>
+
+    <ngx-org-chart-opposite
+      [chart]="chartData"
+      [height]="isChartMaximized('success-of-planned') ? calcMaximizedHeight() : 400"
+      [groupingMode]="groupingMode"
+      [isMaximized]="isChartMaximized('success-of-planned')"
+      [chartDataConfig]="chartDataConfig">
+    </ngx-org-chart-opposite>
+  </div>
+
+  <div card-back>
+    <ng-container *ngTemplateOutlet="meusControles"></ng-container>
+  </div>
+
+</ngx-flip-table>

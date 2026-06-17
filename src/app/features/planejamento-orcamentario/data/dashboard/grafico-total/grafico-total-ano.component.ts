@@ -314,4 +314,9 @@ export class GraficoTotalAnoComponent implements OnInit, OnChanges, OnDestroy {
   isChartMaximized(chartId: string): boolean {
     return this._chartMaximizeService.isChartMaximized(chartId);
   }
+
+    calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
+  }
+
 }

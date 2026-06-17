@@ -1,56 +1,29 @@
-﻿<ngx-flip-table
-  [showSearchField]="false"
-  [cardTitle]="title"
-  [tableContent]="tableContent"
-  [loadingStatus]="requestStatus"
-  (executeDownload)="handleTableDownload()"
-  [backCardHeight]="367"
-  [showMaximizeButton]="true"
-  (showMaximizeButtonClick)="
+﻿<ngx-flip-table [showSearchField]="false" [cardTitle]="title" [tableContent]="tableContent"
+  [loadingStatus]="requestStatus" (executeDownload)="handleTableDownload()"
+  [backCardHeight]="isChartMaximized('revenue-expense-gnd-total') ? calcMaximizedHeight() : 374"
+  [showMaximizeButton]="true" (showMaximizeButtonClick)="
     onMaximizeButtonClick('revenue-expense-gnd-total', $event)
-  "
->
-  <div
-    class="toggles-container small-toggle"
-    card-toggles
-    #cardToggles
-  >
+  ">
+  <div class="toggles-container small-toggle" card-toggles #cardToggles>
     <div class="form-check form-switch">
-      <input
-        class="form-check-input"
-        [(ngModel)]="toggleExecutivo"
-        (ngModelChange)="onToggleChange('executivo')"
-        type="checkbox"
-        role="switch"
-        id="flexSwitchCheckDefault"
-      />
+      <input class="form-check-input" [(ngModel)]="toggleExecutivo" (ngModelChange)="onToggleChange('executivo')"
+        type="checkbox" role="switch" id="flexSwitchCheckDefault" />
       <label class="form-check-label" for="flexSwitchCheckDefault">
         Executivo
       </label>
     </div>
 
     <div class="form-check form-switch">
-      <input
-        class="form-check-input"
-        [(ngModel)]="toggleDemaisPoderes"
-        (ngModelChange)="onToggleChange('demaisPoderes')"
-        type="checkbox"
-        role="switch"
-        id="flexSwitchCheckChecked"
-      />
+      <input class="form-check-input" [(ngModel)]="toggleDemaisPoderes"
+        (ngModelChange)="onToggleChange('demaisPoderes')" type="checkbox" role="switch" id="flexSwitchCheckChecked" />
       <label class="form-check-label" for="flexSwitchCheckChecked">
         Demais Poderes
       </label>
     </div>
   </div>
-  <ngx-org-chart-vertical
-    [chart]="chartData"
-    [chartDataConfig]="chartDataConfig"
-    [height]="
+  <ngx-org-chart-vertical [chart]="chartData" [chartDataConfig]="chartDataConfig" [height]="
       isChartMaximized('revenue-expense-gnd-total')
         ? calcMaximizedHeight()
-        : 300
-    "
-    card-front
-  ></ngx-org-chart-vertical>
+        : 350
+    " card-front></ngx-org-chart-vertical>
 </ngx-flip-table>

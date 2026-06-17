@@ -5,7 +5,7 @@
   [tableContent]="tableContent"
   (executeDownload)="handleTableDownload()"
   (executeSearch)="handleTableSearch($event)"
-  [backCardHeight]="500"
+  [backCardHeight]="isChartMaximized('progress-bar-uo') ? calcMaximizedHeight() : 500"
   [showMaximizeButton]="true"
   (showMaximizeButtonClick)="onMaximizeButtonClick('progress-bar-uo',$event)">
   <ngx-chart-progress-bar

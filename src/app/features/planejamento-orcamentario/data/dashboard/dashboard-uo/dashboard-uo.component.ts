@@ -68,7 +68,7 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
     grid: {
       top: "10%",
       left: "2%",
-      right: "2%",
+      right: "5%",
       bottom: "0%",
       containLabel: true,
     },
@@ -307,5 +307,9 @@ export class DashboardUoComponent implements OnInit, OnChanges, OnDestroy {
       columns,
       `UO - Unidade Orçamentária.xlsx`
     );
+  }
+
+  calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
   }
 }

@@ -111,6 +111,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
 
   fullSourceList: IFullSourceResponse[] = [];
   filteredFullSourceList: IFullSourceResponse[] = [];
+  timesTamp: string = '';
 
   requestStatus = {
     status: RequestStatus.EMPTY,
@@ -179,7 +180,10 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
 
   statusTotal = {
     availableWithoutReservation: 0,
-    plannedSuccess: 0,
+    plannedSuccess: {
+      sucesso: 0,
+      timesTamp: ''
+    },
     comparative: 0,
     poWithHighestSettlement: 0,
     budgetaryFeasibility: 0,
@@ -233,7 +237,8 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
             res.cardAvailableWithoutReversation;
           this.requestStatus.status = RequestStatus.SUCCESS;
         } else if (res.cardPlannedSuccess !== undefined) {
-          this.statusTotal.plannedSuccess = res.cardPlannedSuccess;
+          this.statusTotal.plannedSuccess.sucesso = res.cardPlannedSuccess.sucesso;
+          this.timesTamp = res.cardPlannedSuccess.timesTamp;
           this.requestStatus.status = RequestStatus.SUCCESS;
         } else if (res.cardComparative !== undefined) {
           this.statusTotal.comparative = res.cardComparative;
@@ -805,7 +810,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
       .subscribe({
         next: (response: any) => {
           this.comunicationCardsService.sendCardPlannedSuccess(
-            response.sucesso,
+            { sucesso: response.sucesso, timesTamp: response.timesTamp }
           );
           this.requestStatus.status = RequestStatus.SUCCESS;
         },

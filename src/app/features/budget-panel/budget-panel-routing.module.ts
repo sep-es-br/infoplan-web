@@ -16,11 +16,17 @@ const routes: Routes = [
       },
       {
         path: "resumo-executivo",
-        component: BudgetPanelComponent
+        component: BudgetPanelComponent,
+        data: {
+          dataSource: "Sigefes",
+        }
       },
       {
         path: "indicador",
-        component: BudgetPanelIndicatorComponent
+        component: BudgetPanelIndicatorComponent,
+        data: {
+          dataSource: "Sigefes",
+        }
       }
     ]
   }

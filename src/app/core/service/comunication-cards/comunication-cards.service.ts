@@ -9,7 +9,7 @@ interface IDataCard {
   plannedTotal?: ISPOTotalPrevistoDTO[] | null;
   authorizedTotal?: ISPOTotalAutorizadoDTO[] | null;
   cardAvailableWithoutReversation?: number | null;
-  cardPlannedSuccess?: number | null;
+  cardPlannedSuccess?: { sucesso: number, timesTamp: string } | null;
   cardComparative?: number | null;
   cardPoWithHighestSettlement?: { cod_po: string, nome_po: string, liquidado: number } | null;
   cardBudgetFeasibility?: number | null;
@@ -56,7 +56,7 @@ export class ComunicationCardsService {
     this.dataSubject.next({ cardAvailableWithoutReversation })
   }
 
-  sendCardPlannedSuccess(cardPlannedSuccess: number) {
+  sendCardPlannedSuccess(cardPlannedSuccess: { sucesso: number, timesTamp: string }) {
     this.dataSubject.next({ cardPlannedSuccess })
   }
 
@@ -80,7 +80,7 @@ export class ComunicationCardsService {
     this.dataSubject.next({ cardBudgetChanges })
   }
 
-  sendCardIGO(cardIGO: { IGO: number, nota: string}) {
+  sendCardIGO(cardIGO: { IGO: number, nota: string }) {
     this.dataSubject.next({ cardIGO })
   }
 

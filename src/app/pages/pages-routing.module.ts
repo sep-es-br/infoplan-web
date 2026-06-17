@@ -38,11 +38,11 @@ const routes: Routes = [
         component: PlanejamentoOrcamentarioComponent,
         data: { dataSource: "SPO" },
       },
-      {
-        path: "painel-obras",
-        loadChildren: () => import('../features/painel-obras/layout-painel-obras/layout-painel-obras.module').then(m => m.LayoutPainelObrasModule),
-        data: { dataSource: "PMO" },
-      },
+      // {
+      //   path: "painel-obras",
+      //   loadChildren: () => import('../features/painel-obras/layout-painel-obras/layout-painel-obras.module').then(m => m.LayoutPainelObrasModule),
+      //   data: { dataSource: "PMO" },
+      // },
       {
         path: "",
         redirectTo: "home",

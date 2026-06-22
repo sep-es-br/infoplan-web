@@ -39,9 +39,9 @@ import { FilterManagementService } from "../../../core/service/filter-management
 type PaginaPainel = "visao-geral" | "orgao" | "municipio" | "carteira";
 
 const DEFAULT_PARAMS_PAINEL_OBRAS: IPainelObrasRequest = {
-  orgao: JSON.stringify(environment.painelObras.orgao),
-  status: JSON.stringify(environment.painelObras.status),
-  municipio: JSON.stringify(environment.painelObras.municipio),
+  orgao: environment.painelObras.orgao,
+  status: environment.painelObras.status,
+  municipio: environment.painelObras.municipio,
   portfolio: environment.painelObras.portifolio,
   dataInicio: environment.painelObras.dataInicio,
   dataFim: environment.painelObras.dataFim,
@@ -212,7 +212,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (value) => {
-          this.municipiosList = value;
+          this.municipiosList = value || [];
           this.updateActiveFilters();
         },
       });
@@ -228,7 +228,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (value: IFiltroStatus[]) => {
-          this.statusList = value;
+          this.statusList = value || [];
           this.updateActiveFilters();
         }
       }
@@ -241,7 +241,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (value: IFiltroOrgao[]) => {
-          this.orgaosList = value;
+          this.orgaosList = value || [];
           this.updateActiveFilters();
           this.requestStatus.status = RequestStatus.SUCCESS;
         },
@@ -254,7 +254,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   }
 
   configFilterLabel() {
-    if (this.finalFilter.portfolio && this.finalFilter.portfolio !== " ") {
+    if (this.finalFilter.portfolio && this.finalFilter.portfolio.trim().length > 0) {
       this.activeFilters.push({
         key: "portfolio",
         label: "Portfólio",
@@ -262,7 +262,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.dataInicio && this.finalFilter.dataInicio !== " ") {
+    if (this.finalFilter.dataInicio && this.finalFilter.dataInicio.trim().length > 0) {
       const data = new Date(this.finalFilter.dataInicio);
       const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
       const ano = data.getUTCFullYear();
@@ -274,7 +274,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.dataFim && this.finalFilter.dataFim !== " ") {
+    if (this.finalFilter.dataFim && this.finalFilter.dataFim.trim().length > 0) {
       const data = new Date(this.finalFilter.dataFim);
       const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
       const ano = data.getUTCFullYear();
@@ -286,8 +286,8 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.orgao && this.finalFilter.orgao !== " ") {
-      const orgao = this.orgaosList.find(o => String(o.orgaoId) === String(this.finalFilter.orgao));
+    if (this.finalFilter.orgao && this.finalFilter.orgao.trim().length > 0) {
+      const orgao = this.orgaosList?.find(o => String(o.orgaoId) === String(this.finalFilter.orgao));
       this.activeFilters.push({
         key: "orgao",
         label: "Órgão",
@@ -295,8 +295,8 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.municipio && this.finalFilter.municipio !== " ") {
-      const municipio = this.municipiosList.find(m => String(m.id) === String(this.finalFilter.municipio));
+    if (this.finalFilter.municipio && this.finalFilter.municipio.trim().length > 0) {
+      const municipio = this.municipiosList?.find(m => String(m.id) === String(this.finalFilter.municipio));
       this.activeFilters.push({
         key: "municipio",
         label: "Município",
@@ -304,8 +304,8 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.status && this.finalFilter.status !== " ") {
-      const status = this.statusList.find(s => String(s.id) === String(this.finalFilter.status));
+    if (this.finalFilter.status && this.finalFilter.status.trim().length > 0) {
+      const status = this.statusList?.find(s => String(s.id) === String(this.finalFilter.status));
       this.activeFilters.push({
         key: "status",
         label: "Status",
@@ -317,22 +317,22 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   handleFilterChange(origin: AvailableFilters | string, newValue: any) {
     if (origin === "orgao") {
       this.filter.municipio = "";
-      this.filter.status = " ";
+      this.filter.status = "";
       this.getMunicipios();
       this.getStatus();
     } else if (origin === "municipio") {
-      this.filter.status = " ";
+      this.filter.status = "";
       this.getStatus();
     }
 
     if (Array.isArray(newValue)) {
       if (newValue.length === 1) {
         if (origin === "orgao") {
-          this.filter.orgao = " ";
+          this.filter.orgao = "";
         } else if (origin === "municipio") {
-          this.filter.municipio = " ";
+          this.filter.municipio = "";
         } else if (origin === "status") {
-          this.filter.status = " ";
+          this.filter.status = "";
         }
       }
     }
@@ -382,106 +382,127 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   }
 
   getCardExecution() {
-    this.getContagemEntregas();
-    this.getContagemPE();
-    this.getTotalPlanejado();
-    this.getTotalRealizado();
-    this.getTotalProgramas();
-    this.getTotalProjetos();
+    this.getTotalTolizador();
   }
 
 
-  getTotalProgramas() {
+  // getTotalProgramas() {
+  //   this.requestStatus.status = RequestStatus.LOADING;
+  //   this._painelObrasService.getTotalProgramas(this.currentRequestParams)
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe({
+  //       next: (value) => {
+  //         this.statusTotal.totalizadorProgramas = value.totalPrograma;
+  //         this.requestStatus.status = RequestStatus.SUCCESS;
+  //       },
+  //       error: () => {
+  //         this.statusTotal.totalizadorProgramas = 0;
+  //         this.requestStatus.status = RequestStatus.ERROR;
+  //       }
+  //     });
+  // }
+
+  // getTotalProjetos() {
+  //   this.requestStatus.status = RequestStatus.LOADING;
+  //   this._painelObrasService.getTotalProjetos(this.currentRequestParams)
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe({
+  //       next: (value: { totalProjetos: number }) => {
+  //         this.statusTotal.totalizadorProjetos = value.totalProjetos;
+  //         this.requestStatus.status = RequestStatus.SUCCESS;
+  //       },
+  //       error: () => {
+  //         this.statusTotal.totalizadorProjetos = 0;
+  //         this.requestStatus.status = RequestStatus.ERROR;
+  //       }
+  //     });
+  // }
+
+  // getTotalPlanejado() {
+  //   this.requestStatus.status = RequestStatus.LOADING;
+  //   this._painelObrasService.getTotalPlanejado(this.currentRequestParams)
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe({
+  //       next: (value) => {
+  //         this.statusTotal.monitoramentoPlanejado = value.totalPlanejado;
+  //         this.requestStatus.status = RequestStatus.SUCCESS;
+  //       },
+  //       error: () => {
+  //         this.statusTotal.monitoramentoPlanejado = 0;
+  //         this.requestStatus.status = RequestStatus.ERROR;
+  //       }
+  //     });
+  // }
+
+  // getTotalRealizado() {
+  //   this.requestStatus.status = RequestStatus.LOADING;
+  //   this._painelObrasService.getTotalRealizado(this.currentRequestParams)
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe({
+  //       next: (value) => {
+  //         this.statusTotal.monitoramentoRealizado = value.totalRealizado;
+  //         this.requestStatus.status = RequestStatus.SUCCESS;
+  //       },
+  //       error: () => {
+  //         this.statusTotal.monitoramentoRealizado = 0;
+  //         this.requestStatus.status = RequestStatus.ERROR;
+  //       }
+  //     });
+  // }
+
+  // getContagemPE() {
+  //   this.requestStatus.status = RequestStatus.LOADING;
+  //   this._painelObrasService.getContagemPE(this.currentRequestParams)
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe({
+  //       next: (value) => {
+  //         this.statusTotal.filtroTemporalCritico = value.contagemPE;
+  //         this.requestStatus.status = RequestStatus.SUCCESS;
+  //       },
+  //       error: () => {
+  //         this.statusTotal.filtroTemporalCritico = 0;
+  //         this.requestStatus.status = RequestStatus.ERROR;
+  //       }
+  //     });
+  // }
+
+  // getContagemEntregas() {
+  //   this.requestStatus.status = RequestStatus.LOADING;
+  //   this._painelObrasService.getContagemEntregas(this.currentRequestParams)
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe({
+  //       next: (value) => {
+  //         this.statusTotal.contagemEntregas = value.totalEntregas;
+  //         this.requestStatus.status = RequestStatus.SUCCESS;
+  //       },
+  //       error: () => {
+  //         this.statusTotal.contagemEntregas = 0;
+  //         this.requestStatus.status = RequestStatus.ERROR;
+  //       }
+  //     });
+  // }
+
+  getTotalTolizador() {
     this.requestStatus.status = RequestStatus.LOADING;
-    this._painelObrasService.getTotalProgramas(this.currentRequestParams)
+    this._painelObrasService.getTotalTotalizador(this.currentRequestParams)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (value) => {
-          this.statusTotal.totalizadorProgramas = value.totalPrograma;
-          this.requestStatus.status = RequestStatus.SUCCESS;
-        },
-        error: () => {
-          this.statusTotal.totalizadorProgramas = 0;
-          this.requestStatus.status = RequestStatus.ERROR;
-        }
-      });
-  }
-
-  getTotalProjetos() {
-    this.requestStatus.status = RequestStatus.LOADING;
-    this._painelObrasService.getTotalProjetos(this.currentRequestParams)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value: { totalProjetos: number }) => {
-          this.statusTotal.totalizadorProjetos = value.totalProjetos;
-          this.requestStatus.status = RequestStatus.SUCCESS;
-        },
-        error: () => {
-          this.statusTotal.totalizadorProjetos = 0;
-          this.requestStatus.status = RequestStatus.ERROR;
-        }
-      });
-  }
-
-  getTotalPlanejado() {
-    this.requestStatus.status = RequestStatus.LOADING;
-    this._painelObrasService.getTotalPlanejado(this.currentRequestParams)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
-          this.statusTotal.monitoramentoPlanejado = value.totalPlanejado;
-          this.requestStatus.status = RequestStatus.SUCCESS;
-        },
-        error: () => {
-          this.statusTotal.monitoramentoPlanejado = 0;
-          this.requestStatus.status = RequestStatus.ERROR;
-        }
-      });
-  }
-
-  getTotalRealizado() {
-    this.requestStatus.status = RequestStatus.LOADING;
-    this._painelObrasService.getTotalRealizado(this.currentRequestParams)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
+          console.log("dados", value)
+          this.statusTotal.contagemEntregas = value.totalEntregasPE;
+          this.statusTotal.monitoramentoPlanejado = value.totalPrevisto;
           this.statusTotal.monitoramentoRealizado = value.totalRealizado;
-          this.requestStatus.status = RequestStatus.SUCCESS;
-        },
-        error: () => {
-          this.statusTotal.monitoramentoRealizado = 0;
-          this.requestStatus.status = RequestStatus.ERROR;
-        }
-      });
-  }
-
-  getContagemPE() {
-    this.requestStatus.status = RequestStatus.LOADING;
-    this._painelObrasService.getContagemPE(this.currentRequestParams)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
-          this.statusTotal.filtroTemporalCritico = value.contagemPE;
-          this.requestStatus.status = RequestStatus.SUCCESS;
-        },
-        error: () => {
-          this.statusTotal.filtroTemporalCritico = 0;
-          this.requestStatus.status = RequestStatus.ERROR;
-        }
-      });
-  }
-
-  getContagemEntregas() {
-    this.requestStatus.status = RequestStatus.LOADING;
-    this._painelObrasService.getContagemEntregas(this.currentRequestParams)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
-          this.statusTotal.contagemEntregas = value.totalEntregas;
+          this.statusTotal.totalizadorProgramas = value.quantidadeProgramas;
+          this.statusTotal.totalizadorProjetos = value.quantidadeProjetos;
+          this.statusTotal.filtroTemporalCritico = value.totalProgramado;
           this.requestStatus.status = RequestStatus.SUCCESS;
         },
         error: () => {
           this.statusTotal.contagemEntregas = 0;
+          this.statusTotal.monitoramentoPlanejado = 0;
+          this.statusTotal.monitoramentoRealizado = 0;
+          this.statusTotal.totalizadorProgramas = 0;
+          this.statusTotal.totalizadorProjetos = 0;
           this.requestStatus.status = RequestStatus.ERROR;
         }
       });
@@ -490,11 +511,11 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   removeFilter(filterKey: string): void {
     this.activeFilters = this.activeFilters.filter((f) => f.key !== filterKey);
     if (filterKey === "orgao") {
-      this.filter.orgao = " ";
+      this.filter.orgao = "";
     } else if (filterKey === "municipio") {
-      this.filter.municipio = " ";
+      this.filter.municipio = "";
     } else if (filterKey === "status") {
-      this.filter.status = " ";
+      this.filter.status = "";
     }
     this.filtrar();
   }

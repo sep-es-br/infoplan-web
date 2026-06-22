@@ -269,7 +269,7 @@
 
                 <div class="text-section budget-management-indicator">
                   <div *ngIf="statusTotal?.budgetManagementIndicator?.nota !== null">
-                    <span class="label-subtitle" [nbTooltip]="
+                    <!-- <span class="label-subtitle" [nbTooltip]="
                         ' Nota ' +
                         (
                           statusTotal?.budgetManagementIndicator?.nota
@@ -280,6 +280,11 @@
 
                       statusTotal?.budgetManagementIndicator?.nota
                       }}
+                    </span> -->
+                    <span
+                      *ngIf="statusTotal?.budgetManagementIndicator?.nota !== undefined && statusTotal?.budgetManagementIndicator?.nota !== null"
+                      class="label-subtitle" [nbTooltip]="' Nota ' + statusTotal.budgetManagementIndicator.nota">
+                      Nota {{ statusTotal.budgetManagementIndicator.nota }}
                     </span>
                   </div>
                   <span>Indicador de Gestão Orçamentária</span>

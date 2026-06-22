@@ -122,28 +122,28 @@ export class PainelObrasService {
     );
   }
 
-  public getNumeroEntregasPorMunicipioStatus(request: IPainelObrasRequest): Observable< INumeroEntregasPorMunicipioStatus[]> {
+  public getNumeroEntregasPorMunicipioStatus(request: IPainelObrasRequest): Observable<INumeroEntregasPorMunicipioStatus[]> {
     const params: HttpParams = this.returnParams(request);
     return this._http.get<INumeroEntregasPorMunicipioStatus[]>(`${this._URI}/numero-entregas-por-status`, { params }).pipe(
       catchError((err) => this.handleError(err, this._router))
     );
   }
 
-  public getQuantidadeMaiorEntrega(request: IPainelObrasRequest) : Observable<IQuantidadeMaiorEntrega[]> {
+  public getQuantidadeMaiorEntrega(request: IPainelObrasRequest): Observable<IQuantidadeMaiorEntrega[]> {
     const params: HttpParams = this.returnParams(request);
     return this._http.get<IQuantidadeMaiorEntrega[]>(`${this._URI}/quantidade-maior-entrega`, { params }).pipe(
       catchError((err) => this.handleError(err, this._router))
     )
   }
 
-    public getQuantidadeMaiorEntregaPrevista(request: IPainelObrasRequest) : Observable<IQuantidadeMaiorEntregaPrevista[]> {
+  public getQuantidadeMaiorEntregaPrevista(request: IPainelObrasRequest): Observable<IQuantidadeMaiorEntregaPrevista[]> {
     const params: HttpParams = this.returnParams(request);
     return this._http.get<IQuantidadeMaiorEntregaPrevista[]>(`${this._URI}/quantidade-maior-prevista`, { params }).pipe(
       catchError((err) => this.handleError(err, this._router))
     )
   }
 
-    public getTotalEntregaPorMes(request: IPainelObrasRequest) : Observable<ITotalEntregaPorMes[]> {
+  public getTotalEntregaPorMes(request: IPainelObrasRequest): Observable<ITotalEntregaPorMes[]> {
     const params: HttpParams = this.returnParams(request);
     return this._http.get<ITotalEntregaPorMes[]>(`${this._URI}/total-entrega-por-mes`, { params }).pipe(
       catchError((err) => this.handleError(err, this._router))
@@ -152,12 +152,25 @@ export class PainelObrasService {
 
   private returnParams(request: IPainelObrasRequest): HttpParams {
     let params = new HttpParams();
-    params = params.append('orgao', request.orgao);
-    params = params.append('municipio', request.municipio);
-    params = params.append('status', request.status);
+
+    const sanitizeValue = (value: any): string => {
+      if (value === undefined || value === null) return '';
+
+      let strValue = String(value).trim();
+
+      if (strValue === '""') {
+        return '';
+      }
+
+      return strValue;
+    };
+
+    params = params.append('orgao', sanitizeValue(request.orgao));
+    params = params.append('municipio', sanitizeValue(request.municipio));
+    params = params.append('status', sanitizeValue(request.status));
+
     return params;
   }
-
   private returnParamsMunicipio(request: IFiltroMunicipioRequest): HttpParams {
     let params = new HttpParams();
     params = params.append('orgao', request.orgao);

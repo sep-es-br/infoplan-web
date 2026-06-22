@@ -254,7 +254,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   }
 
   configFilterLabel() {
-    if (this.finalFilter.portfolio && String(this.finalFilter.portfolio) !== "-1") {
+    if (this.finalFilter.portfolio && this.finalFilter.portfolio !== " ") {
       this.activeFilters.push({
         key: "portfolio",
         label: "Portfólio",
@@ -262,7 +262,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.dataInicio && String(this.finalFilter.dataInicio) !== "-1") {
+    if (this.finalFilter.dataInicio && this.finalFilter.dataInicio !== " ") {
       const data = new Date(this.finalFilter.dataInicio);
       const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
       const ano = data.getUTCFullYear();
@@ -274,7 +274,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.dataFim && String(this.finalFilter.dataFim) !== "-1") {
+    if (this.finalFilter.dataFim && this.finalFilter.dataFim !== " ") {
       const data = new Date(this.finalFilter.dataFim);
       const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
       const ano = data.getUTCFullYear();
@@ -286,7 +286,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.orgao && String(this.finalFilter.orgao) !== "-1") {
+    if (this.finalFilter.orgao && this.finalFilter.orgao !== " ") {
       const orgao = this.orgaosList.find(o => String(o.orgaoId) === String(this.finalFilter.orgao));
       this.activeFilters.push({
         key: "orgao",
@@ -295,7 +295,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.municipio && String(this.finalFilter.municipio) !== "-1") {
+    if (this.finalFilter.municipio && this.finalFilter.municipio !== " ") {
       const municipio = this.municipiosList.find(m => String(m.id) === String(this.finalFilter.municipio));
       this.activeFilters.push({
         key: "municipio",
@@ -304,7 +304,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.status && String(this.finalFilter.status) !== "-1") {
+    if (this.finalFilter.status && this.finalFilter.status !== " ") {
       const status = this.statusList.find(s => String(s.id) === String(this.finalFilter.status));
       this.activeFilters.push({
         key: "status",
@@ -316,23 +316,23 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
 
   handleFilterChange(origin: AvailableFilters | string, newValue: any) {
     if (origin === "orgao") {
-      this.filter.municipio = "-1";
-      this.filter.status = "-1";
+      this.filter.municipio = "";
+      this.filter.status = " ";
       this.getMunicipios();
       this.getStatus();
     } else if (origin === "municipio") {
-      this.filter.status = "-1";
+      this.filter.status = " ";
       this.getStatus();
     }
 
     if (Array.isArray(newValue)) {
       if (newValue.length === 1) {
         if (origin === "orgao") {
-          this.filter.orgao = "-1";
+          this.filter.orgao = " ";
         } else if (origin === "municipio") {
-          this.filter.municipio = "-1";
+          this.filter.municipio = " ";
         } else if (origin === "status") {
-          this.filter.status = "-1";
+          this.filter.status = " ";
         }
       }
     }
@@ -490,11 +490,11 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   removeFilter(filterKey: string): void {
     this.activeFilters = this.activeFilters.filter((f) => f.key !== filterKey);
     if (filterKey === "orgao") {
-      this.filter.orgao = "-1";
+      this.filter.orgao = " ";
     } else if (filterKey === "municipio") {
-      this.filter.municipio = "-1";
+      this.filter.municipio = " ";
     } else if (filterKey === "status") {
-      this.filter.status = "-1";
+      this.filter.status = " ";
     }
     this.filtrar();
   }

@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {Router} from '@angular/router';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 
 
@@ -40,25 +40,27 @@ export class AuthRedirectComponent {
           sessionStorage.setItem('token', infoplanToken);
         }),
         tap((response: IProfile) => {
+          console.log("profile", response)
           const userProfile = {
             name: response.name,
             email: response.email,
             role: response.role,
+            sigla: response.Sigla,
           };
 
-        const userRoles = response.role ?? [];
+          const userRoles = response.role ?? [];
 
-        const allowedRoles = Object.values(environment.allowedRoles).filter(role => role); 
+          const allowedRoles = Object.values(environment.allowedRoles).filter(role => role);
 
-        const hasAccess = userRoles.some(role => allowedRoles.includes(role));
+          const hasAccess = userRoles.some(role => allowedRoles.includes(role));
 
-        if (!hasAccess) {
-          sessionStorage.clear();
-          this._router.navigate(['/login'], {
-            state: { authError: 'Acesso negado: Você não tem autorização para acessar esta aplicação.' }
-          });
-          return;
-        }
+          if (!hasAccess) {
+            sessionStorage.clear();
+            this._router.navigate(['/login'], {
+              state: { authError: 'Acesso negado: Você não tem autorização para acessar esta aplicação.' }
+            });
+            return;
+          }
 
           sessionStorage.setItem('user-profile', JSON.stringify(userProfile));
           this._router.navigate(['pages']);
@@ -71,5 +73,5 @@ export class AuthRedirectComponent {
         })
       )
       .subscribe();
-    }
+  }
 }

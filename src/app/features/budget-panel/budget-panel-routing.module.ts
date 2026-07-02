@@ -3,6 +3,8 @@ import { RouterModule, Routes } from "@angular/router";
 import { LayoutBudgetPanel } from "./layout/layout-budget-panel";
 import { BudgetPanelComponent } from "./budget-panel.component";
 import { BudgetPanelIndicatorComponent } from "./budget-panel-indicator/budget-panel-indicator.component";
+import { OrganizacaoGuardGuard } from "../../core/guards/organizacao-guard.guard"; // Import do guard
+import { environment } from "../../../environments/environment";
 
 const routes: Routes = [
   {
@@ -17,15 +19,23 @@ const routes: Routes = [
       {
         path: "resumo-executivo",
         component: BudgetPanelComponent,
+        canActivate: [OrganizacaoGuardGuard],
         data: {
           dataSource: "Sigefes",
+          allowedRoles: [environment.allowedRoles.execucaoOrcamentaria, environment.allowedRoles.geral],
+          allowedOrgs: environment.allowedOrgs.execucaoOrcamentariaResumoExecutivo,
+          fallbackRoute: '/pages/execucao-orcamentaria/indicador'
         }
       },
       {
         path: "indicador",
         component: BudgetPanelIndicatorComponent,
+        canActivate: [OrganizacaoGuardGuard],
         data: {
           dataSource: "Sigefes",
+          allowedRoles: [environment.allowedRoles.execucaoOrcamentaria, environment.allowedRoles.geral],
+          allowedOrgs: environment.allowedOrgs.execucaoOrcamentariaIndicador,
+          fallbackRoute: '/pages/execucao-orcamentaria/resumo-executivo'
         }
       }
     ]

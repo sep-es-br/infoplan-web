@@ -177,6 +177,7 @@ export class OrgChartHorizontalComponent
       },
 
       legend: {
+        type: "scroll",
         orient: "horizontal",
         top: "top",
         left: "center",
@@ -201,9 +202,10 @@ export class OrgChartHorizontalComponent
       xAxis: {
         type: "value",
         scale: true,
+        splitNumber: isPhone ? 3 : isTablet ? 4 : 5,
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 13 : 10,
+          fontSize: isPhone ? (this.showMaximizeButton ? 11 : 8.5) : (this.showMaximizeButton ? 13 : 10),
           formatter: (value: number) => this.formatAxisValue(value),
         },
         splitLine: {
@@ -222,11 +224,12 @@ export class OrgChartHorizontalComponent
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 14 : 11,
+          fontSize: isPhone ? (this.showMaximizeButton ? 11 : 9) : (this.showMaximizeButton ? 13 : 10),
           margin: 10,
-          width: 140,
-          lineHeight: 16,
-          overflow: "break"
+          width: isPhone ? 100 : isTablet ? 120 : isMobile ? 130 : 150,
+          lineHeight: isPhone ? 13 : 15,
+          overflow: "break",
+          formatter: (value: string) => this.formatAxisLabel(value)
         },
         axisLine: {
           show: true,
@@ -293,6 +296,60 @@ export class OrgChartHorizontalComponent
         this.echartsInstance.resize();
       }, 100);
     }
+  }
+
+  private formatAxisLabel(value: string): string {
+    if (!value) return "";
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
+
+    const limit = isPhone ? 18 : isTablet ? 22 : isMobile ? 24 : 26;
+    const maxLines = 3;
+
+    const words = value.split(" ");
+    const lines: string[] = [];
+    let currentLine = "";
+
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      if (!currentLine) {
+        currentLine = word;
+      } else {
+        if ((currentLine + " " + word).length <= limit) {
+          currentLine += " " + word;
+        } else {
+          lines.push(currentLine);
+          if (lines.length === maxLines - 1) {
+            let lastLine = word;
+            let hasMore = false;
+            for (let j = i + 1; j < words.length; j++) {
+              if ((lastLine + " " + words[j]).length <= limit - 3) {
+                lastLine += " " + words[j];
+                i = j;
+              } else {
+                hasMore = true;
+                break;
+              }
+            }
+            if (hasMore || i < words.length - 1) {
+              lastLine = lastLine.substring(0, limit - 3).trim() + "...";
+            }
+            lines.push(lastLine);
+            currentLine = "";
+            break;
+          } else {
+            currentLine = word;
+          }
+        }
+      }
+    }
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    return lines.join("\n");
   }
 
   formatValue(value: number): string {

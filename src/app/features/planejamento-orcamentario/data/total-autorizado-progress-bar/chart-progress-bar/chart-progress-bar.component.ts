@@ -123,11 +123,13 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         },
       },
       xAxis: {
+        splitNumber: isPhone ? 3 : isTablet ? 4 : 5,
         axisLabel: {
-          fontSize: isTablet ? 9 : isMobile ? 10 : 11,
+          fontSize: isPhone ? 8.5 : isTablet ? 9 : isMobile ? 10 : 11,
         },
       },
       legend: {
+        type: "scroll",
         orient: "horizontal",
         top: "top",
         left: "center",
@@ -225,6 +227,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
       },
 
       legend: {
+        type: "scroll",
         orient: "horizontal",
         top: "top",
         left: "center",
@@ -250,9 +253,10 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         type: "value",
         min: 0,
         max: 100,
+        splitNumber: isPhone ? 3 : isTablet ? 4 : 5,
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: isMobile ? 8 : 10,
+          fontSize: isPhone ? 8.5 : isTablet ? 9 : isMobile ? 10 : 11,
           formatter: (v: number) => `${v} %`,
         },
       },

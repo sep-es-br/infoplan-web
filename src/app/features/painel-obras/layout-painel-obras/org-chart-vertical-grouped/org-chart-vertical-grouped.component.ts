@@ -359,7 +359,7 @@ export class OrgChartVerticalGroupedComponent
               : this.formatAxisCompact(value);
           },
           color: theme.textPrimaryColor,
-          fontSize: 10,
+          fontSize: this.isMaximized ? 13 : 10,
         },
         splitLine: {
           show: true,
@@ -376,13 +376,12 @@ export class OrgChartVerticalGroupedComponent
         },
         axisLabel: {
           interval: 0,
-          margin: 20,
+          margin: 10,
           color: theme.textPrimaryColor,
           rich: {
             mainGroup: {
-              fontSize: this.isMaximized ? 14 : 12,
+              fontSize: this.isMaximized ? 14 : 11,
               padding: [0, 0, 4, 0],
-              fontWeight: "bold",
             },
           },
           formatter: (val: string) => {

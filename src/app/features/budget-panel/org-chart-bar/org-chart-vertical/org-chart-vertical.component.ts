@@ -175,15 +175,26 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           fontSize: 12,
         },
         confine: true,
+        extraCssText: 'white-space: normal; word-break: break-all; max-width: 610px;',
         formatter: (params: any) => {
-          let tooltip = `${params[0].name}<br>`;
+          if (!params || params.length === 0) return "";
+
+          let tituloTooltip = params[0].name || "";
+          let tooltip = `<div style="padding:4px"><b style="font-size:13px">${tituloTooltip}</b> </br>`;
+
           params.forEach((p: any) => {
-            tooltip += `${p.seriesName}: ${this.formatNumber(p.value)}<br>`;
+            const valorRaw = p.value !== undefined && p.value !== null ? p.value : 0;
+            const valorFormatado = this.formatNumber(valorRaw);
+            tooltip += `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${p.color};margin-right:5px;"></span>
+                        <b>${p.seriesName}:</b> ${valorFormatado} </br>`;
           });
+
+          tooltip += `</div>`;
           return tooltip;
         },
       },
       legend: {
+        type: "scroll",
         orient: "horizontal",
         top: "top",
         left: "center",
@@ -201,10 +212,10 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
+          fontSize: this.isMaximized ? 14 : 11,
           interval: 0,
-          rotate: window.innerWidth <= 768 ? 45 : 0,
-          margin: 12,
+          rotate: (window.innerWidth <= 768 && data.length > 4) ? 45 : 0,
+          margin: 10,
           overflow: "truncate",
           width: isPhone ? 40 : isTablet ? 60 : isMobile ? 60 : 130,
         },
@@ -217,7 +228,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         inverse: false,
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
+          fontSize: this.isMaximized ? 13 : 10,
           width: isMobile ? 20 : 100,
           formatter: (v: number) => `${this.formatAxisValue(v)}`,
         },
@@ -241,6 +252,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         data: data.map((res) => res.valores[index]),
         itemStyle: {
           color: colors[index],
+          borderRadius: [4, 4, 0, 0],
         },
         label: {
           show: window.innerWidth > 768,

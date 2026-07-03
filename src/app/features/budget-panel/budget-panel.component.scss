@@ -24,6 +24,13 @@ input:focus {
 }
 
 .filter-button.is-sticky {
+  position: sticky;
+  top: 131px;
+
+  @media screen and (max-width: 768px) {
+    top: 180px;
+  }
+
   width: fit-content;
   // margin: 0 auto;
   // padding: 6px 12px;
@@ -177,7 +184,7 @@ input:focus {
     display: flex;
     gap: 8px;
     width: 100%;
-    padding: 5px 0 5px 5px;
+    padding: 5px;
     height: 100%;
 
     .spinner-border {
@@ -378,7 +385,7 @@ nb-tooltip {
         }
 
         .tag-value {
-          margin-top: -6px;
+          margin-top: 0;
         }
 
         button {

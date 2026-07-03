@@ -36,9 +36,9 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
   echartsInstance: ECharts = null;
   chartOptions: EChartsOption;
 
-  centerX: number = 70;
-  centerY: number = 50;
-  pieRadius = ["60%", "100%"];
+  @Input() centerX: number = 70;
+  @Input() centerY: number = 50;
+  pieRadius = ["50%", "80%"];
 
   currentTheme: AvailableThemes = AvailableThemes.DEFAULT;
 
@@ -125,19 +125,10 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private getResponsiveHeight(): number {
-    if (!this.isMaximized) {
-      return this.height ?? 100;
+    if (this.isMaximized) {
+      return this.height || 420;
     }
-
-    const w = window.innerWidth;
-
-    if (w < 350) return 220;
-    if (w < 500) return 200;
-    if (w < 768) return 200;
-    if (w < 922) return 340;
-    if (w < 1100) return 380;
-
-    return this.height || 420;
+    return this.height ?? 100;
   }
 
   @HostListener("window:resize")
@@ -215,6 +206,8 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
         title: {
           left: "50%",
           top: "50%",
+          textAlign: "center",
+          textVerticalAlign: "middle",
           textStyle: { fontSize: isPhone ? 18 : 24 },
         },
         series: [
@@ -282,9 +275,33 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updateTitlePosition() {
-    if (!this.echartsInstance || this.isMaximized) return;
+    if (!this.echartsInstance) return;
 
     const screenWidth = window.innerWidth;
+    const isPhone = screenWidth < 500;
+
+    if (this.isMaximized) {
+      this.echartsInstance.setOption({
+        legend: {
+          textStyle: { fontSize: isPhone ? 11 : 13 }
+        },
+        title: {
+          left: "50%",
+          top: "50%",
+          textAlign: "center",
+          textVerticalAlign: "middle",
+          textStyle: { fontSize: isPhone ? 18 : 24 },
+        },
+        series: [
+          {
+            center: ["50%", "50%"],
+            radius: isPhone ? ["50%", "85%"] : ["55%", "90%"],
+            label: { fontSize: isPhone ? 10 : 12 }
+          },
+        ],
+      });
+      return;
+    }
 
     // Ajusta o raio e posição do gráfico conforme a largura da tela
     if (screenWidth < 320) {
@@ -295,29 +312,25 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
       this.pieRadius = ["40%", "80%"];
       this.centerX = 55;
     } else if (screenWidth < 768) {
-      this.pieRadius = ["45%", "85%"];
+      this.pieRadius = ["45%", "80%"];
     } else if (screenWidth <= 1000) {
-      this.pieRadius = ["50%", "90%"];
+      this.pieRadius = ["50%", "80%"];
       this.centerX = 68;
     } else if (screenWidth >= 1600) {
       this.centerX = 68;
+      this.pieRadius = ["50%", "80%"];
     } else {
-      this.pieRadius = ["60%", "100%"];
+      this.pieRadius = ["50%", "80%"];
     }
-
-    let offset = this.centerX - 1;
-    if (screenWidth >= 1800 || (screenWidth >= 768 && screenWidth <= 1000)) {
-      offset = this.centerX - 1;
-    }
-
-    const isPhone = screenWidth < 500;
 
     try {
       this.echartsInstance.setOption(
         {
           title: {
-            left: `${offset}%`,
+            left: `${this.centerX}%`,
             top: `${this.centerY}%`,
+            textAlign: "center",
+            textVerticalAlign: "middle",
             textStyle: {
               fontSize: isPhone ? 12 : 16,
               fontWeight: "bold",
@@ -423,11 +436,6 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
       };
     } else {
       // MODO NORMAL: Layout original com gráfico deslocado
-      const offset =
-        screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
-          ? this.centerX - 2
-          : this.centerX - 1;
-
       this.chartOptions = {
         tooltip: {
           trigger: "item",
@@ -438,7 +446,7 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
         },
         title: {
           text: `${total}`,
-          left: `${offset}%`,
+          left: `${this.centerX}%`,
           top: `${this.centerY}%`,
           textAlign: "center",
           textVerticalAlign: "middle",

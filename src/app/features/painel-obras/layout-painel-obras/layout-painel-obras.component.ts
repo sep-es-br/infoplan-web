@@ -171,7 +171,6 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   constructor() { }
 
   ngOnInit(): void {
-    // this.filterManagement( {...DEFAULT_PARAMS_PAINEL_OBRAS});
     this._scrollService.isScrolled$
       .pipe(takeUntil(this.destroy$))
       .subscribe((scrolled) => {
@@ -388,110 +387,12 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
     this.getTotalTolizador();
   }
 
-
-  // getTotalProgramas() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalProgramas(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.totalizadorProgramas = value.totalPrograma;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.totalizadorProgramas = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getTotalProjetos() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalProjetos(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value: { totalProjetos: number }) => {
-  //         this.statusTotal.totalizadorProjetos = value.totalProjetos;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.totalizadorProjetos = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getTotalPlanejado() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalPlanejado(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.monitoramentoPlanejado = value.totalPlanejado;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.monitoramentoPlanejado = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getTotalRealizado() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalRealizado(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.monitoramentoRealizado = value.totalRealizado;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.monitoramentoRealizado = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getContagemPE() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getContagemPE(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.filtroTemporalCritico = value.contagemPE;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.filtroTemporalCritico = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getContagemEntregas() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getContagemEntregas(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.contagemEntregas = value.totalEntregas;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.contagemEntregas = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
   getTotalTolizador() {
     this.requestStatus.status = RequestStatus.LOADING;
     this._painelObrasService.getTotalTotalizador(this.currentRequestParams)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (value) => {
-          console.log("dados", value)
           this.statusTotal.contagemEntregas = value.totalEntregasPE;
           this.statusTotal.monitoramentoPlanejado = value.totalPrevisto;
           this.statusTotal.monitoramentoRealizado = value.totalRealizado;

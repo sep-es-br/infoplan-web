@@ -174,7 +174,7 @@ input:focus {
         }
 
         .tag-value {
-          margin-top: -6px;
+          margin-top: 0;
         }
 
         button {
@@ -306,7 +306,7 @@ input:focus {
     display: flex;
     gap: 8px;
     width: 100%;
-    padding: 5px 0 5px 5px;
+    padding: 5px;
     height: 100%;
 
     .spinner-border {
@@ -461,7 +461,7 @@ input:focus {
 
     .card-content {
       gap: 3px;
-      padding: 3px 0 3px 3px;
+      padding: 3px;
 
       .number-box {
         min-width: 60px;

@@ -115,7 +115,7 @@ export class TotalEntregaPorMesComponent
         labels: dados.map((res) => res.mesNome),
         datasets: [
           {
-            label: "Valor Total Previsto",
+            label: "previsto (Total)",
             data: dados.map((res) => res.planejado),
             backgroundColor: this._chartProcessor.colors[0],
           },

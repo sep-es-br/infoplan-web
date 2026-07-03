@@ -13,7 +13,7 @@
         <ng-container *ngIf="deveExibirSearch">
           <ng-container *ngIf="isSearchFieldVisible">
             <nb-form-field class="search-form-field opening">
-              <input nbInput class="search-input" type="text" shape="round" fieldSize="tiny" placeholder="Buscar"
+              <input #searchInput nbInput class="search-input" type="text" shape="round" fieldSize="tiny" placeholder="Buscar"
                 (keyup)="debounceOnInput($event)" />
               <nb-icon nbSuffix class="close-icon" [icon]="'close-outline'" (click)="handleCloseSearchFieldClick()">
               </nb-icon>
@@ -21,7 +21,7 @@
           </ng-container>
 
           <ng-container *ngIf="!isSearchFieldVisible">
-            <nb-icon class="search-button m-0 ms-3 p-0" [icon]="'search-outline'" (click)="isSearchFieldVisible = true">
+            <nb-icon class="search-button m-0 ms-3 p-0" [icon]="'search-outline'" (click)="handleOpenSearchFieldClick()">
             </nb-icon>
           </ng-container>
         </ng-container>

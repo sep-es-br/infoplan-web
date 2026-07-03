@@ -110,40 +110,8 @@ export class OrgChartHorizontalComponent
 
   private updateChartOnResize(): void {
     if (!this.echartsInstance || !this.chart?.data) return;
-
-    const theme = getAvailableThemesStyles(this.currentTheme);
-    const isMobile = window.innerWidth <= 1000;
-    const isPhone = window.innerWidth <= 575;
-    const isTablet = window.innerWidth <= 768;
-
-    this.echartsInstance.setOption({
-      yAxis: {
-        axisLabel: {
-          color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 14 : 11,
-          margin: 10,
-          width: 140,
-          lineHeight: 16,
-          overflow: "break"
-        },
-      },
-      xAxis: {
-        axisLabel: {
-          fontSize: this.showMaximizeButton ? 13 : 10,
-          formatter: (value: number) => this.formatAxisValue(value),
-        },
-      },
-      legend: {
-        textStyle: {
-          color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 13 : 12,
-        },
-      },
-      series: this.chart.data.datasets.map(() => ({
-        barMaxWidth: isMobile ? 15 : 20,
-      })),
-    });
-
+    this.initChartOptions(this.chart);
+    this.echartsInstance.setOption(this.chartOptions, true);
     this.resizeChart();
   }
 
@@ -282,9 +250,9 @@ export class OrgChartHorizontalComponent
         barGap: "20%",
         barMaxWidth: isMobile ? 15 : 25,
         label: {
-          show: true,
+          show: window.innerWidth > 768,
           position: "right",
-          formatter: (params: any) => this.formatAxisValue(params.value),
+          formatter: (params: any) => this.formatValue(params.value),
           fontSize: this.showMaximizeButton ? 13 : 9 ,
           color: theme.textPrimaryColor,
         }
@@ -331,11 +299,11 @@ export class OrgChartHorizontalComponent
     const absValue = Math.abs(value);
 
     if (absValue >= 1_000_000_000_000)
-      return (value / 1_000_000_000_000).toFixed(1).replace('.', ',') + " T";
+      return (value / 1_000_000_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " T";
     if (absValue >= 1_000_000_000)
-      return (value / 1_000_000_000).toFixed(1).replace('.', ',') + " B";
-    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.', ',') + " M";
-    if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.', ',') + " K";
+      return (value / 1_000_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.', ',').replace(',0', '') + " K";
 
     return value.toString();
   }
@@ -350,10 +318,10 @@ export class OrgChartHorizontalComponent
     if (this.valueType === 'currency') {
       const sign = value < 0 ? '-' : '';
       const v = Math.abs(value);
-      if (v >= 1_000_000_000_000) return `${sign} ${ (v / 1_000_000_000_000).toFixed(1).replace('.', ',') } T`;
-      if (v >= 1_000_000_000) return `${sign} ${ (v / 1_000_000_000).toFixed(1).replace('.', ',') } B`;
-      if (v >= 1_000_000) return `${sign} ${ (v / 1_000_000).toFixed(1).replace('.', ',') } M`;
-      if (v >= 1_000) return `${sign} ${ (v / 1_000).toFixed(1).replace('.', ',') } K`;
+      if (v >= 1_000_000_000_000) return `${sign} ${ (v / 1_000_000_000_000).toFixed(0) } T`;
+      if (v >= 1_000_000_000) return `${sign} ${ (v / 1_000_000_000).toFixed(0) } B`;
+      if (v >= 1_000_000) return `${sign} ${ (v / 1_000_000).toFixed(0) } M`;
+      if (v >= 1_000) return `${sign} ${ (v / 1_000).toFixed(0) } K`;
 
       return `${sign} ${this.formatNumberSimple(v)}`;
     }
@@ -362,6 +330,13 @@ export class OrgChartHorizontalComponent
       return `${this.formatNumberSimple(value)}%`;
     }
 
-    return this.formatValue(value);
+    if (absValue >= 1_000_000_000_000)
+      return (value / 1_000_000_000_000).toFixed(0) + " T";
+    if (absValue >= 1_000_000_000)
+      return (value / 1_000_000_000).toFixed(0) + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(0) + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(0) + " K";
+
+    return value.toString();
   }
 }

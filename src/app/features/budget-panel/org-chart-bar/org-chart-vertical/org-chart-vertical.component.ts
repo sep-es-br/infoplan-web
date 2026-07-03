@@ -109,65 +109,8 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
 
   private updateChartOnResize(): void {
     if (!this.echartsInstance || !this.chart?.data) return;
-
-    const theme = getAvailableThemesStyles(this.currentTheme);
-
-    const isMobile = window.innerWidth <= 1000;
-    const isPhone = window.innerWidth <= 575;
-    const isTablet = window.innerWidth <= 768;
-
-    this.echartsInstance.setOption({
-      xAxis: {
-        axisLabel: {
-          color: theme.textPrimaryColor,
-          // fontSize: isMobile ? 10 : 12,
-          fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
-          interval: 0,
-          margin: 12,
-          overflow: "truncate",
-          // ellipsis: "...",
-          // width: isPhone ? 30 : isTablet ? 40 : isMobile ? 100 : 150,
-          width: isPhone ? 40 : isTablet ? 60 : isMobile ? 60 : 130,
-          // formatter: (value: string) => this.quebrarTexto(value, this.charactersPerLine),
-        },
-        axisTick: {
-          alignWithLabel: true,
-        },
-      },
-      yAxis: {
-        type: "value",
-        inverse: false,
-        axisLabel: {
-          color: theme.textPrimaryColor,
-          fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
-          width: isMobile ? 20 : 100,
-          formatter: (v: number) => `${this.formatValue(v)}`,
-        },
-        splitLine: {
-          show: true,
-          lineStyle: { color: theme.textPrimaryColor, opacity: 0.1 },
-        },
-        axisLine: {
-          show: true,
-          lineStyle: {
-            color: theme.textPrimaryColor
-          }
-        },
-
-      },
-      legend: {
-        itemWidth: this.isMaximized ? 14 : 12,
-        itemHeight: this.isMaximized ? 14 : 12,
-        textStyle: {
-          color: theme.textPrimaryColor,
-          fontSize: this.isMaximized ? 14 : 12,
-        },
-      },
-      series: this.chart.data.datasets.map((dataset, index) => ({
-        barMaxWidth: isMobile ? 20 : 40,
-      })),
-    });
-
+    this.initChartOptions(this.chart);
+    this.echartsInstance.setOption(this.chartOptions, true);
     this.resizeChart();
   }
 
@@ -260,7 +203,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           color: theme.textPrimaryColor,
           fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
           interval: 0,
-          rotate: 0,
+          rotate: window.innerWidth <= 768 ? 45 : 0,
           margin: 12,
           overflow: "truncate",
           width: isPhone ? 40 : isTablet ? 60 : isMobile ? 60 : 130,
@@ -276,7 +219,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           color: theme.textPrimaryColor,
           fontSize: this.isMaximized ? (isMobile ? 15 : 15) : 10,
           width: isMobile ? 20 : 100,
-          formatter: (v: number) => `${this.formatValue(v)}`,
+          formatter: (v: number) => `${this.formatAxisValue(v)}`,
         },
         splitLine: {
           show: true,
@@ -300,7 +243,7 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
           color: colors[index],
         },
         label: {
-          show: true,
+          show: window.innerWidth > 768,
           position: "top",
           formatter: (params: any) => `${this.formatValue(params.value)}`,
           fontSize: this.isMaximized ? 14 : 8,
@@ -344,11 +287,23 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
     const absValue = Math.abs(value);
 
     if (absValue >= 1_000_000_000_000)
-      return (value / 1_000_000_000_000).toFixed(1).replace('.', ',') + " T";
+      return (value / 1_000_000_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " T";
     if (absValue >= 1_000_000_000)
-      return (value / 1_000_000_000).toFixed(1).replace('.', ',') + " B";
-    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.', ',') + " M";
-    if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.', ',') + " K";
+      return (value / 1_000_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.', ',').replace(',0', '') + " K";
+    return value.toString();
+  }
+
+  formatAxisValue(value: number): string {
+    const absValue = Math.abs(value);
+
+    if (absValue >= 1_000_000_000_000)
+      return (value / 1_000_000_000_000).toFixed(0) + " T";
+    if (absValue >= 1_000_000_000)
+      return (value / 1_000_000_000).toFixed(0) + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(0) + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(0) + " K";
     return value.toString();
   }
 

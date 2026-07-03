@@ -40,13 +40,12 @@ import { OrgChartVerticalComponent } from "../../../../../budget-panel/org-chart
   imports: [FlipTableComponent, OrgChartVerticalComponent],
 })
 export class TotalEntregaPorMesComponent
-  implements OnInit, OnChanges, OnDestroy
-{
+  implements OnInit, OnChanges, OnDestroy {
   @Input() filter!: IPainelObrasRequest;
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
   readonly title: string =
-    "Gráfico - Valor total por mês das entregas com conclusão em 2026";
+    "Entregas Concluídas por Mês (2026)";
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;

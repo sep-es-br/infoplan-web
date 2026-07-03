@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, inject, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, inject, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as echarts from 'echarts';
 import { ChartDataConfig } from '../../../budget-panel/org-chart-bar/org-chart-horizontal/org-chart-horizontal.component';
@@ -54,9 +54,22 @@ export class OrgChartStackedHorizontalComponent implements OnChanges, OnDestroy 
   echartsInstance: echarts.ECharts | null = null;
   chartOptions!: EChartsOption;
   private readonly colorPalette: string[] = [
-    '#3366ff', '#00d68f', '#ffaa00', '#ff3d71', '#0095ff',
-    '#7b51db', '#ff708d', '#2ce6f8', '#ffc940', '#42aaff'
+    '#4A7BB0', // totalizador-programas
+    '#CD687B', // totalizador-projetos
+    '#C68B45', // contagem-entregas
+    '#5F9E7D', // monitoramento-planejado
+    '#827397', // monitoramento-realizado
+    '#439A9A', // filtro-temporal-critico
+    '#D07A60', // Muted Coral
+    '#A3B899', // Muted Sage Green
+    '#D9C5B2', // Muted Sand/Beige
+    '#8CA1A5'  // Muted Slate Blue
   ];
+
+  @HostListener("window:resize", ["$event"])
+  onResize(event: any) {
+    this.updateChart();
+  }
 
   constructor() {
     this._themeService.getJsTheme()
@@ -80,6 +93,10 @@ export class OrgChartStackedHorizontalComponent implements OnChanges, OnDestroy 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.echartsInstance) {
+      this.echartsInstance.dispose();
+      this.echartsInstance = null;
+    }
   }
 
   onChartInit(chartInstance: echarts.ECharts) {
@@ -106,7 +123,7 @@ export class OrgChartStackedHorizontalComponent implements OnChanges, OnDestroy 
         borderRadius: idx === datasetsRaw.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0]
       },
       label: {
-        show: this.isMaximized,
+        show: this.isMaximized && window.innerWidth > 768,
         position: 'inside',
         formatter: (p: any) => p.value > 0 ? p.value : '',
         color: '#fff',

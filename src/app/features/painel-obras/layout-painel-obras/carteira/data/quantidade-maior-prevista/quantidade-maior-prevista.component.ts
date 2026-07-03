@@ -42,14 +42,13 @@ import { RequestStatus } from "../../../../../strategic-projects/strategicProjec
   imports: [FlipTableComponent, OrgChartHorizontalComponent],
 })
 export class QuantidadeMaiorPrevistaComponent
-  implements OnInit, OnDestroy, OnChanges
-{
+  implements OnInit, OnDestroy, OnChanges {
   @Input() filter!: IPainelObrasRequest;
 
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
   readonly title: string =
-    "Valor total, quantidade e entregas de maior valor previstas para 2026 por órgão";
+    "Maiores Entregas Previstas por Órgão (2026)";
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;
@@ -105,9 +104,9 @@ export class QuantidadeMaiorPrevistaComponent
         next: (response) => {
           this.quantidadeMaiorPorOrgao = response;
           this.assembleFlipTableContent(response);
-         const dados = this.processData(response);
-         this.chartData = dados;
-         this.requestStatus = RequestStatus.SUCCESS;
+          const dados = this.processData(response);
+          this.chartData = dados;
+          this.requestStatus = RequestStatus.SUCCESS;
         },
         error(err) {
           console.error(
@@ -135,14 +134,14 @@ export class QuantidadeMaiorPrevistaComponent
       data: {
         labels,
         datasets: [
-          { 
-            label: "Órgão com maior valor", 
+          {
+            label: "Órgão com maior valor",
             data: primary,
-            backgroundColor: this._chartProcessor.colors[0], 
+            backgroundColor: this._chartProcessor.colors[0],
           },
-          { 
-            label: "planejado", 
-            data:  secondary,
+          {
+            label: "planejado",
+            data: secondary,
             backgroundColor: this._chartProcessor.colors[1],
           }
         ],

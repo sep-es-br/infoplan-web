@@ -43,14 +43,13 @@ import { RequestStatus } from "../../../../../strategic-projects/strategicProjec
   imports: [FlipTableComponent, OrgChartHorizontalComponent],
 })
 export class QuantidadeMaiorEntregaComponent
-  implements OnInit, OnChanges, OnDestroy
-{
+  implements OnInit, OnChanges, OnDestroy {
   @Input() filter!: IPainelObrasRequest;
 
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
   readonly title: string =
-    "Valor total, quantidade e entregas de maior valor em 2026 por município";
+    "Maiores Entregas por Município (2026)";
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;

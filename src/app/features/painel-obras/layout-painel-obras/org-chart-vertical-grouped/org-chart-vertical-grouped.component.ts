@@ -92,6 +92,11 @@ export class OrgChartVerticalGroupedComponent
     "#F38B1D",
   ];
 
+  @HostListener("window:resize", ["$event"])
+  onResize(event: any) {
+    this.updateChart();
+  }
+
   constructor(private themeService: NbThemeService) {
     this.themeService.onThemeChange().subscribe((newTheme) => {
       this.currentTheme = newTheme.name as AvailableThemes;
@@ -182,7 +187,7 @@ export class OrgChartVerticalGroupedComponent
       this.groupingMode === "STATUS" ||
       this.groupingMode === "MUNICIPIO" ||
       this.groupingMode.startsWith("MUNICIPIO_") ||
-      this.groupingMode.startsWith("STATUS_") || 
+      this.groupingMode.startsWith("STATUS_") ||
       this.groupingMode.startsWith("YEAR_") ||
       this.groupingMode.includes("MAJOR");
 
@@ -351,7 +356,7 @@ export class OrgChartVerticalGroupedComponent
           formatter: (value: number) => {
             return this.valueType === "percent"
               ? `${value} %`
-              : this.formatCompact(value);
+              : this.formatAxisCompact(value);
           },
           color: theme.textPrimaryColor,
           fontSize: 10,
@@ -451,7 +456,7 @@ export class OrgChartVerticalGroupedComponent
           barMaxWidth: 20,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
           label: {
-            show: this.isMaximized,
+            show: this.isMaximized && window.innerWidth > 768,
             position: "right",
             color: theme.textPrimaryColor,
             fontSize: 10,
@@ -474,7 +479,7 @@ export class OrgChartVerticalGroupedComponent
           barMaxWidth: 20,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
           label: {
-            show: this.isMaximized,
+            show: this.isMaximized && window.innerWidth > 768,
             position: "insideLeft",
             color: "#fff",
             fontSize: 10,
@@ -494,15 +499,27 @@ export class OrgChartVerticalGroupedComponent
   }
 
   private formatCompact(val: number): string {
-    if (val === 0) return "R$ 0";
+    if (val === 0) return "0";
     const absVal = Math.abs(val);
     if (absVal >= 1000000000)
-      return "R$ " + (val / 1000000000).toFixed(1).replace(".", ",") + "B";
+      return (val / 1000000000).toFixed(1).replace(".", ",").replace(",0", "") + "B";
     if (absVal >= 1000000)
-      return "R$ " + (val / 1000000).toFixed(1).replace(".", ",") + "M";
+      return (val / 1000000).toFixed(1).replace(".", ",").replace(",0", "") + "M";
     if (absVal >= 1000)
-      return "R$ " + (val / 1000).toFixed(1).replace(".", ",") + "K";
-    return "R$ " + val.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+      return (val / 1000).toFixed(1).replace(".", ",").replace(",0", "") + "K";
+    return val.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+  }
+
+  private formatAxisCompact(val: number): string {
+    if (val === 0) return "0";
+    const absVal = Math.abs(val);
+    if (absVal >= 1000000000)
+      return (val / 1000000000).toFixed(0) + "B";
+    if (absVal >= 1000000)
+      return (val / 1000000).toFixed(0) + "M";
+    if (absVal >= 1000)
+      return (val / 1000).toFixed(0) + "K";
+    return val.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
   }
 
   private getGroupColor(label: string, opacity: number): string {

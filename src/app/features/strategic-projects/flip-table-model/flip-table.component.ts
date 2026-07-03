@@ -145,6 +145,8 @@ export class FlipTableComponent implements OnChanges {
 
   @ContentChild("cardToggles", { read: ElementRef }) cardTogglesRef: ElementRef;
 
+  @ViewChild("searchInput") searchInputRef!: ElementRef<HTMLInputElement>;
+
   get hasToggleContent(): boolean {
     return !!this.cardTogglesRef;
   }
@@ -289,6 +291,14 @@ export class FlipTableComponent implements OnChanges {
   }
 
   /* Handlers */
+
+  handleOpenSearchFieldClick() {
+    this.isSearchFieldVisible = true;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.searchInputRef?.nativeElement?.focus();
+    }, 0);
+  }
 
   handleCloseSearchFieldClick() {
     this.isSearchFieldVisible = false;

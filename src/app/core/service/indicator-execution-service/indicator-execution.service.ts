@@ -142,8 +142,8 @@ export class IndicatorExecutionService {
   }
 
   private getCommonParams(): HttpParams {
-    const sigla = this._authService.getUsuarioLogado()?.sigla || '';
-    return new HttpParams().set("sigla", sigla);
+    const orgao = this._authService.getUsuarioLogado()?.sigla || '';
+    return new HttpParams().set("orgao", orgao);
   }
 
   private params(filter: IIndicatorExecutionFilter): HttpParams {

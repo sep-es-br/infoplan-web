@@ -21,7 +21,7 @@ export class LayoutBudgetPanel implements OnInit {
   constructor(
     private authService: AuthenticationService,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const usuario = this.authService.getUsuarioLogado();

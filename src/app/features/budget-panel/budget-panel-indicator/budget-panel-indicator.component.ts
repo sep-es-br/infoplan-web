@@ -646,7 +646,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
           this.filter.codSource = ["-1"];
         } else if (origin === "codAmendment") {
           this.filter.codAmendment = "-1";
-        } else if ((origin = "groupExpense")) {
+        } else if (origin === "groupExpense") {
           this.filter.codGnd = ["-1"];
         }
       } else if (newValue.length > 0) {
@@ -662,6 +662,16 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
         }
       }
     }
+
+    if (origin === "year") {
+      this.filter.codUo = ["-1"];
+      this.filter.codAction = ["-1"];
+      this.filter.codSource = ["-1"];
+      this.loadUOList();
+      this.loadActionList();
+      this.loadFullSourceList();
+    }
+
     this.tooltips.forEach((t) => t.hide());
   }
 
@@ -703,21 +713,31 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
 
     if (filterKey === "year") {
       this.filter.year = [new Date().getFullYear()];
+      this.filter.codUo = ["-1"];
+      this.filter.codAction = ["-1"];
+      this.filter.codSource = ["-1"];
+      this.loadUOList();
+      this.loadActionList();
+      this.loadFullSourceList();
     } else if (filterKey === "month") {
       this.filter.month = environment.indicatorExecutionFilter.month;
     } else if (filterKey === "typeSource") {
       this.filter.typeSource = environment.indicatorExecutionFilter.typeSource;
     } else if (filterKey === "codUo") {
       this.filter.codUo = ["-1"];
+      this.filter.codAction = ["-1"];
+      this.filter.codSource = ["-1"];
       this.loadActionList();
+      this.loadFullSourceList();
     } else if (filterKey === "codAction") {
       this.filter.codAction = ["-1"];
+      this.filter.codSource = ["-1"];
       this.loadFullSourceList();
     } else if (filterKey === "codSource") {
       this.filter.codSource = ["-1"];
     } else if (filterKey === "codAmendment") {
       this.filter.codAmendment = "-1";
-    } else if ((origin = "groupExpense")) {
+    } else if (filterKey === "groupExpense") {
       this.filter.codGnd = ["-1"];
     }
 

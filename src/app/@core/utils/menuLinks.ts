@@ -25,7 +25,7 @@ function checkOrgs(allowedOrgs: string[]): boolean {
     const userProfile = sessionStorage.getItem("user-profile");
     if (!userProfile) return false;
     const userInfos = JSON.parse(userProfile);
-    const userSigla = userInfos?.sigla;
+    const userSigla = userInfos?.orgao;
     if (userSigla && userSigla.trim() !== '') {
       return allowedOrgs.includes(userSigla);
     }

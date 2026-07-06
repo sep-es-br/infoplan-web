@@ -25,9 +25,9 @@ function checkOrgs(allowedOrgs: string[]): boolean {
     const userProfile = sessionStorage.getItem("user-profile");
     if (!userProfile) return false;
     const userInfos = JSON.parse(userProfile);
-    const userSigla = userInfos?.orgao;
-    if (userSigla && userSigla.trim() !== '') {
-      return allowedOrgs.includes(userSigla);
+    const userSigla = userInfos?.sigla || userInfos?.orgao;
+    if (userSigla && String(userSigla).trim() !== '') {
+      return allowedOrgs.includes(String(userSigla).trim());
     }
   } catch (e) {
     console.error("Erro ao verificar siglas do usuário:", e);

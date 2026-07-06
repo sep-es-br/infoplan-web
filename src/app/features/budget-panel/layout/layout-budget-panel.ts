@@ -44,6 +44,40 @@ export class LayoutBudgetPanel implements OnInit {
       }
     ];
 
+    // this.menuExecucao = staticMenu.filter(item => {
+    //   const routeConfig = childRoutes.find(r => r.path === item.path);
+    //   if (!routeConfig) return true;
+
+    //   const allowedRoles = routeConfig.data?.['allowedRoles'] as string[];
+    //   const allowedOrgs = routeConfig.data?.['allowedOrgs'] as string[];
+
+    //   // Se a rota não possui nenhuma restrição de role ou org, exibe por padrão
+    //   if (!allowedRoles && !allowedOrgs) {
+    //     return true;
+    //   }
+
+    //   // 1. Verifica as Roles primeiro
+    //   if (usuario && allowedRoles && allowedRoles.length > 0) {
+    //     const userRoles = usuario.role || [];
+    //     const temRole = allowedRoles.some(role => userRoles.includes(role));
+    //     if (temRole) {
+    //       return true; // Se tem a role necessária, exibe a aba!
+    //     }
+    //   }
+
+    //   // 2. Se não tem role, verifica a Sigla. Se a sigla for vazia, não mostra a aba
+    //   const siglaUsuario = usuario?.sigla || (usuario as any)?.orgao;
+    //   if (!usuario || !siglaUsuario || String(siglaUsuario).trim() === '') {
+    //     return false;
+    //   }
+
+    //   // 3. Verifica se a sigla tem permissão
+    //   if (allowedOrgs && allowedOrgs.length > 0) {
+    //     return allowedOrgs.includes(String(siglaUsuario).trim());
+    //   }
+
+    //   return false;
+    // });
     this.menuExecucao = staticMenu.filter(item => {
       const routeConfig = childRoutes.find(r => r.path === item.path);
       if (!routeConfig) return true;
@@ -51,31 +85,30 @@ export class LayoutBudgetPanel implements OnInit {
       const allowedRoles = routeConfig.data?.['allowedRoles'] as string[];
       const allowedOrgs = routeConfig.data?.['allowedOrgs'] as string[];
 
-      // Se a rota não possui nenhuma restrição de role ou org, exibe por padrão
       if (!allowedRoles && !allowedOrgs) {
         return true;
       }
 
-      // 1. Verifica as Roles primeiro
       if (usuario && allowedRoles && allowedRoles.length > 0) {
-        const userRoles = usuario.role || [];
+        const userRoles = Array.isArray(usuario.role)
+          ? usuario.role
+          : (usuario.role ? [usuario.role] : []);
+
         const temRole = allowedRoles.some(role => userRoles.includes(role));
         if (temRole) {
-          return true; // Se tem a role necessária, exibe a aba!
+          return true;
         }
       }
 
-      // 2. Se não tem role, verifica a Sigla. Se a sigla for vazia, não mostra a aba
-      if (!usuario || !usuario.sigla || usuario.sigla.trim() === '') {
+      if (!allowedOrgs || allowedOrgs.length === 0) {
         return false;
       }
 
-      // 3. Verifica se a sigla tem permissão
-      if (allowedOrgs && allowedOrgs.length > 0) {
-        return allowedOrgs.includes(usuario.sigla);
+      const siglaUsuario = usuario?.sigla || (usuario as any)?.orgao;
+      if (!usuario || !siglaUsuario || String(siglaUsuario).trim() === '') {
+        return false;
       }
-
-      return false;
+      return allowedOrgs.includes(String(siglaUsuario).trim());
     });
   }
 }

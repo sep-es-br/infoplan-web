@@ -53,11 +53,7 @@ export class AuthRedirectComponent {
 
           const hasAccess = userRoles.some(role => allowedRoles.includes(role));
 
-          const allowedOrgs = Object.values(environment.allowedOrgs)
-            .flat()
-            .filter((org): org is string => typeof org === 'string' && org.trim() !== '');
-
-          const hasOrgs = response.sigla && allowedOrgs.includes(response.sigla.trim());
+          const hasOrgs = response.sigla && response.sigla.trim() !== '';
 
           if (!hasAccess && !hasOrgs) {
             sessionStorage.clear();

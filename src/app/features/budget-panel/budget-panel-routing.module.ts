@@ -22,8 +22,8 @@ const routes: Routes = [
         canActivate: [OrganizacaoGuardGuard],
         data: {
           dataSource: "Sigefes",
-          allowedRoles: [environment.allowedRoles.execucaoOrcamentaria, environment.allowedRoles.geral],
-          allowedOrgs: environment.allowedOrgs.execucaoOrcamentariaResumoExecutivo,
+          allowedRoles: [environment.allowedRoles.execucaoOrcamentaria],
+          roleOnly: true,
           fallbackRoute: '/pages/execucao-orcamentaria/indicador'
         }
       },
@@ -33,8 +33,7 @@ const routes: Routes = [
         canActivate: [OrganizacaoGuardGuard],
         data: {
           dataSource: "Sigefes",
-          allowedRoles: [environment.allowedRoles.execucaoOrcamentaria, environment.allowedRoles.geral],
-          allowedOrgs: environment.allowedOrgs.execucaoOrcamentariaIndicador,
+          allowedRoles: [environment.allowedRoles.execucaoOrcamentaria],
           fallbackRoute: '/pages/execucao-orcamentaria/resumo-executivo'
         }
       }

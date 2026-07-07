@@ -35,6 +35,19 @@ function checkOrgs(allowedOrgs: string[]): boolean {
   return false;
 }
 
+function hasAnySigla(): boolean {
+  try {
+    const userProfile = sessionStorage.getItem("user-profile");
+    if (!userProfile) return false;
+    const userInfos = JSON.parse(userProfile);
+    const userSigla = userInfos?.sigla || userInfos?.orgao;
+    return !!(userSigla && String(userSigla).trim() !== '');
+  } catch (e) {
+    console.error("Erro ao verificar sigla do usuário:", e);
+  }
+  return false;
+}
+
 export const menulinks: MyCustomMenuItem[] = [
   // SEPARADOR ORÇAMENTO
   {
@@ -52,8 +65,7 @@ export const menulinks: MyCustomMenuItem[] = [
     name: "Planejamento Orçamentário",
     icon: "logo-spo-branco.svg",
     link: "/pages/planejamento-orcamentario",
-    status: checkRoles(environment.allowedRoles.planejamentoOrcamentario) ||
-      checkOrgs(environment.allowedOrgs.planejamentoOrcamentario),
+    status: checkRoles(environment.allowedRoles.planejamentoOrcamentario),
     url: "",
     src: "SPO",
     menuIcon: "",
@@ -68,11 +80,7 @@ export const menulinks: MyCustomMenuItem[] = [
     name: "Execução Orçamentária",
     icon: "painelOrcamento.svg",
     link: "/pages/execucao-orcamentaria",
-    status: checkRoles(environment.allowedRoles.execucaoOrcamentaria) ||
-      checkOrgs([
-        ...environment.allowedOrgs.execucaoOrcamentariaResumoExecutivo,
-        ...environment.allowedOrgs.execucaoOrcamentariaIndicador
-      ]),
+    status: checkRoles(environment.allowedRoles.execucaoOrcamentaria) || hasAnySigla(),
     url: "",
     src: "Sigefes",
     menuIcon: "",
@@ -84,7 +92,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Orçamento",
     id: 3,
-    status: checkRoles(environment.allowedRoles.sas) || checkOrgs(environment.allowedOrgs.sas),
+    status: checkRoles(environment.allowedRoles.sas),
     name: "Painéis SAS(Sigefes)",
     link: "",
     url: environment.urls.sas,
@@ -124,8 +132,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Projetos",
     id: 5,
-    status: checkRoles(environment.allowedRoles.projetosEstrategicos) ||
-      checkOrgs(environment.allowedOrgs.strategicProjects),
+    status: checkRoles(environment.allowedRoles.projetosEstrategicos),
     name: "Projetos Estratégicos",
     link: "/pages/strategicProjects",
     url: "",
@@ -140,8 +147,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Projetos",
     id: 6,
-    status: checkRoles(environment.allowedRoles.painelObras) ||
-      checkOrgs(environment.allowedOrgs.painelObras),
+    status: checkRoles(environment.allowedRoles.painelObras),
     name: "Painel de Obras",
     icon: "portalObras.svg",
     link: "/pages/painel-obras",
@@ -156,7 +162,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Projetos",
     id: 7,
-    status: checkRoles(environment.allowedRoles.indicadores) || checkOrgs(environment.allowedOrgs.indicadoresEstrategico),
+    status: checkRoles(environment.allowedRoles.indicadores),
     name: "Indicadores Estratégicos",
     link: "",
     url: environment.urls.indicadores,
@@ -171,7 +177,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Projetos",
     id: 8,
-    status: checkRoles(environment.allowedRoles.estado) || checkRoles(environment.allowedRoles.geral),
+    status: true,
     name: "Programa Estado Presente",
     icon: "logoAmareloEstadoPresente.svg",
     link: "",
@@ -190,14 +196,14 @@ export const menulinks: MyCustomMenuItem[] = [
     separator: true,
     sectionTitle: "Captação de Recursos",
     section: "captacao",
-    status: false,
+    status: true,
     title: "", name: "", icon: "", link: "", url: "", src: "",
     menuIcon: "", color: "#F09BBE", subTitle: "", isExternal: false,
   },
   {
     title: "Captação",
     id: 9,
-    status: checkRoles(environment.allowedRoles.capitacao) || checkRoles(environment.allowedRoles.geral),
+    status: true,
     name: "Captação de Recursos",
     icon: "menu-icone-siscap.svg",
     link: "/pages/capitation",

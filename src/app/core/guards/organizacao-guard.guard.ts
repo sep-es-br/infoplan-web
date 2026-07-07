@@ -25,10 +25,10 @@ export class OrganizacaoGuardGuard implements CanActivate {
     }
 
     const allowedRoles = route.data['allowedRoles'] as Array<string>;
-    const allowedOrgs = route.data['allowedOrgs'] as Array<string>;
+    const roleOnly = route.data['roleOnly'] as boolean;
 
-    // Se a rota não possui nenhuma restrição de role ou org, permite acesso
-    if (!allowedRoles && !allowedOrgs) {
+    // Se a rota não possui nenhuma restrição de role, permite acesso
+    if (!allowedRoles) {
       return true;
     }
 
@@ -41,24 +41,21 @@ export class OrganizacaoGuardGuard implements CanActivate {
       }
     }
 
-    // 2. Se não tem role, verifica a Sigla. Se a sigla for vazia, não mostra nada
-    if (!usuario.sigla || usuario.sigla.trim() === '') {
+    // Se exige apenas a Role (e o usuário não passou no check acima), bloqueia:
+    if (roleOnly) {
       const fallback = route.data['fallbackRoute'] || '/pages/home';
       this.router.navigate([fallback]);
       return false;
     }
 
-    // 3. Verifica se a sigla tem permissão na lista de orgs permitidas
-    if (allowedOrgs && allowedOrgs.length > 0) {
-      const temOrg = allowedOrgs.includes(usuario.sigla);
-      if (temOrg) {
-        return true; // Se a organização está permitida, concede acesso!
-      }
+    // 2. Se não tem role, verifica a Sigla. Se a sigla for vazia, não mostra nada
+    const siglaUsuario = usuario.sigla || (usuario as any).orgao;
+    if (!siglaUsuario || String(siglaUsuario).trim() === '') {
+      const fallback = route.data['fallbackRoute'] || '/pages/home';
+      this.router.navigate([fallback]);
+      return false;
     }
 
-    // Caso não passe em nenhuma regra:
-    const fallback = route.data['fallbackRoute'] || '/pages/home';
-    this.router.navigate([fallback]);
-    return false;
+    return true;
   }
 }

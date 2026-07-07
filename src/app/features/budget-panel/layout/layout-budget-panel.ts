@@ -83,9 +83,9 @@ export class LayoutBudgetPanel implements OnInit {
       if (!routeConfig) return true;
 
       const allowedRoles = routeConfig.data?.['allowedRoles'] as string[];
-      const allowedOrgs = routeConfig.data?.['allowedOrgs'] as string[];
+      const roleOnly = routeConfig.data?.['roleOnly'] as boolean;
 
-      if (!allowedRoles && !allowedOrgs) {
+      if (!allowedRoles) {
         return true;
       }
 
@@ -100,7 +100,7 @@ export class LayoutBudgetPanel implements OnInit {
         }
       }
 
-      if (!allowedOrgs || allowedOrgs.length === 0) {
+      if (roleOnly) {
         return false;
       }
 
@@ -108,7 +108,8 @@ export class LayoutBudgetPanel implements OnInit {
       if (!usuario || !siglaUsuario || String(siglaUsuario).trim() === '') {
         return false;
       }
-      return allowedOrgs.includes(String(siglaUsuario).trim());
+
+      return true;
     });
   }
 }

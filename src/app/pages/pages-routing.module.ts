@@ -37,21 +37,16 @@ const routes: Routes = [
         data: {
           dataSource: "OpenPMO",
           allowedRoles: [environment.allowedRoles.projetosEstrategicos, environment.allowedRoles.geral],
-          allowedOrgs: environment.allowedOrgs.strategicProjects,
           fallbackRoute: '/pages/home'
         },
       },
       {
         path: "execucao-orcamentaria",
-        loadChildren: () =>  import('../features/budget-panel/budget-panel.module').then(m => m.BudgetPanelModule),
+        loadChildren: () => import('../features/budget-panel/budget-panel.module').then(m => m.BudgetPanelModule),
         canActivate: [OrganizacaoGuardGuard],
         data: {
           dataSource: "Sigefes",
           allowedRoles: [environment.allowedRoles.execucaoOrcamentaria, environment.allowedRoles.geral],
-          allowedOrgs: [
-            ...environment.allowedOrgs.execucaoOrcamentariaResumoExecutivo,
-            ...environment.allowedOrgs.execucaoOrcamentariaIndicador
-          ],
           fallbackRoute: '/pages/home'
         },
       },
@@ -62,7 +57,6 @@ const routes: Routes = [
         data: {
           dataSource: "SPO",
           allowedRoles: [environment.allowedRoles.planejamentoOrcamentario, environment.allowedRoles.geral],
-          allowedOrgs: environment.allowedOrgs.planejamentoOrcamentario,
           fallbackRoute: '/pages/home'
         },
       },
@@ -73,7 +67,6 @@ const routes: Routes = [
         data: {
           dataSource: "PMO",
           allowedRoles: [environment.allowedRoles.painelObras, environment.allowedRoles.geral],
-          allowedOrgs: environment.allowedOrgs.painelObras,
           fallbackRoute: '/pages/home'
         },
       },

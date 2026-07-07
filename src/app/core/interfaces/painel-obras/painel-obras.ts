@@ -104,3 +104,14 @@ export interface IQuantidadeMaiorEntregaPrevista {
   dataConclusao: string;
   totalMaiorOrgao: number;
 }
+
+export interface ITotalTotalizador {
+  portfolio: string;
+  quantidadeEntregas: number;
+  quantidadeProjetos: number;
+  quantidadeProgramas: number;
+  totalPrevisto: number;
+  totalRealizado: number;
+  totalProgramado: number;
+  totalEntregasPE: number;
+}

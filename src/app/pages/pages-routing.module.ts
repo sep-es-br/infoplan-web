@@ -8,6 +8,8 @@ import { StrategicProjectsComponent } from "../features/strategic-projects/strat
 import { NotFoundComponent } from "./miscellaneous/not-found/not-found.component";
 import { PagesComponent } from "./pages.component";
 import { PlanejamentoOrcamentarioComponent } from "../features/planejamento-orcamentario/planejamento-orcamentario.component";
+import { environment } from "../../environments/environment";
+import { OrganizacaoGuardGuard } from "../core/guards/organizacao-guard.guard";
 
 const routes: Routes = [
   {
@@ -21,28 +23,60 @@ const routes: Routes = [
       {
         path: "capitation",
         component: CapitationComponent,
-        data: { dataSource: "Sistema de Captação de Recursos - SISCAP" },
+        canActivate: [OrganizacaoGuardGuard],
+        data: {
+          dataSource: "Sistema de Captação de Recursos - SISCAP",
+          allowedRoles: [environment.allowedRoles.capitacao, environment.allowedRoles.geral],
+          fallbackRoute: '/pages/home'
+        },
       },
       {
         path: "strategicProjects",
         component: StrategicProjectsComponent,
-        data: { dataSource: "OpenPMO" },
+        canActivate: [OrganizacaoGuardGuard],
+        data: {
+          dataSource: "OpenPMO",
+          allowedRoles: [environment.allowedRoles.projetosEstrategicos, environment.allowedRoles.geral],
+          allowedOrgs: environment.allowedOrgs.strategicProjects,
+          fallbackRoute: '/pages/home'
+        },
       },
       {
         path: "execucao-orcamentaria",
         loadChildren: () =>  import('../features/budget-panel/budget-panel.module').then(m => m.BudgetPanelModule),
-        data: { dataSource: "Sigefes" },
+        canActivate: [OrganizacaoGuardGuard],
+        data: {
+          dataSource: "Sigefes",
+          allowedRoles: [environment.allowedRoles.execucaoOrcamentaria, environment.allowedRoles.geral],
+          allowedOrgs: [
+            ...environment.allowedOrgs.execucaoOrcamentariaResumoExecutivo,
+            ...environment.allowedOrgs.execucaoOrcamentariaIndicador
+          ],
+          fallbackRoute: '/pages/home'
+        },
       },
       {
         path: "planejamento-orcamentario",
         component: PlanejamentoOrcamentarioComponent,
-        data: { dataSource: "SPO" },
+        canActivate: [OrganizacaoGuardGuard],
+        data: {
+          dataSource: "SPO",
+          allowedRoles: [environment.allowedRoles.planejamentoOrcamentario, environment.allowedRoles.geral],
+          allowedOrgs: environment.allowedOrgs.planejamentoOrcamentario,
+          fallbackRoute: '/pages/home'
+        },
       },
-      // {
-      //   path: "painel-obras",
-      //   loadChildren: () => import('../features/painel-obras/layout-painel-obras/layout-painel-obras.module').then(m => m.LayoutPainelObrasModule),
-      //   data: { dataSource: "PMO" },
-      // },
+      {
+        path: "painel-obras",
+        loadChildren: () => import('../features/painel-obras/layout-painel-obras/layout-painel-obras.module').then(m => m.LayoutPainelObrasModule),
+        canActivate: [OrganizacaoGuardGuard],
+        data: {
+          dataSource: "PMO",
+          allowedRoles: [environment.allowedRoles.painelObras, environment.allowedRoles.geral],
+          allowedOrgs: environment.allowedOrgs.painelObras,
+          fallbackRoute: '/pages/home'
+        },
+      },
       {
         path: "",
         redirectTo: "home",

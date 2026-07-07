@@ -127,8 +127,8 @@
     </div>
   </div>
 
-  <div class="row g-2 g-md-2">
-    <div class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
+  <div class="row g-2 g-md-2 mb-2">
+    <div class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 px-1 ">
       <div class="card">
         <div class="card-content">
           <div class="portfolio-content">
@@ -139,12 +139,13 @@
       </div>
     </div>
 
-    <div class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
+    <div class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2  px-1 ">
       <div class="card">
         <div class="icon-top-right prevista" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fa fa-crosshairs"></i>
         </div>
-        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalPlannedRevenue | number : '1.0-0')"  nbTooltipPlacement="bottom" > 
+        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalPlannedRevenue | number : '1.0-0')"
+          nbTooltipPlacement="bottom">
           <ng-container *ngIf="requestStatus.totals === 'Loading'; else previstaContent">
             <div class="d-flex justify-content-center align-items-center w-100">
               <div class="spinner-border total-prevista" role="status">
@@ -171,12 +172,13 @@
       </div>
     </div>
 
-    <div class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
+    <div class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 px-1 ">
       <div class="card">
         <div class="icon-top-right realizada" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fa fa-check-circle"></i>
         </div>
-        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalRealizedRevenue | number : '1.0-2')"  nbTooltipPlacement="bottom" >
+        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalRealizedRevenue | number : '1.0-2')"
+          nbTooltipPlacement="bottom">
           <ng-container *ngIf="requestStatus.totals === 'Loading'; else realizadaContent">
             <div class="d-flex justify-content-center align-items-center w-100">
               <div class="spinner-border total-realizada" role="status">
@@ -203,7 +205,7 @@
       </div>
     </div>
 
-    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 px-1 ">
       <div class="card">
         <div class="icon-top-right realizada-prevista" *ngIf="requestStatus.totals !== 'Loading'">
           <img src="assets/images/app/icone-receita-realizada-prevista.png" style="width: 20px" />
@@ -237,7 +239,7 @@
       </div>
     </div>
 
-    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 px-1 ">
       <div class="card">
         <div class="icon-top-right empenhada-autorizada" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fa fa-handshake"></i>
@@ -271,7 +273,7 @@
       </div>
     </div>
 
-    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 mb-2 px-1">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2  px-1">
       <div class="card">
         <div class="icon-top-right liquidada-autorizada" *ngIf="requestStatus.totals !== 'Loading'">
           <i class="fas fa-hand-holding-usd"></i>
@@ -384,8 +386,7 @@
           </div>
 
           <!-- Receita Transferência -->
-          <div class="chart-container"
-            [class.maximized]="isChartMaximized('revenue-transfer')"
+          <div class="chart-container" [class.maximized]="isChartMaximized('revenue-transfer')"
             [class.col-12]="!isChartMaximized('revenue-transfer')"
             [class.col-md-12]="!isChartMaximized('revenue-transfer')"
             [class.col-lg-6]="!isChartMaximized('revenue-transfer')"

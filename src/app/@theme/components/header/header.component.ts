@@ -134,14 +134,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   toggleSidebar(): boolean {
-    this.sidebarService.toggle(true, 'menu-sidebar');
+    const isMobile = window.innerWidth < 576;
+    this.sidebarService.toggle(!isMobile, 'menu-sidebar');
     this.layoutService.changeLayoutSize();
 
     return false;
   }
 
   logout() {
-    localStorage.removeItem('infoPlanCurrentTheme');
     window.location.href = 'https://acessocidadao.es.gov.br/is/logout';
   }
 

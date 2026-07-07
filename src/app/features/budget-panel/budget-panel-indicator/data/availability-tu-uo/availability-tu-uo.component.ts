@@ -51,7 +51,7 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
     },
   };
 
-  private dashAvailabilityToUo!: IDashAvailabilityToUoResponse;
+  private dashAvailabilityToUo: IDashAvailabilityToUoResponse | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {
@@ -72,27 +72,39 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
     this.requestStatus = RequestStatus.LOADING;
     this._indicatorExecutionService.getDashAvailabilityToUo(this.filter)
       .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.requestStatus = this.dashAvailabilityToUo ? RequestStatus.SUCCESS : RequestStatus.ERROR;
-        })
+        takeUntil(this.destroy$)
       ).subscribe({
         next: (res: IDashAvailabilityToUoResponse) => {
           this.dashAvailabilityToUo = res;
-          // this._comunicationCardsService.sendCardAvailableWithoutReversation(this.dashAvailabilityToUo.availabilityWithoutReservation);
-          this.processChartData(res);
-          this.processTableData(res);
+          if (res) {
+            this.requestStatus = RequestStatus.SUCCESS;
+            this.processChartData(res);
+            this.processTableData(res);
+          } else {
+            this.requestStatus = RequestStatus.EMPTY;
+            this.processChartData(null);
+            this.processTableData(null);
+          }
         },
         error: (err) => {
           console.error("Erro ao carregar Disponibilidade de UO:", err);
           this.requestStatus = RequestStatus.ERROR;
-          this.dashAvailabilityToUo = of(null) as unknown as IDashAvailabilityToUoResponse; // Define como null para evitar erros de acesso a propriedades
+          this.dashAvailabilityToUo = null;
+          this.processChartData(null);
+          this.processTableData(null);
         }
-      })
-
+      });
   }
 
-  private processChartData(response: IDashAvailabilityToUoResponse): IChartOptions {
+  private processChartData(response: IDashAvailabilityToUoResponse | null): IChartOptions {
+    if (!response) {
+      return this.chartData = {
+        data: {
+          labels: [],
+          datasets: []
+        }
+      };
+    }
     return this.chartData = {
       data: {
         labels: response.year ? [response.year.toString()] : [],
@@ -123,9 +135,56 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
     }
   }
 
-  private processTableData(response: IDashAvailabilityToUoResponse | IDashAvailabilityToUoResponse[]): void {
-    const arrayDash = Array.isArray(response) ? response : [response];
-    const year = arrayDash[0]?.year;
+  private processTableData(response: IDashAvailabilityToUoResponse | IDashAvailabilityToUoResponse[] | null): void {
+    if (!response) {
+      this.tableContent = {
+        customColumn: {
+          propertyName: "label",
+          displayName: `Disponibilidade`,
+          alignment: {
+            header: FlipTableAlignment.LEFT,
+            data: FlipTableAlignment.LEFT,
+          },
+        },
+        defaultColumns: [
+          {
+            propertyName: "valor",
+            displayName: "Valores (R$)",
+            alignment: {
+              header: FlipTableAlignment.RIGHT,
+              data: FlipTableAlignment.RIGHT,
+            },
+          },
+        ],
+        data: [],
+      };
+      return;
+    }
+    const arrayDash = (Array.isArray(response) ? response : [response]).filter(item => !!item);
+    if (arrayDash.length === 0) {
+      this.tableContent = {
+        customColumn: {
+          propertyName: "label",
+          displayName: `Disponibilidade`,
+          alignment: {
+            header: FlipTableAlignment.LEFT,
+            data: FlipTableAlignment.LEFT,
+          },
+        },
+        defaultColumns: [
+          {
+            propertyName: "valor",
+            displayName: "Valores (R$)",
+            alignment: {
+              header: FlipTableAlignment.RIGHT,
+              data: FlipTableAlignment.RIGHT,
+            },
+          },
+        ],
+        data: [],
+      };
+      return;
+    }
     this.buildTreeNode(arrayDash);
   }
 

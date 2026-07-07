@@ -8,11 +8,11 @@ import { NbToastrService } from '@nebular/theme';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit  {
+export class LoginComponent implements OnInit {
 
   showExitButton: boolean = false;
 
-  constructor(private authenticationService: AuthenticationService ,private toastrService: NbToastrService, private router: Router) { 
+  constructor(private authenticationService: AuthenticationService, private toastrService: NbToastrService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -23,8 +23,8 @@ export class LoginComponent implements OnInit  {
     }
   }
 
-  login(){
-  this.authenticationService.acessoCidadaoSignIn();
+  login() {
+    this.authenticationService.acessoCidadaoSignIn();
   }
 
   logout() {

@@ -52,7 +52,7 @@ export const menulinks: MyCustomMenuItem[] = [
     name: "Planejamento Orçamentário",
     icon: "logo-spo-branco.svg",
     link: "/pages/planejamento-orcamentario",
-    status: checkRoles(environment.allowedRoles.planejamentoOrcamentario) ||
+    status: checkRoles(environment.allowedRoles.planejamentoOrcamentario) &&
       checkOrgs(environment.allowedOrgs.planejamentoOrcamentario),
     url: "",
     src: "SPO",
@@ -124,7 +124,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Projetos",
     id: 5,
-    status: checkRoles(environment.allowedRoles.projetosEstrategicos) ||
+    status: checkRoles(environment.allowedRoles.projetosEstrategicos) &&
       checkOrgs(environment.allowedOrgs.strategicProjects),
     name: "Projetos Estratégicos",
     link: "/pages/strategicProjects",
@@ -140,7 +140,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Projetos",
     id: 6,
-    status: checkRoles(environment.allowedRoles.painelObras) ||
+    status: checkRoles(environment.allowedRoles.painelObras) &&
       checkOrgs(environment.allowedOrgs.painelObras),
     name: "Painel de Obras",
     icon: "portalObras.svg",
@@ -156,7 +156,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Projetos",
     id: 7,
-    status: checkRoles(environment.allowedRoles.indicadores) || checkOrgs(environment.allowedOrgs.indicadoresEstrategico),
+    status: checkRoles(environment.allowedRoles.indicadores) && checkOrgs(environment.allowedOrgs.indicadoresEstrategico),
     name: "Indicadores Estratégicos",
     link: "",
     url: environment.urls.indicadores,
@@ -171,7 +171,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Projetos",
     id: 8,
-    status: checkRoles(environment.allowedRoles.estado) || checkRoles(environment.allowedRoles.geral),
+    status: checkRoles(environment.allowedRoles.estado) && checkRoles(environment.allowedRoles.geral),
     name: "Programa Estado Presente",
     icon: "logoAmareloEstadoPresente.svg",
     link: "",
@@ -197,7 +197,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Captação",
     id: 9,
-    status: checkRoles(environment.allowedRoles.capitacao) || checkRoles(environment.allowedRoles.geral),
+    status: checkRoles(environment.allowedRoles.capitacao) && checkRoles(environment.allowedRoles.geral),
     name: "Captação de Recursos",
     icon: "menu-icone-siscap.svg",
     link: "/pages/capitation",

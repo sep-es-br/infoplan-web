@@ -92,7 +92,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Orçamento",
     id: 3,
-    status: checkRoles(environment.allowedRoles.sas),
+    status: true,
     name: "Painéis SAS(Sigefes)",
     link: "",
     url: environment.urls.sas,
@@ -203,7 +203,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Captação",
     id: 9,
-    status: true,
+    status: checkRoles(environment.allowedRoles.capitacao),
     name: "Captação de Recursos",
     icon: "menu-icone-siscap.svg",
     link: "/pages/capitation",

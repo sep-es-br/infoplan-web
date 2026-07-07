@@ -3,7 +3,7 @@ export interface IProfile {
     name: string;
     email: string;
     role: string[];
-    Sigla: string;
+    sigla: string;
 }
 
 export interface IUsuarioLogado {

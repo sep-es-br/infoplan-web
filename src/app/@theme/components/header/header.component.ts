@@ -142,7 +142,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    localStorage.removeItem('infoPlanCurrentTheme');
     window.location.href = 'https://acessocidadao.es.gov.br/is/logout';
   }
 

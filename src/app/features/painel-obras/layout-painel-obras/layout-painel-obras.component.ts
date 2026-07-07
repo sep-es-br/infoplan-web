@@ -488,7 +488,6 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (value) => {
-          console.log("dados", value)
           this.statusTotal.contagemEntregas = value.totalEntregasPE;
           this.statusTotal.monitoramentoPlanejado = value.totalPrevisto;
           this.statusTotal.monitoramentoRealizado = value.totalRealizado;

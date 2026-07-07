@@ -40,12 +40,11 @@ export class AuthRedirectComponent {
           sessionStorage.setItem('token', infoplanToken);
         }),
         tap((response: IProfile) => {
-          console.log("profile", response)
           const userProfile = {
             name: response.name,
             email: response.email,
             role: response.role,
-            sigla: response.Sigla,
+            sigla: response.sigla,
           };
 
           const userRoles = response.role ?? [];

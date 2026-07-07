@@ -13,7 +13,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class ProfileService {
   private _url = `${environment.apiUrl}/signin/user-info`;
-  private _sessionProfileSubject = new BehaviorSubject<IProfile>({ token: "", name: "", email: "", role: [], Sigla: "" });
+  private _sessionProfileSubject = new BehaviorSubject<IProfile>({ token: "", name: "", email: "", role: [], sigla: "" });
   public sessionProfile$ = this._sessionProfileSubject.asObservable();
 
   constructor(

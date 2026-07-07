@@ -275,8 +275,8 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
     this.indicatorExecutionService
       .getSearchBugataryUnit(this.filter)
       .subscribe((res) => {
-        this.uoList = res;
-        this.filteredUOList = res;
+        this.uoList = res || [];
+        this.filteredUOList = res || [];
       });
   }
 
@@ -289,8 +289,8 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
     this.indicatorExecutionService
       .getSearchAction(this.filter)
       .subscribe((res) => {
-        this.actionList = res;
-        this.filteredActionList = res;
+        this.actionList = res || [];
+        this.filteredActionList = res || [];
       });
   }
 
@@ -303,8 +303,8 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
     this.indicatorExecutionService
       .getSearchFullSource(this.filter)
       .subscribe((res) => {
-        this.fullSourceList = res as any;
-        this.filteredFullSourceList = res as any;
+        this.fullSourceList = (res as any) || [];
+        this.filteredFullSourceList = (res as any) || [];
       });
   }
 
@@ -322,7 +322,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
 
   onUOSearch(event: any) {
     const term = event.target.value.toLowerCase();
-    this.filteredUOList = this.uoList.filter(
+    this.filteredUOList = (this.uoList || []).filter(
       (uo) =>
         uo.uo.toLowerCase().includes(term) ||
         uo.name.toLowerCase().includes(term),
@@ -331,7 +331,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
 
   onActionSearch(event: any) {
     const term = event.target.value.toLowerCase();
-    this.filteredActionList = this.actionList.filter(
+    this.filteredActionList = (this.actionList || []).filter(
       (action) =>
         action.cod_action.toLowerCase().includes(term) ||
         action.name_action.toLowerCase().includes(term),
@@ -340,7 +340,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
 
   onFullSourceSearch(event: any) {
     const term = event.target.value.toLowerCase();
-    this.filteredFullSourceList = this.fullSourceList.filter(
+    this.filteredFullSourceList = (this.fullSourceList || []).filter(
       (source) =>
         source.cod_source.toLowerCase().includes(term) ||
         source.name_source.toLowerCase().includes(term),
@@ -348,17 +348,17 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
   }
 
   get selectedUOs(): IBudgetaryUnitResponse[] {
-    return this.uoList.filter((uo) => this.filter.codUo.includes(uo.uo));
+    return (this.uoList || []).filter((uo) => this.filter.codUo.includes(uo.uo));
   }
 
   get selectedActions(): IActionResponse[] {
-    return this.actionList.filter((a) =>
+    return (this.actionList || []).filter((a) =>
       this.filter.codAction.includes(a.cod_action),
     );
   }
 
   get selectedFullSources(): IFullSourceResponse[] {
-    return this.fullSourceList.filter((s) =>
+    return (this.fullSourceList || []).filter((s) =>
       this.filter.codSource.includes(s.cod_source),
     );
   }

@@ -25,11 +25,10 @@ export class OrganizacaoGuardGuard implements CanActivate {
     }
 
     const allowedRoles = route.data['allowedRoles'] as Array<string>;
-    const allowedOrgs = route.data['allowedOrgs'] as Array<string>;
     const roleOnly = route.data['roleOnly'] as boolean;
 
-    // Se a rota não possui nenhuma restrição de role ou org, permite acesso
-    if (!allowedRoles && !allowedOrgs) {
+    // Se a rota não possui nenhuma restrição de role, permite acesso
+    if (!allowedRoles) {
       return true;
     }
 
@@ -57,20 +56,6 @@ export class OrganizacaoGuardGuard implements CanActivate {
       return false;
     }
 
-    // 3. Verifica se a sigla tem permissão na lista de orgs permitidas (caso haja restrição específica)
-    if (allowedOrgs && allowedOrgs.length > 0) {
-      const temOrg = allowedOrgs.includes(String(siglaUsuario).trim());
-      if (temOrg) {
-        return true; // Se a organização está permitida, concede acesso!
-      }
-      
-      // Se há restrições e o usuário não pertence a elas:
-      const fallback = route.data['fallbackRoute'] || '/pages/home';
-      this.router.navigate([fallback]);
-      return false;
-    }
-
-    // Se o usuário tem sigla preenchida e não há restrição específica de allowedOrgs:
     return true;
   }
 }

@@ -39,9 +39,9 @@ import { FilterManagementService } from "../../../core/service/filter-management
 type PaginaPainel = "visao-geral" | "orgao" | "municipio" | "carteira";
 
 const DEFAULT_PARAMS_PAINEL_OBRAS: IPainelObrasRequest = {
-  orgao: environment.painelObras.orgao,
-  status: environment.painelObras.status,
-  municipio: environment.painelObras.municipio,
+  orgao: String(environment.painelObras.orgao),
+  status: String(environment.painelObras.status),
+  municipio: String(environment.painelObras.municipio),
   portfolio: environment.painelObras.portifolio,
   dataInicio: environment.painelObras.dataInicio,
   dataFim: environment.painelObras.dataFim,

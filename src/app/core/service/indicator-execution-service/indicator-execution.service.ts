@@ -17,6 +17,7 @@ import {
   IIndicatorExecutionFilter,
 } from "../../interfaces/indicator-execution/indicator-execution";
 import { catchError } from "rxjs/operators";
+import { AuthenticationService } from "../authentication.service";
 
 @Injectable({
   providedIn: "root",
@@ -25,6 +26,7 @@ export class IndicatorExecutionService {
   private _URI = `${environment.apiUrl}/indicador`;
   private _http = inject(HttpClient);
   private _router = inject(Router);
+  private _authService = inject(AuthenticationService);
 
   public getSearchBugataryUnit(
     filter: IIndicatorExecutionFilter,
@@ -139,30 +141,31 @@ export class IndicatorExecutionService {
       .pipe(catchError((err) => this.handleError(err, this._router)));
   }
 
+  private getCommonParams(): HttpParams {
+    const orgao = this._authService.getUsuarioLogado()?.sigla || '';
+    return new HttpParams().set("orgao", orgao);
+  }
+
   private params(filter: IIndicatorExecutionFilter): HttpParams {
-    const params = new HttpParams().set("year", Array.isArray(filter.year) ? filter.year.join(",") : filter.year);
-    return params;
+    return this.getCommonParams()
+      .set("year", Array.isArray(filter.year) ? filter.year.join(",") : filter.year);
   }
 
   private paramsAction(filter: IIndicatorExecutionFilter): HttpParams {
-    const params = new HttpParams()
+    return this.getCommonParams()
       .set("year", Array.isArray(filter.year) ? filter.year.join(",") : filter.year)
       .set("codUo", Array.isArray(filter.codUo) ? filter.codUo.join(",") : filter.codUo);
-
-    return params;
   }
 
   private paramsFullSource(filter: IIndicatorExecutionFilter): HttpParams {
-    const params = new HttpParams()
+    return this.getCommonParams()
       .set("year", Array.isArray(filter.year) ? filter.year.join(",") : filter.year)
       .set("codUo", Array.isArray(filter.codUo) ? filter.codUo.join(",") : filter.codUo)
       .set("codAction", Array.isArray(filter.codAction) ? filter.codAction.join(",") : filter.codAction);
-
-    return params;
   }
 
   private paramsFilterGeneral(filter: IIndicatorExecutionFilter): HttpParams {
-    const params = new HttpParams()
+    return this.getCommonParams()
       .set("year", Array.isArray(filter.year) ? filter.year.join(",") : filter.year)
       .set("month", Array.isArray(filter.month) ? filter.month.join(",") : filter.month)
       .set("codUo", Array.isArray(filter.codUo) ? filter.codUo.join(",") : filter.codUo)
@@ -171,12 +174,10 @@ export class IndicatorExecutionService {
       .set("codSource", Array.isArray(filter.codSource) ? filter.codSource.join(",") : filter.codSource)
       .set("codAmendment", filter.codAmendment)
       .set("typeSource", Array.isArray(filter.typeSource) ? filter.typeSource.join(",") : filter.typeSource);
-    return params;
   }
 
-
   private paramsDashAvailabilityToUo(filter: IIndicatorExecutionFilter): HttpParams {
-    const params = new HttpParams()
+    return this.getCommonParams()
       .set("year", filter.year.toString())
       .set("month", Array.isArray(filter.month) ? filter.month.join(",") : filter.month)
       .set("codUo", Array.isArray(filter.codUo) ? filter.codUo.join(",") : filter.codUo)
@@ -185,8 +186,6 @@ export class IndicatorExecutionService {
       .set("codSource", Array.isArray(filter.codSource) ? filter.codSource.join(",") : filter.codSource)
       .set("codAmendment", filter.codAmendment)
       .set("typeSource", Array.isArray(filter.typeSource) ? filter.typeSource.join(",") : filter.typeSource);
-
-    return params;
   }
 
   private handleError(err: any, router: Router): Observable<never> {

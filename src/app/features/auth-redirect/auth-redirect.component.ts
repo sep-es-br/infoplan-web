@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {Router} from '@angular/router';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 
 
@@ -44,21 +44,24 @@ export class AuthRedirectComponent {
             name: response.name,
             email: response.email,
             role: response.role,
+            sigla: response.sigla,
           };
 
-        const userRoles = response.role ?? [];
+          const userRoles = response.role ?? [];
 
-        const allowedRoles = Object.values(environment.allowedRoles).filter(role => role); 
+          const allowedRoles = Object.values(environment.allowedRoles).filter(role => role);
 
-        const hasAccess = userRoles.some(role => allowedRoles.includes(role));
+          const hasAccess = userRoles.some(role => allowedRoles.includes(role));
 
-        if (!hasAccess) {
-          sessionStorage.clear();
-          this._router.navigate(['/login'], {
-            state: { authError: 'Acesso negado: Você não tem autorização para acessar esta aplicação.' }
-          });
-          return;
-        }
+          const hasOrgs = response.sigla && response.sigla.trim() !== '';
+
+          if (!hasAccess && !hasOrgs) {
+            sessionStorage.clear();
+            this._router.navigate(['/login'], {
+              state: { authError: 'Acesso negado: Você não tem autorização para acessar esta aplicação.' }
+            });
+            return;
+          }
 
           sessionStorage.setItem('user-profile', JSON.stringify(userProfile));
           this._router.navigate(['pages']);
@@ -71,5 +74,5 @@ export class AuthRedirectComponent {
         })
       )
       .subscribe();
-    }
+  }
 }

@@ -31,3 +31,7 @@
     padding-right: 0.75rem !important;
   }
 }
+
+::ng-deep nb-sidebar.fixed {
+  z-index: 1040 !important;
+}

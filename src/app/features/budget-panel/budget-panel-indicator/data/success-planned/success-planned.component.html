@@ -21,7 +21,8 @@
   [tableContent]="tableContent"
   [loadingStatus]="requestStatus"
   (executeDownload)="handleTableDownload()"
-  [backCardHeight]="400"
+  [backCardHeight]="isChartMaximized('success-of-planned') ? calcMaximizedHeight() : 502"
+  [tableOnFront]="false"
   [groupedHeaderColumns]="groupedHeaderColumns"
   [distinctYears]="distinctYears"
   [showMaximizeButton]="true"
@@ -32,7 +33,7 @@
 
     <ngx-org-chart-opposite
       [chart]="chartData"
-      [height]="isChartMaximized('success-of-planned') ? calcMaximizedHeight() : 497"
+      [height]="isChartMaximized('success-of-planned') ? calcMaximizedHeight() : 400"
       [groupingMode]="groupingMode"
       [isMaximized]="isChartMaximized('success-of-planned')"
       [chartDataConfig]="chartDataConfig">

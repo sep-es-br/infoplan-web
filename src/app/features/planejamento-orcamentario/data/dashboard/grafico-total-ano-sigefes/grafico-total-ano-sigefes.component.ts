@@ -290,4 +290,8 @@ export class GraficoTotalAnoSigefesComponent
   isChartMaximized(chartId: string): boolean {
     return this._chartMaximizeService.isChartMaximized(chartId);
   }
+
+    calcMaximizedHeight(): number {
+    return this._chartMaximizeService.calcMaximizedHeight();
+  }
 }

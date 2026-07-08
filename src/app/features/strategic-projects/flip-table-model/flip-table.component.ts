@@ -133,6 +133,8 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() showMaximizeButton: boolean = false;
 
+  @Input() tableOnFront: boolean = false;
+
   @Input() groupedHeaderColumns: string[] = [];
 
   @Input() distinctYears: number[] = [];
@@ -142,6 +144,8 @@ export class FlipTableComponent implements OnChanges {
   @Input() outerCardHeight: number;
 
   @ContentChild("cardToggles", { read: ElementRef }) cardTogglesRef: ElementRef;
+
+  @ViewChild("searchInput") searchInputRef!: ElementRef<HTMLInputElement>;
 
   get hasToggleContent(): boolean {
     return !!this.cardTogglesRef;
@@ -169,6 +173,18 @@ export class FlipTableComponent implements OnChanges {
       return window.innerHeight - 80; // menos espaço para headers/borders
     } else {
       return (this.height || 400) - 30;
+    }
+  }
+
+  get deveExibirSearch(): boolean {
+    if (!this.showSearchField) {
+      return false;
+    }
+
+    if (this.tableOnFront) {
+      return !this.isFlipCardFlipped;
+    } else {
+      return this.isFlipCardFlipped;
     }
   }
 
@@ -275,6 +291,14 @@ export class FlipTableComponent implements OnChanges {
   }
 
   /* Handlers */
+
+  handleOpenSearchFieldClick() {
+    this.isSearchFieldVisible = true;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.searchInputRef?.nativeElement?.focus();
+    }, 0);
+  }
 
   handleCloseSearchFieldClick() {
     this.isSearchFieldVisible = false;
@@ -411,9 +435,9 @@ export class FlipTableComponent implements OnChanges {
     return propList.some(
       (prop) =>
         (prop.propertyName === "categoria" ||
-         prop.propertyName === "category" ||
-         prop.propertyName === "planoOrcamentario" ||
-         prop.propertyName === customProp) &&
+          prop.propertyName === "category" ||
+          prop.propertyName === "planoOrcamentario" ||
+          prop.propertyName === customProp) &&
         prop.value?.toString().trim().toUpperCase() === "TOTAL",
     );
   }

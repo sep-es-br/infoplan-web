@@ -54,6 +54,7 @@ export interface IDashComparativeResponse {
   authorized: number,
   committed: number,
   liquidated: number,
+  paid: number,
   committedBarAuthorized: number,
   liquidatedBarAuthorized: number
 }

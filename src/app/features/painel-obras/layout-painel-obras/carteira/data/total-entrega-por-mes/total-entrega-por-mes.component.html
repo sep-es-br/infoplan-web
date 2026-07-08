@@ -1,0 +1,10 @@
+<ngx-flip-table [cardTitle]="title" [showSearchField]="true"
+  [tableContent]="flipTableContent" [showMaximizeButton]="true"
+  [loadingStatus]="requestStatus" (executeDownload)="handleTableDownload()" (executeSearch)="handleUserTableSearch($event)"
+  [backCardHeight]="isChartMaximized('total-entrega-por-mes') ? calcMaximizedHeight() : 400"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('total-entrega-por-mes', $event)">
+
+  <ngx-org-chart-vertical [chart]="chartData" [height]="isChartMaximized('total-entrega-por-mes') ? calcMaximizedHeight() : 400"
+    [isMaximized]="isChartMaximized('total-entrega-por-mes')" [barGap]="'150'" [chartDataConfig]="chartDataConfig" card-front>
+  </ngx-org-chart-vertical>
+</ngx-flip-table>

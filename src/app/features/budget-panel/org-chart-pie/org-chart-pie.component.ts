@@ -1,4 +1,3 @@
-import { UtilitiesService } from "./../../../core/service/utilities.service";
 import { CommonModule } from "@angular/common";
 import {
   Component,
@@ -18,7 +17,6 @@ import {
   getAvailableThemesStyles,
 } from "../../../@theme/theme.module";
 import { ShortNumberPipe } from "../../../@theme/pipes";
-import { tooltip } from "leaflet";
 
 export interface PieChartData {
   value: number;
@@ -156,6 +154,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
 
     // Adiciona o listener
     this.echartsInstance.on("legendselectchanged", (params: any) => {
+      if (!this.data) return;
       const selected = params.selected;
       const newTotal = this.data.reduce((sum, item) => {
         return selected[item.name] ? sum + item.value : sum;

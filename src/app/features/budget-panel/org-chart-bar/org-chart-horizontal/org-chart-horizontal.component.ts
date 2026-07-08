@@ -7,6 +7,7 @@ import {
   OnDestroy,
   SimpleChanges,
   AfterViewInit,
+  inject,
 } from "@angular/core";
 import { NbThemeService } from "@nebular/theme";
 import { ECharts, EChartsOption } from "echarts";
@@ -17,6 +18,8 @@ import {
 import { IChartOptions } from "../../../../shared/models/budget-panel/IChartOptions";
 import { CommonModule } from "@angular/common";
 import { NgxEchartsModule } from "ngx-echarts";
+import { UtilitiesService } from "../../../../core/service/utilities.service";
+
 export interface ChartDataConfig {
   legend?: {
     fontSize?: number | string;
@@ -33,6 +36,7 @@ export interface ChartDataConfig {
   };
   showMaximizeButton?: boolean;
 }
+
 @Component({
   selector: "ngx-org-chart-horizontal",
   templateUrl: "./org-chart-horizontal.component.html",
@@ -47,6 +51,9 @@ export class OrgChartHorizontalComponent
   @Input() charactersPerLine!: number;
   @Input() showMaximizeButton!: boolean;
   @Input() chartDataConfig!: ChartDataConfig;
+  @Input() valueType: 'percent' | 'currency' = 'percent';
+
+  private readonly _utilitiesService = inject(UtilitiesService);
 
   chartOptions!: EChartsOption;
   echartsInstance: ECharts | null = null;
@@ -77,7 +84,7 @@ export class OrgChartHorizontalComponent
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["chart"] && this.chart) {
+    if ((changes["chart"] && this.chart) || changes["valueType"]) {
       this.initChartOptions(this.chart);
     }
     if (changes["height"]) {
@@ -103,58 +110,19 @@ export class OrgChartHorizontalComponent
 
   private updateChartOnResize(): void {
     if (!this.echartsInstance || !this.chart?.data) return;
-
-    const theme = getAvailableThemesStyles(this.currentTheme);
-    const isMobile = window.innerWidth <= 1000;
-    const isPhone = window.innerWidth <= 575;
-    const isTablet = window.innerWidth <= 768;
-
-    this.echartsInstance.setOption({
-      yAxis: {
-        axisLabel: {
-          color: theme.textPrimaryColor,
-          // fontSize: isTablet ? 9 : isMobile ? 10 : 11,
-          fontSize: this.showMaximizeButton ? 14 : 11,
-          margin: 10,
-          width: 140,
-          lineHeight: 16,
-          overflow: "break"
-          // width: isPhone ? 80 : isTablet ? 80 : isMobile ? 80 : 140,
-        },
-      },
-      xAxis: {
-        axisLabel: {
-          // fontSize: isTablet ? 9 : isMobile ? 10 : 11,
-          fontSize: this.showMaximizeButton ? 13 : 10,
-          formatter: (value: number) => {
-            return this.formatValue(value);
-          },
-        },
-      },
-      legend: {
-        textStyle: {
-          color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 13 : 12,
-        },
-      },
-      series: this.chart.data.datasets.map(() => ({
-        barMaxWidth: isMobile ? 15 : 20,
-      })),
-    });
-
+    this.initChartOptions(this.chart);
+    this.echartsInstance.setOption(this.chartOptions, true);
     this.resizeChart();
   }
 
   initChartOptions(chart: IChartOptions) {
-    if (!chart?.data || chart.data.datasets.length < 2) {
+    if (!chart?.data || chart.data.datasets.length === 0) {
       this.chartOptions = null!;
       return;
     }
 
     const theme = getAvailableThemesStyles(this.currentTheme);
-
     const datasetLabels = chart.data.datasets.map((dataset) => dataset.label);
-
     const labels = chart.data.labels as string[];
 
     const data = labels.map((label: string, i: number) => ({
@@ -190,49 +158,26 @@ export class OrgChartHorizontalComponent
 
           if (!dataRef) return "";
 
-          let tituloTooltip = "";
+          let tituloTooltip = params[0].name || "";
 
-          if (dataRef.tipoTooltip === "PO") {
-            const po =
-              (dataRef.nomePO && dataRef.nomePO[index]) ||
-              "PO não identificado";
-            const uo =
-              dataRef.nomeUO && dataRef.nomeUO[index]
-                ? dataRef.nomeUO[index]
-                : "";
-
-            tituloTooltip = uo ? `${uo} - ${po} &nbsp;&nbsp;` : `${po} &nbsp;&nbsp;`;
-          } else {
-            const labelOriginal = params[0].name || "";
-            const codigo = labelOriginal.includes(" - ")
-              ? labelOriginal.split(" - ")[0].trim()
-              : labelOriginal.trim();
-
-            const uo =
-              dataRef.nomeUO && dataRef.nomeUO[index]
-                ? String(dataRef.nomeUO[index]).trim()
-                : "";
-            let partes = [];
-            if (codigo) partes.push(`${codigo} - `);
-            if (uo) partes.push(`${uo} &nbsp;&nbsp;`);
-
-            tituloTooltip = partes.join(" ");
-          }
-
-          let tooltip = `${tituloTooltip} </br>`;
+          let tooltip = `<div style="padding:4px"><b style="font-size:13px">${tituloTooltip}</b> </br>`;
 
           params.forEach((p: any) => {
-            const valorRaw =
-              p.value !== undefined && p.value !== null ? p.value : 0;
-            const valorFormatado = this.formatNumber(valorRaw);
-            tooltip += `${p.seriesName}: ${valorFormatado} </br>`;
+            const valorRaw = p.value !== undefined && p.value !== null ? p.value : 0;
+            const valorFormatado = this.valueType === 'currency'
+              ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(valorRaw, "R$")
+              : (this.valueType === 'percent' ? `${this.formatNumberSimple(valorRaw)}%` : this._utilitiesService.formatCurrencyUsingBrazilianStandards(valorRaw, "R$"));
+            tooltip += `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${p.color};margin-right:5px;"></span>
+                        <b>${p.seriesName}:</b> ${valorFormatado} </br>`;
           });
 
+          tooltip += `</div>`;
           return tooltip;
         },
       },
 
       legend: {
+        type: "scroll",
         orient: "horizontal",
         top: "top",
         left: "center",
@@ -247,23 +192,21 @@ export class OrgChartHorizontalComponent
       },
 
       grid: {
-        top: this.chartDataConfig?.grid?.top || "5%",
+        top: this.chartDataConfig?.grid?.top || "15%",
         left: this.chartDataConfig?.grid?.left || "10%",
         right: this.chartDataConfig?.grid?.right || "10%",
-        bottom: this.chartDataConfig?.grid?.bottom || "20%",
+        bottom: this.chartDataConfig?.grid?.bottom || "10%",
         containLabel: this.chartDataConfig?.grid?.containLabel || true,
       },
 
       xAxis: {
         type: "value",
         scale: true,
+        splitNumber: isPhone ? 3 : isTablet ? 4 : 5,
         axisLabel: {
           color: theme.textPrimaryColor,
-          // fontSize: isMobile ? 8 : 10,
-          fontSize: this.showMaximizeButton ? 13 : 10,
-          formatter: (value: number) => {
-            return this.formatValue(value);
-          },
+          fontSize: isPhone ? (this.showMaximizeButton ? 11 : 8.5) : (this.showMaximizeButton ? 13 : 10),
+          formatter: (value: number) => this.formatAxisValue(value),
         },
         splitLine: {
           show: true,
@@ -281,11 +224,12 @@ export class OrgChartHorizontalComponent
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 14 : 11,
+          fontSize: isPhone ? (this.showMaximizeButton ? 11 : 9) : (this.showMaximizeButton ? 13 : 10),
           margin: 10,
-          width: 140,
-          lineHeight: 16,
-          overflow: "break"
+          width: isPhone ? 100 : isTablet ? 120 : isMobile ? 130 : 150,
+          lineHeight: isPhone ? 13 : 15,
+          overflow: "break",
+          formatter: (value: string) => this.formatAxisLabel(value)
         },
         axisLine: {
           show: true,
@@ -302,18 +246,17 @@ export class OrgChartHorizontalComponent
         type: "bar",
         data: data.map((d) => d.valores[index]),
         itemStyle: {
-          color: colors[index]
+          color: colors[index],
+          borderRadius: [0, 4, 4, 0],
         },
         barCategoryGap: "20%",
         barGap: "20%",
         barMaxWidth: isMobile ? 15 : 25,
         label: {
-          show: true,
+          show: window.innerWidth > 768,
           position: "right",
-          formatter: (params: any) => {
-            return this.formatValue(params.value);
-          },
-          fontSize: this.showMaximizeButton ? 13 : 10,
+          formatter: (params: any) => this.formatValue(params.value),
+          fontSize: this.showMaximizeButton ? 13 : 9 ,
           color: theme.textPrimaryColor,
         }
       })),
@@ -355,22 +298,102 @@ export class OrgChartHorizontalComponent
     }
   }
 
+  private formatAxisLabel(value: string): string {
+    if (!value) return "";
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
+
+    const limit = isPhone ? 18 : isTablet ? 22 : isMobile ? 24 : 26;
+    const maxLines = 3;
+
+    const words = value.split(" ");
+    const lines: string[] = [];
+    let currentLine = "";
+
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      if (!currentLine) {
+        currentLine = word;
+      } else {
+        if ((currentLine + " " + word).length <= limit) {
+          currentLine += " " + word;
+        } else {
+          lines.push(currentLine);
+          if (lines.length === maxLines - 1) {
+            let lastLine = word;
+            let hasMore = false;
+            for (let j = i + 1; j < words.length; j++) {
+              if ((lastLine + " " + words[j]).length <= limit - 3) {
+                lastLine += " " + words[j];
+                i = j;
+              } else {
+                hasMore = true;
+                break;
+              }
+            }
+            if (hasMore || i < words.length - 1) {
+              lastLine = lastLine.substring(0, limit - 3).trim() + "...";
+            }
+            lines.push(lastLine);
+            currentLine = "";
+            break;
+          } else {
+            currentLine = word;
+          }
+        }
+      }
+    }
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    return lines.join("\n");
+  }
+
   formatValue(value: number): string {
     const absValue = Math.abs(value);
 
     if (absValue >= 1_000_000_000_000)
-      return (value / 1_000_000_000_000).toFixed(1) + " T";
+      return (value / 1_000_000_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " T";
     if (absValue >= 1_000_000_000)
-      return (value / 1_000_000_000).toFixed(1) + " B";
-    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1) + " M";
-    if (absValue >= 1_000) return (value / 1_000).toFixed(1) + " K";
+      return (value / 1_000_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.', ',').replace(',0', '') + " K";
 
     return value.toString();
   }
-  private formatNumber(value: number): string {
-    return `R$ ${value.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
+
+  private formatNumberSimple(value: number): string {
+    return new Intl.NumberFormat("pt-BR").format(value);
+  }
+
+  private formatAxisValue(value: number): string {
+    const absValue = Math.abs(value);
+
+    if (this.valueType === 'currency') {
+      const sign = value < 0 ? '-' : '';
+      const v = Math.abs(value);
+      if (v >= 1_000_000_000_000) return `${sign} ${ (v / 1_000_000_000_000).toFixed(0) } T`;
+      if (v >= 1_000_000_000) return `${sign} ${ (v / 1_000_000_000).toFixed(0) } B`;
+      if (v >= 1_000_000) return `${sign} ${ (v / 1_000_000).toFixed(0) } M`;
+      if (v >= 1_000) return `${sign} ${ (v / 1_000).toFixed(0) } K`;
+
+      return `${sign} ${this.formatNumberSimple(v)}`;
+    }
+
+    if (this.valueType === 'percent') {
+      return `${this.formatNumberSimple(value)}%`;
+    }
+
+    if (absValue >= 1_000_000_000_000)
+      return (value / 1_000_000_000_000).toFixed(0) + " T";
+    if (absValue >= 1_000_000_000)
+      return (value / 1_000_000_000).toFixed(0) + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(0) + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(0) + " K";
+
+    return value.toString();
   }
 }

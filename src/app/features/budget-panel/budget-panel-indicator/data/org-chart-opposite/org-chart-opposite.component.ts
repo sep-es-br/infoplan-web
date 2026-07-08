@@ -7,6 +7,7 @@ import {
   OnDestroy,
   OnInit,
   SimpleChanges,
+  inject,
 } from "@angular/core";
 import { NgxEchartsModule } from "ngx-echarts";
 import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
@@ -17,6 +18,7 @@ import {
 } from "../../../../../@theme/theme.module";
 import { ChartDataConfig } from "../../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { NbThemeService } from "@nebular/theme";
+import { UtilitiesService } from "../../../../../core/service/utilities.service";
 
 export type GroupingMode = "YEAR_GND" | "GND";
 
@@ -47,6 +49,9 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isMaximized!: boolean;
   @Input() chartDataConfig!: ChartDataConfig;
   @Input() groupingMode: GroupingMode = "YEAR_GND";
+  @Input() valueType: 'percent' | 'currency' = 'percent';
+
+  private readonly _utilitiesService = inject(UtilitiesService);
 
   echartsInstance: ECharts | null = null;
   chartOptions!: EChartsOption;
@@ -75,7 +80,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["chart"] || changes["groupingMode"] || changes["isMaximized"] || changes["chartDataConfig"]) {
+    if (changes["chart"] || changes["groupingMode"] || changes["isMaximized"] || changes["chartDataConfig"] || changes["valueType"]) {
       this.updateChart();
     }
     if (changes["height"] && this.echartsInstance) {
@@ -154,7 +159,6 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         .map((d, idx) => (getKey(d) === groupKey ? idx : -1))
         .filter((i) => i !== -1);
       if (indices.length > 0) {
-        // Encontra o meio do grupo para colocar o rótulo principal
         midpointIndices.add(indices[Math.floor(indices.length / 2)]);
       }
     });
@@ -181,35 +185,6 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       });
       liqSeriesData.push({ value: d.liq, itemStyle: { color: baseColor } });
     });
-
-    // finalData.forEach((d) => {
-    //   const baseColor =
-    //     this.groupingMode === "YEAR_GND"
-    //       ? this.getGndColor(d.gnd, 1)
-    //       : this.colorPalette[
-    //           uniqueYears.indexOf(d.year) % this.colorPalette.length
-    //         ];
-
-    //   const faded = baseColor.startsWith("#")
-    //     ? this.getOpacityColor(baseColor, 0.4)
-    //     : baseColor.replace("rgb", "rgba").replace(")", ", 0.4)");
-
-    //   const itemLabel = d.emp >= 97
-    //     ? {
-    //         position: "insideRight",
-    //         color: "#ffffff",
-    //         distance: 8
-    //       }
-    //     : undefined;
-
-    //   empSeriesData.push({
-    //     value: d.emp,
-    //     itemStyle: { color: faded },
-    //     label: itemLabel
-    //   });
-
-    //   liqSeriesData.push({ value: d.liq, itemStyle: { color: baseColor } });
-    // });
 
     const legendData: string[] = [];
     const legendSeries: any[] = [];
@@ -293,9 +268,14 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
               param.seriesName.includes("(Liquidado)")
             )
               return;
+
+            const formattedValue = this.valueType === 'currency'
+              ? this._utilitiesService.formatCurrencyUsingBrazilianStandards(param.value, "R$")
+              : `${param.value.toFixed(1).replace(".", ",")} %`;
+
             html += `<div style="margin-bottom: 2px;">
                        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${param.color};margin-right:5px;"></span>
-                       <b>${param.seriesName}:</b> ${param.value.toFixed(1).replace(".", ",")} %
+                       <b>${param.seriesName}:</b> ${formattedValue}
                      </div>`;
           });
 
@@ -312,9 +292,13 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       },
       xAxis: {
         type: "value",
-        max: 100,
+        max: this.valueType === 'percent' ? 100 : null,
         axisLabel: {
-          formatter: "{value} %",
+          formatter: (value: number) => {
+            return this.valueType === 'percent'
+              ? `${value} %`
+              : this._utilitiesService.formatCurrencyUsingBrazilianStandards(value, "R$");
+          },
           color: theme.textPrimaryColor,
           fontSize: 10,
         },
@@ -416,11 +400,15 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           z: 1,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
           label: {
-            show: true,
+            show: this.isMaximized && window.innerWidth > 768,
             position: "right",
             color: theme.textPrimaryColor,
             fontSize: 12,
-            formatter: (p: any) => `${p.value.toFixed(1).replace(".", ",")}%`,
+            formatter: (p: any) => {
+              return this.valueType === 'percent'
+                ? `${p.value.toFixed(1).replace(".", ",")}%`
+                : this._utilitiesService.formatCurrencyUsingBrazilianStandards(p.value, "R$");
+            },
           },
         },
         {
@@ -431,11 +419,15 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           z: 2,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
           label: {
-            show: true,
+            show: this.isMaximized && window.innerWidth > 768,
             position: "insideLeft",
             color: theme.textPrimaryColor,
             fontSize: 12,
-            formatter: (p: any) => `${p.value.toFixed(1).replace(".", ",")}%`,
+            formatter: (p: any) => {
+              return this.valueType === 'percent'
+                ? `${p.value.toFixed(1).replace(".", ",")}%`
+                : this._utilitiesService.formatCurrencyUsingBrazilianStandards(p.value, "R$");
+            },
           },
         },
         ...legendSeries,
@@ -462,7 +454,10 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   @HostListener("window:resize")
   onWindowResize() {
     clearTimeout(this.resizeTimeout);
-    this.resizeTimeout = setTimeout(() => this.echartsInstance?.resize(), 150);
+    this.resizeTimeout = setTimeout(() => {
+      this.updateChart();
+      this.echartsInstance?.resize();
+    }, 150);
   }
 
   private resizeChart() {

@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { PlanejamentoOrcamentarioComponent } from "./planejamento-orcamentario.component";
 import { NgModule } from "@angular/core";
-import { NbButtonModule, NbCardModule, NbIconModule, NbSelectModule, NbLayoutModule, NbAutocompleteModule, NbTagModule } from "@nebular/theme";
+import { NbButtonModule, NbCardModule, NbIconModule, NbSelectModule, NbLayoutModule, NbAutocompleteModule, NbTagModule, NbTooltipComponent, NbTooltipModule } from "@nebular/theme";
 import { FormsModule } from "@angular/forms";
 import { TextTruncatePipe } from "../../@theme/pipes/text-truncate.pipe";
 import { ThemeModule } from "../../@theme/theme.module";
@@ -23,6 +23,7 @@ import { GraficoTotalAnoSigefesComponent } from "./data/dashboard/grafico-total-
     NbIconModule,
     NbSelectModule,
     NbCardModule,
+    NbTooltipModule,
     TextTruncatePipe,
     NbLayoutModule,
     ThemeModule,

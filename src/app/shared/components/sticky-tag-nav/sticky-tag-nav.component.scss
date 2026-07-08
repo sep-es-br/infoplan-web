@@ -1,31 +1,39 @@
-:host {
-  display: block;
-}
-
 @media screen and (min-width: 992px) {
   :host {
-    margin-top: -15px;
+    display: block;
+    width: 100%;
+    z-index: 1010;
   }
 }
 
 @media screen and (max-width: 991px) {
   :host {
-    margin-top: -4px;
+    display: block;
+    width: 100%;
+    z-index: 1010;
   }
 }
 
 .tag-panel {
   display: flex;
   justify-content: center;
-  margin-top: 0;
-  gap: 8px;
+  transition: top 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  width: 100%;
+
+  &.is-sticky {
+    z-index: 1010;
+    transition: opacity 0.3s ease;
+    
+    // Comportamento sticky removido conforme solicitado
+  }
 
   nb-tag {
     font-size: 12px;
-    padding: 4px 12px;
+    padding: 4px 4px;
     border-radius: 8px;
     font-weight: bold;
-    width: 200px;
+    width: 142px;
+    // width: 102px;
     display: flex;
     justify-content: center;
 
@@ -36,33 +44,8 @@
   }
 }
 
-// .tag-default {
-//   background-color: transparent !important;
-//   color: #4BB6D6 !important;
-//   border: 1px solid #4BB6D6 !important;
-//   transition: all 0.2s ease-in-out !important;
-//   cursor: pointer !important;
-
-// }
-
-// .tag-default:hover {
-//   background-color: #EAF6FB !important;
-// }
-
-// nb-tag.active-tag {
-//   background-color: #4BB6D6 !important;
-//   color: white !important;
-//   border-color: #4BB6D6 !important;
-//   pointer-events: none !important;
-// }
-// .disabled-tag {
-//   pointer-events: none;
-//   opacity: 0.7;
-//   cursor: default;
-// }
-
 nb-tag.tag-default {
-  background-color: transparent !important;
+  background-color: transparent;
   color: #4bb6d6 !important;
   border: 1px solid #4bb6d6 !important;
   cursor: pointer !important;
@@ -99,21 +82,38 @@ nb-tag.disabled-tag {
   filter: grayscale(20%) !important;
 }
 
-@media screen and (max-width: 584px) {
+@media screen and (max-width: 684px) {
   .tag-panel {
     display: flex;
     justify-content: center;
-    // padding: 0.5rem 1rem;
-    gap: 8px;
+    width: 100%;
+    padding: 0px 6px 11px;
+  }
 
-    nb-tag {
-      display: flex;
-      align-items: center;
-      align-content: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      flex: 1;
-      gap: 5px;
-    }
+  ::ng-deep nb-tag-list {
+    width: 100%;
+    display: block !important; 
+  }
+
+  ::ng-deep .nb-tag-list-tags-wrapper {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important; 
+    justify-content: center;
+    width: 100%;
+  }
+
+  ::ng-deep nb-tag {
+    flex: 0 0 calc(50% - 4px) !important; 
+    max-width: calc(50% - 4px) !important;
+    
+    box-sizing: border-box !important; 
+    
+    margin: 0 !important; 
+    padding: 6px !important;
+    
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
   }
 }

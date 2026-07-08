@@ -1,13 +1,13 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
-import { NavigationBudgetPanel } from "./navigation-budget-panel/navigation-budget-panel";
+import { LayoutBudgetPanel } from "./layout/layout-budget-panel";
 import { BudgetPanelComponent } from "./budget-panel.component";
 import { BudgetPanelIndicatorComponent } from "./budget-panel-indicator/budget-panel-indicator.component";
 
 const routes: Routes = [
   {
     path: "",
-    component: NavigationBudgetPanel,
+    component: LayoutBudgetPanel,
     children: [
       {
         path: "",
@@ -16,11 +16,17 @@ const routes: Routes = [
       },
       {
         path: "resumo-executivo",
-        component: BudgetPanelComponent
+        component: BudgetPanelComponent,
+        data: {
+          dataSource: "Sigefes",
+        }
       },
       {
         path: "indicador",
-        component: BudgetPanelIndicatorComponent
+        component: BudgetPanelIndicatorComponent,
+        data: {
+          dataSource: "Sigefes",
+        }
       }
     ]
   }

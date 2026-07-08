@@ -5,6 +5,7 @@ import {
   OnChanges,
   OnInit,
   SimpleChanges,
+  OnDestroy,
 } from "@angular/core";
 import { NbThemeService } from "@nebular/theme";
 import { EChartsOption } from "echarts";
@@ -21,7 +22,7 @@ import {
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
-export class VerticalBarChartModelComponent implements OnInit, OnChanges {
+export class VerticalBarChartModelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: { date: string; previsto: number; realizado: number }[] = [];
 
   @Input() colors: string[] = [];
@@ -80,6 +81,13 @@ export class VerticalBarChartModelComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"]) {
       this.initChartOptions(this.data, this.colors);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.echartsInstance) {
+      this.echartsInstance.dispose();
+      this.echartsInstance = null;
     }
   }
 

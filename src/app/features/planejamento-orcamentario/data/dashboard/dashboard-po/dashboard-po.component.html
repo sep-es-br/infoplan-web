@@ -1,8 +1,13 @@
 <ngx-flip-table [showSearchField]="true" [cardTitle]="title" [loadingStatus]="requestStatus"
-  [tableContent]="tableContent" (executeDownload)="handleTableDownload()" [backCardHeight]="500"
-  (executeSearch)="handleTableSearch($event)" [showMaximizeButton]="true" [showSearchField]="true"
+  [tableContent]="tableContent" (executeDownload)="handleTableDownload()"
+  [backCardHeight]="isChartMaximized('dashboard-po') ? calcMaximizedHeight() : 500"
+  (executeSearch)="handleTableSearch($event)" [showMaximizeButton]="true"
+  [showSearchField]="true"
   (showMaximizeButtonClick)="onMaximizeButtonClick('dashboard-po',$event)">
-  <ngx-org-chart-horizontal [chart]="chartData" [height]="isChartMaximized('dashboard-po') ? maximizedHeight : 500"
+  <ngx-org-chart-horizontal
+  [chart]="chartData"
+  [valueType]="'currency'"
+  [height]="isChartMaximized('dashboard-po') ? maximizedHeight : 500"
     [chartDataConfig]="chartDataConfig" card-front>
   </ngx-org-chart-horizontal>
 </ngx-flip-table>

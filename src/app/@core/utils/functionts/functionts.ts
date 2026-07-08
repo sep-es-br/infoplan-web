@@ -3,7 +3,7 @@ export const converterToNumber = (valor: string): number | null => {
     if (!valor) return null;
     // Remove all whitespace (including unicode spaces like non-breaking spaces)
     let clean = valor.replace(/\s/g, "").replace(/[\xa0\u202f]/g, "");
-    
+
     // Remove currency symbol if present
     clean = clean.replace(/R\$/g, "");
 
@@ -39,3 +39,10 @@ export const replacePorcentage = (value: string) : number => {
   const transformValue = Number(clean);
   return isNaN(transformValue) ? 0 : transformValue;
 }
+
+
+  export const getChartColors = (count: number, chartColorPalette: string[]): string[] => {
+    return Array.from({ length: count }, (_, index) =>
+      chartColorPalette[index % chartColorPalette.length],
+    );
+  }

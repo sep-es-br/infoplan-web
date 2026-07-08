@@ -40,13 +40,19 @@
 
   .card-header {
     border: none;
-    height: 4rem;
+    min-height: 4rem;
+    height: auto;
     background-color: transparent;
 
     .card-title {
       color: var(--card-text-color);
       font-size: 1rem;
       font-weight: 600;
+
+      @media screen and (max-width: 576px) {
+        font-size: 0.75rem;
+        line-height: 1rem;
+      }
     }
 
     .sub-card-title {
@@ -83,10 +89,30 @@
   }
 
   .flip-card {
+
     .card-front,
     .card-front-content,
     .card-back {
       border: none;
+    }
+
+    /* Evitar que os containers do nb-flip-card interceptem eventos de mouse e bloqueiem o scroll */
+    ::ng-deep .front-container {
+      pointer-events: auto;
+    }
+
+    ::ng-deep .back-container {
+      pointer-events: none;
+    }
+
+    &.flipped {
+      ::ng-deep .front-container {
+        pointer-events: none;
+      }
+
+      ::ng-deep .back-container {
+        pointer-events: auto;
+      }
     }
 
     ::ng-deep &.align-table-vertically {
@@ -96,8 +122,7 @@
     }
 
     .card-back {
-      height: 100vh !important;
-      max-height: 80%;
+      // Height is managed dynamically via [style.height] in the template
 
       .table-container {
         overflow: auto;
@@ -156,7 +181,7 @@
                   font-weight: 700;
                 }
 
-                & + th {
+                &+th {
                   border-left: 1px solid var(--divider-color, #edf2f7);
                 }
 
@@ -219,10 +244,8 @@
               background-color: transparent;
 
               &:hover {
-                background-color: var(
-                  --table-row-hover-background-color,
-                  rgba(128, 128, 128, 0.1)
-                );
+                background-color: var(--table-row-hover-background-color,
+                    rgba(128, 128, 128, 0.1));
 
                 td:first-child {
                   background-color: inherit;
@@ -263,7 +286,7 @@
                   border-right: 2px solid var(--divider-color);
                 }
 
-                & + td {
+                &+td {
                   border-left: 1px solid var(--divider-color);
                 }
               }
@@ -366,7 +389,7 @@
           }
 
           th {
-            font-size: 12px !important;
+            font-size: 16px !important;
             padding-left: 0.5em;
             padding-right: 0.5em;
             height: 40px;
@@ -375,7 +398,7 @@
           }
 
           td {
-            font-size: 12px !important;
+            font-size: 16px !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;
@@ -387,6 +410,36 @@
 
         .icon {
           color: var(--card-text-color);
+        }
+
+        /* Garantir ícones consistentes dentro da tabela (tamanho e cor) */
+        nb-icon {
+          display: inline-flex;
+          width: 20px;
+          height: 20px;
+          vertical-align: middle;
+          min-width: 20px !important;
+          min-height: 20px !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+
+        nb-icon svg,
+        nb-icon img {
+          width: 20px !important;
+          height: 20px !important;
+          fill: currentColor !important;
+        }
+
+        /* Também garantir para o toggle da árvore (componente Nebular) */
+        nb-tree-grid-row-toggle svg,
+        nb-tree-grid-row-toggle nb-icon svg {
+          width: 20px !important;
+          height: 20px !important;
+          min-width: 20px !important;
+          min-height: 20px !important;
+          display: block !important;
+          visibility: visible !important;
         }
       }
     }
@@ -408,8 +461,10 @@
       tr:nth-child(2) th {
         background-color: #ffffff !important;
         color: #475569 !important;
-        border-top: 1px solid #94a3b8 !important; /* Força a borda superior no tema claro */
-        border-left: 1px solid #cbd5e1 !important; /* Força a divisão entre os anos no tema claro */
+        border-top: 1px solid #94a3b8 !important;
+        /* Força a borda superior no tema claro */
+        border-left: 1px solid #cbd5e1 !important;
+        /* Força a divisão entre os anos no tema claro */
         border-bottom: 1px solid #cbd5e1 !important;
       }
 

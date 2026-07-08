@@ -1,55 +1,64 @@
 <div class="col-12">
   <div class="filter-container">
-    <div class="filter-button px-2">
-      <div class="filter-tags">
-        <div *ngFor="let tag of activeFilters; let i = index">
-          <div class="filter-tag" [ngClass]="{ 'invisible-tag': showFilters }">
-            <div>
-              <div class="tag-label">{{ tag.label }}</div>
+    <div class="filter-wrapper" [class.is-sticky]="isScrolled">
+      <div class="filter-button px-2">
+        <div class="filter-tags" [class.is-sticky]="isScrolled">
+          <div *ngFor="let tag of activeFilters; let i = index">
+            <div class="filter-tag" [class.is-sticky]="isScrolled">
+              <div class="filter-tag-inner" [ngClass]="{ 'invisible-tag': showFilters }">
+                <div>
+                  <div class="tag-label">{{ tag.label }}</div>
 
-              <div class="tag-value">
-                <ng-container *ngFor="let valueDisplay of tag.displayValue; let index = index">
-                  <ng-container *ngIf="valueDisplay.name?.length <= 20; else spanWithTooltip">
-                    <span>
-                      {{
-                      (index > 0 ? " " : "") +
-                      (tag.displayValue.length > 1
-                      ? valueDisplay.name + ";"
-                      : valueDisplay.name)
-                      }}
-                    </span>
-                  </ng-container>
+                  <div class="tag-value">
+                    <ng-container *ngFor="
+                        let valueDisplay of tag.displayValue;
+                        let index = index
+                      ">
+                      <ng-container *ngIf="
+                          valueDisplay.name?.length <= 20;
+                          else spanWithTooltip
+                        ">
+                        <span>
+                          {{
+                          (index > 0 ? " " : "") +
+                          (tag.displayValue.length > 1
+                          ? valueDisplay.name + ";"
+                          : valueDisplay.name)
+                          }}
+                        </span>
+                      </ng-container>
 
-                  <ng-template #spanWithTooltip>
-                    <span [nbTooltip]="
-                      valueDisplay.fullName
-                        ? valueDisplay.fullName
-                        : valueDisplay.name
-                    ">
-                      {{
-                      (index > 0 ? " " : "") +
-                      (valueDisplay.name | TextTruncate : 17 : ";")
-                      }}
-                    </span>
-                  </ng-template>
-                </ng-container>
+                      <ng-template #spanWithTooltip>
+                        <span [nbTooltip]="
+                            valueDisplay.fullName
+                              ? valueDisplay.fullName
+                              : valueDisplay.name
+                          ">
+                          {{
+                          (index > 0 ? " " : "") +
+                          (valueDisplay.name | TextTruncate: 17 : ";")
+                          }}
+                        </span>
+                      </ng-template>
+                    </ng-container>
+                  </div>
+                </div>
               </div>
+              <button *ngIf="tag.key !== 'year'" class="remove-button" (click)="removeFilter(tag.key)">
+                x
+              </button>
             </div>
-            <button *ngIf="tag.key !== 'year'" class="remove-button" (click)="removeFilter(tag.key)">
-              x
-            </button>
           </div>
         </div>
-      </div>
 
-      <div class="filter-button">
-        <button class="filter-toggle" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
-          Filtros
-          <nb-icon [icon]="'funnel-outline'"></nb-icon>
-        </button>
+        <div class="filter-button" [class.is-sticky]="isScrolled">
+          <button class="filter-toggle" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
+            Filtros
+            <nb-icon [icon]="'funnel-outline'"></nb-icon>
+          </button>
+        </div>
       </div>
     </div>
-
     <!-- Painel de Filtros -->
     <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable">
@@ -88,19 +97,20 @@
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
                     <span class="mb-1">Tipo de Fonte</span>
                     <nb-select multiple name="tipoFonte" placeholder="Selecionar" size="tiny"
-                      [(ngModel)]="filter.typeSource" (selectedChange)="handleFilterChange('typeSource', $event)"
-                      #customSelect>
+                      [(ngModel)]="filter.typeSource" (selectedChange)="
+                        handleFilterChange('typeSource', $event)
+                      " #customSelect>
                       <nb-option [value]="1">Caixa do Tesouro</nb-option>
                       <nb-option [value]="2">Demais Fontes</nb-option>
                     </nb-select>
                   </div>
 
-
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
                     <span class="mb-1">Grupo de Despesa</span>
                     <nb-select multiple name="groupExpense" placeholder="Selecionar" size="tiny"
-                      [(selected)]="filter.codGnd" (selectedChange)="handleFilterChange('groupExpense', $event)"
-                      #customSelect>
+                      [(selected)]="filter.codGnd" (selectedChange)="
+                        handleFilterChange('groupExpense', $event)
+                      " #customSelect>
                       <nb-option *ngFor="let grupo of groupExpenseList" [value]="grupo.id">
                         {{ grupo.name }}
                       </nb-option>
@@ -110,8 +120,9 @@
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
                     <span class="mb-1">Emenda parlamentar Estadual</span>
                     <nb-select name="codAmendment" placeholder="Selecionar" size="tiny"
-                      [(ngModel)]="filter.codAmendment" (selectedChange)="handleFilterChange('codAmendment', $event)"
-                      #customSelect>
+                      [(ngModel)]="filter.codAmendment" (selectedChange)="
+                        handleFilterChange('codAmendment', $event)
+                      " #customSelect>
                       <nb-option [value]="1">Sem Emenda Estadual</nb-option>
                       <nb-option [value]="2">Apenas Emenda Estadual</nb-option>
                     </nb-select>
@@ -124,10 +135,10 @@
                       placeholder="Buscar UO..." autocomplete="off" [nbAutocomplete]="uoAutocomplete"
                       (input)="onUOSearch($event)" fieldSize="tiny" />
 
-                    <div class="selected-items-row mt-1" *ngIf="selectedUOs.length > 0">
+                    <div class="selected-items-row" *ngIf="selectedUOs.length > 0">
                       <nb-tag *ngFor="let uo of selectedUOs" [text]="uo.uo" [removable]="true"
                         [nbTooltip]="uo.uo + ' - ' + uo.name" (remove)="removeUO(uo.uo)" size="tiny"
-                        appearance="outline">
+                        appearance="filled">
                       </nb-tag>
                     </div>
 
@@ -148,10 +159,11 @@
                       name="actionSearch" placeholder="Buscar ação orçamentária..." autocomplete="off"
                       [nbAutocomplete]="actionAutocomplete" (input)="onActionSearch($event)" fieldSize="tiny" />
 
-                    <div class="selected-items-row mt-1" *ngIf="selectedActions.length > 0">
+                    <div class="selected-items-row" *ngIf="selectedActions.length > 0">
                       <nb-tag *ngFor="let action of selectedActions" [text]="action.cod_action" [removable]="true"
-                        [nbTooltip]="action.cod_action + ' - ' + action.name_action"
-                        (remove)="removeAction(action.cod_action)" size="tiny" appearance="outline">
+                        [nbTooltip]="
+                          action.cod_action + ' - ' + action.name_action
+                        " (remove)="removeAction(action.cod_action)" size="tiny" appearance="filled">
                       </nb-tag>
                     </div>
 
@@ -173,10 +185,11 @@
                       name="fullSourceSearch" placeholder="Buscar fonte..." autocomplete="off"
                       [nbAutocomplete]="fullSourceAutocomplete" (input)="onFullSourceSearch($event)" fieldSize="tiny" />
 
-                    <div class="selected-items-row mt-1" *ngIf="selectedFullSources.length > 0">
+                    <div class="selected-items-row" *ngIf="selectedFullSources.length > 0">
                       <nb-tag *ngFor="let source of selectedFullSources" [text]="source.cod_source" [removable]="true"
-                        [nbTooltip]="source.cod_source + ' - ' + source.name_source"
-                        (remove)="removeFullSource(source.cod_source)" size="tiny" appearance="outline">
+                        [nbTooltip]="
+                          source.cod_source + ' - ' + source.name_source
+                        " (remove)="removeFullSource(source.cod_source)" size="tiny" appearance="filled">
                       </nb-tag>
                     </div>
 
@@ -231,12 +244,13 @@
             <div class="icon-top-right budget-management-indicator" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa-solid fa-gears"></i>
             </div>
-            <div class="card-content"
-              [title]="'1° Quadrimestre 30,40%\n2° Quadrimestre 52,87%\n3° Quadrimestre 65,60%'">
+            <div class="card-content" [nbTooltip]="
+                '1° Quadrimestre 30,40%\n 2° Quadrimestre 52,87%\n 3° Quadrimestre 65,60%'
+              " nbTooltipClass="tooltip-respeita-linha" nbTooltipPlacement="bottom">
               <ng-container *ngIf="
-                    requestStatus.status === 'Loading';
-                    else budgetManagementIndicador
-                  ">
+                  requestStatus.status === 'Loading';
+                  else budgetManagementIndicador
+                ">
                 <div class="d-flex justify-content-center align-items-center w-100">
                   <div class="spinner-border budget-management-indicator" role="status">
                     <span class="sr-only">Carregando...</span>
@@ -248,12 +262,31 @@
                 <div class="number-box budget-management-indicator">
                   <div class="d-flex" style="flex-direction: column; align-items: start">
                     <div class="value">
-                      {{ statusTotal.budgetManagementIndicator }} %
+                      {{ statusTotal?.budgetManagementIndicator.IGO }} %
                     </div>
                   </div>
                 </div>
 
                 <div class="text-section budget-management-indicator">
+                  <div *ngIf="statusTotal?.budgetManagementIndicator?.nota !== null">
+                    <!-- <span class="label-subtitle" [nbTooltip]="
+                        ' Nota ' +
+                        (
+                          statusTotal?.budgetManagementIndicator?.nota
+                        )
+                      ">
+                      Nota
+                      {{
+
+                      statusTotal?.budgetManagementIndicator?.nota
+                      }}
+                    </span> -->
+                    <span
+                      *ngIf="statusTotal?.budgetManagementIndicator?.nota !== undefined && statusTotal?.budgetManagementIndicator?.nota !== null"
+                      class="label-subtitle" [nbTooltip]="' Nota ' + statusTotal.budgetManagementIndicator.nota">
+                      Nota {{ statusTotal.budgetManagementIndicator.nota }}
+                    </span>
+                  </div>
                   <span>Indicador de Gestão Orçamentária</span>
                 </div>
               </ng-template>
@@ -266,12 +299,10 @@
               <i class="fas fa-chart-line"></i>
             </div>
 
-            <div class="card-content"
-              [title]="'1° Quadrimestre 28,00%\n2° Quadrimestre 60,00%\n3° Quadrimestre 85,00%'">
-              <ng-container *ngIf="
-                    requestStatus.status === 'Loading';
-                    else plannedSuccess
-                  ">
+            <div class="card-content" [nbTooltip]="
+                '1° Quadrimestre 28,00%\n2° Quadrimestre 60,00%\n3° Quadrimestre 85,00%'
+              " nbTooltipClass="tooltip-respeita-linha" nbTooltipPlacement="bottom">
+              <ng-container *ngIf="requestStatus.status === 'Loading'; else plannedSuccess">
                 <div class="d-flex justify-content-center align-items-center w-100">
                   <div class="spinner-border planned-success" role="status">
                     <span class="sr-only">Carregando...</span>
@@ -282,9 +313,7 @@
               <ng-template #plannedSuccess>
                 <div class="number-box planned-success">
                   <div class="d-flex" style="flex-direction: column; align-items: start">
-                    <div class="value">
-                      {{ statusTotal.plannedSuccess }} %
-                    </div>
+                    <div class="value">{{ statusTotal?.plannedSuccess?.sucesso }} %</div>
                   </div>
                 </div>
 
@@ -300,11 +329,13 @@
             <div class="icon-top-right budgetary-changes" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa fa-exchange-alt"></i>
             </div>
-            <div class="card-content" [title]="'1° Quadrimestre 6,25%\n2° Quadrimestre 15,00%\n3° Quadrimestre 25,00%'">
+            <div class="card-content" [nbTooltip]="
+                '1° Quadrimestre 6,25%\n2° Quadrimestre 15,00%\n3° Quadrimestre 25,00%'
+              " nbTooltipClass="tooltip-respeita-linha" nbTooltipPlacement="bottom">
               <ng-container *ngIf="
-                    requestStatus.status === 'Loading';
-                    else budgetaryChanges
-                  ">
+                  requestStatus.status === 'Loading';
+                  else budgetaryChanges
+                ">
                 <div class="d-flex justify-content-center align-items-center w-100">
                   <div class="spinner-border budgetary-changes" role="status">
                     <span class="sr-only">Carregando...</span>
@@ -316,7 +347,7 @@
                 <div class="number-box budgetary-changes">
                   <div class="d-flex" style="flex-direction: column; align-items: start">
                     <div class="value">
-                      {{ statusTotal.budgetaryChanges }} %
+                      {{ statusTotal?.budgetaryChanges }} %
                     </div>
                   </div>
                 </div>
@@ -334,12 +365,13 @@
             <div class="icon-top-right budgetary-feasibility" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa-solid fa-scale-balanced"></i>
             </div>
-            <div class="card-content"
-              [title]="'1° Quadrimestre 47,50%\n2° Quadrimestre 76,00%\n3° Quadrimestre 95,00%'">
+            <div class="card-content" [nbTooltip]="
+                '1° Quadrimestre 47,50%\n2° Quadrimestre 76,00%\n3° Quadrimestre 95,00%'
+              " nbTooltipClass="tooltip-respeita-linha" nbTooltipPlacement="bottom">
               <ng-container *ngIf="
-                    requestStatus.status === 'Loading';
-                    else budgetaryFeasibility
-                  ">
+                  requestStatus.status === 'Loading';
+                  else budgetaryFeasibility
+                ">
                 <div class="d-flex justify-content-center align-items-center w-100">
                   <div class="spinner-border budgetary-feasibility" role="status">
                     <span class="sr-only">Carregando...</span>
@@ -351,7 +383,7 @@
                 <div class="number-box budgetary-feasibility">
                   <div class="d-flex" style="flex-direction: column; align-items: start">
                     <div class="value">
-                      {{ statusTotal.budgetaryFeasibility }} %
+                      {{ statusTotal?.budgetaryFeasibility }} %
                     </div>
                   </div>
                 </div>
@@ -369,12 +401,13 @@
             <div class="icon-top-right focus-on-the-mission" *ngIf="requestStatus.status !== 'Loading'">
               <i class="fa fa-bullseye"></i>
             </div>
-            <div class="card-content"
-              [title]="'1° Quadrimestre 30,00%\n2° Quadrimestre 48,00%\n3° Quadrimestre 60,00%'">
+            <div class="card-content" [nbTooltip]="
+                '1° Quadrimestre 30,00%\n2° Quadrimestre 48,00%\n3° Quadrimestre 60,00%'
+              " nbTooltipClass="tooltip-respeita-linha" nbTooltipPlacement="bottom">
               <ng-container *ngIf="
-                    requestStatus.status === 'Loading';
-                    else focusOnTheMission
-                  ">
+                  requestStatus.status === 'Loading';
+                  else focusOnTheMission
+                ">
                 <div class="d-flex justify-content-center align-items-center w-100">
                   <div class="spinner-border focus-on-the-mission" role="status">
                     <span class="sr-only">Carregando...</span>
@@ -386,7 +419,7 @@
                 <div class="number-box focus-on-the-mission">
                   <div class="d-flex" style="flex-direction: column; align-items: start">
                     <div class="value">
-                      {{ statusTotal.focusOnTheMission }} %
+                      {{ statusTotal?.focusOnTheMission }} %
                     </div>
                   </div>
                 </div>
@@ -405,14 +438,14 @@
               <i class="fa-solid fa-wallet"></i>
             </div>
 
-            <div class="card-content" [title]="
-                  'R$ ' +
-                  (statusTotal.availableWithoutReservation | number : '1.0-0')
-                ">
+            <div class="card-content" [nbTooltip]="
+                'R$ ' +
+                (statusTotal?.availableWithoutReservation | number: '1.0-0')
+              " nbTooltipPlacement="bottom">
               <ng-container *ngIf="
-                    requestStatus.status === 'Loading';
-                    else availableWithoutReservation
-                  ">
+                  requestStatus.status === 'Loading';
+                  else availableWithoutReservation
+                ">
                 <div class="d-flex justify-content-center align-items-center w-100">
                   <div class="spinner-border total-reservation" role="status">
                     <span class="sr-only">Carregando...</span>
@@ -426,7 +459,7 @@
                     <div class="currency">R$</div>
                     <div class="value">
                       {{
-                      formatNumber(statusTotal.availableWithoutReservation)
+                      formatNumber(statusTotal?.availableWithoutReservation)
                       }}
                     </div>
                   </div>
@@ -457,7 +490,7 @@
               <ng-template #comparative>
                 <div class="number-box comparative">
                   <div class="d-flex" style="flex-direction: column; align-items: start">
-                    <div class="value">{{ statusTotal.comparative }} %</div>
+                    <div class="value">{{ statusTotal?.comparative }} %</div>
                   </div>
                 </div>
 
@@ -475,14 +508,15 @@
               <i class="fas fa-trophy"></i>
             </div>
 
-            <div class="card-content" [title]="
-              'R$ ' +
-              (statusTotal?.poWithHighestSettlement?.liquidado | number : '1.2-2')
-          ">
+            <div class="card-content" [nbTooltip]="
+                'R$ ' +
+                (statusTotal?.poWithHighestSettlement?.liquidado
+                  | number: '1.2-2')
+              " nbTooltipPlacement="bottom">
               <ng-container *ngIf="
-                    requestStatus.status === 'Loading';
-                    else poWithHighestSettlement
-                  ">
+                  requestStatus.status === 'Loading';
+                  else poWithHighestSettlement
+                ">
                 <div class="d-flex justify-content-center align-items-center w-100">
                   <div class="spinner-border poWith-highest-settlement" role="status">
                     <span class="sr-only">Carregando...</span>
@@ -495,17 +529,21 @@
                   <div class="d-flex" style="flex-direction: column; align-items: start">
                     <div class="currency">R$</div>
                     <div class="value">
-                      {{ formatNumber(statusTotal.poWithHighestSettlement.liquidado) }}
+                      {{
+                      formatNumber(
+                      statusTotal?.poWithHighestSettlement?.liquidado
+                      )
+                      }}
                     </div>
                   </div>
                 </div>
 
                 <div class="text-section po-with-highest-settlement d-flex flex-column justify-content-end">
                   <span class="label-title">PO com Maior Liquidação</span>
-
                   <span class="label-subtitle"
-                    [nbTooltip]="statusTotal.poWithHighestSettlement.cod_po + ' - ' + statusTotal.poWithHighestSettlement.nome_po">
-                    {{ statusTotal.poWithHighestSettlement.cod_po }} - {{ statusTotal.poWithHighestSettlement.nome_po |
+                    [nbTooltip]="statusTotal?.poWithHighestSettlement?.cod_po + ' - ' + statusTotal?.poWithHighestSettlement?.nome_po">
+                    {{ statusTotal?.poWithHighestSettlement?.cod_po }} - {{
+                    statusTotal?.poWithHighestSettlement?.nome_po |
                     TextTruncate:20 }}
                   </span>
                 </div>
@@ -528,10 +566,9 @@
             [class.col-xl-12]="!isChartMaximized('availability-por-uo')"
             [class.col-xxl-12]="!isChartMaximized('availability-por-uo')"
             [class.col-xxxl-12]="!isChartMaximized('availability-por-uo')">
-            <ngx-availability-tu-uo class="w-100"
-              (maximizeButtonClick)="handleMaximizeButtonClick('availability-por-uo', $event)"
-              [filter]="currentRequestParams">
-
+            <ngx-availability-tu-uo class="w-100" (sendMaximizeButtonClick)="
+                handleMaximizeButtonClick('availability-por-uo', $event)
+              " [filter]="currentRequestParams">
             </ngx-availability-tu-uo>
           </div>
         </ng-container>
@@ -546,10 +583,9 @@
             [class.col-xl-12]="!isChartMaximized('success-of-planned')"
             [class.col-xxl-12]="!isChartMaximized('success-of-planned')"
             [class.col-xxxl-12]="!isChartMaximized('success-of-planned')">
-            <ngx-success-planned class="w-100"
-              (maximizeButtonClick)="handleMaximizeButtonClick('success-of-planned', $event)"
-              [filter]="currentRequestParams">
-
+            <ngx-success-planned class="w-100" (sendMaximizeButtonClick)="
+                handleMaximizeButtonClick('success-of-planned', $event)
+              " [filter]="currentRequestParams">
             </ngx-success-planned>
           </div>
         </ng-container>
@@ -562,8 +598,9 @@
             [class.col-lg-12]="!isChartMaximized('comparative')" [class.col-xl-12]="!isChartMaximized('comparative')"
             [class.col-xxl-12]="!isChartMaximized('comparative')"
             [class.col-xxxl-12]="!isChartMaximized('comparative')">
-            <ngx-comparative class="w-100" (maximizeButtonClick)="handleMaximizeButtonClick('comparative', $event)"
-              [filter]="currentRequestParams"></ngx-comparative>
+            <ngx-comparative class="w-100" (sendMaximizeButtonClick)="
+                handleMaximizeButtonClick('comparative', $event)
+              " [filter]="currentRequestParams"></ngx-comparative>
           </div>
         </ng-container>
       </div>
@@ -577,12 +614,16 @@
             [class.col-xl-12]="!isChartMaximized('planned-budgetary')"
             [class.col-xxl-12]="!isChartMaximized('planned-budgetary')"
             [class.col-xxxl-12]="!isChartMaximized('planned-budgetary')">
-            <ngx-planned-budgetary class="w-100"
-              (maximizeButtonClick)="handleMaximizeButtonClick('planned-budgetary', $event)"
-              [filter]="currentRequestParams"></ngx-planned-budgetary>
+            <ngx-planned-budgetary class="w-100" (sendMaximizeButtonClick)="
+                handleMaximizeButtonClick('planned-budgetary', $event)
+              " [filter]="currentRequestParams"></ngx-planned-budgetary>
           </div>
         </ng-container>
       </div>
     </div>
   </div>
+
+  <nb-layout-footer class="mt-2">
+    <ngx-footer [timestamp]="timesTamp"></ngx-footer>
+  </nb-layout-footer>
 </div>

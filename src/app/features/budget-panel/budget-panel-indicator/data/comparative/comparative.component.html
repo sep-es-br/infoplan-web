@@ -1,10 +1,24 @@
-<ngx-flip-table [showSearchField]="false" [cardTitle]="title" [tableContent]="tableContent"
-    [loadingStatus]="requestStatus" [backCardHeight]="400" (executeDownload)="handleTableDownload()"
-    [groupedHeaderColumns]="groupedHeaderColumns" [distinctYears]="distinctYears"
-    [showMaximizeButton]="true" (showMaximizeButtonClick)="onMaximizeButtonClick('comparative', $event)">
-
-    <ngx-org-chart-vertical [chart]="chartData" [height]="isChartMaximized('comparative') ? calcMaximizedHeight() : 500"
-        [isMaximized]="isChartMaximized('comparative')" [chartDataConfig]="chartDataConfig" [charactersPerLine]="30"
-        card-front>
-    </ngx-org-chart-vertical>
+<ngx-flip-table
+  [showSearchField]="false"
+  [cardTitle]="title"
+  [tableContent]="tableContent"
+  [loadingStatus]="requestStatus"
+  [backCardHeight]="
+    isChartMaximized('comparative') ? calcMaximizedHeight() : 400
+  "
+  (executeDownload)="handleTableDownload()"
+  [groupedHeaderColumns]="groupedHeaderColumns"
+  [distinctYears]="distinctYears"
+  [showMaximizeButton]="true"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('comparative', $event)"
+>
+  <ngx-org-chart-vertical
+    [chart]="chartData"
+    [height]="isChartMaximized('comparative') ? calcMaximizedHeight() : 400"
+    [isMaximized]="isChartMaximized('comparative')"
+    [chartDataConfig]="chartDataConfig"
+    [charactersPerLine]="30"
+    card-front
+  >
+  </ngx-org-chart-vertical>
 </ngx-flip-table>

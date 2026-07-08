@@ -9,13 +9,13 @@ interface IDataCard {
   plannedTotal?: ISPOTotalPrevistoDTO[] | null;
   authorizedTotal?: ISPOTotalAutorizadoDTO[] | null;
   cardAvailableWithoutReversation?: number | null;
-  cardPlannedSuccess?: number | null;
+  cardPlannedSuccess?: { sucesso: number, timesTamp: string } | null;
   cardComparative?: number | null;
   cardPoWithHighestSettlement?: { cod_po: string, nome_po: string, liquidado: number } | null;
   cardBudgetFeasibility?: number | null;
   cardFocusOnTheMission?: number | null;
   cardBudgetChanges?: number | null;
-  cardIGO?: number | null;
+  cardIGO?: { IGO: number | null, nota: string };
 }
 
 @Injectable({
@@ -56,7 +56,7 @@ export class ComunicationCardsService {
     this.dataSubject.next({ cardAvailableWithoutReversation })
   }
 
-  sendCardPlannedSuccess(cardPlannedSuccess: number) {
+  sendCardPlannedSuccess(cardPlannedSuccess: { sucesso: number, timesTamp: string }) {
     this.dataSubject.next({ cardPlannedSuccess })
   }
 
@@ -80,7 +80,7 @@ export class ComunicationCardsService {
     this.dataSubject.next({ cardBudgetChanges })
   }
 
-  sendCardIGO(cardIGO: number) {
+  sendCardIGO(cardIGO: { IGO: number, nota: string }) {
     this.dataSubject.next({ cardIGO })
   }
 

@@ -2,20 +2,23 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "chrome",
+            "type": "pwa-chrome",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
+            "name": "Debugger Angular",
             "url": "http://localhost:4200",
             "sourceMaps": true,
-            "webRoot": "${workspaceRoot}"
+            "webRoot": "${workspaceFolder}",
+            "runtimeArgs": [
+                "--disable-blink-features=AutomationControlled"
+            ]
         },
         {
-            "type": "chrome",
+            "type": "pwa-chrome",
             "request": "attach",
             "name": "Attach to Chrome",
             "port": 9222,
             "sourceMaps": true,
-            "webRoot": "${workspaceRoot}"
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }

@@ -32,6 +32,7 @@ import { authInterceptor } from "./core/interceptors/auth.interceptor";
 import { registerLocaleData } from "@angular/common";
 import ptBr from "@angular/common/locales/pt";
 import { LOCALE_ID } from "@angular/core";
+import { QuantidadePorStatusComponent } from './features/painel-obras/layout-painel-obras/visao-geral/data/quantidade-por-status/quantidade-por-status.component';
 
 registerLocaleData(ptBr);
 @NgModule({

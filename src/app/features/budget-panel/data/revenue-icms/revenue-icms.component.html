@@ -1,20 +1,9 @@
-﻿<ngx-flip-table
-  [cardTitle]="title"
-  [showSearchField]="false"
-  [tableContent]="tableContent"
-  [showTableIcon]="showTableIcon"
-  [loadingStatus]="requestStatus"
-  (executeDownload)="handleTableDownload()"
-  [backCardHeight]="308"
-  [showMaximizeButton]="true"
+﻿<ngx-flip-table [cardTitle]="title" [showSearchField]="false" [tableContent]="tableContent"
+  [showTableIcon]="showTableIcon" [loadingStatus]="requestStatus" (executeDownload)="handleTableDownload()"
+  [backCardHeight]="isChartMaximized('revenue-icms') ? calcMaximizedHeight() : 308" [showMaximizeButton]="true"
   (showMaximizeButtonClick)="onMaximizeButtonClick('revenue-icms', $event)">
-  <ngx-pie-chart
-    [data]="chartData"
-    [colors]="['#F58B9B', '#4DB6D2']"
+  <ngx-pie-chart [data]="chartData" [colors]="['#F58B9B', '#4DB6D2']"
     [height]="isChartMaximized('revenue-icms') ? calcMaximizedHeight() : '300'"
-    [showMaximizeButton]="isChartMaximized('revenue-icms')"
-    [width]="'400'"
-    [config]="chartConfig"
-    card-front>
+    [showMaximizeButton]="isChartMaximized('revenue-icms')" [width]="'400'" [config]="chartConfig" card-front>
   </ngx-pie-chart>
 </ngx-flip-table>

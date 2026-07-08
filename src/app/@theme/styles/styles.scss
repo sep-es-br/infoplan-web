@@ -20,7 +20,7 @@
 @import "./overrides";
 @import url("./_budget-panel-cores.scss");
 @import url("./_chart-container-maximized.scss");
-
+@import url("./_painel-obras-totalizadores.scss");
 // install the framework and custom global styles
 @include nb-install() {
   // framework global styles
@@ -42,18 +42,6 @@
   overflow-y: auto;
   overflow-x: auto;
 }
-
-/* Container do gráfico */
-// :host ::ng-deep .echarts {
-//   width: 100% !important;
-//   height: 100% !important;
-// }
-
-/* Quando maximizado, força a altura */
-// .chart-container.maximized ::ng-deep .echarts {
-//   min-height: 500px !important;
-//   height: 100% !important;
-// }
 
 /* Container do flip-card */
 :host ::ng-deep nb-card-body {
@@ -104,12 +92,12 @@ nb-menu .menu-section-divider {
     content: "";
     flex: 1;
     height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(0, 0, 0, 0.7),
-      transparent
-    );
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(0, 0, 0, 0.7),
+        transparent);
+    // rgba(0, 0, 0, 0.7)
+    // rgba(83, 106, 209, 0.8)
   }
 }
 
@@ -126,20 +114,23 @@ nb-sidebar.compacted .section-title {
   }
 }
 
+// // ============================================
+// // TEMAS (DARK/COSMIC) - OVERRIDES
+// // ============================================
+
 .nb-theme-dark,
 .nb-theme-cosmic {
+
   .divisor,
   nb-menu .menu-section-divider .divisor {
     color: rgba(255, 255, 255, 0.9);
 
     &::before,
     &::after {
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.6),
-        transparent
-      ) !important;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.6),
+          transparent) !important;
     }
   }
 

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NavigationBudgetPanel } from './navigation-budget-panel';
+import { LayoutBudgetPanel } from './layout-budget-panel';
 
-describe('NavigationBudgetPanel', () => {
-  let component: NavigationBudgetPanel;
-  let fixture: ComponentFixture<NavigationBudgetPanel>;
+describe('LayoutBudgetPanel', () => {
+  let component: LayoutBudgetPanel;
+  let fixture: ComponentFixture<LayoutBudgetPanel>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NavigationBudgetPanel]
+      imports: [LayoutBudgetPanel]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(NavigationBudgetPanel);
+    fixture = TestBed.createComponent(LayoutBudgetPanel);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

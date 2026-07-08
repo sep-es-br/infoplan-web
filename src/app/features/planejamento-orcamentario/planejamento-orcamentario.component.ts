@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -26,7 +27,6 @@ import {
   ChartMaximizeState,
 } from "../../core/service/chart-maximize/chart-maximize.service";
 import { Subject, Subscription } from "rxjs";
-import { ComunicationCardsService } from "../../core/service/comunication-cards/comunication-cards.service";
 import { PlanejamentoOrcamentarioService } from "../../core/service/planejamento-orcamentario/planejamento-orcamentario.service";
 import {
   debounceTime,
@@ -34,6 +34,8 @@ import {
   finalize,
   takeUntil,
 } from "rxjs/operators";
+import { ScrollService } from "../../core/service/scroll.service";
+import { AvailableThemes } from "../../@theme/theme.module";
 
 const DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS: IPlanejamentoOrcamentarioFilter =
 {
@@ -69,19 +71,16 @@ export enum RequestStatus {
   ERROR = "Error",
 }
 
-export enum AvailableThemes {
-  DEFAULT = "default",
-  DARK = "dark",
-  COSMIC = "cosmic",
-}
+
 
 @Component({
   selector: "ngx-planejamento-orcamentario-component",
   templateUrl: "./planejamento-orcamentario.component.html",
   styleUrls: ["./planejamento-orcamentario.component.scss"],
 })
-export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
+export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
+  @ViewChild("uoSearchInput") uoSearchInput!: ElementRef<HTMLInputElement>;
   @ViewChildren("customSelect") customSelectRefs!: QueryList<NbSelectComponent>;
   @ViewChild(NbAutocompleteDirective) autocomplete!: NbAutocompleteDirective<any>;
   @Output() filterChanged = new EventEmitter<IPlanejamentoOrcamentarioFilter>();
@@ -93,6 +92,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
   }[] = [];
 
   isFilterModalOpen: boolean = false;
+  isScrolled: boolean = false;
 
   filter: IPlanejamentoOrcamentarioFilter = {
     ...DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS,
@@ -164,23 +164,14 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
   timesTamp!: string;
 
-  currentRequestParams: IPlanejamentoOrcamentarioFilter =
-    DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS;
+  currentRequestParams: IPlanejamentoOrcamentarioFilter = DEFAULT_PLANEJAENTO_ORCAMENTARIO_REQUEST_PARAMS;
 
   private _themeService: NbThemeService = inject(NbThemeService);
-
-  private readonly _chartMaximizeService: ChartMaximizeService =
-    inject(ChartMaximizeService);
-
-  private readonly _comunicationCardsService: ComunicationCardsService = inject(
-    ComunicationCardsService,
-  );
-
-  private readonly _planejamentoOrcamentarioService: PlanejamentoOrcamentarioService =
-    inject(PlanejamentoOrcamentarioService);
+  private readonly _chartMaximizeService = inject(ChartMaximizeService);
+  private readonly _planejamentoOrcamentarioService = inject(PlanejamentoOrcamentarioService);
+  private readonly _scrollService = inject(ScrollService);
 
   private readonly destroy$ = new Subject<void>();
-
   private subscription!: Subscription;
   private subscriptionMaximizeState!: Subscription;
 
@@ -233,6 +224,12 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
     this.getTotais();
     this.updateActiveFilters();
     this.loadInitialData();
+
+    this._scrollService.isScrolled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(scrolled => {
+        this.isScrolled = scrolled;
+      });
   }
 
   private getListPos(ano: number, codUosList: string[]) {
@@ -328,6 +325,20 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
     if (this.subscriptionMaximizeState) {
       this.subscriptionMaximizeState.unsubscribe();
+    }
+
+    const modal = document.getElementById("filtrosModal");
+    if (modal && modal.parentNode === document.body) {
+      document.body.removeChild(modal);
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // Move o modal para o root do document body para evitar bugs de CSS (position: fixed) 
+    // quando engatilhado dentro de layouts com transform/sticky (típico no mobile)
+    const modal = document.getElementById("filtrosModal");
+    if (modal && modal.parentNode !== document.body) {
+      document.body.appendChild(modal);
     }
   }
 
@@ -730,6 +741,10 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this._processingUO = false;
+      if (this.uoSearchInput) {
+        this.uoSearchInput.nativeElement.value = "";
+        this.uoSearchInput.nativeElement.focus();
+      }
       // Força o menu a permanecer aberto (útil para seleção via teclado/Enter)
       if (this.autocomplete) {
         this.autocomplete.show();

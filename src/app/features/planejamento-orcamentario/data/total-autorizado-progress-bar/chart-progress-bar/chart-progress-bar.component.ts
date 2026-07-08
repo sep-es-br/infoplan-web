@@ -285,7 +285,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         showBackground: true,
         backgroundStyle: {
           borderRadius: 10,
-          color: "rgba(180, 180, 180, 0.1)", // Um fundo sutil para mostrar o total (100%)
+          color: "rgba(180, 180, 180, 0.1)",
         },
 
         itemStyle: {
@@ -294,7 +294,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         },
 
         label: {
-          show: true,
+          show: window.innerWidth > 768,
           position: "right",
           formatter: (params) => params.value + " %",
           color: theme.textPrimaryColor,

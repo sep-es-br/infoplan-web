@@ -214,7 +214,8 @@
               <div class="icon-top-right contagem-entregas" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-box-open"></i>
               </div>
-              <div class="card-content" [nbTooltip]="statusTotal.contagemEntregas + ' Entregas'" nbTooltipPlacement="bottom">
+              <div class="card-content" [nbTooltip]="statusTotal.contagemEntregas + ' Entregas'"
+                nbTooltipPlacement="bottom">
                 <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else contagemEntregasContent
@@ -320,7 +321,9 @@
               <div class="icon-top-right filtro-temporal-critico" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-hourglass-half"></i>
               </div>
-              <div class="card-content" [nbTooltip]="statusTotal.filtroTemporalCritico" nbTooltipPlacement="bottom">
+              <div class="card-content" [nbTooltip]="
+                'R$ ' +
+                (statusTotal?.filtroTemporalCritico | number: '1.0-0') " nbTooltipPlacement="bottom">
                 <ng-container *ngIf="
                     requestStatus.status === 'Loading';
                     else filtroTemporalCriticoContent
@@ -336,7 +339,7 @@
                   <div class="number-box filtro-temporal-critico">
                     <div class="d-flex" style="flex-direction: column; align-items: start">
                       <div class="value">
-                        {{ statusTotal.filtroTemporalCritico }}
+                        {{ formatNumber(statusTotal.filtroTemporalCritico )}}
                       </div>
                     </div>
                   </div>
@@ -351,9 +354,9 @@
       </div>
     </div>
   </div>
-      <ng-container>
-        <router-outlet></router-outlet>
-      </ng-container>
+  <ng-container>
+    <router-outlet></router-outlet>
+  </ng-container>
 
 </div>
 

@@ -15,13 +15,39 @@ function checkRoles(allowedRole: string): boolean {
     sessionStorage.getItem("user-profile") || "{}",
   );
 
-  //if(userInfos.role.find(value => value == environment.allowedRoles.geral))
-  //return true;
-
-  if (userInfos.role.find((value) => value == allowedRole)) return true;
+  if (userInfos.role && userInfos.role.find((value) => value == allowedRole)) return true;
 
   return false;
 }
+
+function checkOrgs(allowedOrgs: string[]): boolean {
+  try {
+    const userProfile = sessionStorage.getItem("user-profile");
+    if (!userProfile) return false;
+    const userInfos = JSON.parse(userProfile);
+    const userSigla = userInfos?.sigla || userInfos?.orgao;
+    if (userSigla && String(userSigla).trim() !== '') {
+      return allowedOrgs.includes(String(userSigla).trim());
+    }
+  } catch (e) {
+    console.error("Erro ao verificar siglas do usuário:", e);
+  }
+  return false;
+}
+
+function hasAnySigla(): boolean {
+  try {
+    const userProfile = sessionStorage.getItem("user-profile");
+    if (!userProfile) return false;
+    const userInfos = JSON.parse(userProfile);
+    const userSigla = userInfos?.sigla || userInfos?.orgao;
+    return !!(userSigla && String(userSigla).trim() !== '');
+  } catch (e) {
+    console.error("Erro ao verificar sigla do usuário:", e);
+  }
+  return false;
+}
+
 export const menulinks: MyCustomMenuItem[] = [
   // SEPARADOR ORÇAMENTO
   {
@@ -54,7 +80,7 @@ export const menulinks: MyCustomMenuItem[] = [
     name: "Execução Orçamentária",
     icon: "painelOrcamento.svg",
     link: "/pages/execucao-orcamentaria",
-    status: checkRoles(environment.allowedRoles.execucaoOrcamentaria),
+    status: checkRoles(environment.allowedRoles.execucaoOrcamentaria) || hasAnySigla(),
     url: "",
     src: "Sigefes",
     menuIcon: "",
@@ -66,7 +92,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Orçamento",
     id: 3,
-    status: checkRoles(environment.allowedRoles.sas),
+    status: true,
     name: "Painéis SAS(Sigefes)",
     link: "",
     url: environment.urls.sas,
@@ -118,22 +144,21 @@ export const menulinks: MyCustomMenuItem[] = [
     isExternal: false,
     section: "projetos",
   },
-
-  // {
-  //   title: "Projetos",
-  //   id: 6,
-  //   status: true,
-  //   name: "Painel de Obras",
-  //   icon: "portalObras.svg",
-  //   link: "/pages/painel-obras",
-  //   url: "",
-  //   src: "OpenPMO",
-  //   menuIcon: "",
-  //   color: "#FF8080",
-  //   subTitle: "Consolidado de Obras do Estado",
-  //   isExternal: false,
-  //   section: "projetos",
-  // },
+  {
+    title: "Projetos",
+    id: 6,
+    status: checkRoles(environment.allowedRoles.painelObras),
+    name: "Painel de Obras",
+    icon: "portalObras.svg",
+    link: "/pages/painel-obras",
+    url: "",
+    src: "OpenPMO",
+    menuIcon: "",
+    color: "#FF8080",
+    subTitle: "Consolidado de Obras do Estado",
+    isExternal: false,
+    section: "projetos",
+  },
   {
     title: "Projetos",
     id: 7,
@@ -152,7 +177,7 @@ export const menulinks: MyCustomMenuItem[] = [
   {
     title: "Projetos",
     id: 8,
-    status: checkRoles(environment.allowedRoles.estado),
+    status: true,
     name: "Programa Estado Presente",
     icon: "logoAmareloEstadoPresente.svg",
     link: "",
@@ -171,7 +196,7 @@ export const menulinks: MyCustomMenuItem[] = [
     separator: true,
     sectionTitle: "Captação de Recursos",
     section: "captacao",
-    status: false,
+    status: true,
     title: "", name: "", icon: "", link: "", url: "", src: "",
     menuIcon: "", color: "#F09BBE", subTitle: "", isExternal: false,
   },

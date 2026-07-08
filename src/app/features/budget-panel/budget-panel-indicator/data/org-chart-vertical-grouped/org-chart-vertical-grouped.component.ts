@@ -196,7 +196,7 @@ export class OrgChartVerticalGroupedComponent
       this.groupingMode === "STATUS" ||
       this.groupingMode === "MUNICIPIO" ||
       this.groupingMode.startsWith("MUNICIPIO_") ||
-      this.groupingMode.startsWith("STATUS_") || 
+      this.groupingMode.startsWith("STATUS_") ||
       this.groupingMode.startsWith("YEAR_") ||
       this.groupingMode.includes("MAJOR");
 
@@ -286,6 +286,10 @@ export class OrgChartVerticalGroupedComponent
       });
     });
 
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
+
     this.chartOptions = {
       legend: {
         type: "scroll",
@@ -360,6 +364,8 @@ export class OrgChartVerticalGroupedComponent
       },
       xAxis: {
         type: "value",
+        scale: true,
+        splitNumber: isPhone ? 3 : isTablet ? 4 : 5,
         max: this.valueType === "percent" ? 100 : null,
         axisLabel: {
           formatter: (value: number) => {
@@ -394,6 +400,9 @@ export class OrgChartVerticalGroupedComponent
               fontWeight: "bold",
             },
           },
+          width: isPhone ? 100 : isTablet ? 120 : isMobile ? 130 : 150,
+          lineHeight: isPhone ? 13 : 15,
+          overflow: "break",
           formatter: (val: string) => {
             const absoluteIdx = parseInt(val.split("__idx__")[1], 10);
             const d = finalData[absoluteIdx];

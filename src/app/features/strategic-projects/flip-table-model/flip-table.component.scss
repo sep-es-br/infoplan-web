@@ -99,19 +99,23 @@
     /* Evitar que os containers do nb-flip-card interceptem eventos de mouse e bloqueiem o scroll */
     ::ng-deep .front-container {
       pointer-events: auto;
+      z-index: 2;
     }
 
     ::ng-deep .back-container {
       pointer-events: none;
+      z-index: 1;
     }
 
     &.flipped {
       ::ng-deep .front-container {
         pointer-events: none;
+        z-index: 1;
       }
 
       ::ng-deep .back-container {
         pointer-events: auto;
+        z-index: 2;
       }
     }
 
@@ -128,6 +132,8 @@
         overflow: auto;
         max-height: 100%;
         width: 100%;
+        flex: 1;
+        min-height: 0;
         border: 1px solid var(--divider-color);
         border-radius: 4px;
 
@@ -151,9 +157,11 @@
 
         .custom-grouped-table {
           width: 100%;
+          min-width: max-content;
           border-collapse: separate;
           border-spacing: 0;
           background-color: transparent;
+          table-layout: auto !important;
 
           thead {
             tr {
@@ -358,6 +366,10 @@
           }
 
           th {
+            position: sticky;
+            top: -1px;
+            z-index: 10;
+            background-color: var(--card-background-color) !important;
             font-size: 12px !important;
             padding-left: 0.5em;
             padding-right: 0.5em;
@@ -389,6 +401,10 @@
           }
 
           th {
+            position: sticky;
+            top: -1px;
+            z-index: 10;
+            background-color: var(--card-background-color) !important;
             font-size: 16px !important;
             padding-left: 0.5em;
             padding-right: 0.5em;

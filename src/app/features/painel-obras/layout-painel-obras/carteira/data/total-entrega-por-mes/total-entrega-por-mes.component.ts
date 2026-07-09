@@ -230,7 +230,7 @@ export class TotalEntregaPorMesComponent
       customColumn: {
         originalPropertyName: "municipio",
         propertyName: "firstColumn",
-        displayName: "Município",
+        displayName: "Mês",
         alignment: {
           header: FlipTableAlignment.CENTER,
           data: FlipTableAlignment.LEFT,

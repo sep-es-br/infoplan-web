@@ -49,7 +49,7 @@
           (click)="handleDownloadButtonClick()" title="Download XLS">
         </nb-icon>
 
-        <ng-container *ngIf="isFlipCardFlipped; else tableIcon">
+        <ng-container *ngIf="tableOnFront !== isFlipCardFlipped; else tableIcon">
           <i class="flip-button fas fa-chart-pie m-0 ms-3 p-0" (click)="handleFlipButtonClick()"
             title="Ver gráfico"></i>
         </ng-container>
@@ -186,8 +186,8 @@
       </ng-template>
 
       <nb-card-front>
-        <nb-card class="card-back box-limited m-0" [style.max-height]="backCardHeight + 'px !important'"
-          [style.height]="backCardHeight + 'px !important'">
+        <nb-card class="card-back m-0" [style.max-height]="backCardHeight + 'px !important'"
+          [style.height]="backCardHeight + 'px !important'" [style.overflow]="'hidden'">
           <ng-content select="[card-front]"></ng-content>
           <ng-container *ngIf="tableOnFront && tableContent">
             <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
@@ -195,8 +195,8 @@
         </nb-card>
       </nb-card-front>
       <nb-card-back>
-        <nb-card class="card-back box-limited m-0" [style.max-height]="backCardHeight + 'px !important'"
-          [style.height]="backCardHeight + 'px !important'">
+        <nb-card class="card-back m-0" [style.max-height]="backCardHeight + 'px !important'"
+          [style.height]="backCardHeight + 'px !important'" [style.overflow]="'hidden'">
 
           <ng-content select="[card-back]"></ng-content>
           <ng-container *ngIf="!tableOnFront && tableContent">

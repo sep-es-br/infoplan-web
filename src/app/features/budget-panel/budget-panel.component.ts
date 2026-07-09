@@ -422,13 +422,11 @@ export class BudgetPanelComponent implements OnInit, OnDestroy {
 
   dataReceitaCards() {
     const receitaDespesa = this.revenueExpenseGndTotalOrcamento || [];
-    const primeiroItem = receitaDespesa[0];
     const segundoItem = receitaDespesa[1];
-
     this.totals = {
       realizedVsPlannedRevenuePercentage: this.revenueTotal?.percentage || 0,
       committedVsAuthorizedExpensePercentage:
-        primeiroItem?.committedPercentage || 0,
+        segundoItem?.committedPercentage || 0,
       liquidatedVsAuthorizedExpensePercentage:
         segundoItem?.liquidatedPercentage || 0,
       totalPlannedRevenue: this.revenueTotal?.plannedRevenueValue || 0,

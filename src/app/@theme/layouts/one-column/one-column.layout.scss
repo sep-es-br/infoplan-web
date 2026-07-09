@@ -36,3 +36,7 @@
   margin-top: 0 !important;
   height: 75px !important;
 }
+
+::ng-deep nb-sidebar.fixed {
+  z-index: 1040 !important;
+}

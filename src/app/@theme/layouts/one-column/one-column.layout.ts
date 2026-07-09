@@ -1,11 +1,13 @@
 import {
-  AfterViewInit,
   ChangeDetectorRef,
   Component,
   HostListener,
+  OnDestroy,
   ViewChild,
 } from "@angular/core";
-import { NbSidebarService } from "@nebular/theme";
+import { NbMenuService, NbSidebarService } from "@nebular/theme";
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 import { HeaderComponent } from "../../components";
 
 @Component({
@@ -22,6 +24,8 @@ import { HeaderComponent } from "../../components";
       <nb-sidebar
         class="menu-sidebar"
         tag="menu-sidebar"
+        [fixed]="isMobile"
+        [state]="initialSidebarState"
         #menuSidebar
       >
         <ng-content select="nb-menu"></ng-content>
@@ -33,13 +37,17 @@ import { HeaderComponent } from "../../components";
     </nb-layout>
   `,
 })
-export class OneColumnLayoutComponent implements AfterViewInit {
+export class OneColumnLayoutComponent implements OnDestroy {
   @ViewChild("menuSidebar") menuSidebar: any;
 
   @ViewChild("pageHeader") pageHeader: HeaderComponent;
 
   private touchStartX: number = 0;
   private touchEndX: number = 0;
+
+  isMobile: boolean = false;
+  initialSidebarState: string;
+  private destroy$ = new Subject<void>();
 
   @HostListener('touchstart', ['$event'])
   onTouchStart(event: TouchEvent): void {
@@ -58,7 +66,7 @@ export class OneColumnLayoutComponent implements AfterViewInit {
 
   private handleSwipe(): void {
     const swipeDistance = this.touchStartX - this.touchEndX;
-    
+
     // Se arrastou para a esquerda em pelo menos 50px, fecha o menu
     if (swipeDistance > 50) {
       this.sidebarService.collapse("menu-sidebar");
@@ -94,15 +102,34 @@ export class OneColumnLayoutComponent implements AfterViewInit {
 
   constructor(
     private sidebarService: NbSidebarService,
+    private menuService: NbMenuService,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) {
+    this.checkMobile();
+    this.initialSidebarState = this.isMobile ? 'collapsed' : 'compacted';
 
-  ngAfterViewInit() {
-    if (window.innerWidth < 576) {
-      this.sidebarService.collapse();
-    } else {
-      this.sidebarService.compact("menu-sidebar");
-    }
-    this.cdr.detectChanges();
+    this.menuService.onItemClick()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ item }) => {
+        if (window.innerWidth < 576 && (!item.children || item.children.length === 0)) {
+          this.sidebarService.collapse("menu-sidebar");
+          this.cdr.detectChanges();
+        }
+      });
   }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  @HostListener("window:resize", ["$event"])
+  onResize() {
+    this.checkMobile();
+  }
+
+  private checkMobile() {
+    this.isMobile = window.innerWidth < 576;
+  }
+
 }

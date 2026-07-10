@@ -230,7 +230,7 @@
     gap: 5px;
     padding: 0px !important;
 
-    @media (max-width: 767px) {
+    @media (max-width: 818px) {
       flex-wrap: wrap;
       gap: 10px;
 
@@ -642,5 +642,35 @@
     max-width: 90% !important;
     max-height: 55px !important;
     object-fit: contain;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1366px) {
+  .nav-buttons-container ::ng-deep nb-tag {
+    width: 110px !important;
+    font-size: 11px !important;
+    padding: 4px 2px !important;
+  }
+}
+
+::ng-deep nb-sidebar:not(.compacted):not(.collapsed) ~ .content {
+  .filter-button {
+    @media (max-width: 1200px) {
+      flex-wrap: wrap;
+      gap: 10px;
+
+      .nav-buttons-container {
+        width: 100%;
+
+        .tag-panel {
+          justify-content: center !important;
+        }
+      }
+
+      .d-flex.align-items-center {
+        width: 100%;
+        padding: 0 6px;
+      }
+    }
   }
 }

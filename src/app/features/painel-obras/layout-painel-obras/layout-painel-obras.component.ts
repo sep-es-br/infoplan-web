@@ -285,30 +285,30 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.orgao && this.finalFilter.orgao.length > 0) {
+    if (this.finalFilter.orgao && String(this.finalFilter.orgao).length > 0) {
       const orgao = this.orgaosList?.find(o => String(o.orgaoId) === String(this.finalFilter.orgao));
       this.activeFilters.push({
         key: "orgao",
         label: "Órgão",
-        displayValue: [{ name: orgao ? orgao.nome : this.finalFilter.orgao }],
+        displayValue: [{ name: orgao ? orgao.nome : String(this.finalFilter.orgao) }],
       });
     }
 
-    if (this.finalFilter.municipio && this.finalFilter.municipio.length > 0) {
+    if (this.finalFilter.municipio && String(this.finalFilter.municipio).length > 0) {
       const municipio = this.municipiosList?.find(m => String(m.id) === String(this.finalFilter.municipio));
       this.activeFilters.push({
         key: "municipio",
         label: "Município",
-        displayValue: [{ name: municipio ? municipio.nome : this.finalFilter.municipio }],
+        displayValue: [{ name: municipio ? municipio.nome : String(this.finalFilter.municipio) }],
       });
     }
 
-    if (this.finalFilter.status && this.finalFilter.status.length > 0) {
+    if (this.finalFilter.status && String(this.finalFilter.status).length > 0) {
       const status = this.statusList?.find(s => String(s.id) === String(this.finalFilter.status));
       this.activeFilters.push({
         key: "status",
         label: "Status",
-        displayValue: [{ name: status ? status.fase : this.finalFilter.status }],
+        displayValue: [{ name: status ? status.fase : String(this.finalFilter.status) }],
       });
     }
   }

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { INumeroEntregasPorMunicipioStatus, IPainelObrasRequest} from '../../../../../../core/interfaces/painel-obras/painel-obras';
+import { INumeroEntregasPorMunicipioStatus, IPainelObrasRequest } from '../../../../../../core/interfaces/painel-obras/painel-obras';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { ChartMaximizeService } from '../../../../../../core/service/chart-maximize/chart-maximize.service';
@@ -154,7 +154,7 @@ export class NumeroEntregasPorMunicipioStatusComponent implements OnChanges, OnD
 
   assembleFlipTableContent(
     data: INumeroEntregasPorMunicipioStatus[],
-    shouldStartExpanded: boolean = false,
+    shouldStartExpanded: boolean = true,
   ): void {
     const standardAlignment = {
       header: FlipTableAlignment.CENTER,
@@ -163,36 +163,61 @@ export class NumeroEntregasPorMunicipioStatusComponent implements OnChanges, OnD
 
     const tableColumns = [
       {
-        propertyName: "status",
-        displayName: "Status",
-        alignment: standardAlignment,
-      },
-      {
         propertyName: "quantidade_entregas",
         displayName: "Quantidade de Entregas",
         alignment: standardAlignment
       }
     ];
 
-    const finalData: Array<TreeNode> = data.map((item) => ({
-      data: [
-        {
-          originalPropertyName: "municipio",
-          propertyName: "firstColumn",
-          value: item.municipio,
-        },
-        {
-          propertyName: "status",
-          value: item.status,
-        },
-        {
-          propertyName: "quantidade_entregas",
-          value: item.quantidadeEntregas,
-        },
-      ],
-      children: [],
-      expanded: shouldStartExpanded,
-    }))
+    const groupedData = data.reduce(
+      (acc, current) => {
+        const key = current.municipio;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(current);
+        return acc;
+      },
+      {} as Record<string, INumeroEntregasPorMunicipioStatus[]>,
+    );
+
+    const finalData: Array<TreeNode> = Object.entries(groupedData).map(
+      ([municipio, items]) => {
+        const totalEntregas = items.reduce((sum, i) => sum + i.quantidadeEntregas, 0);
+
+        const children = items.map((item) => ({
+          data: [
+            {
+              originalPropertyName: "status",
+              propertyName: "firstColumn",
+              value: item.status,
+            },
+            {
+              propertyName: "quantidade_entregas",
+              value: item.quantidadeEntregas,
+            },
+          ],
+          children: [],
+          expanded: false,
+        }));
+
+        return {
+          data: [
+            {
+              originalPropertyName: "municipio",
+              propertyName: "firstColumn",
+              value: municipio,
+            },
+            {
+              propertyName: "quantidade_entregas",
+              value: totalEntregas,
+            },
+          ],
+          children: children,
+          expanded: shouldStartExpanded,
+        };
+      }
+    );
 
     this.flipTableContent = {
       defaultColumns: tableColumns,

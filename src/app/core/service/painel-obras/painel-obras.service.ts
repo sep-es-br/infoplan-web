@@ -32,14 +32,15 @@ export class PainelObrasService {
 
   public getMunicipios(filtro: IFiltroMunicipioRequest): Observable<IFiltroMunicipio[]> {
     const params: HttpParams = this.returnParamsMunicipio(filtro);
-    return this._http.get<IFiltroMunicipio[]>(`${this._URI}/filtros/municipios/${params.get('orgao')}`).pipe(
+
+    return this._http.get<IFiltroMunicipio[]>(`${this._URI}/filtros/municipios`, { params }).pipe(
       catchError((err) => this.handleError(err, this._router))
     );
   }
 
   public getStatus(filtro: IFiltroStatusRequest): Observable<IFiltroStatus[]> {
     const params: HttpParams = this.returnParamsStatus(filtro);
-    return this._http.get<IFiltroStatus[]>(`${this._URI}/filtros/status/${params.get('orgao')}/${params.get('municipio')}`).pipe(
+    return this._http.get<IFiltroStatus[]>(`${this._URI}/filtros/status`, { params }).pipe(
       catchError((err) => this.handleError(err, this._router))
     );
   }

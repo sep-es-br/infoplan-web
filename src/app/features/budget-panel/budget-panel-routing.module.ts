@@ -3,8 +3,8 @@ import { RouterModule, Routes } from "@angular/router";
 import { LayoutBudgetPanel } from "./layout/layout-budget-panel";
 import { BudgetPanelComponent } from "./budget-panel.component";
 import { BudgetPanelIndicatorComponent } from "./budget-panel-indicator/budget-panel-indicator.component";
-import { OrganizacaoGuardGuard } from "../../core/guards/organizacao-guard.guard"; // Import do guard
 import { environment } from "../../../environments/environment";
+import { OrganizacaoGuardGuard } from "../../core/guards/organizacao-guard.guard";
 
 const routes: Routes = [
   {

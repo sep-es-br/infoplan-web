@@ -344,7 +344,7 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
         },
         false
       );
-    } catch {}
+    } catch { }
   }
 
   public redrawChart() {

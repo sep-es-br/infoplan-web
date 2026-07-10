@@ -171,7 +171,6 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   constructor() { }
 
   ngOnInit(): void {
-    // this.filterManagement( {...DEFAULT_PARAMS_PAINEL_OBRAS});
     this._scrollService.isScrolled$
       .pipe(takeUntil(this.destroy$))
       .subscribe((scrolled) => {
@@ -254,7 +253,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   }
 
   configFilterLabel() {
-    if (this.finalFilter.portfolio && this.finalFilter.portfolio.trim().length > 0) {
+    if (this.finalFilter.portfolio && this.finalFilter.portfolio.length > 0) {
       this.activeFilters.push({
         key: "portfolio",
         label: "Portfólio",
@@ -262,7 +261,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.dataInicio && this.finalFilter.dataInicio.trim().length > 0) {
+    if (this.finalFilter.dataInicio && this.finalFilter.dataInicio.length > 0) {
       const data = new Date(this.finalFilter.dataInicio);
       const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
       const ano = data.getUTCFullYear();
@@ -274,7 +273,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.dataFim && this.finalFilter.dataFim.trim().length > 0) {
+    if (this.finalFilter.dataFim && this.finalFilter.dataFim.length > 0) {
       const data = new Date(this.finalFilter.dataFim);
       const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
       const ano = data.getUTCFullYear();
@@ -286,7 +285,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.orgao && this.finalFilter.orgao.trim().length > 0) {
+    if (this.finalFilter.orgao && this.finalFilter.orgao.length > 0) {
       const orgao = this.orgaosList?.find(o => String(o.orgaoId) === String(this.finalFilter.orgao));
       this.activeFilters.push({
         key: "orgao",
@@ -295,7 +294,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.municipio && this.finalFilter.municipio.trim().length > 0) {
+    if (this.finalFilter.municipio && this.finalFilter.municipio.length > 0) {
       const municipio = this.municipiosList?.find(m => String(m.id) === String(this.finalFilter.municipio));
       this.activeFilters.push({
         key: "municipio",
@@ -304,7 +303,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.status && this.finalFilter.status.trim().length > 0) {
+    if (this.finalFilter.status && this.finalFilter.status.length > 0) {
       const status = this.statusList?.find(s => String(s.id) === String(this.finalFilter.status));
       this.activeFilters.push({
         key: "status",
@@ -378,109 +377,15 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       orgao: this.finalFilter.orgao,
       municipio: this.finalFilter.municipio,
       status: this.finalFilter.status,
+      portfolio: this.finalFilter.portfolio,
+      dataInicio: this.finalFilter.dataInicio,
+      dataFim: this.finalFilter.dataFim,
     };
   }
 
   getCardExecution() {
     this.getTotalTolizador();
   }
-
-
-  // getTotalProgramas() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalProgramas(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.totalizadorProgramas = value.totalPrograma;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.totalizadorProgramas = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getTotalProjetos() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalProjetos(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value: { totalProjetos: number }) => {
-  //         this.statusTotal.totalizadorProjetos = value.totalProjetos;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.totalizadorProjetos = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getTotalPlanejado() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalPlanejado(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.monitoramentoPlanejado = value.totalPlanejado;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.monitoramentoPlanejado = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getTotalRealizado() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalRealizado(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.monitoramentoRealizado = value.totalRealizado;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.monitoramentoRealizado = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getContagemPE() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getContagemPE(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.filtroTemporalCritico = value.contagemPE;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.filtroTemporalCritico = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getContagemEntregas() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getContagemEntregas(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.contagemEntregas = value.totalEntregas;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.contagemEntregas = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
 
   getTotalTolizador() {
     this.requestStatus.status = RequestStatus.LOADING;

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, OnDestroy } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 import { ECharts, EChartsOption } from 'echarts';
 import { NgxEchartsModule } from 'ngx-echarts';
@@ -28,7 +28,7 @@ export interface HorizontalBarChartCustomConfig {
   standalone: true,
   imports: [NgxEchartsModule, CommonModule],
 })
-export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
+export class HorizontalBarChartModelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: { category: string, previsto?: number, realizado?: number, emExecucao?: number, concluida?: number }[] = [];
 
   @Input() colors:  string[] = [];
@@ -97,6 +97,14 @@ export class HorizontalBarChartModelComponent implements OnInit, OnChanges {
 
     if (changes["height"] || changes["isMaximized"]) {
       this.resizeChart();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.echartsInstance) {
+      this.echartsInstance.off('click');
+      this.echartsInstance.dispose();
+      this.echartsInstance = null;
     }
   }
 

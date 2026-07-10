@@ -73,7 +73,7 @@ input:focus {
         }
 
         .tag-value {
-          margin-top: -6px;
+          margin-top: 0;
         }
 
         button {
@@ -202,8 +202,12 @@ input:focus {
     display: flex;
     gap: 20px;
     width: 100%;
-    padding: 5px 0 5px 5px;
+    padding: 5px;
     height: 100%;
+
+    @media screen and (max-width: 576px) {
+      gap: 10px;
+    }
 
     .spinner-border {
       width: 3rem;

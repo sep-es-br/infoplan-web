@@ -40,13 +40,12 @@ import { OrgChartVerticalComponent } from "../../../../../budget-panel/org-chart
   imports: [FlipTableComponent, OrgChartVerticalComponent],
 })
 export class TotalEntregaPorMesComponent
-  implements OnInit, OnChanges, OnDestroy
-{
+  implements OnInit, OnChanges, OnDestroy {
   @Input() filter!: IPainelObrasRequest;
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
   readonly title: string =
-    "Gráfico - Valor total por mês das entregas com conclusão em 2026";
+    "Entregas Concluídas por Mês (2026)";
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;
@@ -116,7 +115,7 @@ export class TotalEntregaPorMesComponent
         labels: dados.map((res) => res.mesNome),
         datasets: [
           {
-            label: "Valor Total Previsto",
+            label: "previsto (Total)",
             data: dados.map((res) => res.planejado),
             backgroundColor: this._chartProcessor.colors[0],
           },
@@ -231,7 +230,7 @@ export class TotalEntregaPorMesComponent
       customColumn: {
         originalPropertyName: "municipio",
         propertyName: "firstColumn",
-        displayName: "Município",
+        displayName: "Mês",
         alignment: {
           header: FlipTableAlignment.CENTER,
           data: FlipTableAlignment.LEFT,

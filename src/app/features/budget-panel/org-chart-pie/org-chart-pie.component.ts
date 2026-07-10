@@ -154,6 +154,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
 
     // Adiciona o listener
     this.echartsInstance.on("legendselectchanged", (params: any) => {
+      if (!this.data) return;
       const selected = params.selected;
       const newTotal = this.data.reduce((sum, item) => {
         return selected[item.name] ? sum + item.value : sum;

@@ -8,7 +8,7 @@
   }
 }
 
-::ng-deep nb-layout-column > [class] {
+::ng-deep nb-layout-column>[class] {
   height: 100%;
 }
 
@@ -27,9 +27,14 @@
 
 @media screen and (max-width: 576px) {
   nb-layout-column {
-    padding-left: .25rem !important;
-    padding-right: .25rem !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
   }
+}
+
+::ng-deep nb-layout.window-mode .layout nb-layout-header {
+  margin-top: 0 !important;
+  height: 75px !important;
 }
 
 ::ng-deep nb-sidebar.fixed {

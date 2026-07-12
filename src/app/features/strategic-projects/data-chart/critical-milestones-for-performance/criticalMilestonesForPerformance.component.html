@@ -1,19 +1,10 @@
-<ngx-flip-table
-  [cardTitle]="'Marcos Críticos por Desempenho'"
-  [tableContent]="flipTableContent"
-  [loadingStatus]="requestStatus"
-  [outerCardHeight]="275"
-  [backCardHeight]="isChartMaximized('critical-milestones-for-performance') ? 700 : 150"
-  [showMaximizeButton]="true"
-  (executeSearch)="handleUserTableSearch($event)"
-  (executeDownload)="handleUserTableDownload()"
-  (showMaximizeButtonClick)="onMaximizeButtonClick('critical-milestones-for-performance', $event)"
->
-  <ngx-pie-chart-model
-    [data]="chartData"
-    [colors]="chartColors"
+<ngx-flip-table [cardTitle]="'Marcos Críticos por Desempenho'" [tableContent]="flipTableContent"
+  [loadingStatus]="requestStatus" [outerCardHeight]="275"
+  [backCardHeight]="isChartMaximized('critical-milestones-for-performance') ? 600 : 150" [showMaximizeButton]="true"
+  (executeSearch)="handleUserTableSearch($event)" (executeDownload)="handleUserTableDownload()"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('critical-milestones-for-performance', $event)">
+  <ngx-pie-chart-model [data]="chartData" [colors]="chartColors"
     [height]="isChartMaximized('critical-milestones-for-performance') ? calcMaximizedHeight() : 150"
-    [isMaximized]="isChartMaximized('critical-milestones-for-performance')"
-    card-front>
+    [isMaximized]="isChartMaximized('critical-milestones-for-performance')" card-front>
   </ngx-pie-chart-model>
 </ngx-flip-table>

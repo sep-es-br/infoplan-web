@@ -1,5 +1,5 @@
 <ngx-flip-table [cardTitle]="'Projetos por Status'" [tableContent]="flipTableContent" [loadingStatus]="requestStatus"
-  [outerCardHeight]="275" [backCardHeight]="isChartMaximized('projects-by-status') ? 700 : 150"
+  [outerCardHeight]="275" [backCardHeight]="isChartMaximized('projects-by-status') ? 600 : 150"
   [showMaximizeButton]="true" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
   (showMaximizeButtonClick)="onMaximizeButtonClick('projects-by-status', $event)">

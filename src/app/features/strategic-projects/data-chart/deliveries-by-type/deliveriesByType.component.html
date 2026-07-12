@@ -1,6 +1,6 @@
 <ngx-flip-table [cardTitle]="'Entregas por Tipo'" [tableContent]="flipTableContent" [loadingStatus]="requestStatus"
   [showMaximizeButton]="true" [outerCardHeight]="275"
-  [backCardHeight]="isChartMaximized('deliveries-by-type') ? 700 : 150" (executeSearch)="handleUserTableSearch($event)"
+  [backCardHeight]="isChartMaximized('deliveries-by-type') ? 600 : 150" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
   (showMaximizeButtonClick)="onMaximizeButtonClick('deliveries-by-type', $event)">
   <ngx-pie-chart-model [data]="chartData" [colors]="chartColors"

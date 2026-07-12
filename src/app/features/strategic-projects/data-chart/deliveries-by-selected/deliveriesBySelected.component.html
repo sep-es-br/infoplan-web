@@ -1,16 +1,12 @@
-<ngx-flip-table
-  [tableContent]="flipTableContent"
-  [backCardHeight]="isChartMaximized('DeliveriesBy') ? 700 : 290"
-  [loadingStatus]="requestStatus"
-  [showMaximizeButton]="true"
-  (executeSearch)="handleUserTableSearch($event)"
-  (executeDownload)="handleUserTableDownload()"
-  (executeCustomFiltering)="handleCustomFiltering($event)"
-  (showMaximizeButtonClick)="onMaximizeButtonClick('DeliveriesBy', $event)"
->
+<ngx-flip-table [tableContent]="flipTableContent" [backCardHeight]="isChartMaximized('DeliveriesBy') ? 700 : 290"
+  [outerCardHeight]="isChartMaximized('DeliveriesBy') ? 720 : 415" [loadingStatus]="requestStatus"
+  [showMaximizeButton]="true" (executeSearch)="handleUserTableSearch($event)"
+  (executeDownload)="handleUserTableDownload()" (executeCustomFiltering)="handleCustomFiltering($event)"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('DeliveriesBy', $event)">
   <div class="d-flex flex-column flex-sm-row p-0" custom-header>
     <span class="text-card me-2">Entregas por</span>
-    <nb-select class="delivery-select" size="tiny" shape="semi-round" [(selected)]="deliveriesSelectedOption" (selectedChange)="loadData()">
+    <nb-select class="delivery-select" size="tiny" shape="semi-round" [(selected)]="deliveriesSelectedOption"
+      (selectedChange)="loadData()">
       <nb-option value="Área Temática">Área Temática</nb-option>
       <nb-option value="Programa">Programa</nb-option>
       <nb-option value="Programas Transversais">Programas Transversais</nb-option>
@@ -18,34 +14,19 @@
     </nb-select>
   </div>
 
-  <ngx-horizontal-bar-chart-model
-    card-front
-    [data]="chartData"
-    [colors]="chartColors"
-    [height]="isChartMaximized('DeliveriesBy') ? calcMaximizedHeight() : 290"
-    [customConfig]="chartCustomConfig"
-    (labelClick)="handleChartLabelClick($event)"
-    (barClick)="handleChartBarClick($event)"
-  >
+  <ngx-horizontal-bar-chart-model card-front [data]="chartData" [colors]="chartColors"
+    [height]="isChartMaximized('DeliveriesBy') ? calcMaximizedHeight() : 290" [customConfig]="chartCustomConfig"
+    (labelClick)="handleChartLabelClick($event)" (barClick)="handleChartBarClick($event)">
   </ngx-horizontal-bar-chart-model>
 </ngx-flip-table>
 
 <!-- Esse botão não aparece no HTML, mas é usado para abrir o offcanvas -->
 <!-- É possível abrir o offcanvas sem o botão (direto no código), só que aí o offcanvas abre sem o backdrop e o scroll -->
-<button
-  class="offcanvas-trigger"
-  type="button"
-  data-bs-toggle="offcanvas"
-  data-bs-target="#deliveriesOffcanvas"
-  aria-controls="deliveriesOffcanvas"
-  #offcanvasTrigger2
->
+<button class="offcanvas-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#deliveriesOffcanvas"
+  aria-controls="deliveriesOffcanvas" #offcanvasTrigger2>
 </button>
 
-<ngx-offcanvas-info-model
-  [customOffcanvasIdentifier]="'deliveriesOffcanvas'"
-  [selectedItemDetails]="selectedItemDetails"
-  [requestStatus]="offcanvasRequestStatus"
-  (requestStatusChange)="offcanvasRequestStatus = $event"
->
+<ngx-offcanvas-info-model [customOffcanvasIdentifier]="'deliveriesOffcanvas'"
+  [selectedItemDetails]="selectedItemDetails" [requestStatus]="offcanvasRequestStatus"
+  (requestStatusChange)="offcanvasRequestStatus = $event">
 </ngx-offcanvas-info-model>

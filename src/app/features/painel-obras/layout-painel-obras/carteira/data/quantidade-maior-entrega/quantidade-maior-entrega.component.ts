@@ -55,7 +55,7 @@ export class QuantidadeMaiorEntregaComponent
   flipTableContent!: FlipTableContent;
   selectedMaximize: boolean = false;
 
-  chartData!: IChartOptions;
+  chartData: IChartOptions = {} as IChartOptions;;
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
@@ -95,28 +95,34 @@ export class QuantidadeMaiorEntregaComponent
     this.destroy$.complete();
   }
 
-  loadData() {
+loadData() {
     this.requestStatus = RequestStatus.LOADING;
 
     this._painelObrasService.getQuantidadeMaiorEntrega(this.filter).subscribe({
       next: (response) => {
-        this.quantidadeMaiorPorMunicipio = response;
-        this.assembleFlipTableContent(response);
-        const dados = this.processData(response);
-        this.chartData = dados;
         this.requestStatus = RequestStatus.SUCCESS;
+        if (response && response.length > 0) {
+          this.quantidadeMaiorPorMunicipio = response;
+          this.assembleFlipTableContent(response);
+          this.processData(response);
+        } else {
+          this.requestStatus = RequestStatus.EMPTY;
+          this.quantidadeMaiorPorMunicipio = [];
+          this.assembleFlipTableContent([]);
+          this.processData([]);
+        }
       },
-      error(err) {
+      error: (err) => {
         console.error(
-          "Erro ao carregar os dados das quantidade de entregras prevista por órgão: ",
+          "Erro ao carregar os dados das quantidade de entregas prevista por órgão: ",
           err,
         );
-        // this.requestStatus = RequestStatus.ERROR;
+        this.requestStatus = RequestStatus.ERROR;
       },
     });
   }
 
-  processData(response: IQuantidadeMaiorEntrega[]): IChartOptions {
+  processData(response: IQuantidadeMaiorEntrega[] | []): IChartOptions {
     if (!response || response.length === 0)
       return { data: { labels: [], datasets: [] } } as IChartOptions;
 

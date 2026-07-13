@@ -1,6 +1,6 @@
-<ngx-flip-table [cardTitle]="'Riscos por Importância'" [tableContent]="flipTableContent" [loadingStatus]="requestStatus"
-  [showMaximizeButton]="true" [outerCardHeight]="275"
-  [backCardHeight]="isChartMaximized('risks-by-classification') ? 600 : 150"
+<ngx-flip-table [cardTitle]="'Riscos por Importância'" [showSearchField]="true" [tableContent]="flipTableContent" [loadingStatus]="requestStatus"
+  [showMaximizeButton]="true" [outerCardHeight]="isChartMaximized('risks-by-classification') ? (calcMaximizedHeight() + 125) : 275"
+  [backCardHeight]="isChartMaximized('risks-by-classification') ? calcMaximizedHeight() : 150"
   (executeSearch)="handleUserTableSearch($event)" (executeDownload)="handleUserTableDownload()"
   (showMaximizeButtonClick)="onMaximizeButtonClick('risks-by-classification', $event)">
   <ngx-pie-chart-model [data]="chartData" [colors]="chartColors"

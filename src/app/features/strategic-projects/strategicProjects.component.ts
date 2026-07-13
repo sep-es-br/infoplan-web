@@ -736,4 +736,20 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
         .forEach((year) => (year.disabledFinal = true));
     }
   }
+
+  trackByTag(index: number, tag: any): string {
+    return tag.key;
+  }
+
+  trackByMonth(index: number, month: any): number {
+    return month.num;
+  }
+
+  trackByYear(index: number, year: any): number {
+    return year.num;
+  }
+
+  trackById(index: number, item: any): number | string {
+    return item.id || index;
+  }
 }

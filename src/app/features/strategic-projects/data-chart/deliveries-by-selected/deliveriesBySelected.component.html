@@ -1,5 +1,5 @@
-<ngx-flip-table [tableContent]="flipTableContent" [backCardHeight]="isChartMaximized('DeliveriesBy') ? 700 : 290"
-  [outerCardHeight]="isChartMaximized('DeliveriesBy') ? 720 : 415" [loadingStatus]="requestStatus"
+<ngx-flip-table [showSearchField]="true" [tableContent]="flipTableContent" [backCardHeight]="isChartMaximized('DeliveriesBy') ? calcMaximizedHeight() : 290"
+  [outerCardHeight]="isChartMaximized('DeliveriesBy') ? (calcMaximizedHeight() + 125) : 415" [loadingStatus]="requestStatus"
   [showMaximizeButton]="true" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()" (executeCustomFiltering)="handleCustomFiltering($event)"
   (showMaximizeButtonClick)="onMaximizeButtonClick('DeliveriesBy', $event)">

@@ -1,7 +1,8 @@
 <ngx-flip-table
   [cardTitle]="'Investimento Acumulado'"
+  [showSearchField]="true"
   [tableContent]="flipTableContent"
-  [backCardHeight]="isChartMaximized('accumulated-investment') ? 700 : 400"
+  [backCardHeight]="isChartMaximized('accumulated-investment') ? calcMaximizedHeight() : 400"
   [showMaximizeButton]="true"
   [loadingStatus]="requestStatus"
   (executeSearch)="handleUserTableSearch($event)"

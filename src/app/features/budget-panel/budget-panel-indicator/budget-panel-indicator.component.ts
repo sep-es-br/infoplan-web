@@ -344,6 +344,7 @@ export class BudgetPanelIndicatorComponent
   isPOSelected(source: IPO) :boolean {
     return this.filter.codPo?.includes(source.codPo);
   }
+
   onUOSearch(event: any) {
     const term = event.target.value.toLowerCase();
     this.filteredUOList = (this.uoList || []).filter(
@@ -420,12 +421,15 @@ export class BudgetPanelIndicatorComponent
     this.filter.codUo = this.filter.codUo.filter((c) => c !== code);
     if (this.filter.codUo.length === 0) this.filter.codUo = ["-1"];
     this.loadActionList();
+    this.loadFullSourceList();
+    this.loadCodPoList();
   }
 
   removeAction(code: string) {
     this.filter.codAction = this.filter.codAction.filter((c) => c !== code);
     if (this.filter.codAction.length === 0) this.filter.codAction = ["-1"];
     this.loadFullSourceList();
+    this.loadCodPoList();
   }
 
   removePO(code: string) {
@@ -464,6 +468,8 @@ export class BudgetPanelIndicatorComponent
     }, 50);
 
     this.loadActionList();
+    this.loadFullSourceList();
+    this.loadCodPoList();
   }
 
   onActionSelected(selectedCode: string) {
@@ -547,6 +553,9 @@ export class BudgetPanelIndicatorComponent
         this.poSearchInput.nativeElement.focus();
       }
     }, 50);
+
+    this.loadFullSourceList();
+    this.loadCodPoList();
   }
 
   filtrar(event?: Event): void {
@@ -843,6 +852,9 @@ export class BudgetPanelIndicatorComponent
       this.filter.codGnd = ["-1"];
     } else if (filterKey === "codPo") {
       this.filter.codPo = ["-1"];
+      this.loadFullSourceList();
+      this.loadCodPoList();
+      this.loadActionList();
     }
 
     this.filtrar();

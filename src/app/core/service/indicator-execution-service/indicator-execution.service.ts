@@ -244,6 +244,12 @@ export class IndicatorExecutionService {
         Array.isArray(filter.codAction)
           ? filter.codAction.join(",")
           : filter.codAction,
+      )
+      .set(
+        "codUo",
+        Array.isArray(filter.codUo)
+          ? filter.codUo.join(",")
+          : filter.codUo,
       );
   }
 

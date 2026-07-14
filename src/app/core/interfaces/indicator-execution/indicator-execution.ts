@@ -7,6 +7,12 @@ export interface IIndicatorExecutionFilter {
   codGnd: string[];
   codSource: string[];
   codAmendment: string;
+  codPo: string[];
+}
+
+export interface IPO {
+  codPo: string;
+  nomePo: string;
 }
 
 export interface IActionResponse {

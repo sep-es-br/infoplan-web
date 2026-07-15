@@ -106,12 +106,12 @@ export class QuantidadeMaiorPrevistaComponent
         if (response && response.length > 0) {
           this.quantidadeMaiorPorOrgao = response;
           this.assembleFlipTableContent(response);
-          this.processData(response);
+          this.chartData = this.processData(response);
         } else {
           this.requestStatus = RequestStatus.EMPTY;
           this.quantidadeMaiorPorOrgao = [];
           this.assembleFlipTableContent([]);
-           this.processData([]);
+          this.chartData = this.processData([]);
         }
         },
         error(err) {
@@ -124,8 +124,25 @@ export class QuantidadeMaiorPrevistaComponent
   }
 
   processData(response: IQuantidadeMaiorEntregaPrevista[]): IChartOptions {
-    if (!response || response.length === 0)
-      return { data: { labels: [], datasets: [] } } as IChartOptions;
+    if (!response || response.length === 0) {
+      return {
+        data: {
+          labels: ["Sem Registros"],
+          datasets: [
+            {
+              label: "Órgão com maior valor",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[0],
+            },
+            {
+              label: "planejado",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[1],
+            }
+          ],
+        },
+      } as IChartOptions;
+    }
 
     const top10 = [...response]
       .sort((a, b) => b.totalMaiorOrgao - a.totalMaiorOrgao)

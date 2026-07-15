@@ -23,8 +23,6 @@
   &.is-sticky {
     z-index: 1010;
     transition: opacity 0.3s ease;
-
-    // Comportamento sticky removido conforme solicitado
   }
 
   nb-tag {
@@ -33,13 +31,42 @@
     border-radius: 8px;
     font-weight: bold;
     width: 142px;
-    // width: 102px;
     display: flex;
     justify-content: center;
 
     @media screen and (max-width: 576px) {
-      padding: 2px 12px;
+      padding: 2px  !important;
       font-size: 11px;
+    }
+  }
+
+  @media screen and (max-width: 684px) {
+    padding: 0px 20px 2px;
+
+    ::ng-deep nb-tag-list {
+      width: 100%;
+      display: block !important;
+
+      .nb-tag-list-tags-wrapper {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        justify-content: center;
+        width: 100%;
+      }
+    }
+
+    ::ng-deep nb-tag {
+      flex: 0 0 calc(50% - 4px) !important;
+      max-width: calc(50% - 4px) !important;
+      
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      // padding: 6px !important;
+      
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
     }
   }
 }
@@ -80,40 +107,4 @@ nb-tag.disabled-tag {
   opacity: 0.6 !important;
   cursor: default !important;
   filter: grayscale(20%) !important;
-}
-
-@media screen and (max-width: 684px) {
-  .tag-panel {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    padding: 0px 6px 11px;
-  }
-
-  ::ng-deep nb-tag-list {
-    width: 100%;
-    display: block !important;
-  }
-
-  ::ng-deep .nb-tag-list-tags-wrapper {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-    justify-content: center;
-    width: 100%;
-  }
-
-  ::ng-deep nb-tag {
-    flex: 0 0 calc(50% - 4px) !important;
-    max-width: calc(50% - 4px) !important;
-
-    box-sizing: border-box !important;
-
-    margin: 0 !important;
-    padding: 6px !important;
-
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-  }
 }

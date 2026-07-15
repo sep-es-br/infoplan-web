@@ -39,9 +39,9 @@ import { FilterManagementService } from "../../../core/service/filter-management
 type PaginaPainel = "visao-geral" | "orgao" | "municipio" | "carteira";
 
 const DEFAULT_PARAMS_PAINEL_OBRAS: IPainelObrasRequest = {
-  orgao: String(environment.painelObras.orgao),
-  status: String(environment.painelObras.status),
-  municipio: String(environment.painelObras.municipio),
+  orgao: environment.painelObras.orgao,
+  status: environment.painelObras.status,
+  municipio: environment.painelObras.municipio,
   portfolio: environment.painelObras.portifolio,
   dataInicio: environment.painelObras.dataInicio,
   dataFim: environment.painelObras.dataFim,
@@ -285,7 +285,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.orgao && this.finalFilter.orgao.length > 0) {
+    if (this.finalFilter.orgao && this.finalFilter.orgao != '') {
       const orgao = this.orgaosList?.find(o => String(o.orgaoId) === String(this.finalFilter.orgao));
       this.activeFilters.push({
         key: "orgao",
@@ -294,7 +294,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.municipio && this.finalFilter.municipio.length > 0) {
+    if (this.finalFilter.municipio && this.finalFilter.municipio != '') {
       const municipio = this.municipiosList?.find(m => String(m.id) === String(this.finalFilter.municipio));
       this.activeFilters.push({
         key: "municipio",
@@ -303,7 +303,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.status && this.finalFilter.status.length > 0) {
+    if (this.finalFilter.status && this.finalFilter.status != '') {
       const status = this.statusList?.find(s => String(s.id) === String(this.finalFilter.status));
       this.activeFilters.push({
         key: "status",

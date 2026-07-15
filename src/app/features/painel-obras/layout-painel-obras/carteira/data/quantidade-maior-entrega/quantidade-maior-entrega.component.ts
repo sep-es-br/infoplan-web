@@ -95,22 +95,21 @@ export class QuantidadeMaiorEntregaComponent
     this.destroy$.complete();
   }
 
-loadData() {
+  loadData() {
     this.requestStatus = RequestStatus.LOADING;
 
     this._painelObrasService.getQuantidadeMaiorEntrega(this.filter).subscribe({
       next: (response) => {
-        this.requestStatus = RequestStatus.SUCCESS;
-        if (response && response.length > 0) {
-          this.quantidadeMaiorPorMunicipio = response;
-          this.assembleFlipTableContent(response);
-          this.processData(response);
+        this.quantidadeMaiorPorMunicipio = response || [];
+
+        if (this.quantidadeMaiorPorMunicipio.length > 0) {
+          this.assembleFlipTableContent(this.quantidadeMaiorPorMunicipio);
+          this.chartData = this.processData(this.quantidadeMaiorPorMunicipio);
         } else {
-          this.requestStatus = RequestStatus.EMPTY;
-          this.quantidadeMaiorPorMunicipio = [];
           this.assembleFlipTableContent([]);
-          this.processData([]);
+          this.chartData = this.processData([]);
         }
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       error: (err) => {
         console.error(
@@ -123,8 +122,25 @@ loadData() {
   }
 
   processData(response: IQuantidadeMaiorEntrega[] | []): IChartOptions {
-    if (!response || response.length === 0)
-      return { data: { labels: [], datasets: [] } } as IChartOptions;
+    if (!response || response.length === 0) {
+      return {
+        data: {
+          labels: ["Sem Registros"],
+          datasets: [
+            {
+              label: "Município com maior valor",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[0],
+            },
+            {
+              label: "planejado",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[1],
+            },
+          ],
+        },
+      } as IChartOptions;
+    }
 
     const top10 = [...response]
       .sort((a, b) => b.totalMaiorMunicipio - a.totalMaiorMunicipio)

@@ -97,21 +97,15 @@ export class TotalEntregaPorMesComponent
 
     this._painelObrasService.getTotalEntregaPorMes(this.filter).subscribe({
       next: (response) => {
-        this.requestStatus = RequestStatus.SUCCESS;
-        if (response && response.length > 0) {
-          this.totalEntregasPorMes = response;
-          this.assembleFlipTableContent(response);
-          this.chartData = this.processData(response);
+        this.totalEntregasPorMes = response || [];
+        if (this.totalEntregasPorMes.length > 0) {
+          this.assembleFlipTableContent(this.totalEntregasPorMes);
+          this.chartData = this.processData(this.totalEntregasPorMes);
         } else {
-          this.requestStatus = RequestStatus.EMPTY;
-          this.totalEntregasPorMes = [];
           this.assembleFlipTableContent([]);
           this.chartData = this.processData([]);
         }
-        // this.requestStatus = RequestStatus.SUCCESS;
-        // this.totalEntregasPorMes = response;
-        // this.assembleFlipTableContent(response);
-        // this.processData(response);
+        this.requestStatus = RequestStatus.SUCCESS;
       },
       error(err) {
         console.error("Erro ao carregar os dados das entregas por mês: ", err);
@@ -120,13 +114,19 @@ export class TotalEntregaPorMesComponent
   }
 
   private processData(dados: ITotalEntregaPorMes[] | []): IChartOptions {
-    if (!dados) {
-      return (this.chartData = {
+    if (!dados || dados.length === 0) {
+      return {
         data: {
-          labels: [],
-          datasets: [],
+          labels: ["Sem Registros"],
+          datasets: [
+            {
+              label: "previsto (Total)",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[0],
+            },
+          ],
         },
-      });
+      };
     }
     return {
       data: {

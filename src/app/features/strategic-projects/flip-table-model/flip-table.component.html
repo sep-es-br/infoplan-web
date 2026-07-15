@@ -13,15 +13,16 @@
         <ng-container *ngIf="deveExibirSearch">
           <ng-container *ngIf="isSearchFieldVisible">
             <nb-form-field class="search-form-field opening">
-              <input #searchInput nbInput class="search-input" type="text" shape="round" fieldSize="tiny" placeholder="Buscar"
-                (keyup)="debounceOnInput($event)" />
+              <input #searchInput nbInput class="search-input" type="text" shape="round" fieldSize="tiny"
+                placeholder="Buscar" (keyup)="debounceOnInput($event)" />
               <nb-icon nbSuffix class="close-icon" [icon]="'close-outline'" (click)="handleCloseSearchFieldClick()">
               </nb-icon>
             </nb-form-field>
           </ng-container>
 
           <ng-container *ngIf="!isSearchFieldVisible">
-            <nb-icon class="search-button m-0 ms-3 p-0" [icon]="'search-outline'" (click)="handleOpenSearchFieldClick()">
+            <nb-icon class="search-button m-0 ms-3 p-0" [icon]="'search-outline'"
+              (click)="handleOpenSearchFieldClick()">
             </nb-icon>
           </ng-container>
         </ng-container>
@@ -153,17 +154,22 @@
                 {{ tableContent.customColumn.displayName }}
               </th>
               <td *nbTreeGridCellDef="let row" nbTreeGridCell
-                [ngClass]="{ 'font-weight-bold': isRowTotal(row), 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
+                [ngClass]="{ 'font-weight-bold': isRowTotal(row) || row.hasChildren(), 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
                 (click)="tableContent.customColumn.enableEventClick && !isRowTotal(row) ? handleCustomColumnClick(getCellValue(row.data, tableContent.customColumn.propertyName)) : null">
-                <nb-tree-grid-row-toggle *ngIf="row.hasChildren()" [expanded]="row.expanded">
-                </nb-tree-grid-row-toggle>
-                <nb-icon *ngIf="!row.hasChildren() && tableContent.customColumn.enableEventClick && !isRowTotal(row)"
-                  [icon]="'chevron-right-outline'" class="me-1">
-                </nb-icon>
-                <span
-                  [style.fontWeight]="getCellValue(row.data, tableContent.customColumn.propertyName) === 'Total' ? 'bold' : 'normal'">
-                  {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
-                </span>
+                <div [style.--level]="row.level" class="tree-node-wrapper">
+                  <nb-tree-grid-row-toggle *ngIf="row.hasChildren()" [expanded]="row.expanded">
+                  </nb-tree-grid-row-toggle>
+                  <span
+                    *ngIf="!row.hasChildren() && row.level > 0 && !(tableContent.customColumn.enableEventClick && !isRowTotal(row))"
+                    class="tree-node-spacer"></span>
+                  <nb-icon *ngIf="!row.hasChildren() && tableContent.customColumn.enableEventClick && !isRowTotal(row)"
+                    [icon]="'chevron-right-outline'" class="me-1">
+                  </nb-icon>
+                  <span
+                    [style.fontWeight]="(row.hasChildren() || getCellValue(row.data, tableContent.customColumn.propertyName) === 'Total') ? 'bold' : 'normal'">
+                    {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
+                  </span>
+                </div>
               </td>
             </ng-container>
 
@@ -175,7 +181,7 @@
                 {{ column.displayName }}
               </th>
               <td nbTreeGridCell *nbTreeGridCellDef="let row" class="px-1"
-                [ngClass]="{ 'font-weight-bold': isRowTotal(row) }"
+                [ngClass]="{ 'font-weight-bold': isRowTotal(row) || row.hasChildren() }"
                 [style]="{'text-align': column.alignment ? column.alignment.data : 'right'}"
                 title="{{ getCellValue(row.data, column.propertyName) }}">
                 {{ getCellValueShort(row.data, column.propertyName) }}

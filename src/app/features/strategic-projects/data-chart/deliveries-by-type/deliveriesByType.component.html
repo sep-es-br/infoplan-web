@@ -1,18 +1,10 @@
-<ngx-flip-table
-  [cardTitle]="'Entregas por Tipo'"
-  [tableContent]="flipTableContent"
-  [loadingStatus]="requestStatus"
-  [showMaximizeButton]="true"
-  [backCardHeight]="isChartMaximized('deliveries-by-type') ? 700 : 150"
-  (executeSearch)="handleUserTableSearch($event)"
+<ngx-flip-table [cardTitle]="'Entregas por Tipo'" [showSearchField]="true" [tableContent]="flipTableContent" [loadingStatus]="requestStatus"
+  [showMaximizeButton]="true" [outerCardHeight]="isChartMaximized('deliveries-by-type') ? (calcMaximizedHeight() + 125) : 275"
+  [backCardHeight]="isChartMaximized('deliveries-by-type') ? calcMaximizedHeight() : 150" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
-  (showMaximizeButtonClick)="onMaximizeButtonClick('deliveries-by-type', $event)"
-  >
-  <ngx-pie-chart-model
-    [data]="chartData"
-    [colors]="chartColors"
+  (showMaximizeButtonClick)="onMaximizeButtonClick('deliveries-by-type', $event)">
+  <ngx-pie-chart-model [data]="chartData" [colors]="chartColors"
     [height]="isChartMaximized('deliveries-by-type') ? calcMaximizedHeight() : 150"
-    [isMaximized]="isChartMaximized('deliveries-by-type')"
-    card-front>
+    [isMaximized]="isChartMaximized('deliveries-by-type')" card-front>
   </ngx-pie-chart-model>
 </ngx-flip-table>

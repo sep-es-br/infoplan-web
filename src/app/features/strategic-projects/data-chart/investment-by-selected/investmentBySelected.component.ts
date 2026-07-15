@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { HorizontalBarChartBarClick, HorizontalBarChartCustomConfig, HorizontalBarChartLabelClick, HorizontalBarChartModelComponent } from '../../bar-chart-model/horizontal-bar-chart-model/horizontal-bar-chart-model.component';
 import { IStrategicProjectFilterValuesDto } from '../../../../core/interfaces/strategic-project-filter.interface';
 import { StrategicProjectsService } from '../../../../core/service/strategic-projects.service';
@@ -8,7 +9,7 @@ import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { UtilitiesService } from '../../../../core/service/utilities.service';
 import { CustomTableFilteringTrigger, RequestStatus } from '../../strategicProjects.component';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { OffcanvasInfoModelComponent } from '../../offcanvas-info-model/offcanvas-info-model.components';
 import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
@@ -18,13 +19,15 @@ import { ChartMaximizeService } from '../../../../core/service/chart-maximize/ch
   styleUrls: ['./investmentBySelected.component.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     HorizontalBarChartModelComponent,
     OffcanvasInfoModelComponent,
     FlipTableComponent,
     NbSelectModule,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InvestmentBySelectedComponent implements OnChanges {
+export class InvestmentBySelectedComponent implements OnChanges, OnDestroy {
   @Input() filter!: IStrategicProjectFilterValuesDto;
 
   @Input() tableFilteringTrigger: BehaviorSubject<CustomTableFilteringTrigger>;
@@ -55,6 +58,8 @@ export class InvestmentBySelectedComponent implements OnChanges {
   offcanvasRequestStatus: RequestStatus = RequestStatus.EMPTY;
 
   isDoingDrillDownActions: boolean = false;
+  private dataSubscription: Subscription;
+  totalItemsCount: number = 0;
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
@@ -62,7 +67,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
     private utilitiesService: UtilitiesService,
     private changeDetectorRef: ChangeDetectorRef,
     private chartMaximizeService: ChartMaximizeService
-  ) {}
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['filter'] && this.filter)) {
@@ -96,7 +101,16 @@ export class InvestmentBySelectedComponent implements OnChanges {
     return this.chartMaximizeService.calcMaximizedWidth();
   }
 
-  loadData(){
+  ngOnDestroy(): void {
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
+  }
+
+  loadData() {
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
     const cleanedFilter = this.strategicProjectsService.removeEmptyValues(this.filter);
     this.chartColors = [];
 
@@ -127,80 +141,96 @@ export class InvestmentBySelectedComponent implements OnChanges {
 
   loadInvestmentByArea(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
+    this.changeDetectorRef.detectChanges();
 
-    this.strategicProjectsService.getInvestmentByArea(cleanedFilter).subscribe(
+    this.dataSubscription = this.strategicProjectsService.getInvestmentByArea(cleanedFilter).subscribe(
       (data: IStrategicProjectInvestmentSelected[]) => {
         this.investmentData = data;
         this.formatChartData();
         this.requestStatus = RequestStatus.SUCCESS;
+        this.changeDetectorRef.detectChanges();
       },
       (error) => {
         console.error('Erro ao carregar os dados das áreas temáticas:', error);
         this.requestStatus = RequestStatus.ERROR;
+        this.changeDetectorRef.detectChanges();
       }
     );
   }
 
   loadInvestmentByProgram(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
+    this.changeDetectorRef.detectChanges();
 
-    this.strategicProjectsService.getInvestmentByProgram(cleanedFilter).subscribe(
+    this.dataSubscription = this.strategicProjectsService.getInvestmentByProgram(cleanedFilter).subscribe(
       (data: IStrategicProjectInvestmentSelected[]) => {
         this.investmentData = data;
         this.formatChartData();
         this.requestStatus = RequestStatus.SUCCESS;
+        this.changeDetectorRef.detectChanges();
       },
       (error) => {
         console.error('Erro ao carregar os dados dos programas:', error);
         this.requestStatus = RequestStatus.ERROR;
+        this.changeDetectorRef.detectChanges();
       }
     );
   }
 
   loadInvestmentByCrossProgramAt(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
+    this.changeDetectorRef.detectChanges();
 
-    this.strategicProjectsService.getInvestmentByProgramAt(cleanedFilter).subscribe(
+    this.dataSubscription = this.strategicProjectsService.getInvestmentByProgramAt(cleanedFilter).subscribe(
       (data: IStrategicProjectInvestmentSelected[]) => {
         this.investmentData = data;
         this.formatChartData();
         this.requestStatus = RequestStatus.SUCCESS;
+        this.changeDetectorRef.detectChanges();
       },
       (error) => {
         console.error('Erro ao carregar os dados dos programas transversais:', error);
         this.requestStatus = RequestStatus.ERROR;
+        this.changeDetectorRef.detectChanges();
       }
     );
   }
 
   loadInvestmentByProject(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
+    this.changeDetectorRef.detectChanges();
 
-    this.strategicProjectsService.getInvestmentByProject(cleanedFilter).subscribe(
+    this.dataSubscription = this.strategicProjectsService.getInvestmentByProject(cleanedFilter).subscribe(
       (data: IStrategicProjectInvestmentSelected[]) => {
         this.investmentData = data;
         this.formatChartData();
         this.requestStatus = RequestStatus.SUCCESS;
+        this.changeDetectorRef.detectChanges();
       },
       (error) => {
         console.error('Erro ao carregar os dados dos projetos:', error);
         this.requestStatus = RequestStatus.ERROR;
+        this.changeDetectorRef.detectChanges();
       }
     );
   }
 
   loadInvestmentByDelivery(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
+    this.changeDetectorRef.detectChanges();
 
-    this.strategicProjectsService.getInvestmentByDelivery(cleanedFilter).subscribe(
+    this.dataSubscription = this.strategicProjectsService.getInvestmentByDelivery(cleanedFilter).subscribe(
       (data: IStrategicProjectInvestmentSelected[]) => {
         this.investmentData = data;
         this.formatChartData();
+        
         this.requestStatus = RequestStatus.SUCCESS;
+        this.changeDetectorRef.detectChanges();
       },
       (error) => {
         console.error('Erro ao carregar os dados das entregas:', error);
         this.requestStatus = RequestStatus.ERROR;
+        this.changeDetectorRef.detectChanges();
       }
     );
   }
@@ -212,6 +242,7 @@ export class InvestmentBySelectedComponent implements OnChanges {
       realizado: item.custoRealizado
     }));
 
+    this.totalItemsCount = this.investmentData.length;
     this.assembleFlipTableContent(this.investmentData);
   }
 
@@ -264,8 +295,10 @@ export class InvestmentBySelectedComponent implements OnChanges {
         this.utilitiesService.formatCurrencyUsingBrazilianStandards(investimento.custoRealizado, 'R$').includes(preparedSearchTerm)
       ));
 
+      this.totalItemsCount = filteredItems.length;
       this.assembleFlipTableContent(filteredItems, true);
     } else {
+      this.totalItemsCount = this.investmentData.length;
       this.assembleFlipTableContent(this.investmentData);
     }
   }

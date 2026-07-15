@@ -7,7 +7,7 @@ import { FlipTableAlignment, FlipTableComponent, FlipTableContent, TreeNode } fr
 import { NbSelectModule } from '@nebular/theme';
 import { ExportDataService } from '../../../../core/service/export-data';
 import { CustomTableFilteringTrigger, RequestStatus } from '../../strategicProjects.component';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { OffcanvasInfoModelComponent } from '../../offcanvas-info-model/offcanvas-info-model.components';
 import { ChartMaximizeService } from '../../../../core/service/chart-maximize/chart-maximize.service';
 
@@ -54,6 +54,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
   requestStatus: RequestStatus = RequestStatus.EMPTY;
 
   isDoingDrillDownActions: boolean = false;
+  private dataSubscription: Subscription;
 
   constructor(
     private strategicProjectsService: StrategicProjectsService,
@@ -95,6 +96,9 @@ export class DeliveriesBySelectedComponent implements OnChanges {
   }
 
   loadData() {
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
     const cleanedFilter = this.strategicProjectsService.removeEmptyValues(this.filter);
     this.chartColors = [];
 
@@ -122,7 +126,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
   loadDeliveriesByArea(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
 
-    this.strategicProjectsService.getDeliveriesByArea(cleanedFilter).subscribe(
+    this.dataSubscription = this.strategicProjectsService.getDeliveriesByArea(cleanedFilter).subscribe(
       (data: IStrategicProjectDeliveriesBySelected[]) => {
         this.deliveriesData = data;
         this.formatDeliveriesChartData();
@@ -138,7 +142,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
   loadDeliveriesByProgram(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
 
-    this.strategicProjectsService.getDeliveriesByProgram(cleanedFilter).subscribe(
+    this.dataSubscription = this.strategicProjectsService.getDeliveriesByProgram(cleanedFilter).subscribe(
       (data: IStrategicProjectDeliveriesBySelected[]) => {
         this.deliveriesData = data;
         this.formatDeliveriesChartData();
@@ -154,7 +158,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
   loadDeliveriesByCrossProgramAt(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
 
-    this.strategicProjectsService.getDeliveriesByProgramAt(cleanedFilter).subscribe(
+    this.dataSubscription = this.strategicProjectsService.getDeliveriesByProgramAt(cleanedFilter).subscribe(
       (data: IStrategicProjectDeliveriesBySelected[]) => {
         this.deliveriesData = data;
         this.formatDeliveriesChartData();
@@ -170,7 +174,7 @@ export class DeliveriesBySelectedComponent implements OnChanges {
   loadDeliveriesByProject(cleanedFilter: IStrategicProjectFilterValuesDto): void {
     this.requestStatus = RequestStatus.LOADING;
 
-    this.strategicProjectsService.getDeliveriesByProject(cleanedFilter).subscribe(
+    this.dataSubscription = this.strategicProjectsService.getDeliveriesByProject(cleanedFilter).subscribe(
       (data: IStrategicProjectDeliveriesBySelected[]) => {
         this.deliveriesData = data;
         this.formatDeliveriesChartData();

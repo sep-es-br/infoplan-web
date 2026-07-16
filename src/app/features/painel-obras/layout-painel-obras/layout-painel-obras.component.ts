@@ -290,7 +290,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       this.activeFilters.push({
         key: "orgao",
         label: "Órgão",
-        displayValue: [{ name: orgao ? orgao.nome : this.finalFilter.orgao }],
+        displayValue: [{ name: orgao ? orgao.nome : String(this.finalFilter.orgao) }],
       });
     }
 
@@ -299,7 +299,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       this.activeFilters.push({
         key: "municipio",
         label: "Município",
-        displayValue: [{ name: municipio ? municipio.nome : this.finalFilter.municipio }],
+        displayValue: [{ name: municipio ? municipio.nome : String(this.finalFilter.municipio) }],
       });
     }
 
@@ -308,7 +308,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       this.activeFilters.push({
         key: "status",
         label: "Status",
-        displayValue: [{ name: status ? status.fase : this.finalFilter.status }],
+        displayValue: [{ name: status ? status.fase : String(this.finalFilter.status) }],
       });
     }
   }

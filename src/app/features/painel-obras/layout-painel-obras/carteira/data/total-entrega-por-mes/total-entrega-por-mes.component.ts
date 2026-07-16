@@ -40,18 +40,18 @@ import { OrgChartVerticalComponent } from "../../../../../budget-panel/org-chart
   imports: [FlipTableComponent, OrgChartVerticalComponent],
 })
 export class TotalEntregaPorMesComponent
-  implements OnInit, OnChanges, OnDestroy {
+  implements OnInit, OnChanges, OnDestroy
+{
   @Input() filter!: IPainelObrasRequest;
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
-  readonly title: string =
-    "Entregas Concluídas por Mês (2026)";
+  readonly title: string = "Entregas Concluídas por Mês (2026)";
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;
   selectedMaximize: boolean = false;
 
-  chartData!: IChartOptions;
+  chartData: IChartOptions = {} as IChartOptions;
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
@@ -97,20 +97,38 @@ export class TotalEntregaPorMesComponent
 
     this._painelObrasService.getTotalEntregaPorMes(this.filter).subscribe({
       next: (response) => {
-        this.totalEntregasPorMes = response;
-        this.assembleFlipTableContent(response);
-        this.processData(response);
+        this.totalEntregasPorMes = response || [];
+        if (this.totalEntregasPorMes.length > 0) {
+          this.assembleFlipTableContent(this.totalEntregasPorMes);
+          this.chartData = this.processData(this.totalEntregasPorMes);
+        } else {
+          this.assembleFlipTableContent([]);
+          this.chartData = this.processData([]);
+        }
         this.requestStatus = RequestStatus.SUCCESS;
       },
       error(err) {
         console.error("Erro ao carregar os dados das entregas por mês: ", err);
-        // this.requestStatus = RequestStatus.ERROR;
       },
     });
   }
 
-  private processData(dados: ITotalEntregaPorMes[]): void {
-    this.chartData = {
+  private processData(dados: ITotalEntregaPorMes[] | []): IChartOptions {
+    if (!dados || dados.length === 0) {
+      return {
+        data: {
+          labels: ["Sem Registros"],
+          datasets: [
+            {
+              label: "previsto (Total)",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[0],
+            },
+          ],
+        },
+      };
+    }
+    return {
       data: {
         labels: dados.map((res) => res.mesNome),
         datasets: [
@@ -122,7 +140,6 @@ export class TotalEntregaPorMesComponent
         ],
       },
     };
-    this.assembleFlipTableContent(dados);
   }
 
   assembleFlipTableContent(
@@ -323,13 +340,13 @@ export class TotalEntregaPorMesComponent
       municipio: item.municipio,
       valor_medio_por_acao: item.valorMedioPorAcao,
       data_conclusao: item.dataConclusaoMaiorEntrega,
-      maior_valor_mes: item.maiorValorNoMes
-    }))
+      maior_valor_mes: item.maiorValorNoMes,
+    }));
 
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataToExport,
       columns,
-      "Total_Entregas_Por_Mes.xlsx"
-    )
+      "Total_Entregas_Por_Mes.xlsx",
+    );
   }
 }

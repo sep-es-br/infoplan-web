@@ -19,6 +19,7 @@ import {
   IBudgetaryUnitResponse,
   IFullSourceResponse,
   IIndicatorExecutionFilter,
+  IPO,
 } from "../../../core/interfaces/indicator-execution/indicator-execution";
 import { environment } from "../../../../environments/environment";
 import { IndicatorExecutionService } from "../../../core/service/indicator-execution-service/indicator-execution.service";
@@ -38,6 +39,7 @@ const DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS: IIndicatorExecutionFilter = {
   codSource: environment.indicatorExecutionFilter.codSource.map(String),
   codGnd: environment.indicatorExecutionFilter.codGnd.map(String),
   codAmendment: environment.indicatorExecutionFilter.codAmendment.toString(),
+  codPo: environment.indicatorExecutionFilter.codPO.map(String),
 };
 
 interface ICardExecutionResponse {
@@ -73,7 +75,9 @@ enum AvailableFilters {
   templateUrl: "./budget-panel-indicator.component.html",
   styleUrls: ["./budget-panel-indicator.component.scss"],
 })
-export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterViewInit {
+export class BudgetPanelIndicatorComponent
+  implements OnInit, OnDestroy, AfterViewInit
+{
   private indicatorExecutionService = inject(IndicatorExecutionService);
   private comunicationCardsService = inject(ComunicationCardsService);
   private _chartMaximizeService = inject(ChartMaximizeService);
@@ -85,6 +89,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
   actionSearchInput!: ElementRef<HTMLInputElement>;
   @ViewChild("fullSourceSearchInput")
   fullSourceSearchInput!: ElementRef<HTMLInputElement>;
+  @ViewChild("poSearchInput") poSearchInput!: ElementRef<HTMLInputElement>;
   @ViewChildren("customSelect") customSelectRefs!: QueryList<NbSelectComponent>;
 
   @Output() filterChanged = new EventEmitter<IIndicatorExecutionFilter>();
@@ -105,13 +110,13 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
 
   uoList: IBudgetaryUnitResponse[] = [];
   filteredUOList: IBudgetaryUnitResponse[] = [];
-
   actionList: IActionResponse[] = [];
   filteredActionList: IActionResponse[] = [];
-
   fullSourceList: IFullSourceResponse[] = [];
   filteredFullSourceList: IFullSourceResponse[] = [];
-  timesTamp: string = '';
+  poList: IPO[] = [];
+  filteredPOList: IPO[] = [];
+  timesTamp: string = "";
 
   requestStatus = {
     status: RequestStatus.EMPTY,
@@ -182,7 +187,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
     availableWithoutReservation: 0,
     plannedSuccess: {
       sucesso: 0,
-      timesTamp: ''
+      timesTamp: "",
     },
     comparative: 0,
     poWithHighestSettlement: 0,
@@ -191,7 +196,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
     budgetaryChanges: 0,
     budgetManagementIndicator: {
       igo: 0,
-      nota: ""
+      nota: "",
     },
   };
 
@@ -200,7 +205,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
     this.loadUOList();
     this.loadActionList();
     this.loadFullSourceList();
-
+    this.loadCodPoList();
     this._scrollService.isScrolled$
       .pipe(takeUntil(this.destroy$))
       .subscribe((scrolled) => {
@@ -237,7 +242,8 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
             res.cardAvailableWithoutReversation;
           this.requestStatus.status = RequestStatus.SUCCESS;
         } else if (res.cardPlannedSuccess !== undefined) {
-          this.statusTotal.plannedSuccess.sucesso = res.cardPlannedSuccess.sucesso;
+          this.statusTotal.plannedSuccess.sucesso =
+            res.cardPlannedSuccess.sucesso;
           this.timesTamp = res.cardPlannedSuccess.timesTamp;
           this.requestStatus.status = RequestStatus.SUCCESS;
         } else if (res.cardComparative !== undefined) {
@@ -308,6 +314,21 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
       });
   }
 
+  loadCodPoList() {
+    if (!this.filter.codAction || this.filter.codAction.length === 0) {
+      this.poList = [];
+      this.filteredPOList = [];
+      return;
+    }
+
+    this.indicatorExecutionService
+      .getSearchPo(this.filter)
+      .subscribe((res) => {
+        this.poList = (res as any) || [];
+        this.filteredPOList = (res as any) || [];
+      });
+  }
+
   isUOSelected(uo: IBudgetaryUnitResponse): boolean {
     return this.filter.codUo?.includes(uo.uo);
   }
@@ -318,6 +339,10 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
 
   isFullSourceSelected(source: IFullSourceResponse): boolean {
     return this.filter.codSource?.includes(source.cod_source);
+  }
+
+  isPOSelected(source: IPO) :boolean {
+    return this.filter.codPo?.includes(source.codPo);
   }
 
   onUOSearch(event: any) {
@@ -338,6 +363,15 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
     );
   }
 
+  onPoSearch(event: any) {
+    const term = event.target.value.toLowerCase();
+    this.filteredPOList = (this.poList || []).filter(
+      (po) =>
+        po.codPo.toLowerCase().includes(term) ||
+        po.nomePo.toLowerCase().includes(term),
+    );
+  }
+
   onFullSourceSearch(event: any) {
     const term = event.target.value.toLowerCase();
     this.filteredFullSourceList = (this.fullSourceList || []).filter(
@@ -348,7 +382,9 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
   }
 
   get selectedUOs(): IBudgetaryUnitResponse[] {
-    return (this.uoList || []).filter((uo) => this.filter.codUo.includes(uo.uo));
+    return (this.uoList || []).filter((uo) =>
+      this.filter.codUo.includes(uo.uo),
+    );
   }
 
   get selectedActions(): IActionResponse[] {
@@ -360,6 +396,12 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
   get selectedFullSources(): IFullSourceResponse[] {
     return (this.fullSourceList || []).filter((s) =>
       this.filter.codSource.includes(s.cod_source),
+    );
+  }
+
+  get selectedPOs(): IPO[] {
+    return (this.poList || []).filter((po) =>
+      this.filter.codPo.includes(po.codPo),
     );
   }
 
@@ -379,14 +421,22 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
     this.filter.codUo = this.filter.codUo.filter((c) => c !== code);
     if (this.filter.codUo.length === 0) this.filter.codUo = ["-1"];
     this.loadActionList();
+    this.loadFullSourceList();
+    this.loadCodPoList();
   }
 
   removeAction(code: string) {
     this.filter.codAction = this.filter.codAction.filter((c) => c !== code);
     if (this.filter.codAction.length === 0) this.filter.codAction = ["-1"];
     this.loadFullSourceList();
+    this.loadCodPoList();
   }
 
+  removePO(code: string) {
+    this.filter.codPo = this.filter.codPo.filter((c) => c !== code);
+    if (this.filter.codPo.length === 0) this.filter.codPo = ["-1"];
+    this.loadCodPoList();
+  }
   removeFullSource(code: string) {
     this.filter.codSource = this.filter.codSource.filter((c) => c !== code);
     if (this.filter.codSource.length === 0) this.filter.codSource = ["-1"];
@@ -418,6 +468,8 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
     }, 50);
 
     this.loadActionList();
+    this.loadFullSourceList();
+    this.loadCodPoList();
   }
 
   onActionSelected(selectedCode: string) {
@@ -448,6 +500,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
     }, 50);
 
     this.loadFullSourceList();
+    this.loadCodPoList();
   }
 
   onFullSourceSelected(selectedCode: string) {
@@ -468,7 +521,6 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
       this.filter.codSource = ["-1"];
     }
 
-    // Limpa o campo e recarrega lista completa para permitir nova busca
     setTimeout(() => {
       if (this.fullSourceSearchInput) {
         this.fullSourceSearchInput.nativeElement.value = "";
@@ -476,6 +528,34 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
         this.fullSourceSearchInput.nativeElement.focus();
       }
     }, 50);
+  }
+
+  onPoSelected(selectedCode: string) {
+    if (this.filter.codPo.includes("-1")) {
+      this.filter.codPo = this.filter.codPo.filter((code) => code !== "-1");
+    }
+
+    const index = this.filter.codPo.indexOf(selectedCode);
+    if (index > -1) {
+      this.filter.codPo.splice(index, 1);
+    } else {
+      this.filter.codPo.push(selectedCode);
+    }
+
+    if (this.filter.codPo.length === 0) {
+      this.filter.codPo = ["-1"];
+    }
+
+    setTimeout(() => {
+      if (this.poSearchInput) {
+        this.poSearchInput.nativeElement.value = "";
+        this.filteredPOList = [...this.poList];
+        this.poSearchInput.nativeElement.focus();
+      }
+    }, 50);
+
+    this.loadFullSourceList();
+    this.loadCodPoList();
   }
 
   filtrar(event?: Event): void {
@@ -506,6 +586,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
       codSource: this.finalFilter.codSource,
       codGnd: this.finalFilter.codGnd,
       codAmendment: this.finalFilter.codAmendment,
+      codPo: this.finalFilter.codPo,
     };
   }
 
@@ -612,7 +693,24 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
       }
     }
 
-    if (this.finalFilter.codAmendment !== undefined && this.finalFilter.codAmendment !== null && String(this.finalFilter.codAmendment).length >= 1) {
+    if(this.finalFilter.codPo && this.finalFilter.codPo.length >= 1) {
+      if(!this.finalFilter.codPo.includes("-1")) {
+        this.activeFilters.push({
+          key: "codPo",
+          label: "PO",
+          displayValue: this.finalFilter.codPo.map((code) => {
+            const item = this.poList.find((i) => i.codPo === code);
+            return { name: item ? `${item.codPo} - ${item.nomePo}` : code };
+          }),
+        });
+      }
+    }
+
+    if (
+      this.finalFilter.codAmendment !== undefined &&
+      this.finalFilter.codAmendment !== null &&
+      String(this.finalFilter.codAmendment).length >= 1
+    ) {
       const codAmStr = String(this.finalFilter.codAmendment);
       if (codAmStr !== "-1") {
         this.activeFilters.push({
@@ -620,8 +718,14 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
           label: "Emenda Parlamentar",
           displayValue: [
             {
-              name: codAmStr === "1" ? "Sem Emenda Estadual" : "Apenas Emenda Estadual",
-              fullName: codAmStr === "1" ? "Sem Emenda Estadual" : "Apenas Emenda Estadual",
+              name:
+                codAmStr === "1"
+                  ? "Sem Emenda Estadual"
+                  : "Apenas Emenda Estadual",
+              fullName:
+                codAmStr === "1"
+                  ? "Sem Emenda Estadual"
+                  : "Apenas Emenda Estadual",
             },
           ],
         });
@@ -670,6 +774,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
       this.loadUOList();
       this.loadActionList();
       this.loadFullSourceList();
+      this.loadCodPoList();
     }
 
     this.tooltips.forEach((t) => t.hide());
@@ -683,17 +788,20 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
     this.uoList = [];
     this.actionList = [];
     this.fullSourceList = [];
+    this.poList = [];
 
     this.currentRequestParams = { ...DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS };
 
     this.loadUOList();
     this.loadActionList();
     this.loadFullSourceList();
+    this.loadCodPoList();
 
     if (this.uoSearchInput) this.uoSearchInput.nativeElement.value = "";
     if (this.actionSearchInput) this.actionSearchInput.nativeElement.value = "";
     if (this.fullSourceSearchInput)
       this.fullSourceSearchInput.nativeElement.value = "";
+    if (this.poSearchInput) this.poSearchInput.nativeElement.value = "";
 
     this.updateActiveFilters();
 
@@ -719,6 +827,7 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
       this.loadUOList();
       this.loadActionList();
       this.loadFullSourceList();
+      this.loadCodPoList();
     } else if (filterKey === "month") {
       this.filter.month = environment.indicatorExecutionFilter.month;
     } else if (filterKey === "typeSource") {
@@ -729,16 +838,23 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
       this.filter.codSource = ["-1"];
       this.loadActionList();
       this.loadFullSourceList();
+      this.loadCodPoList();
     } else if (filterKey === "codAction") {
       this.filter.codAction = ["-1"];
       this.filter.codSource = ["-1"];
       this.loadFullSourceList();
+      this.loadCodPoList();
     } else if (filterKey === "codSource") {
       this.filter.codSource = ["-1"];
     } else if (filterKey === "codAmendment") {
       this.filter.codAmendment = "-1";
     } else if (filterKey === "groupExpense") {
       this.filter.codGnd = ["-1"];
+    } else if (filterKey === "codPo") {
+      this.filter.codPo = ["-1"];
+      this.loadFullSourceList();
+      this.loadCodPoList();
+      this.loadActionList();
     }
 
     this.filtrar();
@@ -829,9 +945,10 @@ export class BudgetPanelIndicatorComponent implements OnInit, OnDestroy, AfterVi
       .getCardPlannedSuccess(this.currentRequestParams)
       .subscribe({
         next: (response: any) => {
-          this.comunicationCardsService.sendCardPlannedSuccess(
-            { sucesso: response.sucesso, timesTamp: response.timesTamp }
-          );
+          this.comunicationCardsService.sendCardPlannedSuccess({
+            sucesso: response.sucesso,
+            timesTamp: response.timesTamp,
+          });
           this.requestStatus.status = RequestStatus.SUCCESS;
         },
       });

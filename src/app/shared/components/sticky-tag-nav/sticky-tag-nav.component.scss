@@ -26,8 +26,9 @@
   }
 
   nb-tag {
-    font-size: 12px;
-    padding: 4px 4px;
+    // font-size: 12px;
+    font-size: 10px;
+    // padding: 4px 4px;
     border-radius: 8px;
     font-weight: bold;
     width: 142px;
@@ -35,13 +36,15 @@
     justify-content: center;
 
     @media screen and (max-width: 576px) {
-      padding: 2px  !important;
-      font-size: 11px;
+      // padding: 2px  !important;
+      padding: 3px !important;
+      // font-size: 11px;
+      font-size: 10px;
     }
   }
 
   @media screen and (max-width: 684px) {
-    padding: 0px 20px 2px;
+    // padding: 0px 20px 2px;
 
     ::ng-deep nb-tag-list {
       width: 100%;
@@ -50,7 +53,7 @@
       .nb-tag-list-tags-wrapper {
         display: flex !important;
         flex-wrap: wrap !important;
-        gap: 8px !important;
+        gap: 3px !important;
         justify-content: center;
         width: 100%;
       }
@@ -59,11 +62,11 @@
     ::ng-deep nb-tag {
       flex: 0 0 calc(50% - 4px) !important;
       max-width: calc(50% - 4px) !important;
-      
+
       box-sizing: border-box !important;
       margin: 0 !important;
       // padding: 6px !important;
-      
+
       display: flex !important;
       justify-content: center !important;
       align-items: center !important;

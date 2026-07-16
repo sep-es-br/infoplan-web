@@ -42,6 +42,7 @@
   top: 84px;
   z-index: 1000;
   width: 100%;
+  padding: 6px 6px;
   background-color: transparent;
 }
 
@@ -381,16 +382,38 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 15px;
-    padding: 0px !important;
+    // padding: 0px !important;
     width: 100%;
 
     .nav-buttons-container {
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-grow: 1;
 
       ::ng-deep .tag-panel {
         justify-content: flex-start !important;
+
+        @media (min-width: 685px) {
+          width: 100%;
+
+          nb-tag-list,
+          .custom-tag-list {
+            width: 100% !important;
+
+            .nb-tag-list-tags-wrapper {
+              display: flex !important;
+              width: 100% !important;
+              // gap: 10px !important;
+            }
+          }
+
+          nb-tag {
+            flex: 1 1 0px !important;
+            max-width: none !important;
+            width: auto !important;
+          }
+        }
       }
     }
 
@@ -412,7 +435,7 @@
         flex-wrap: wrap;
 
         ::ng-deep .tag-panel {
-          justify-content: center !important;
+          // justify-content: center !important;
         }
       }
 
@@ -420,7 +443,8 @@
         width: 100%;
         padding: 0 6px;
         justify-content: center;
-        flex-wrap: wrap;
+        margin-top: -10px
+        // flex-wrap: wrap;
       }
     }
 
@@ -454,7 +478,8 @@
 
         @media screen and (max-width: 576px) {
           padding: 2px 12px;
-          font-size: 9px;
+          // font-size: 9px;
+          font-size: 8px;
         }
 
         .tag-label {
@@ -517,7 +542,7 @@
       // width: 38px;
       // height: 38px;
       width: 44px;
-      height: 42px;
+      height: 44px;
       border-radius: 6px;
       border: 1px solid var(--border-color, #ced4da);
       background-color: var(--card-background-color, transparent);
@@ -818,8 +843,8 @@
 @media (min-width: 768px) and (max-width: 1366px) {
   .nav-buttons-container ::ng-deep nb-tag {
     width: 110px !important;
-    font-size: 11px !important;
-    padding: 4px 2px !important;
+    // font-size: 11px !important;
+    // padding: 4px 2px !important;
   }
 }
 

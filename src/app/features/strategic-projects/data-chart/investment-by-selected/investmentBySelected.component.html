@@ -1,17 +1,13 @@
-<ngx-flip-table
-  [tableContent]="flipTableContent"
-  [backCardHeight]="isChartMaximized('InvestmentBy') ? 700 : 290"
-  [loadingStatus]="requestStatus"
-  [outerCardHeight]="isChartMaximized('InvestmentBy') ? 720 : 415"
-  [showMaximizeButton]="true"
-  (executeSearch)="handleUserTableSearch($event)"
-  (executeDownload)="handleUserTableDownload()"
+<ngx-flip-table [showSearchField]="true" [tableContent]="flipTableContent"
+  [backCardHeight]="isChartMaximized('InvestmentBy') ? calcMaximizedHeight() : 290" [loadingStatus]="requestStatus"
+  [outerCardHeight]="isChartMaximized('InvestmentBy') ? (calcMaximizedHeight() + 125) : 415" [showMaximizeButton]="true"
+  (executeSearch)="handleUserTableSearch($event)" (executeDownload)="handleUserTableDownload()"
   (executeCustomFiltering)="handleCustomFiltering($event)"
-  (showMaximizeButtonClick)="onMaximizeButtonClick('InvestmentBy', $event)"
-  >
+  (showMaximizeButtonClick)="onMaximizeButtonClick('InvestmentBy', $event)">
   <div class="d-flex flex-column flex-sm-row p-0" custom-header>
     <span class="text-card text-truncate me-2">Investimento por</span>
-    <nb-select class="investment-select" size="tiny" shape="semi-round" [(selected)]="selectedInvestmentOption" (selectedChange)="loadData()">
+    <nb-select class="investment-select" size="tiny" shape="semi-round" [(selected)]="selectedInvestmentOption"
+      (selectedChange)="loadData()">
       <nb-option value="Área Temática">Área Temática</nb-option>
       <nb-option value="Programa">Programa</nb-option>
       <nb-option value="Programas Transversais">Programas Transversais</nb-option>
@@ -20,35 +16,19 @@
     </nb-select>
   </div>
 
-  <ngx-horizontal-bar-chart-model
-    card-front
-    [data]="chartData"
-    [colors]="chartColors"
-    [height]="isChartMaximized('InvestmentBy') ? calcMaximizedHeight() : 290"
-    [customConfig]="chartCustomConfig"
-    (labelClick)="handleChartLabelClick($event)"
-    (barClick)="handleChartBarClick($event)"
-  >
+  <ngx-horizontal-bar-chart-model card-front [data]="chartData" [colors]="chartColors"
+    [height]="isChartMaximized('InvestmentBy') ? calcMaximizedHeight() : 290" [customConfig]="chartCustomConfig"
+    (labelClick)="handleChartLabelClick($event)" (barClick)="handleChartBarClick($event)">
   </ngx-horizontal-bar-chart-model>
 </ngx-flip-table>
 
 <!-- Esse botão não aparece no HTML, mas é usado para abrir o offcanvas -->
 <!-- É possível abrir o offcanvas sem o botão (direto no código), só que aí o offcanvas abre sem o backdrop e o scroll -->
-<button
-  class="offcanvas-trigger"
-  type="button"
-  data-bs-toggle="offcanvas"
-  data-bs-target="#investmentOffcanvas"
-  aria-controls="investmentOffcanvas"
-  #offcanvasTrigger
->
+<button class="offcanvas-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#investmentOffcanvas"
+  aria-controls="investmentOffcanvas" #offcanvasTrigger>
 </button>
 
-<ngx-offcanvas-info-model
-  [customOffcanvasIdentifier]="'investmentOffcanvas'"
-  [selectedItemDetails]="selectedItemDetails"
-  [requestStatus]="offcanvasRequestStatus"
-  (requestStatusChange)="offcanvasRequestStatus = $event"
->
+<ngx-offcanvas-info-model [customOffcanvasIdentifier]="'investmentOffcanvas'"
+  [selectedItemDetails]="selectedItemDetails" [requestStatus]="offcanvasRequestStatus"
+  (requestStatusChange)="offcanvasRequestStatus = $event">
 </ngx-offcanvas-info-model>
-

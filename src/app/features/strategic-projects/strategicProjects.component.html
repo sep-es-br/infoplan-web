@@ -3,7 +3,7 @@
     <div class="filter-wrapper" [class.is-sticky]="isScrolled">
       <div class="filter-button px-2">
         <div class="filter-tags" [class.is-sticky]="isScrolled">
-          <div *ngFor="let tag of activeFilters; let i = index">
+          <div *ngFor="let tag of activeFilters; let i = index; trackBy: trackByTag">
             <div class="filter-tag" [class.is-sticky]="isScrolled">
               <div
                 class="filter-tag-inner"
@@ -156,7 +156,7 @@
                           #customSelect
                         >
                           <nb-option
-                            *ngFor="let mes of monthsList; let index = index"
+                            *ngFor="let mes of monthsList; let index = index; trackBy: trackByMonth"
                             [value]="mes.num"
                             [disabled]="mes.disabledInicial"
                           >
@@ -176,7 +176,7 @@
                           #customSelect
                         >
                           <nb-option
-                            *ngFor="let ano of yearsList"
+                            *ngFor="let ano of yearsList; trackBy: trackByYear"
                             [value]="ano.num"
                             [disabled]="ano.disabledInicial"
                           >
@@ -204,7 +204,7 @@
                           #customSelect
                         >
                           <nb-option
-                            *ngFor="let mes of monthsList; let index = index"
+                            *ngFor="let mes of monthsList; let index = index; trackBy: trackByMonth"
                             [value]="mes.num"
                             [disabled]="mes.disabledFinal"
                           >
@@ -224,7 +224,7 @@
                           #customSelect
                         >
                           <nb-option
-                            *ngFor="let ano of yearsList"
+                            *ngFor="let ano of yearsList; trackBy: trackByYear"
                             [value]="ano.num"
                             [disabled]="ano.disabledFinal"
                           >
@@ -270,7 +270,7 @@
                       #customSelect
                     >
                       <nb-option
-                        *ngFor="let area of areaList"
+                        *ngFor="let area of areaList; trackBy: trackById"
                         [value]="area.id"
                       >
                         {{ area.name }}
@@ -294,7 +294,7 @@
                       #customSelect
                     >
                       <nb-option
-                        *ngFor="let programa of programaOList"
+                        *ngFor="let programa of programaOList; trackBy: trackById"
                         [value]="programa.id"
                       >
                         {{ programa.name }}
@@ -316,7 +316,7 @@
                       #customSelect
                     >
                       <nb-option
-                        *ngFor="let projeto of projetoList"
+                        *ngFor="let projeto of projetoList; trackBy: trackById"
                         [value]="projeto.id"
                       >
                         {{ projeto.name }}
@@ -338,7 +338,7 @@
                       #customSelect
                     >
                       <nb-option
-                        *ngFor="let entrega of entregaList"
+                        *ngFor="let entrega of entregaList; trackBy: trackById"
                         [value]="entrega.id"
                       >
                         {{ entrega.name }}
@@ -366,7 +366,7 @@
                       #customSelect
                     >
                       <nb-option
-                        *ngFor="let programa of programaTList"
+                        *ngFor="let programa of programaTList; trackBy: trackById"
                         [value]="programa.id"
                       >
                         {{ programa.name }}
@@ -387,7 +387,7 @@
                       #customSelect
                     >
                       <nb-option
-                        *ngFor="let localidade of localidadeList"
+                        *ngFor="let localidade of localidadeList; trackBy: trackById"
                         [value]="localidade.id"
                         [ngClass]="{ 'ps-4': localidade.tipo === 'MUNICÍPIO' }"
                       >
@@ -409,7 +409,7 @@
                       #customSelect
                     >
                       <nb-option
-                        *ngFor="let orgao of orgaoList"
+                        *ngFor="let orgao of orgaoList; trackBy: trackById"
                         [value]="orgao.id"
                       >
                         {{ orgao.name }}

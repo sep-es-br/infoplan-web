@@ -344,6 +344,10 @@
           white-space: nowrap;
         }
 
+        td:first-child {
+          padding-left: 2px !important;
+        }
+
         // th:first-child,
         // td:first-child {
         //   min-width: 350px;
@@ -448,14 +452,49 @@
         }
 
         /* Também garantir para o toggle da árvore (componente Nebular) */
-        nb-tree-grid-row-toggle svg,
-        nb-tree-grid-row-toggle nb-icon svg {
-          width: 20px !important;
+        ::ng-deep nb-tree-grid-row-toggle {
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
           height: 20px !important;
+          width: 20px !important;
+          line-height: 1 !important;
+          margin-right: 4px !important;
+
+          .row-toggle-button {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 20px !important;
+            height: 20px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: transparent !important;
+            border: none !important;
+            line-height: 1 !important;
+          }
+        }
+
+        ::ng-deep nb-tree-grid-row-toggle svg,
+        ::ng-deep nb-tree-grid-row-toggle nb-icon svg {
+          width: 20px !important;
+          height: 14px !important;
           min-width: 20px !important;
-          min-height: 20px !important;
+          min-height: 10px !important;
           display: block !important;
           visibility: visible !important;
+        }
+
+        .tree-node-wrapper {
+          display: inline-flex;
+          align-items: center;
+          width: 100%;
+          padding-left: calc(var(--level, 0) * 9px);
+
+          .tree-node-spacer {
+            width: 24px;
+            display: inline-block;
+          }
         }
       }
     }

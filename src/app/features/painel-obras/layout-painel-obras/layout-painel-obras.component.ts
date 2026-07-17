@@ -250,6 +250,17 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   closeFilterModal() {
     (document.activeElement as HTMLElement)?.blur();
     if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
+
+    // Remove o foco do botão que abriu o modal após o fechamento para evitar saltos de rolagem nativos do Bootstrap
+    setTimeout(() => {
+      (document.activeElement as HTMLElement)?.blur();
+    }, 100);
+    setTimeout(() => {
+      (document.activeElement as HTMLElement)?.blur();
+    }, 200);
+    setTimeout(() => {
+      (document.activeElement as HTMLElement)?.blur();
+    }, 350);
   }
 
   configFilterLabel() {

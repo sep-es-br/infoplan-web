@@ -814,6 +814,16 @@ export class BudgetPanelIndicatorComponent
     if (this.isFilterModalOpen) {
       this.modalCloseButtonRef.nativeElement.click();
     }
+
+    setTimeout(() => {
+      (document.activeElement as HTMLElement)?.blur();
+    }, 100);
+    setTimeout(() => {
+      (document.activeElement as HTMLElement)?.blur();
+    }, 200);
+    setTimeout(() => {
+      (document.activeElement as HTMLElement)?.blur();
+    }, 350);
   }
 
   removeFilter(filterKey: string): void {

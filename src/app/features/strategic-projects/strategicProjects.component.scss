@@ -423,9 +423,9 @@ chart-container.maximized::before:hover {
   padding: 6px 6px;
   transition: top 0.3s ease-in-out;
 
-  // @media screen and (max-width: 768px) {
-  //   top: 52px;
-  // }
+  @media screen and (max-width: 768px) {
+    top: 52px;
+  }
 }
 
 .filter-button-box {

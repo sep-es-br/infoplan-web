@@ -748,3 +748,12 @@ nb-tag {
     object-fit: contain;
   }
 }
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.card-content {
+  min-height: 75px;
+}

@@ -1,23 +1,22 @@
-<div class="row px-2">
-  <div class="row g-2 g-md-2">
-    <div
-      class="chart-container px-2"
-      [class.maximized]="isChartMaximized('total-entregas-por-orgao')"
-      [class.col-12]="!isChartMaximized('total-entregas-por-orgao')"
-      [class.col-md-12]="!isChartMaximized('total-entregas-por-orgao')"
-      [class.col-lg-12]="!isChartMaximized('total-entregas-por-orgao')"
-      [class.col-xl-12]="!isChartMaximized('total-entregas-por-orgao')"
-      [class.col-xxl-12]="!isChartMaximized('total-entregas-por-orgao')"
-      [class.col-xxxl-12]="!isChartMaximized('total-entregas-por-orgao')"
-    >
-      <ngx-total-entregas-por-orgao
-        class="w-100"
-        [filter]="currentRequestParams"
-        (maximizeButtonClick)="isChartMaximized('total-entregas-por-orgao')"
-      ></ngx-total-entregas-por-orgao>
-    </div>
+<div class="row py-1 px-2 g-1">
+  <div
+    class="chart-container px-1"
+    [class.maximized]="isChartMaximized('total-entregas-por-orgao')"
+    [class.col-12]="!isChartMaximized('total-entregas-por-orgao')"
+    [class.col-md-12]="!isChartMaximized('total-entregas-por-orgao')"
+    [class.col-lg-12]="!isChartMaximized('total-entregas-por-orgao')"
+    [class.col-xl-12]="!isChartMaximized('total-entregas-por-orgao')"
+    [class.col-xxl-12]="!isChartMaximized('total-entregas-por-orgao')"
+    [class.col-xxxl-12]="!isChartMaximized('total-entregas-por-orgao')"
+  >
+    <ngx-total-entregas-por-orgao
+      class="w-100"
+      [filter]="currentRequestParams"
+      (maximizeButtonClick)="isChartMaximized('total-entregas-por-orgao')"
+    ></ngx-total-entregas-por-orgao>
+  </div>
 
-    <!-- <div
+  <!-- <div
       class="chart-container px-2"
       [class.maximized]="isChartMaximized('total-entregas-por-orgao-execucao')"
       [class.col-12]="!isChartMaximized('total-entregas-por-orgao-execucao')"
@@ -35,5 +34,4 @@
         "
       ></ngx-total-entregas-por-orgao-execucao>
     </div> -->
-  </div>
 </div>

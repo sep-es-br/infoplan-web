@@ -357,16 +357,11 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
   closeFilterModal() {
     (document.activeElement as HTMLElement)?.blur();
     if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
+  }
 
-    setTimeout(() => {
-      (document.activeElement as HTMLElement)?.blur();
-    }, 100);
-    setTimeout(() => {
-      (document.activeElement as HTMLElement)?.blur();
-    }, 200);
-    setTimeout(() => {
-      (document.activeElement as HTMLElement)?.blur();
-    }, 350);
+  blurButton(event: Event) {
+    (event.currentTarget as HTMLElement)?.blur();
+    (document.activeElement as HTMLElement)?.blur();
   }
 
   handleFilterChange(origin: AvailableFilters | string, newValue: any) {

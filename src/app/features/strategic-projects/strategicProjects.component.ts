@@ -680,18 +680,19 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
 
   closeFilterModal() {
     (document.activeElement as HTMLElement)?.blur();
+    /*
+     * Isso serve pra evitar um erro de "Blocked aria-hidden on an element because its descendent retained focus..."
+     * que ocorre quando se fecha um elemento/componente (tipo um offcanvas ou nesse caso um modal) com aria-hidden="true" (utilizado por leitores de telas)
+     * enquanto um elemento dentro desse componente ainda está com foco.
+     * Por isso se faz necessário remover o foco desse elemento antes de fechar o componente.
+     */
 
     if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
+  }
 
-    setTimeout(() => {
-      (document.activeElement as HTMLElement)?.blur();
-    }, 100);
-    setTimeout(() => {
-      (document.activeElement as HTMLElement)?.blur();
-    }, 200);
-    setTimeout(() => {
-      (document.activeElement as HTMLElement)?.blur();
-    }, 350);
+  blurButton(event: Event) {
+    (event.currentTarget as HTMLElement)?.blur();
+    (document.activeElement as HTMLElement)?.blur();
   }
 
   filterOutDisabledDates() {

@@ -1,4 +1,4 @@
-﻿<div class="col-12">
+<div class="col-12">
   <div class="filter-container">
     <div class="filter-wrapper" [class.is-sticky]="isScrolled">
       <div class="filter-button px-2">
@@ -46,7 +46,7 @@
         </div>
 
         <div class="filter-button" [class.is-sticky]="isScrolled">
-          <button class="filter-toggle" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
+          <button class="filter-toggle" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal" (click)="blurButton($event)">
             Filtros
             <nb-icon [icon]="'funnel-outline'"></nb-icon>
           </button>

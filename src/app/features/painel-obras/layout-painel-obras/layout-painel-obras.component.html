@@ -1,7 +1,7 @@
 <div class="col-12">
   <div class="filter-container">
     <div class="filter-wrapper" [class.is-sticky]="isScrolled">
-      <div class="filter-button px-2">
+      <div class="filter-button px-2" [class.is-sticky]="isScrolled">
         <div class="nav-buttons-container flex-grow-1">
           <ngx-sticky-tag-nav [tags]="menuPortalObras"></ngx-sticky-tag-nav>
         </div>
@@ -120,7 +120,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-xl-10">
+      <div class="col-12 col-xl-10 px-1">
         <div class="row g-1">
 
           <div class="col-12 col-sm-6 col-xl-4 px-1">

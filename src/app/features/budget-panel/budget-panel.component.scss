@@ -181,6 +181,7 @@ input:focus {
   }
 
   .card-content {
+  position: relative;
     display: flex;
     gap: 8px;
     width: 100%;
@@ -531,5 +532,6 @@ nb-tooltip {
 }
 
 .card-content {
+  position: relative;
   min-height: 75px;
 }

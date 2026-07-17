@@ -316,6 +316,7 @@ input:focus {
   }
 
   .card-content {
+  position: relative;
     display: flex;
     gap: 8px;
     width: 100%;
@@ -473,6 +474,7 @@ input:focus {
     }
 
     .card-content {
+  position: relative;
       gap: 3px;
       padding: 3px;
 
@@ -755,5 +757,6 @@ nb-tag {
 }
 
 .card-content {
+  position: relative;
   min-height: 75px;
 }

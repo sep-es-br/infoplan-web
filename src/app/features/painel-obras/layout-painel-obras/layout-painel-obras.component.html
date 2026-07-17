@@ -130,23 +130,21 @@
                 <i class="fas fa-layer-group"></i>
               </div>
               <div class="card-content" [nbTooltip]="statusTotal.totalizadorProgramas" nbTooltipPlacement="bottom">
-                <ng-container *ngIf="requestStatus.status === 'Loading'; else programasContent">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border totalizador-programas" role="status">
-                      <span class="sr-only">Carregando...</span>
-                    </div>
-                  </div>
-                </ng-container>
-                <ng-template #programasContent>
-                  <div class="number-box totalizador-programas">
+                <div *ngIf="requestStatus.status === 'Loading'" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-color: rgba(255, 255, 255, 0.7); z-index: 10; border-radius: 4px;">
+            <div class="spinner-border totalizador-programas" role="status">
+              <span class="sr-only">Carregando...</span>
+            </div>
+          </div>
+
+                  <div class="number-box totalizador-programas" [style.opacity]="requestStatus.status === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
                     <div class="d-flex flex-column align-items-start">
                       <div class="value">{{ statusTotal.totalizadorProgramas }}</div>
                     </div>
                   </div>
-                  <div class="text-section totalizador-programas">
+                  <div class="text-section totalizador-programas" [style.opacity]="requestStatus.status === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
                     <span>Totalizador de Programas</span>
                   </div>
-                </ng-template>
+                
               </div>
             </div>
           </div>

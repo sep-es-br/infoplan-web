@@ -146,16 +146,13 @@
         </div>
         <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalPlannedRevenue | number : '1.0-0')"
           nbTooltipPlacement="bottom">
-          <ng-container *ngIf="requestStatus.totals === 'Loading'; else previstaContent">
-            <div class="d-flex justify-content-center align-items-center w-100">
-              <div class="spinner-border total-prevista" role="status">
-                <span class="sr-only">Carregando...</span>
-              </div>
+          <div *ngIf="requestStatus.totals === 'Loading'" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-color: rgba(255, 255, 255, 0.7); z-index: 10; border-radius: 4px;">
+            <div class="spinner-border total-prevista" role="status">
+              <span class="sr-only">Carregando...</span>
             </div>
-          </ng-container>
+          </div>
 
-          <ng-template #previstaContent>
-            <div class="number-box prevista">
+            <div class="number-box prevista" [style.opacity]="requestStatus.totals === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
               <div class="d-flex" style="flex-direction: column; align-items: start">
                 <div class="currency">R$</div>
                 <div class="value">
@@ -164,10 +161,10 @@
               </div>
             </div>
 
-            <div class="text-section prevista">
+            <div class="text-section prevista" [style.opacity]="requestStatus.totals === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
               <span>Receita Prevista</span>
             </div>
-          </ng-template>
+          
         </div>
       </div>
     </div>
@@ -179,16 +176,13 @@
         </div>
         <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalRealizedRevenue | number : '1.0-2')"
           nbTooltipPlacement="bottom">
-          <ng-container *ngIf="requestStatus.totals === 'Loading'; else realizadaContent">
-            <div class="d-flex justify-content-center align-items-center w-100">
-              <div class="spinner-border total-realizada" role="status">
-                <span class="sr-only">Carregando...</span>
-              </div>
+          <div *ngIf="requestStatus.totals === 'Loading'" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-color: rgba(255, 255, 255, 0.7); z-index: 10; border-radius: 4px;">
+            <div class="spinner-border total-realizada" role="status">
+              <span class="sr-only">Carregando...</span>
             </div>
-          </ng-container>
+          </div>
 
-          <ng-template #realizadaContent>
-            <div class="number-box realizada">
+            <div class="number-box realizada" [style.opacity]="requestStatus.totals === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
               <div class="d-flex" style="flex-direction: column; align-items: start">
                 <div class="currency">R$</div>
                 <div class="value">
@@ -197,10 +191,10 @@
               </div>
             </div>
 
-            <div class="text-section realizada">
+            <div class="text-section realizada" [style.opacity]="requestStatus.totals === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
               <span>Receita Realizada</span>
             </div>
-          </ng-template>
+          
         </div>
       </div>
     </div>

@@ -7,16 +7,16 @@ input:focus {
 
 .filter-wrapper {
   position: sticky;
-  top: 84px;
+  top: 52px;
   z-index: 1000;
   width: 100%;
   background-color: transparent;
   padding: 6px 6px;
   transition: top 0.3s ease-in-out;
 
-  @media screen and (max-width: 768px) {
-    top: 90px; // Alinhado com o cabeçalho no mobile
-  }
+  // @media screen and (max-width: 768px) {
+  //   top: 90px; // Alinhado com o cabeçalho no mobile
+  // }
 }
 
 .filter-button-box {

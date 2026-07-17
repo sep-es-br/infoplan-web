@@ -1,7 +1,7 @@
 <div [ngClass]="{'is-visible-card-filter': (!_filterStateService.showExpensePanel$ | async)}">
   <nb-card class="outer-card m-0" [style]="{ height: outerCardHeight + 'px' }" [nbSpinner]="loadingStatus === 'Loading'"
     [nbSpinnerStatus]="'success'">
-    <nb-card-header class="card-header d-flex justify-content-between align-items-start p-2 px-3">
+    <nb-card-header class="card-header d-flex justify-content-between align-items-start p-2">
       <ng-container *ngIf="cardTitle; else customHeader">
         <span class="card-title m-0">{{ cardTitle }}</span>
       </ng-container>

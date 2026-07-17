@@ -1,36 +1,28 @@
-<div class="row px-2">
-  <div class="row g-1 g-md-1">
-    <div class="chart-container px-1" [class.maximized]="isChartMaximized('total-entrega-por-mes')"
-      [class.col-12]="!isChartMaximized('total-entrega-por-mes')"
-      [class.col-md-12]="!isChartMaximized('total-entrega-por-mes')"
-      [class.col-lg-12]="!isChartMaximized('total-entrega-por-mes')"
-      [class.col-xl-12]="!isChartMaximized('total-entrega-por-mes')"
-      [class.col-xxl-12]="!isChartMaximized('total-entrega-por-mes')"
-      [class.col-xxxl-12]="!isChartMaximized('total-entrega-por-mes')">
-      <ngx-total-entrega-por-mes class="w-100" [filter]="currentRequestParams"
-        (maximizeButtonClick)="handleMaximizeButtonClick('total-entrega-por-mes', $event)"></ngx-total-entrega-por-mes>
-    </div>
-
-    <div class="chart-container px-1" [class.maximized]="isChartMaximized('quantidade-maior-prevista')"
-      [class.col-12]="!isChartMaximized('quantidade-maior-prevista')"
-      [class.col-md-12]="!isChartMaximized('quantidade-maior-prevista')"
-      [class.col-lg-6]="!isChartMaximized('quantidade-maior-prevista')"
-      [class.col-xl-6]="!isChartMaximized('quantidade-maior-prevista')"
-      [class.col-xxl-6]="!isChartMaximized('quantidade-maior-prevista')"
-      [class.col-xxxl-6]="!isChartMaximized('quantidade-maior-prevista')">
-      <ngx-quantidade-maior-prevista class="w-100" [filter]="currentRequestParams"
-        (maximizeButtonClick)="handleMaximizeButtonClick('quantidade-maior-prevista', $event)"></ngx-quantidade-maior-prevista>
-    </div>
-
-    <div class="chart-container px-1" [class.maximized]="isChartMaximized('quantidade-maior-entrega')"
-      [class.col-12]="!isChartMaximized('quantidade-maior-entrega')"
-      [class.col-md-12]="!isChartMaximized('quantidade-maior-entrega')"
-      [class.col-lg-6]="!isChartMaximized('quantidade-maior-entrega')"
-      [class.col-xl-6]="!isChartMaximized('quantidade-maior-entrega')"
-      [class.col-xxl-6]="!isChartMaximized('quantidade-maior-entrega')"
-      [class.col-xxxl-6]="!isChartMaximized('quantidade-maior-entrega')">
-      <ngx-quantidade-maior-entrega class="w-100" [filter]="currentRequestParams"
-        (maximizeButtonClick)="handleMaximizeButtonClick('quantidade-maior-entrega', $event)"></ngx-quantidade-maior-entrega>
-    </div>
+<div class="row py-1 px-2 g-1">
+  <div class="chart-container px-1"
+       [class.maximized]="isChartMaximized('total-entrega-por-mes')"
+       [class.col-12]="!isChartMaximized('total-entrega-por-mes')">
+    <ngx-total-entrega-por-mes class="w-100" [filter]="currentRequestParams"
+      (maximizeButtonClick)="handleMaximizeButtonClick('total-entrega-por-mes', $event)">
+    </ngx-total-entrega-por-mes>
   </div>
+
+  <div class="chart-container px-1 mt-1"
+       [class.maximized]="isChartMaximized('quantidade-maior-prevista')"
+       [class.col-12]="!isChartMaximized('quantidade-maior-prevista')"
+       [class.col-lg-6]="!isChartMaximized('quantidade-maior-prevista')">
+    <ngx-quantidade-maior-prevista class="w-100" [filter]="currentRequestParams"
+      (maximizeButtonClick)="handleMaximizeButtonClick('quantidade-maior-prevista', $event)">
+    </ngx-quantidade-maior-prevista>
+  </div>
+
+  <div class="chart-container px-1 mt-1"
+       [class.maximized]="isChartMaximized('quantidade-maior-entrega')"
+       [class.col-12]="!isChartMaximized('quantidade-maior-entrega')"
+       [class.col-lg-6]="!isChartMaximized('quantidade-maior-entrega')">
+    <ngx-quantidade-maior-entrega class="w-100" [filter]="currentRequestParams"
+      (maximizeButtonClick)="handleMaximizeButtonClick('quantidade-maior-entrega', $event)">
+    </ngx-quantidade-maior-entrega>
+  </div>
+
 </div>

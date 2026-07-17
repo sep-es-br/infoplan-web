@@ -1,5 +1,6 @@
 :host {
   display: block;
+  min-height: 100vh;
 }
 
 @media screen and (min-width: 992px) {
@@ -39,7 +40,7 @@
 
 .filter-wrapper {
   position: sticky;
-  top: 84px;
+  top: 57px;
   z-index: 1000;
   width: 100%;
   padding: 6px 6px;
@@ -47,7 +48,7 @@
   transition: top 0.3s ease-in-out;
 
   @media screen and (max-width: 768px) {
-    top: 90px;
+    top: 59px;
   }
 }
 
@@ -497,6 +498,7 @@
     width: 100%;
     padding: 5px;
     height: 100%;
+    min-height: 75px;
 
     @media screen and (max-width: 576px) {
       gap: 10px;

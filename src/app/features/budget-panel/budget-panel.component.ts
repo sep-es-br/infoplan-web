@@ -1,4 +1,4 @@
-﻿import {
+import {
   Component,
   OnInit,
   OnDestroy,
@@ -406,6 +406,16 @@ export class BudgetPanelComponent implements OnInit, OnDestroy {
   closeFilterModal() {
     (document.activeElement as HTMLElement)?.blur();
     if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
+
+    setTimeout(() => {
+      (document.activeElement as HTMLElement)?.blur();
+    }, 100);
+    setTimeout(() => {
+      (document.activeElement as HTMLElement)?.blur();
+    }, 200);
+    setTimeout(() => {
+      (document.activeElement as HTMLElement)?.blur();
+    }, 350);
   }
 
   handleMaximizeButtonClick(chartId: string, event: boolean): void {

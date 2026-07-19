@@ -15,6 +15,16 @@ export class ScrollService {
         .pipe(
           throttleTime(20),
           map((event: Event) => {
+            const isScrollBlocked =
+              document.body.classList.contains('modal-open') ||
+              document.documentElement.classList.contains('cdk-global-scrollblock') ||
+              document.body.style.position === 'fixed' ||
+              document.documentElement.style.position === 'fixed';
+
+            if (isScrollBlocked) {
+              return this._isScrolled$.value;
+            }
+
             const target = event.target;
 
             if (target instanceof Document) {

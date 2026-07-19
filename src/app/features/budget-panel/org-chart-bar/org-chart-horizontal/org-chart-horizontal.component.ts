@@ -19,23 +19,9 @@ import { IChartOptions } from "../../../../shared/models/budget-panel/IChartOpti
 import { CommonModule } from "@angular/common";
 import { NgxEchartsModule } from "ngx-echarts";
 import { UtilitiesService } from "../../../../core/service/utilities.service";
+import { ChartDataConfig, LegendConfig } from "../../../../core/interfaces/chart-config.interface";
 
-export interface ChartDataConfig {
-  legend?: {
-    fontSize?: number | string;
-    itemWidth?: number;
-    itemHeight?: number;
-    itemGap?: number;
-  };
-  grid?: {
-    top?: string;
-    left?: string;
-    right?: string;
-    bottom?: string;
-    containLabel?: boolean;
-  };
-  showMaximizeButton?: boolean;
-}
+export { ChartDataConfig, LegendConfig };
 
 @Component({
   selector: "ngx-org-chart-horizontal",

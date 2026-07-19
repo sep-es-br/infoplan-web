@@ -37,6 +37,22 @@ export class QuantidadePorStatusComponent implements OnChanges, OnDestroy {
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;
   chartDataConfig: ChartDataConfig = {
+    minimized: {
+      legend: {
+        fontSize: 14,
+        itemWidth: 14,
+        itemHeight: 14,
+        itemGap: 10
+      }
+    },
+    maximized: {
+      legend: {
+        fontSize: 16,
+        itemWidth: 16,
+        itemHeight: 16,
+        itemGap: 12
+      }
+    },
     grid: {
       top: "10%",
       left: "3%",

@@ -17,6 +17,7 @@ import {
 } from "../../../@theme/theme.module";
 import { fromEvent, Subscription } from "rxjs";
 import { debounceTime } from "rxjs/operators";
+import { ChartDataConfig } from "../../../core/interfaces/chart-config.interface";
 
 @Component({
   selector: "ngx-pie-chart-model",
@@ -32,6 +33,7 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width: number;
   @Input() fontSizeLegend: number = 9;
   @Input() isMaximized: boolean = false;
+  @Input() config: ChartDataConfig = {};
 
   echartsInstance: ECharts = null;
   chartOptions: EChartsOption;
@@ -70,7 +72,8 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
       changes["data"] ||
       changes["colors"] ||
       changes["fontSizeLegend"] ||
-      changes["isMaximized"];
+      changes["isMaximized"] ||
+      changes["config"];
 
     if (shouldRebuildOptions) {
       this.initChartOptions();
@@ -164,6 +167,74 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  private getLegendOptions(s: any, isTabletOrPhone: boolean, isPhone: boolean): any {
+    const generalLegend = this.config?.legend || {};
+    const stateLegend = this.isMaximized
+      ? (this.config?.maximized?.legend || {})
+      : (this.config?.minimized?.legend || {});
+
+    const userLegend = {
+      ...generalLegend,
+      ...stateLegend
+    };
+
+    const defaultLegend = this.isMaximized
+      ? {
+          type: "scroll" as const,
+          orient: isTabletOrPhone ? "horizontal" : "vertical" as const,
+          left: isTabletOrPhone ? "center" : "12%",
+          top: isTabletOrPhone ? "auto" : "middle",
+          bottom: isTabletOrPhone ? "15px" : "auto",
+          fontSize: isPhone ? 11 : 13,
+          itemWidth: 12,
+          itemHeight: 12,
+          itemGap: 12,
+        }
+      : {
+          type: "scroll" as const,
+          orient: "vertical" as const,
+          left: "left",
+          top: "top",
+          bottom: undefined,
+          fontSize: this.fontSizeLegend,
+          itemWidth: 10,
+          itemHeight: 10,
+          itemGap: 8,
+        };
+
+    const resolvedLeft = userLegend.right !== undefined && userLegend.left === undefined
+      ? undefined
+      : (userLegend.left ?? defaultLegend.left);
+
+    const resolvedTop = userLegend.bottom !== undefined && userLegend.top === undefined
+      ? undefined
+      : (userLegend.top ?? defaultLegend.top);
+
+    const resolvedBottom = userLegend.top !== undefined && userLegend.bottom === undefined
+      ? undefined
+      : (userLegend.bottom ?? defaultLegend.bottom);
+
+    return {
+      show: userLegend.show ?? true,
+      type: userLegend.type ?? defaultLegend.type,
+      orient: userLegend.orient ?? defaultLegend.orient,
+      left: resolvedLeft,
+      top: resolvedTop,
+      bottom: resolvedBottom,
+      right: userLegend.right ?? undefined,
+      data: this.data.map((i) => i.name),
+      textStyle: {
+        fontSize: userLegend.fontSize ?? defaultLegend.fontSize,
+        color: s.textPrimaryColor,
+      },
+      itemWidth: userLegend.itemWidth ?? defaultLegend.itemWidth,
+      itemHeight: userLegend.itemHeight ?? defaultLegend.itemHeight,
+      itemGap: userLegend.itemGap ?? defaultLegend.itemGap,
+      pageIconColor: s.themePrimaryColor,
+      pageTextStyle: { color: s.textPrimaryColor }
+    };
+  }
+
   initChartOptions() {
     this.chartHeight = this.getResponsiveHeight();
     if (!this.data || this.data.length === 0) return;
@@ -189,7 +260,7 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
         color: this.colors,
         title: {
           text: `${total}`,
-          left: isTabletOrPhone ? "50%" : "40%",
+          left: isTabletOrPhone ? "50%" : "60%",
           top: isTabletOrPhone ? "46%" : "50%",
           textAlign: "center",
           textVerticalAlign: "middle",
@@ -199,30 +270,14 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
             color: s.textPrimaryColor,
           },
         },
-        legend: {
-          type: "scroll",
-          orient: isTabletOrPhone ? "horizontal" : "vertical",
-          left: isTabletOrPhone ? "center" : "72%",
-          top: isTabletOrPhone ? "auto" : "middle",
-          bottom: isTabletOrPhone ? "15px" : "auto",
-          data: this.data.map((i) => i.name),
-          textStyle: {
-            fontSize: isPhone ? 11 : 13,
-            color: s.textPrimaryColor,
-          },
-          itemWidth: 12,
-          itemHeight: 12,
-          itemGap: 12,
-          pageIconColor: s.themePrimaryColor,
-          pageTextStyle: { color: s.textPrimaryColor }
-        },
+        legend: this.getLegendOptions(s, isTabletOrPhone, isPhone),
         series: [
           {
             type: "pie",
             radius: isTabletOrPhone
               ? (isPhone ? ["40%", "70%"] : ["42%", "72%"])
               : ["45%", "75%"],
-            center: isTabletOrPhone ? ["50%", "46%"] : ["40%", "50%"],
+            center: isTabletOrPhone ? ["50%", "46%"] : ["60%", "50%"],
             data: this.data,
             emphasis: { scale: false },
             label: {
@@ -259,22 +314,7 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
             color: s.textPrimaryColor,
           },
         },
-        legend: {
-          type: "scroll",
-          orient: "vertical",
-          left: "left",
-          top: "top",
-          data: this.data.map((i) => i.name),
-          textStyle: {
-            fontSize: this.fontSizeLegend,
-            color: s.textPrimaryColor,
-          },
-          itemWidth: 10,
-          itemHeight: 10,
-          itemGap: 8,
-          pageIconColor: s.themePrimaryColor,
-          pageTextStyle: { color: s.textPrimaryColor }
-        },
+        legend: this.getLegendOptions(s, false, isPhone),
         series: [
           {
             type: "pie",

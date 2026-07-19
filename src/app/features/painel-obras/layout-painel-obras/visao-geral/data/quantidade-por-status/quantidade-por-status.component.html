@@ -3,7 +3,7 @@
   [loadingStatus]="requestStatus" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
   (showMaximizeButtonClick)="onMaximizeButtonClick('quantidade-por-status', $event)" card-front>
-  <ngx-pie-chart-model [data]="chartData" [colors]="chartColors"
+  <ngx-pie-chart-model [data]="chartData" [colors]="chartColors" [config]="chartDataConfig"
     [height]="isChartMaximized('quantidade-por-status') ? calcMaximizedHeight() : 290"
     [isMaximized]="isChartMaximized('quantidade-por-status')" card-back>
   </ngx-pie-chart-model>

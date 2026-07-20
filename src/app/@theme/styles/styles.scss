@@ -38,10 +38,10 @@
   text-align: left;
 }
 
-.box-limited {
-  overflow-y: auto;
-  overflow-x: auto;
-}
+// .box-limited {
+//   overflow-y: auto;
+//   overflow-x: auto;
+// }
 
 /* Container do flip-card */
 :host ::ng-deep nb-card-body {
@@ -143,4 +143,11 @@ nb-sidebar.compacted .section-title {
 body.modal-open {
   overflow: visible !important;
   padding-right: 0 !important;
+}
+
+html.cdk-global-scrollblock,
+html.nb-global-scrollblock {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
 }

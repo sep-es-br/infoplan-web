@@ -208,7 +208,7 @@ export class QuantidadeMaiorPrevistaComponent
       },
       {
         propertyName: "maior_valor_orgao",
-        displayName: "Maior valor òrgão",
+        displayName: "Maior valor órgão",
         alignment: standardAlignment,
       },
     ];
@@ -261,7 +261,7 @@ export class QuantidadeMaiorPrevistaComponent
       customColumn: {
         originalPropertyName: "orgao",
         propertyName: "firstColumn",
-        displayName: "Òrgão",
+        displayName: "Órgão",
         alignment: {
           header: FlipTableAlignment.CENTER,
           data: FlipTableAlignment.LEFT,
@@ -314,7 +314,7 @@ export class QuantidadeMaiorPrevistaComponent
     const columns: Array<{ key: string; label: string }> = [
       {
         key: "orgao",
-        label: "Òrgão",
+        label: "Órgão",
       },
       {
         key: "planejado",
@@ -355,7 +355,7 @@ export class QuantidadeMaiorPrevistaComponent
     this._exportDataService.exportXLSXWithCustomHeaders(
       dataToExport,
       columns,
-      "Quantidade_Maior_Entrega_Por_Òrgão.xlsx",
+      "Quantidade_Maior_Entrega_Por_Órgão.xlsx",
     );
   }
 }

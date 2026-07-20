@@ -502,12 +502,18 @@
 }
 
 .autocomplete-input-uo {
-  padding-left: 0.75rem !important;
-}
-
-.autocomplete-input-uo {
-  height: 19px !important;
+  height: 2.1em !important;
+  max-height: 2.1em !important;
+  font-size: 12px !important;
   border-radius: 4px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0.75rem !important;
+  line-height: normal !important;
+
+  &::placeholder {
+    font-size: 11px !important;
+  }
 }
 
 // Aplica esses estilos sob o tema "dark" e "cosmic"

@@ -120,7 +120,7 @@ export class TotalEntregaPorMesComponent
           labels: ["Sem Registros"],
           datasets: [
             {
-              label: "previsto (Total)",
+              label: "Previsto (Total)",
               data: [0],
               backgroundColor: this._chartProcessor.colors[0],
             },
@@ -133,7 +133,7 @@ export class TotalEntregaPorMesComponent
         labels: dados.map((res) => res.mesNome),
         datasets: [
           {
-            label: "previsto (Total)",
+            label: "Previsto (Total)",
             data: dados.map((res) => res.planejado),
             backgroundColor: this._chartProcessor.colors[0],
           },

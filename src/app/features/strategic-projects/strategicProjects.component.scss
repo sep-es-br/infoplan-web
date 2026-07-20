@@ -416,7 +416,7 @@ chart-container.maximized::before:hover {
 
 .filter-wrapper {
   position: sticky;
-  top: 62px;
+  top: 74px;
   z-index: 1000;
   width: 100%;
   background-color: transparent;
@@ -424,7 +424,7 @@ chart-container.maximized::before:hover {
   transition: top 0.3s ease-in-out;
 
   @media screen and (max-width: 768px) {
-    top: 52px;
+    top: 76px;
   }
 }
 

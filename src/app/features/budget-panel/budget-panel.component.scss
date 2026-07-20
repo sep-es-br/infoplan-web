@@ -24,13 +24,6 @@ input:focus {
 }
 
 .filter-button.is-sticky {
-  position: sticky;
-  top: 131px;
-
-  @media screen and (max-width: 768px) {
-    top: 180px;
-  }
-
   width: fit-content;
   // margin: 0 auto;
   // padding: 6px 12px;

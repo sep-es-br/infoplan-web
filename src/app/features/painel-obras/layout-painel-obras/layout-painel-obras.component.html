@@ -46,8 +46,9 @@
             type="button"
             data-bs-toggle="modal"
             data-bs-target="#filtrosModal"
-            (click)="blurButton($event)"
-            nbTooltip="Filtros">
+            (click)="blurButton($event, filtrosTooltip)"
+            nbTooltip="Filtros"
+            #filtrosTooltip="nbTooltip">
             <nb-icon [icon]="'funnel-outline'"></nb-icon>
           </button>
         </div>

@@ -40,7 +40,7 @@
 
 .filter-wrapper {
   position: sticky;
-  top: 57px;
+  top: 70px;
   z-index: 1000;
   width: 100%;
   padding: 6px 6px;
@@ -399,8 +399,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
       border: 1px solid var(--border-color, #ced4da);
       background-color: var(--card-background-color, transparent);
       color: var(--card-text-color, currentColor);

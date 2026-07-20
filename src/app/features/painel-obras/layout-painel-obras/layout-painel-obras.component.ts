@@ -254,8 +254,16 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
     if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
   }
 
-  blurButton(event: Event) {
-    (event.currentTarget as HTMLElement)?.blur();
+  blurButton(event: Event, tooltip?: any) {
+    if (tooltip && typeof tooltip.hide === 'function') {
+      tooltip.hide();
+    }
+    const target = event.currentTarget as HTMLElement;
+    if (target) {
+      target.blur();
+      target.dispatchEvent(new MouseEvent('mouseleave'));
+      target.dispatchEvent(new MouseEvent('pointerleave'));
+    }
     (document.activeElement as HTMLElement)?.blur();
   }
 

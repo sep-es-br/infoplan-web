@@ -7,7 +7,7 @@ input:focus {
 
 .filter-wrapper {
   position: sticky;
-  top: 52px;
+  top: 70px;
   z-index: 1000;
   width: 100%;
   background-color: transparent;
@@ -15,7 +15,7 @@ input:focus {
   transition: top 0.3s ease-in-out;
 
   @media screen and (max-width: 768px) {
-    top: 90px; // Alinhado com o cabeçalho no mobile
+    top: 68px;
   }
 }
 
@@ -24,13 +24,6 @@ input:focus {
 }
 
 .filter-button.is-sticky {
-  position: sticky;
-  top: 131px;
-
-  @media screen and (max-width: 768px) {
-    top: 180px;
-  }
-
   width: fit-content;
   // margin: 0 auto;
   // padding: 6px 12px;
@@ -181,7 +174,7 @@ input:focus {
   }
 
   .card-content {
-  position: relative;
+    position: relative;
     display: flex;
     gap: 8px;
     width: 100%;

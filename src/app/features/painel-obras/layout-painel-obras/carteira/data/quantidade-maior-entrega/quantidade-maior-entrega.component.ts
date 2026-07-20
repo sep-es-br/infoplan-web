@@ -133,7 +133,7 @@ export class QuantidadeMaiorEntregaComponent
               backgroundColor: this._chartProcessor.colors[0],
             },
             {
-              label: "planejado",
+              label: "Planejado",
               data: [0],
               backgroundColor: this._chartProcessor.colors[1],
             },
@@ -160,7 +160,7 @@ export class QuantidadeMaiorEntregaComponent
             backgroundColor: this._chartProcessor.colors[0],
           },
           {
-            label: "planejado",
+            label: "Planejado",
             data: secondary,
             backgroundColor: this._chartProcessor.colors[1],
           },

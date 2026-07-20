@@ -816,8 +816,16 @@ export class BudgetPanelIndicatorComponent
     }
   }
 
-  blurButton(event: Event): void {
-    (event.currentTarget as HTMLElement)?.blur();
+  blurButton(event: Event, tooltip?: any): void {
+    if (tooltip && typeof tooltip.hide === 'function') {
+      tooltip.hide();
+    }
+    const target = event.currentTarget as HTMLElement;
+    if (target) {
+      target.blur();
+      target.dispatchEvent(new MouseEvent('mouseleave'));
+      target.dispatchEvent(new MouseEvent('pointerleave'));
+    }
     (document.activeElement as HTMLElement)?.blur();
   }
 

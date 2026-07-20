@@ -43,20 +43,19 @@ import { RequestStatus } from "../../../../../strategic-projects/strategicProjec
   imports: [FlipTableComponent, OrgChartHorizontalComponent],
 })
 export class QuantidadeMaiorEntregaComponent
-  implements OnInit, OnChanges, OnDestroy
-{
+  implements OnInit, OnChanges, OnDestroy {
   @Input() filter!: IPainelObrasRequest;
 
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
   readonly title: string =
-    "Valor total, quantidade e entregas de maior valor em 2026 por município";
+    "Maiores Entregas por Município (2026)";
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;
   selectedMaximize: boolean = false;
 
-  chartData!: IChartOptions;
+  chartData: IChartOptions = {} as IChartOptions;;
   chartDataConfig: ChartDataConfig = {
     grid: {
       top: "10%",
@@ -101,25 +100,47 @@ export class QuantidadeMaiorEntregaComponent
 
     this._painelObrasService.getQuantidadeMaiorEntrega(this.filter).subscribe({
       next: (response) => {
-        this.quantidadeMaiorPorMunicipio = response;
-        this.assembleFlipTableContent(response);
-        const dados = this.processData(response);
-        this.chartData = dados;
+        this.quantidadeMaiorPorMunicipio = response || [];
+
+        if (this.quantidadeMaiorPorMunicipio.length > 0) {
+          this.assembleFlipTableContent(this.quantidadeMaiorPorMunicipio);
+          this.chartData = this.processData(this.quantidadeMaiorPorMunicipio);
+        } else {
+          this.assembleFlipTableContent([]);
+          this.chartData = this.processData([]);
+        }
         this.requestStatus = RequestStatus.SUCCESS;
       },
-      error(err) {
+      error: (err) => {
         console.error(
-          "Erro ao carregar os dados das quantidade de entregras prevista por órgão: ",
+          "Erro ao carregar os dados das quantidade de entregas prevista por órgão: ",
           err,
         );
-        // this.requestStatus = RequestStatus.ERROR;
+        this.requestStatus = RequestStatus.ERROR;
       },
     });
   }
 
-  processData(response: IQuantidadeMaiorEntrega[]): IChartOptions {
-    if (!response || response.length === 0)
-      return { data: { labels: [], datasets: [] } } as IChartOptions;
+  processData(response: IQuantidadeMaiorEntrega[] | []): IChartOptions {
+    if (!response || response.length === 0) {
+      return {
+        data: {
+          labels: ["Sem Registros"],
+          datasets: [
+            {
+              label: "Município com maior valor",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[0],
+            },
+            {
+              label: "Planejado",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[1],
+            },
+          ],
+        },
+      } as IChartOptions;
+    }
 
     const top10 = [...response]
       .sort((a, b) => b.totalMaiorMunicipio - a.totalMaiorMunicipio)
@@ -139,7 +160,7 @@ export class QuantidadeMaiorEntregaComponent
             backgroundColor: this._chartProcessor.colors[0],
           },
           {
-            label: "planejado",
+            label: "Planejado",
             data: secondary,
             backgroundColor: this._chartProcessor.colors[1],
           },

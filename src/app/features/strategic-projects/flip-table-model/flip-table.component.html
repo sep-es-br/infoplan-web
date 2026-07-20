@@ -1,7 +1,7 @@
 <div [ngClass]="{'is-visible-card-filter': (!_filterStateService.showExpensePanel$ | async)}">
   <nb-card class="outer-card m-0" [style]="{ height: outerCardHeight + 'px' }" [nbSpinner]="loadingStatus === 'Loading'"
     [nbSpinnerStatus]="'success'">
-    <nb-card-header class="card-header d-flex justify-content-between align-items-start p-2 px-3">
+    <nb-card-header class="card-header d-flex justify-content-between align-items-start p-2">
       <ng-container *ngIf="cardTitle; else customHeader">
         <span class="card-title m-0">{{ cardTitle }}</span>
       </ng-container>
@@ -13,15 +13,16 @@
         <ng-container *ngIf="deveExibirSearch">
           <ng-container *ngIf="isSearchFieldVisible">
             <nb-form-field class="search-form-field opening">
-              <input nbInput class="search-input" type="text" shape="round" fieldSize="tiny" placeholder="Buscar"
-                (keyup)="debounceOnInput($event)" />
+              <input #searchInput nbInput class="search-input" type="text" shape="round" fieldSize="tiny"
+                placeholder="Buscar" (keyup)="debounceOnInput($event)" />
               <nb-icon nbSuffix class="close-icon" [icon]="'close-outline'" (click)="handleCloseSearchFieldClick()">
               </nb-icon>
             </nb-form-field>
           </ng-container>
 
           <ng-container *ngIf="!isSearchFieldVisible">
-            <nb-icon class="search-button m-0 ms-3 p-0" [icon]="'search-outline'" (click)="isSearchFieldVisible = true">
+            <nb-icon class="search-button m-0 ms-3 p-0" [icon]="'search-outline'"
+              (click)="handleOpenSearchFieldClick()">
             </nb-icon>
           </ng-container>
         </ng-container>
@@ -49,7 +50,7 @@
           (click)="handleDownloadButtonClick()" title="Download XLS">
         </nb-icon>
 
-        <ng-container *ngIf="isFlipCardFlipped; else tableIcon">
+        <ng-container *ngIf="tableOnFront !== isFlipCardFlipped; else tableIcon">
           <i class="flip-button fas fa-chart-pie m-0 ms-3 p-0" (click)="handleFlipButtonClick()"
             title="Ver gráfico"></i>
         </ng-container>
@@ -75,7 +76,7 @@
       </div>
     </nb-card-header>
 
-    <div *ngIf="hasToggleContent" class="d-flex justify-content-between align-items-start p-0 pb-1 px-3">
+    <div *ngIf="hasToggleContent" class="d-flex justify-content-between align-items-start px-2">
       <ng-container>
         <!-- <div class="card-toggle-section"> -->
         <ng-content select="[card-toggles]"></ng-content>
@@ -153,17 +154,22 @@
                 {{ tableContent.customColumn.displayName }}
               </th>
               <td *nbTreeGridCellDef="let row" nbTreeGridCell
-                [ngClass]="{ 'font-weight-bold': isRowTotal(row), 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
+                [ngClass]="{ 'font-weight-bold': isRowTotal(row) || row.hasChildren(), 'cursor-pointer': tableContent.customColumn.enableEventClick && !isRowTotal(row) }"
                 (click)="tableContent.customColumn.enableEventClick && !isRowTotal(row) ? handleCustomColumnClick(getCellValue(row.data, tableContent.customColumn.propertyName)) : null">
-                <nb-tree-grid-row-toggle *ngIf="row.hasChildren()" [expanded]="row.expanded">
-                </nb-tree-grid-row-toggle>
-                <nb-icon *ngIf="!row.hasChildren() && tableContent.customColumn.enableEventClick && !isRowTotal(row)"
-                  [icon]="'chevron-right-outline'" class="me-1">
-                </nb-icon>
-                <span
-                  [style.fontWeight]="getCellValue(row.data, tableContent.customColumn.propertyName) === 'Total' ? 'bold' : 'normal'">
-                  {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
-                </span>
+                <div [style.--level]="row.level" class="tree-node-wrapper">
+                  <nb-tree-grid-row-toggle *ngIf="row.hasChildren()" [expanded]="row.expanded">
+                  </nb-tree-grid-row-toggle>
+                  <span
+                    *ngIf="!row.hasChildren() && row.level > 0 && !(tableContent.customColumn.enableEventClick && !isRowTotal(row))"
+                    class="tree-node-spacer"></span>
+                  <nb-icon *ngIf="!row.hasChildren() && tableContent.customColumn.enableEventClick && !isRowTotal(row)"
+                    [icon]="'chevron-right-outline'" class="me-1">
+                  </nb-icon>
+                  <span
+                    [style.fontWeight]="(row.hasChildren() || getCellValue(row.data, tableContent.customColumn.propertyName) === 'Total') ? 'bold' : 'normal'">
+                    {{ getCellValue(row.data, tableContent.customColumn.propertyName) | TextTruncate: 50 }}
+                  </span>
+                </div>
               </td>
             </ng-container>
 
@@ -175,7 +181,7 @@
                 {{ column.displayName }}
               </th>
               <td nbTreeGridCell *nbTreeGridCellDef="let row" class="px-1"
-                [ngClass]="{ 'font-weight-bold': isRowTotal(row) }"
+                [ngClass]="{ 'font-weight-bold': isRowTotal(row) || row.hasChildren() }"
                 [style]="{'text-align': column.alignment ? column.alignment.data : 'right'}"
                 title="{{ getCellValue(row.data, column.propertyName) }}">
                 {{ getCellValueShort(row.data, column.propertyName) }}
@@ -186,8 +192,8 @@
       </ng-template>
 
       <nb-card-front>
-        <nb-card class="card-back box-limited m-0" [style.max-height]="backCardHeight + 'px !important'"
-          [style.height]="backCardHeight + 'px !important'">
+        <nb-card class="card-back m-0" [style.max-height]="backCardHeight + 'px !important'"
+          [style.height]="backCardHeight + 'px !important'" [style.overflow]="'hidden'">
           <ng-content select="[card-front]"></ng-content>
           <ng-container *ngIf="tableOnFront && tableContent">
             <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
@@ -195,8 +201,8 @@
         </nb-card>
       </nb-card-front>
       <nb-card-back>
-        <nb-card class="card-back box-limited m-0" [style.max-height]="backCardHeight + 'px !important'"
-          [style.height]="backCardHeight + 'px !important'">
+        <nb-card class="card-back m-0" [style.max-height]="backCardHeight + 'px !important'"
+          [style.height]="backCardHeight + 'px !important'" [style.overflow]="'hidden'">
 
           <ng-content select="[card-back]"></ng-content>
           <ng-container *ngIf="!tableOnFront && tableContent">

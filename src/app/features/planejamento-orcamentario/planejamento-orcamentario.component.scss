@@ -26,7 +26,7 @@
 
 .filter-wrapper {
   position: sticky;
-  top: 75px;
+  top: 59px;
   z-index: 1000;
   width: 100%;
   background-color: transparent;
@@ -194,7 +194,7 @@
         }
 
         .tag-value {
-          margin-top: -6px;
+          margin-top: 0;
         }
 
         button {
@@ -286,7 +286,7 @@
             input {
               width: 100%;
               max-width: 100%;
-              height: 2.5em;
+              height: 2.1em !important;
               font-size: 12px;
             }
           }
@@ -328,8 +328,12 @@
     display: flex;
     gap: 20px;
     width: 100%;
-    padding: 5px 0 5px 5px;
+    padding: 5px;
     height: 100%;
+
+    @media screen and (max-width: 576px) {
+      gap: 10px;
+    }
 
     .spinner-border {
       width: 3rem;
@@ -498,12 +502,18 @@
 }
 
 .autocomplete-input-uo {
-  padding-left: 0.75rem !important;
-}
-
-.autocomplete-input-uo {
-  height: 19px !important;
+  height: 2.1em !important;
+  max-height: 2.1em !important;
+  font-size: 12px !important;
   border-radius: 4px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0.75rem !important;
+  line-height: normal !important;
+
+  &::placeholder {
+    font-size: 11px !important;
+  }
 }
 
 // Aplica esses estilos sob o tema "dark" e "cosmic"
@@ -634,4 +644,13 @@
       color: #1a56db !important;
     }
   }
+}
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.card-content {
+  min-height: 75px;
 }

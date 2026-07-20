@@ -400,7 +400,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           z: 1,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
           label: {
-            show: true,
+            show: this.isMaximized && window.innerWidth > 768,
             position: "right",
             color: theme.textPrimaryColor,
             fontSize: 12,
@@ -419,7 +419,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           z: 2,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
           label: {
-            show: true,
+            show: this.isMaximized && window.innerWidth > 768,
             position: "insideLeft",
             color: theme.textPrimaryColor,
             fontSize: 12,
@@ -454,7 +454,10 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   @HostListener("window:resize")
   onWindowResize() {
     clearTimeout(this.resizeTimeout);
-    this.resizeTimeout = setTimeout(() => this.echartsInstance?.resize(), 150);
+    this.resizeTimeout = setTimeout(() => {
+      this.updateChart();
+      this.echartsInstance?.resize();
+    }, 150);
   }
 
   private resizeChart() {

@@ -35,13 +35,14 @@ import { VisaoGeralComponent } from "./visao-geral/visao-geral.component";
 import { NavigationTag, StickyTagNavComponent } from "../../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
 import { OrgaoComponent } from "./orgao/orgao.component";
 import { FilterManagementService } from "../../../core/service/filter-management/filter-management.service";
+import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
 
 type PaginaPainel = "visao-geral" | "orgao" | "municipio" | "carteira";
 
 const DEFAULT_PARAMS_PAINEL_OBRAS: IPainelObrasRequest = {
-  orgao: String(environment.painelObras.orgao),
-  status: String(environment.painelObras.status),
-  municipio: String(environment.painelObras.municipio),
+  orgao: environment.painelObras.orgao,
+  status: environment.painelObras.status,
+  municipio: environment.painelObras.municipio,
   portfolio: environment.painelObras.portifolio,
   dataInicio: environment.painelObras.dataInicio,
   dataFim: environment.painelObras.dataFim,
@@ -63,7 +64,8 @@ enum AvailableFilters {
     NbIconModule,
     NbSelectModule,
     NbButtonModule,
-    NbTooltipModule
+    NbTooltipModule,
+    TextTruncatePipe
   ],
   templateUrl: "./layout-painel-obras.component.html",
   styleUrls: ["./layout-painel-obras.component.scss"],
@@ -171,7 +173,6 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   constructor() { }
 
   ngOnInit(): void {
-    // this.filterManagement( {...DEFAULT_PARAMS_PAINEL_OBRAS});
     this._scrollService.isScrolled$
       .pipe(takeUntil(this.destroy$))
       .subscribe((scrolled) => {
@@ -253,8 +254,21 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
     if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
   }
 
+  blurButton(event: Event, tooltip?: any) {
+    if (tooltip && typeof tooltip.hide === 'function') {
+      tooltip.hide();
+    }
+    const target = event.currentTarget as HTMLElement;
+    if (target) {
+      target.blur();
+      target.dispatchEvent(new MouseEvent('mouseleave'));
+      target.dispatchEvent(new MouseEvent('pointerleave'));
+    }
+    (document.activeElement as HTMLElement)?.blur();
+  }
+
   configFilterLabel() {
-    if (this.finalFilter.portfolio && this.finalFilter.portfolio.trim().length > 0) {
+    if (this.finalFilter.portfolio && this.finalFilter.portfolio.length > 0) {
       this.activeFilters.push({
         key: "portfolio",
         label: "Portfólio",
@@ -262,7 +276,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.dataInicio && this.finalFilter.dataInicio.trim().length > 0) {
+    if (this.finalFilter.dataInicio && this.finalFilter.dataInicio.length > 0) {
       const data = new Date(this.finalFilter.dataInicio);
       const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
       const ano = data.getUTCFullYear();
@@ -274,7 +288,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.dataFim && this.finalFilter.dataFim.trim().length > 0) {
+    if (this.finalFilter.dataFim && this.finalFilter.dataFim.length > 0) {
       const data = new Date(this.finalFilter.dataFim);
       const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
       const ano = data.getUTCFullYear();
@@ -286,30 +300,30 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.finalFilter.orgao && this.finalFilter.orgao.trim().length > 0) {
+    if (this.finalFilter.orgao && this.finalFilter.orgao != '') {
       const orgao = this.orgaosList?.find(o => String(o.orgaoId) === String(this.finalFilter.orgao));
       this.activeFilters.push({
         key: "orgao",
         label: "Órgão",
-        displayValue: [{ name: orgao ? orgao.nome : this.finalFilter.orgao }],
+        displayValue: [{ name: orgao ? orgao.nome : String(this.finalFilter.orgao) }],
       });
     }
 
-    if (this.finalFilter.municipio && this.finalFilter.municipio.trim().length > 0) {
+    if (this.finalFilter.municipio && this.finalFilter.municipio != '') {
       const municipio = this.municipiosList?.find(m => String(m.id) === String(this.finalFilter.municipio));
       this.activeFilters.push({
         key: "municipio",
         label: "Município",
-        displayValue: [{ name: municipio ? municipio.nome : this.finalFilter.municipio }],
+        displayValue: [{ name: municipio ? municipio.nome : String(this.finalFilter.municipio) }],
       });
     }
 
-    if (this.finalFilter.status && this.finalFilter.status.trim().length > 0) {
+    if (this.finalFilter.status && this.finalFilter.status != '') {
       const status = this.statusList?.find(s => String(s.id) === String(this.finalFilter.status));
       this.activeFilters.push({
         key: "status",
         label: "Status",
-        displayValue: [{ name: status ? status.fase : this.finalFilter.status }],
+        displayValue: [{ name: status ? status.fase : String(this.finalFilter.status) }],
       });
     }
   }
@@ -378,109 +392,15 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       orgao: this.finalFilter.orgao,
       municipio: this.finalFilter.municipio,
       status: this.finalFilter.status,
+      portfolio: this.finalFilter.portfolio,
+      dataInicio: this.finalFilter.dataInicio,
+      dataFim: this.finalFilter.dataFim,
     };
   }
 
   getCardExecution() {
     this.getTotalTolizador();
   }
-
-
-  // getTotalProgramas() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalProgramas(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.totalizadorProgramas = value.totalPrograma;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.totalizadorProgramas = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getTotalProjetos() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalProjetos(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value: { totalProjetos: number }) => {
-  //         this.statusTotal.totalizadorProjetos = value.totalProjetos;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.totalizadorProjetos = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getTotalPlanejado() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalPlanejado(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.monitoramentoPlanejado = value.totalPlanejado;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.monitoramentoPlanejado = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getTotalRealizado() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getTotalRealizado(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.monitoramentoRealizado = value.totalRealizado;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.monitoramentoRealizado = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getContagemPE() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getContagemPE(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.filtroTemporalCritico = value.contagemPE;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.filtroTemporalCritico = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
-
-  // getContagemEntregas() {
-  //   this.requestStatus.status = RequestStatus.LOADING;
-  //   this._painelObrasService.getContagemEntregas(this.currentRequestParams)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (value) => {
-  //         this.statusTotal.contagemEntregas = value.totalEntregas;
-  //         this.requestStatus.status = RequestStatus.SUCCESS;
-  //       },
-  //       error: () => {
-  //         this.statusTotal.contagemEntregas = 0;
-  //         this.requestStatus.status = RequestStatus.ERROR;
-  //       }
-  //     });
-  // }
 
   getTotalTolizador() {
     this.requestStatus.status = RequestStatus.LOADING;

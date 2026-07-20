@@ -17,6 +17,7 @@ import {
 } from "../../../@theme/theme.module";
 import { fromEvent, Subscription } from "rxjs";
 import { debounceTime } from "rxjs/operators";
+import { ChartDataConfig } from "../../../core/interfaces/chart-config.interface";
 
 @Component({
   selector: "ngx-pie-chart-model",
@@ -32,9 +33,11 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width: number;
   @Input() fontSizeLegend: number = 9;
   @Input() isMaximized: boolean = false;
+  @Input() config: ChartDataConfig = {};
 
   echartsInstance: ECharts = null;
   chartOptions: EChartsOption;
+  chartHeight: number;
 
   centerX: number = 70;
   centerY: number = 50;
@@ -48,29 +51,9 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
     this.themeService
       .onThemeChange()
       .subscribe((newTheme: { name: AvailableThemes; previous: string }) => {
+        this.currentTheme = newTheme.name;
         if (this.echartsInstance) {
-          const newStyles = getAvailableThemesStyles(newTheme.name);
-
-          this.echartsInstance.setOption({
-            tooltip: {
-              textStyle: { color: newStyles.textPrimaryColor },
-              backgroundColor: newStyles.themePrimaryColor,
-              borderColor: newStyles.themePrimaryColor,
-            },
-            title: {
-              textStyle: { color: newStyles.textPrimaryColor },
-            },
-            legend: {
-              textStyle: { color: newStyles.textPrimaryColor },
-              tooltip: {
-                backgroundColor: newStyles.themePrimaryColor,
-                borderColor: newStyles.themePrimaryColor,
-                textStyle: {
-                  color: newStyles.textPrimaryColor,
-                },
-              },
-            },
-          });
+          this.refreshChart();
         }
       });
 
@@ -81,37 +64,28 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     this.currentTheme = this.themeService.currentTheme as AvailableThemes;
-    if (this.data && this.data.length > 0) {
-      this.initChartOptions(this.data, this.colors);
-    }
+    this.initChartOptions();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["height"] && this.echartsInstance) {
+    const shouldRebuildOptions =
+      changes["data"] ||
+      changes["colors"] ||
+      changes["fontSizeLegend"] ||
+      changes["isMaximized"] ||
+      changes["config"];
+
+    if (shouldRebuildOptions) {
+      this.initChartOptions();
+    }
+
+    if (this.echartsInstance) {
       setTimeout(() => {
-        this.echartsInstance.resize({
-          height: this.getResponsiveHeight(),
-        });
-      }, 0);
-    }
-
-    if (changes["data"]) {
-      this.updateTitlePosition();
-      this.initChartOptions(this.data, this.colors);
-
-      if (this.echartsInstance) {
-        setTimeout(() => {
+        this.echartsInstance.resize();
+        if (shouldRebuildOptions) {
           this.echartsInstance.setOption(this.chartOptions, true);
-        }, 0);
-      }
-    }
-
-    if (changes["fontSizeLegend"] && this.echartsInstance) {
-      this.updateChartFontSizes();
-    }
-
-    if (changes["isMaximized"] && this.echartsInstance) {
-      this.handleMaximizeChange();
+        }
+      }, 0);
     }
   }
 
@@ -129,35 +103,15 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
       return this.height ?? 100;
     }
 
-    const w = window.innerWidth;
-
-    if (w < 350) return 220;
-    if (w < 500) return 200;
-    if (w < 768) return 200;
-    if (w < 922) return 340;
-    if (w < 1100) return 380;
-
-    return this.height || 420;
-  }
-
-  @HostListener("window:resize")
-  onResize() {
-    if (this.echartsInstance) {
-      const newHeight = this.getResponsiveHeight();
-      this.echartsInstance.resize({ height: newHeight });
-    }
-
-    this.updateTitlePosition();
+    // Reduzido para - 340 para evitar que o card extrapole o limite da tela
+    return Math.max(220, window.innerHeight - 340);
   }
 
   onChartInit(chart: ECharts) {
     this.echartsInstance = chart;
 
     setTimeout(() => {
-      chart.resize({
-        height: this.getResponsiveHeight(),
-      });
-      this.updateTitlePosition();
+      this.refreshChart();
     }, 50);
 
     chart.on("legendselectchanged", (params: any) => {
@@ -171,10 +125,7 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
 
     chart.on("restore", () => {
       setTimeout(() => {
-        this.updateTitlePosition();
-        chart.resize({
-          height: this.getResponsiveHeight(),
-        });
+        this.refreshChart();
       }, 10);
     });
   }
@@ -182,203 +133,135 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
   private handleResize() {
     if (this.echartsInstance) {
       setTimeout(() => {
-        this.echartsInstance.resize({
-          height: this.getResponsiveHeight(),
-        });
-        this.updateTitlePosition();
+        this.refreshChart();
       }, 0);
     }
   }
 
-  private handleMaximizeChange() {
-    if (!this.echartsInstance) return;
+  private getResponsiveLayout(width: number): { radius: string[]; centerX: number; centerY: number } {
+    const layouts = [
+      { match: () => width < 320, radius: ["35%", "70%"], centerX: 52, centerY: 50 },
+      { match: () => width < 420, radius: ["40%", "70%"], centerX: 66, centerY: 50 },
+      { match: () => width < 768, radius: ["45%", "75%"], centerX: 66, centerY: 50 },
+      { match: () => width <= 1000, radius: ["50%", "90%"], centerX: 68, centerY: 50 },
+      { match: () => width >= 1600, radius: ["60%", "100%"], centerX: 68, centerY: 50 }
+    ];
 
-    const screenWidth = window.innerWidth;
-    const isPhone = screenWidth < 500;
-
-    const theme = getAvailableThemesStyles(this.currentTheme);
-    if (this.isMaximized) {
-      this.echartsInstance.setOption({
-        legend: {
-          type: 'scroll',
-          left: "center",
-          top: "top",
-          orient: 'horizontal',
-          textStyle: { fontSize: isPhone ? 11 : 13, color: theme.textPrimaryColor },
-          itemWidth: 12,
-          itemHeight: 12,
-          itemGap: 12,
-          pageIconColor: theme.themePrimaryColor,
-          pageTextStyle: { color: theme.textPrimaryColor }
-        },
-        title: {
-          left: "50%",
-          top: "50%",
-          textStyle: { fontSize: isPhone ? 18 : 24 },
-        },
-        series: [
-          {
-            center: ["50%", "50%"],
-            radius: isPhone ? ["50%", "85%"] : ["55%", "90%"],
-            label: { fontSize: isPhone ? 10 : 12 }
-          },
-        ],
-      });
-    } else {
-      const currentThemeStyles = getAvailableThemesStyles(this.currentTheme);
-      this.echartsInstance.setOption({
-        legend: {
-          type: 'scroll',
-          left: "left",
-          top: "top",
-          orient: 'vertical',
-          textStyle: {
-            fontSize: this.fontSizeLegend,
-            color: currentThemeStyles.textPrimaryColor
-          },
-          itemWidth: 10,
-          itemHeight: 10,
-          itemGap: 8,
-          pageIconColor: currentThemeStyles.themePrimaryColor,
-          pageTextStyle: { color: currentThemeStyles.textPrimaryColor }
-        },
-        title: {
-          textStyle: {
-            fontSize: 16,
-            color: currentThemeStyles.textPrimaryColor
-          },
-        },
-        series: [
-          {
-            center: [`${this.centerX}%`, `${this.centerY}%`],
-            radius: this.pieRadius,
-            label: { fontSize: 9 }
-          },
-        ],
-      });
-
-      // Reaplica o posicionamento correto do título
-      this.updateTitlePosition();
-    }
+    const matched = layouts.find(layout => layout.match());
+    return matched || { radius: ["60%", "100%"], centerX: 70, centerY: 50 };
   }
 
-  private updateChartFontSizes() {
-    if (this.echartsInstance && !this.isMaximized) {
-      this.echartsInstance.setOption({
-        legend: {
-          textStyle: { fontSize: this.fontSizeLegend },
-        },
-        title: {
-          textStyle: { fontSize: this.fontSizeLegend * 1.5 },
-        },
-        series: [
-          {
-            label: { fontSize: this.fontSizeLegend },
-          },
-        ],
-      });
+  public refreshChart() {
+    this.initChartOptions();
+    if (this.echartsInstance) {
+      this.echartsInstance.resize();
+      this.echartsInstance.setOption(this.chartOptions, true);
     }
-  }
-
-  updateTitlePosition() {
-    if (!this.echartsInstance || this.isMaximized) return;
-
-    const screenWidth = window.innerWidth;
-
-    // Ajusta o raio e posição do gráfico conforme a largura da tela
-    if (screenWidth < 320) {
-      this.pieRadius = ["35%", "70%"];
-      this.centerX = 50;
-      this.centerY = 50;
-    } else if (screenWidth < 420) {
-      this.pieRadius = ["40%", "80%"];
-      this.centerX = 55;
-    } else if (screenWidth < 768) {
-      this.pieRadius = ["45%", "85%"];
-    } else if (screenWidth <= 1000) {
-      this.pieRadius = ["50%", "90%"];
-      this.centerX = 68;
-    } else if (screenWidth >= 1600) {
-      this.centerX = 68;
-    } else {
-      this.pieRadius = ["60%", "100%"];
-    }
-
-    let offset = this.centerX - 1;
-    if (screenWidth >= 1800 || (screenWidth >= 768 && screenWidth <= 1000)) {
-      offset = this.centerX - 1;
-    }
-
-    const isPhone = screenWidth < 500;
-
-    try {
-      this.echartsInstance.setOption(
-        {
-          title: {
-            left: `${offset}%`,
-            top: `${this.centerY}%`,
-            textStyle: {
-              fontSize: isPhone ? 12 : 16,
-              fontWeight: "bold",
-            }
-          },
-          legend: {
-            textStyle: {
-              fontSize: this.fontSizeLegend,
-            },
-            left: "left",
-            top: "top",
-            itemWidth: 10,
-            itemHeight: 10,
-            itemGap: 10,
-          },
-          series: [
-            {
-              center: [`${this.centerX}%`, `${this.centerY}%`],
-              radius: this.pieRadius,
-              label: {
-                fontSize: this.fontSizeLegend,
-              }
-            },
-          ],
-        },
-        false
-      );
-    } catch {}
   }
 
   public redrawChart() {
     if (this.echartsInstance) {
       setTimeout(() => {
-        this.echartsInstance.resize({
-          height: this.getResponsiveHeight(),
-        });
-        this.updateTitlePosition();
+        this.refreshChart();
       }, 0);
     }
   }
 
-  initChartOptions(data: { value: number; name: string }[], colors: string[]) {
-    const total = data?.reduce((s, i) => s + i.value, 0) ?? 0;
+  private getLegendOptions(s: any, isTabletOrPhone: boolean, isPhone: boolean): any {
+    const generalLegend = this.config?.legend || {};
+    const stateLegend = this.isMaximized
+      ? (this.config?.maximized?.legend || {})
+      : (this.config?.minimized?.legend || {});
+
+    const userLegend = {
+      ...generalLegend,
+      ...stateLegend
+    };
+
+    const defaultLegend = this.isMaximized
+      ? {
+          type: "scroll" as const,
+          orient: isTabletOrPhone ? "horizontal" : "vertical" as const,
+          left: isTabletOrPhone ? "center" : "12%",
+          top: isTabletOrPhone ? "auto" : "middle",
+          bottom: isTabletOrPhone ? "15px" : "auto",
+          fontSize: isPhone ? 11 : 13,
+          itemWidth: 12,
+          itemHeight: 12,
+          itemGap: 12,
+        }
+      : {
+          type: "scroll" as const,
+          orient: "vertical" as const,
+          left: "left",
+          top: "top",
+          bottom: undefined,
+          fontSize: this.fontSizeLegend,
+          itemWidth: 10,
+          itemHeight: 10,
+          itemGap: 8,
+        };
+
+    const resolvedLeft = userLegend.right !== undefined && userLegend.left === undefined
+      ? undefined
+      : (userLegend.left ?? defaultLegend.left);
+
+    const resolvedTop = userLegend.bottom !== undefined && userLegend.top === undefined
+      ? undefined
+      : (userLegend.top ?? defaultLegend.top);
+
+    const resolvedBottom = userLegend.top !== undefined && userLegend.bottom === undefined
+      ? undefined
+      : (userLegend.bottom ?? defaultLegend.bottom);
+
+    return {
+      show: userLegend.show ?? true,
+      type: userLegend.type ?? defaultLegend.type,
+      orient: userLegend.orient ?? defaultLegend.orient,
+      left: resolvedLeft,
+      top: resolvedTop,
+      bottom: resolvedBottom,
+      right: userLegend.right ?? undefined,
+      data: this.data.map((i) => i.name),
+      textStyle: {
+        fontSize: userLegend.fontSize ?? defaultLegend.fontSize,
+        color: s.textPrimaryColor,
+      },
+      itemWidth: userLegend.itemWidth ?? defaultLegend.itemWidth,
+      itemHeight: userLegend.itemHeight ?? defaultLegend.itemHeight,
+      itemGap: userLegend.itemGap ?? defaultLegend.itemGap,
+      pageIconColor: s.themePrimaryColor,
+      pageTextStyle: { color: s.textPrimaryColor }
+    };
+  }
+
+  initChartOptions() {
+    this.chartHeight = this.getResponsiveHeight();
+    if (!this.data || this.data.length === 0) return;
+
+    const total = this.data.reduce((s, i) => s + i.value, 0);
     const screenWidth = window.innerWidth;
     const s = getAvailableThemesStyles(this.currentTheme);
+    const isPhone = screenWidth < 500;
+
+    const tooltip = {
+      trigger: "item" as const,
+      formatter: (p: any) => `${p.name}: ${p.value} (${p.percent}%)`,
+      backgroundColor: s.themePrimaryColor,
+      borderColor: s.themePrimaryColor,
+      textStyle: { color: s.textPrimaryColor },
+    };
 
     if (this.isMaximized) {
-      // MODO MAXIMIZADO: Gráfico centralizado
-      const isPhone = screenWidth < 500;
+      const isTabletOrPhone = screenWidth < 1024;
 
       this.chartOptions = {
-        tooltip: {
-          trigger: "item",
-          formatter: (p) => `${p.name}: ${p.value} (${p.percent}%)`,
-          backgroundColor: s.themePrimaryColor,
-          borderColor: s.themePrimaryColor,
-          textStyle: { color: s.textPrimaryColor },
-        },
+        tooltip,
+        color: this.colors,
         title: {
           text: `${total}`,
-          left: "50%",
-          top: "50%",
+          left: isTabletOrPhone ? "50%" : "60%",
+          top: isTabletOrPhone ? "46%" : "50%",
           textAlign: "center",
           textVerticalAlign: "middle",
           textStyle: {
@@ -387,30 +270,20 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
             color: s.textPrimaryColor,
           },
         },
-        legend: {
-          orient: "vertical",
-          left: "left",
-          top: "top",
-          data: data?.map((i) => i.name),
-          textStyle: {
-            fontSize: isPhone ? 11 : 13,
-            color: s.textPrimaryColor,
-          },
-          itemWidth: 12,
-          itemHeight: 12,
-          itemGap: 12,
-        },
+        legend: this.getLegendOptions(s, isTabletOrPhone, isPhone),
         series: [
           {
             type: "pie",
-            radius: isPhone ? ["50%", "85%"] : ["55%", "90%"],
-            center: ["50%", "50%"],
-            data,
+            radius: isTabletOrPhone
+              ? (isPhone ? ["40%", "70%"] : ["42%", "72%"])
+              : ["45%", "75%"],
+            center: isTabletOrPhone ? ["50%", "46%"] : ["60%", "50%"],
+            data: this.data,
             emphasis: { scale: false },
             label: {
               show: true,
               position: "inside",
-              formatter: (p) =>
+              formatter: (p: any) =>
                 p.percent >= 6 ? Math.round(p.percent) + "%" : "",
               color: "#FFF",
               fontSize: isPhone ? 10 : 12,
@@ -418,62 +291,41 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
             labelLine: { show: false },
           },
         ],
-        color: colors,
       };
     } else {
-      // MODO NORMAL: Layout original com gráfico deslocado
-      const offset =
-        screenWidth >= 1600 || (screenWidth >= 768 && screenWidth <= 1000)
-          ? this.centerX - 2
-          : this.centerX - 1;
+      const layout = this.getResponsiveLayout(screenWidth);
+      let offset = layout.centerX - 1;
+      if (screenWidth >= 1800 || (screenWidth >= 768 && screenWidth <= 1000)) {
+        offset = layout.centerX - 1;
+      }
 
       this.chartOptions = {
-        tooltip: {
-          trigger: "item",
-          formatter: (p) => `${p.name}: ${p.value} (${p.percent}%)`,
-          backgroundColor: s.themePrimaryColor,
-          borderColor: s.themePrimaryColor,
-          textStyle: { color: s.textPrimaryColor },
-        },
+        tooltip,
+        color: this.colors,
         title: {
           text: `${total}`,
           left: `${offset}%`,
-          top: `${this.centerY}%`,
+          top: `${layout.centerY}%`,
           textAlign: "center",
           textVerticalAlign: "middle",
           textStyle: {
-            fontSize: 16,
+            fontSize: isPhone ? 12 : 16,
             fontWeight: "bold",
             color: s.textPrimaryColor,
           },
         },
-        legend: {
-          type: 'scroll',
-          orient: "vertical",
-          left: "left",
-          top: "top",
-          data: data?.map((i) => i.name),
-          textStyle: {
-            fontSize: 9,
-            color: s.textPrimaryColor,
-          },
-          itemWidth: 10,
-          itemHeight: 10,
-          itemGap: 8,
-          pageIconColor: s.themePrimaryColor,
-          pageTextStyle: { color: s.textPrimaryColor }
-        },
+        legend: this.getLegendOptions(s, false, isPhone),
         series: [
           {
             type: "pie",
-            radius: this.pieRadius,
-            center: [`${this.centerX}%`, `${this.centerY}%`],
-            data,
+            radius: layout.radius,
+            center: [`${layout.centerX}%`, `${layout.centerY}%`],
+            data: this.data,
             emphasis: { scale: false },
             label: {
               show: true,
               position: "inside",
-              formatter: (p) =>
+              formatter: (p: any) =>
                 p.percent >= 6 ? Math.round(p.percent) + "%" : "",
               color: "#FFF",
               fontSize: 9,
@@ -481,7 +333,6 @@ export class PieChartModelComponent implements OnInit, OnChanges, OnDestroy {
             labelLine: { show: false },
           },
         ],
-        color: colors,
       };
     }
   }

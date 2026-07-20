@@ -1,6 +1,6 @@
 ::ng-deep {
   .cdk-overlay-container {
-    z-index: 1060;
+    z-index: 100000 !important;
   }
 }
 
@@ -73,7 +73,7 @@ input:focus {
         }
 
         .tag-value {
-          margin-top: -6px;
+          margin-top: 0;
         }
 
         button {
@@ -202,8 +202,12 @@ input:focus {
     display: flex;
     gap: 20px;
     width: 100%;
-    padding: 5px 0 5px 5px;
+    padding: 5px;
     height: 100%;
+
+    @media screen and (max-width: 576px) {
+      gap: 10px;
+    }
 
     .spinner-border {
       width: 3rem;
@@ -282,7 +286,7 @@ input:focus {
 }
 
 nb-option-list {
-  z-index: 99999px !important;
+  z-index: 100000 !important;
 }
 
 // Aplica esses estilos sob o tema "default"
@@ -412,7 +416,7 @@ chart-container.maximized::before:hover {
 
 .filter-wrapper {
   position: sticky;
-  top: 75px;
+  top: 74px;
   z-index: 1000;
   width: 100%;
   background-color: transparent;
@@ -420,7 +424,7 @@ chart-container.maximized::before:hover {
   transition: top 0.3s ease-in-out;
 
   @media screen and (max-width: 768px) {
-    top: 90px;
+    top: 76px;
   }
 }
 
@@ -514,4 +518,13 @@ chart-container.maximized::before:hover {
     padding: 0 0 0 8px !important;
     box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.5);
   }
+}
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.card-content {
+  min-height: 75px;
 }

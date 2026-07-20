@@ -52,7 +52,8 @@
         </div>
 
         <div class="filter-button" [class.is-sticky]="isScrolled">
-          <button class="filter-toggle" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal">
+          <button class="filter-toggle" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal"
+            (click)="blurButton($event)">
             Filtros
             <nb-icon [icon]="'funnel-outline'"></nb-icon>
           </button>
@@ -179,6 +180,30 @@
                   </div>
 
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
+                    <span class="mb-1">PO</span>
+                    <input #poSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth name="poSearch"
+                      placeholder="Buscar PO..." autocomplete="off" [nbAutocomplete]="poAutocomplete"
+                      (input)="onPoSearch($event)" fieldSize="tiny" />
+
+                    <div class="selected-items-row" *ngIf="selectedPOs.length > 0">
+                      <nb-tag *ngFor="let po of selectedPOs" [text]="po.codPo" [removable]="true" [nbTooltip]="
+                          po.codPo + ' - ' + po.nomePo
+                        " (remove)="removePO(po.codPo)" size="tiny" appearance="filled">
+                      </nb-tag>
+                    </div>
+
+                    <nb-autocomplete #poAutocomplete (selectedChange)="onPoSelected($event)">
+                      <nb-option *ngFor="let po of filteredPOList" [value]="po.codPo"
+                        [class.uo-selected]="isPOSelected(po)" (mousedown)="$event.preventDefault()">
+                        <div class="option-wrapper d-flex align-items-center w-100 h-100">
+                          <nb-icon *ngIf="isPOSelected(po)" icon="checkmark-outline" class="me-2"></nb-icon>
+                          {{ po.codPo }} - {{ po.nomePo }}
+                        </div>
+                      </nb-option>
+                    </nb-autocomplete>
+                  </div>
+
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
                     <span class="mb-1">Fonte Completa</span>
 
                     <input #fullSourceSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth
@@ -268,7 +293,9 @@
                 </div>
 
                 <div class="text-section budget-management-indicator">
-                  <div *ngIf="statusTotal?.budgetManagementIndicator?.nota !== null">
+                  <div *ngIf="
+                      statusTotal?.budgetManagementIndicator?.nota !== null
+                    ">
                     <!-- <span class="label-subtitle" [nbTooltip]="
                         ' Nota ' +
                         (
@@ -281,9 +308,13 @@
                       statusTotal?.budgetManagementIndicator?.nota
                       }}
                     </span> -->
-                    <span
-                      *ngIf="statusTotal?.budgetManagementIndicator?.nota !== undefined && statusTotal?.budgetManagementIndicator?.nota !== null"
-                      class="label-subtitle" [nbTooltip]="' Nota ' + statusTotal.budgetManagementIndicator.nota">
+                    <span *ngIf="
+                        statusTotal?.budgetManagementIndicator?.nota !==
+                          undefined &&
+                        statusTotal?.budgetManagementIndicator?.nota !== null
+                      " class="label-subtitle" [nbTooltip]="
+                        ' Nota ' + statusTotal.budgetManagementIndicator.nota
+                      ">
                       Nota {{ statusTotal.budgetManagementIndicator.nota }}
                     </span>
                   </div>
@@ -313,7 +344,9 @@
               <ng-template #plannedSuccess>
                 <div class="number-box planned-success">
                   <div class="d-flex" style="flex-direction: column; align-items: start">
-                    <div class="value">{{ statusTotal?.plannedSuccess?.sucesso }} %</div>
+                    <div class="value">
+                      {{ statusTotal?.plannedSuccess?.sucesso }} %
+                    </div>
                   </div>
                 </div>
 
@@ -540,11 +573,16 @@
 
                 <div class="text-section po-with-highest-settlement d-flex flex-column justify-content-end">
                   <span class="label-title">PO com Maior Liquidação</span>
-                  <span class="label-subtitle"
-                    [nbTooltip]="statusTotal?.poWithHighestSettlement?.cod_po + ' - ' + statusTotal?.poWithHighestSettlement?.nome_po">
-                    {{ statusTotal?.poWithHighestSettlement?.cod_po }} - {{
-                    statusTotal?.poWithHighestSettlement?.nome_po |
-                    TextTruncate:20 }}
+                  <span class="label-subtitle" [nbTooltip]="
+                      statusTotal?.poWithHighestSettlement?.cod_po +
+                      ' - ' +
+                      statusTotal?.poWithHighestSettlement?.nome_po
+                    ">
+                    {{ statusTotal?.poWithHighestSettlement?.cod_po }} -
+                    {{
+                    statusTotal?.poWithHighestSettlement?.nome_po
+                    | TextTruncate: 20
+                    }}
                   </span>
                 </div>
               </ng-template>
@@ -556,7 +594,7 @@
   </div>
 
   <div class="row px-2">
-    <div class="row g-2 g-md-1 px-1">
+    <div class="row g-1 g-md-1 px-1">
       <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
         <ng-container>
           <div class="chart-container" [class.maximized]="isChartMaximized('availability-por-uo')"

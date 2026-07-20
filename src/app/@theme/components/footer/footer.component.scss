@@ -8,28 +8,8 @@
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
-  padding-left: 1rem;
-  padding-right: 1rem;
-
-  p {
-    margin-bottom: 0;
-  }
-
-  p, span {
-    font-size: 13px;
-  }
-
-  @media screen and (max-width: 576px) {
-    flex-direction: column !important;
-    align-items: flex-start;
-    gap: 4px;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-
-    p, span {
-      font-size: 12px !important;
-    }
-  }
+  // padding-left: 1rem;
+  // padding-right: 1rem;
 }
 
 @include nb-install-component() {

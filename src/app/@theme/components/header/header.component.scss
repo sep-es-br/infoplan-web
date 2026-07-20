@@ -13,11 +13,11 @@
     width: calc(#{nb-theme(sidebar-width)} - #{nb-theme(header-padding)});
   }
 
-  .icone-info-plan{
-	  width: 120px;
+  .icone-info-plan {
+    width: 120px;
   }
 
-  .context-menu{
+  .context-menu {
     text-align: left !important;
   }
 
@@ -36,7 +36,7 @@
   }
 
   ::ng-deep nb-search button {
-    padding: 0!important;
+    padding: 0 !important;
   }
 
   .header-container {
@@ -49,13 +49,15 @@
       @include nb-rtl(padding-left, 1.25rem);
       text-decoration: none;
       color: nb-theme(text-hint-color);
+
       nb-icon {
-        font-size: 1.75rem;
+        // font-size: 1.75rem;
+        padding-right: 0.70rem;
       }
     }
 
     .logo {
-      padding: 0 1.25rem;
+      // padding: 0 1.25rem;
       font-size: 1.75rem;
       // @include nb-ltr(border-left, 1px solid nb-theme(divider-color));
       @include nb-rtl(border-right, 1px solid nb-theme(divider-color));
@@ -81,5 +83,5 @@
       display: none;
     }
   }
-  
+
 }

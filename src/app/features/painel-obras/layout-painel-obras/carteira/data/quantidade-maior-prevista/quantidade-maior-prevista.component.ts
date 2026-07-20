@@ -42,14 +42,13 @@ import { RequestStatus } from "../../../../../strategic-projects/strategicProjec
   imports: [FlipTableComponent, OrgChartHorizontalComponent],
 })
 export class QuantidadeMaiorPrevistaComponent
-  implements OnInit, OnDestroy, OnChanges
-{
+  implements OnInit, OnDestroy, OnChanges {
   @Input() filter!: IPainelObrasRequest;
 
   @Output() maximizeButtonClick = new EventEmitter<boolean>();
 
   readonly title: string =
-    "Valor total, quantidade e entregas de maior valor previstas para 2026 por órgão";
+    "Maiores Entregas Previstas por Órgão (2026)";
   tableContent!: FlipTableContent;
   requestStatus: RequestStatus = RequestStatus.EMPTY;
   flipTableContent!: FlipTableContent;
@@ -103,25 +102,47 @@ export class QuantidadeMaiorPrevistaComponent
       .getQuantidadeMaiorEntregaPrevista(this.filter)
       .subscribe({
         next: (response) => {
+        this.requestStatus = RequestStatus.SUCCESS;
+        if (response && response.length > 0) {
           this.quantidadeMaiorPorOrgao = response;
           this.assembleFlipTableContent(response);
-         const dados = this.processData(response);
-         this.chartData = dados;
-         this.requestStatus = RequestStatus.SUCCESS;
+          this.chartData = this.processData(response);
+        } else {
+          this.requestStatus = RequestStatus.EMPTY;
+          this.quantidadeMaiorPorOrgao = [];
+          this.assembleFlipTableContent([]);
+          this.chartData = this.processData([]);
+        }
         },
         error(err) {
           console.error(
             "Erro ao carregar os dados das quantidade de entregras prevista por órgão: ",
             err,
           );
-          // this.requestStatus = RequestStatus.ERROR;
         },
       });
   }
 
   processData(response: IQuantidadeMaiorEntregaPrevista[]): IChartOptions {
-    if (!response || response.length === 0)
-      return { data: { labels: [], datasets: [] } } as IChartOptions;
+    if (!response || response.length === 0) {
+      return {
+        data: {
+          labels: ["Sem Registros"],
+          datasets: [
+            {
+              label: "Órgão com maior valor",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[0],
+            },
+            {
+              label: "Planejado",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[1],
+            }
+          ],
+        },
+      } as IChartOptions;
+    }
 
     const top10 = [...response]
       .sort((a, b) => b.totalMaiorOrgao - a.totalMaiorOrgao)
@@ -135,14 +156,14 @@ export class QuantidadeMaiorPrevistaComponent
       data: {
         labels,
         datasets: [
-          { 
-            label: "Órgão com maior valor", 
+          {
+            label: "Órgão com maior valor",
             data: primary,
-            backgroundColor: this._chartProcessor.colors[0], 
+            backgroundColor: this._chartProcessor.colors[0],
           },
-          { 
-            label: "planejado", 
-            data:  secondary,
+          {
+            label: "Planejado",
+            data: secondary,
             backgroundColor: this._chartProcessor.colors[1],
           }
         ],

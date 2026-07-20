@@ -19,23 +19,9 @@ import { IChartOptions } from "../../../../shared/models/budget-panel/IChartOpti
 import { CommonModule } from "@angular/common";
 import { NgxEchartsModule } from "ngx-echarts";
 import { UtilitiesService } from "../../../../core/service/utilities.service";
+import { ChartDataConfig, LegendConfig } from "../../../../core/interfaces/chart-config.interface";
 
-export interface ChartDataConfig {
-  legend?: {
-    fontSize?: number | string;
-    itemWidth?: number;
-    itemHeight?: number;
-    itemGap?: number;
-  };
-  grid?: {
-    top?: string;
-    left?: string;
-    right?: string;
-    bottom?: string;
-    containLabel?: boolean;
-  };
-  showMaximizeButton?: boolean;
-}
+export { ChartDataConfig, LegendConfig };
 
 @Component({
   selector: "ngx-org-chart-horizontal",
@@ -110,40 +96,8 @@ export class OrgChartHorizontalComponent
 
   private updateChartOnResize(): void {
     if (!this.echartsInstance || !this.chart?.data) return;
-
-    const theme = getAvailableThemesStyles(this.currentTheme);
-    const isMobile = window.innerWidth <= 1000;
-    const isPhone = window.innerWidth <= 575;
-    const isTablet = window.innerWidth <= 768;
-
-    this.echartsInstance.setOption({
-      yAxis: {
-        axisLabel: {
-          color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 14 : 11,
-          margin: 10,
-          width: 140,
-          lineHeight: 16,
-          overflow: "break"
-        },
-      },
-      xAxis: {
-        axisLabel: {
-          fontSize: this.showMaximizeButton ? 13 : 10,
-          formatter: (value: number) => this.formatAxisValue(value),
-        },
-      },
-      legend: {
-        textStyle: {
-          color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 13 : 12,
-        },
-      },
-      series: this.chart.data.datasets.map(() => ({
-        barMaxWidth: isMobile ? 15 : 20,
-      })),
-    });
-
+    this.initChartOptions(this.chart);
+    this.echartsInstance.setOption(this.chartOptions, true);
     this.resizeChart();
   }
 
@@ -209,6 +163,7 @@ export class OrgChartHorizontalComponent
       },
 
       legend: {
+        type: "scroll",
         orient: "horizontal",
         top: "top",
         left: "center",
@@ -233,9 +188,10 @@ export class OrgChartHorizontalComponent
       xAxis: {
         type: "value",
         scale: true,
+        splitNumber: isPhone ? 3 : isTablet ? 4 : 5,
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 13 : 10,
+          fontSize: isPhone ? (this.showMaximizeButton ? 11 : 8.5) : (this.showMaximizeButton ? 13 : 10),
           formatter: (value: number) => this.formatAxisValue(value),
         },
         splitLine: {
@@ -254,11 +210,12 @@ export class OrgChartHorizontalComponent
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: this.showMaximizeButton ? 14 : 11,
+          fontSize: isPhone ? (this.showMaximizeButton ? 11 : 9) : (this.showMaximizeButton ? 13 : 10),
           margin: 10,
-          width: 140,
-          lineHeight: 16,
-          overflow: "break"
+          width: isPhone ? 100 : isTablet ? 120 : isMobile ? 130 : 150,
+          lineHeight: isPhone ? 13 : 15,
+          overflow: "break",
+          formatter: (value: string) => this.formatAxisLabel(value)
         },
         axisLine: {
           show: true,
@@ -282,9 +239,9 @@ export class OrgChartHorizontalComponent
         barGap: "20%",
         barMaxWidth: isMobile ? 15 : 25,
         label: {
-          show: true,
+          show: window.innerWidth > 768,
           position: "right",
-          formatter: (params: any) => this.formatAxisValue(params.value),
+          formatter: (params: any) => this.formatValue(params.value),
           fontSize: this.showMaximizeButton ? 13 : 9 ,
           color: theme.textPrimaryColor,
         }
@@ -327,15 +284,69 @@ export class OrgChartHorizontalComponent
     }
   }
 
+  private formatAxisLabel(value: string): string {
+    if (!value) return "";
+    const isMobile = window.innerWidth <= 1000;
+    const isPhone = window.innerWidth <= 575;
+    const isTablet = window.innerWidth <= 768;
+
+    const limit = isPhone ? 18 : isTablet ? 22 : isMobile ? 24 : 26;
+    const maxLines = 3;
+
+    const words = value.split(" ");
+    const lines: string[] = [];
+    let currentLine = "";
+
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      if (!currentLine) {
+        currentLine = word;
+      } else {
+        if ((currentLine + " " + word).length <= limit) {
+          currentLine += " " + word;
+        } else {
+          lines.push(currentLine);
+          if (lines.length === maxLines - 1) {
+            let lastLine = word;
+            let hasMore = false;
+            for (let j = i + 1; j < words.length; j++) {
+              if ((lastLine + " " + words[j]).length <= limit - 3) {
+                lastLine += " " + words[j];
+                i = j;
+              } else {
+                hasMore = true;
+                break;
+              }
+            }
+            if (hasMore || i < words.length - 1) {
+              lastLine = lastLine.substring(0, limit - 3).trim() + "...";
+            }
+            lines.push(lastLine);
+            currentLine = "";
+            break;
+          } else {
+            currentLine = word;
+          }
+        }
+      }
+    }
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    return lines.join("\n");
+  }
+
   formatValue(value: number): string {
     const absValue = Math.abs(value);
 
     if (absValue >= 1_000_000_000_000)
-      return (value / 1_000_000_000_000).toFixed(1).replace('.', ',') + " T";
+      return (value / 1_000_000_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " T";
     if (absValue >= 1_000_000_000)
-      return (value / 1_000_000_000).toFixed(1).replace('.', ',') + " B";
-    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.', ',') + " M";
-    if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.', ',') + " K";
+      return (value / 1_000_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.', ',').replace(',0', '') + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(1).replace('.', ',').replace(',0', '') + " K";
 
     return value.toString();
   }
@@ -350,10 +361,10 @@ export class OrgChartHorizontalComponent
     if (this.valueType === 'currency') {
       const sign = value < 0 ? '-' : '';
       const v = Math.abs(value);
-      if (v >= 1_000_000_000_000) return `${sign} ${ (v / 1_000_000_000_000).toFixed(1).replace('.', ',') } T`;
-      if (v >= 1_000_000_000) return `${sign} ${ (v / 1_000_000_000).toFixed(1).replace('.', ',') } B`;
-      if (v >= 1_000_000) return `${sign} ${ (v / 1_000_000).toFixed(1).replace('.', ',') } M`;
-      if (v >= 1_000) return `${sign} ${ (v / 1_000).toFixed(1).replace('.', ',') } K`;
+      if (v >= 1_000_000_000_000) return `${sign} ${ (v / 1_000_000_000_000).toFixed(0) } T`;
+      if (v >= 1_000_000_000) return `${sign} ${ (v / 1_000_000_000).toFixed(0) } B`;
+      if (v >= 1_000_000) return `${sign} ${ (v / 1_000_000).toFixed(0) } M`;
+      if (v >= 1_000) return `${sign} ${ (v / 1_000).toFixed(0) } K`;
 
       return `${sign} ${this.formatNumberSimple(v)}`;
     }
@@ -362,6 +373,13 @@ export class OrgChartHorizontalComponent
       return `${this.formatNumberSimple(value)}%`;
     }
 
-    return this.formatValue(value);
+    if (absValue >= 1_000_000_000_000)
+      return (value / 1_000_000_000_000).toFixed(0) + " T";
+    if (absValue >= 1_000_000_000)
+      return (value / 1_000_000_000).toFixed(0) + " B";
+    if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(0) + " M";
+    if (absValue >= 1_000) return (value / 1_000).toFixed(0) + " K";
+
+    return value.toString();
   }
 }

@@ -7,7 +7,7 @@ input:focus {
 
 .filter-wrapper {
   position: sticky;
-  top: 84px;
+  top: 70px;
   z-index: 1000;
   width: 100%;
   background-color: transparent;
@@ -15,7 +15,7 @@ input:focus {
   transition: top 0.3s ease-in-out;
 
   @media screen and (max-width: 768px) {
-    top: 90px; // Alinhado com o cabeçalho no mobile
+    top: 68px;
   }
 }
 
@@ -174,10 +174,11 @@ input:focus {
   }
 
   .card-content {
+    position: relative;
     display: flex;
     gap: 8px;
     width: 100%;
-    padding: 5px 0 5px 5px;
+    padding: 5px;
     height: 100%;
 
     .spinner-border {
@@ -378,7 +379,7 @@ nb-tooltip {
         }
 
         .tag-value {
-          margin-top: -6px;
+          margin-top: 0;
         }
 
         button {
@@ -516,4 +517,14 @@ nb-tooltip {
   .text-section {
     color: #ffffff !important;
   }
+}
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.card-content {
+  position: relative;
+  min-height: 75px;
 }

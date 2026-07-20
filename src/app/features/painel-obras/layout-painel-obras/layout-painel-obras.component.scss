@@ -1,3 +1,20 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+@media screen and (min-width: 992px) {
+  :host {
+    margin-top: -15px;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  :host {
+    margin-top: -4px;
+  }
+}
+
 ::ng-deep {
   .cdk-overlay-container {
     z-index: 1060;
@@ -23,16 +40,19 @@
 
 .filter-wrapper {
   position: sticky;
-  flex-wrap: wrap;
-  top: 84px;
+  top: 70px;
   z-index: 1000;
   width: 100%;
-  background-color: transparent;
   padding: 6px 6px;
+  background-color: transparent;
   transition: top 0.3s ease-in-out;
 
   @media screen and (max-width: 768px) {
-    top: 90px; // Header + tags no mobile
+    top: 64px;
+  }
+
+  @media screen and (max-width: 412px) {
+    top: 84px;
   }
 }
 
@@ -41,7 +61,9 @@
 }
 
 .filter-button.is-sticky {
-  width: fit-content;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
   // margin: 0 auto;
   // padding: 6px 12px;
   border-radius: 2px;
@@ -49,11 +71,11 @@
   display: flex;
   // align-items: center;
   gap: 0.75rem;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-
-  background: rgba(227, 230, 240, 0.85);
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .filter-tag.is-sticky {
@@ -92,12 +114,52 @@
   }
 
   .filter-button.is-sticky {
-    background: rgba(10, 15, 30, 0.85);
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .filter-toggle-icon-only.is-sticky {
+    background: rgba(21, 26, 48, 0.85) !important;
     border: 1px solid rgb(255, 255, 255);
-    border-radius: 8px;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: 2px 3px 10px lightgray;
+    border-radius: 50%;
+    box-shadow: 2px 3px 10px lightgray !important;
+    transition: none !important;
+  }
+
+  .nav-buttons-container ::ng-deep nb-tag.tag-default:not(.active-tag) {
+    background-color: transparent !important;
+    color: #4bb6d6 !important;
+    border: 1px solid #4bb6d6 !important;
+    border-radius: 10px !important;
+
+    &:hover {
+      background-color: rgba(75, 182, 214, 0.1) !important;
+    }
+  }
+
+  .nav-buttons-container ::ng-deep nb-tag.tag-default.is-sticky:not(.active-tag) {
+    background-color: rgba(21, 26, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: rgb(255, 255, 255) !important;
+    border-radius: 10px !important;
+    box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.3) !important;
+
+    &:hover {
+      background-color: rgba(21, 26, 48, 0.95) !important;
+      color: rgb(255, 255, 255) !important;
+      border-color: rgba(255, 255, 255, 0.932) !important;
+    }
+  }
+
+  .nav-buttons-container ::ng-deep nb-tag.tag-default.is-sticky.active-tag {
+    background-color: rgb(21, 26, 48) !important;
+    border: 1px solid rgb(255, 255, 255) !important;
+    color: rgb(255, 255, 255) !important;
+    border-radius: 10px !important;
+    box-shadow: 2px 3px 10px lightgray !important;
   }
 }
 
@@ -127,6 +189,47 @@
     border-radius: 8px;
     box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.5);
   }
+
+  .filter-toggle-icon-only.is-sticky {
+    background: rgba(255, 255, 255, 0.877) !important;
+    border: 1px solid rgb(173 165 165);
+    border-radius: 50%;
+    box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.5) !important;
+    transition: none !important;
+  }
+
+  .nav-buttons-container ::ng-deep nb-tag.tag-default:not(.active-tag) {
+    background-color: transparent !important;
+    color: rgb(50, 50, 50) !important;
+    border: 1px solid #4bb6d6 !important;
+    border-radius: 10px !important;
+
+    &:hover {
+      background-color: #eaf6fb !important;
+    }
+  }
+
+  .nav-buttons-container ::ng-deep nb-tag.tag-default.is-sticky:not(.active-tag) {
+    background-color: rgb(245 245 245) !important;
+    border: 1px solid rgba(102, 102, 102, 0.3) !important;
+    // color: rgba(50, 50, 50, 0.5) !important;
+    border-radius: 10px !important;
+    box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.05) !important;
+
+    &:hover {
+      background-color: rgb(245, 245, 245) !important;
+      color: rgb(50, 50, 50) !important;
+      border-color: rgba(163, 160, 160, 0.6) !important;
+    }
+  }
+
+  .nav-buttons-container ::ng-deep nb-tag.tag-default.is-sticky.active-tag {
+    background-color: #4bb6d6 !important;
+    border: 1px solid #4bb6d6 !important;
+    color: white !important;
+    border-radius: 10px !important;
+    box-shadow: 2px 3px 10px rgba(75, 182, 214, 0.4) !important;
+  }
 }
 
 .filter-container {
@@ -136,20 +239,89 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 5px;
-    padding: 0px !important;
+    flex-wrap: wrap;
+    gap: 15px;
+    // padding: 0px !important;
+    width: 100%;
+
+    .nav-buttons-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-grow: 1;
+
+      ::ng-deep .tag-panel {
+        justify-content: flex-start !important;
+
+        @media (min-width: 685px) {
+          width: 100%;
+
+          nb-tag-list,
+          .custom-tag-list {
+            width: 100% !important;
+
+            .nb-tag-list-tags-wrapper {
+              display: flex !important;
+              width: 100% !important;
+              // gap: 10px !important;
+            }
+          }
+
+          nb-tag {
+            flex: 1 1 0px !important;
+            max-width: none !important;
+            width: auto !important;
+          }
+        }
+      }
+    }
+
+    .d-flex.align-items-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: auto;
+      min-width: 0;
+    }
+
+    @media (max-width: 877px) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 15px;
+
+      .nav-buttons-container {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        ::ng-deep .tag-panel {
+          // justify-content: center !important;
+        }
+      }
+
+      .d-flex.align-items-center {
+        width: 100%;
+        min-width: 0;
+        padding: 0 6px;
+        justify-content: center;
+        margin-top: -10px // flex-wrap: wrap;
+      }
+    }
 
     .filter-tags {
       display: flex;
-      flex: 1;
+      flex: 0 1 auto;
       min-width: 0;
       overflow-x: auto;
       white-space: nowrap;
       gap: 8px;
-      // padding: 6px 0;
+      padding: 6px 0;
       scrollbar-width: thin;
       scrollbar-color: #005c99 transparent;
-      // flex-wrap: wrap;
+
+      >div {
+        flex-shrink: 0;
+      }
 
       .filter-tag {
         background-color: var(--card-background-color);
@@ -166,7 +338,8 @@
 
         @media screen and (max-width: 576px) {
           padding: 2px 12px;
-          font-size: 9px;
+          // font-size: 9px;
+          font-size: 8px;
         }
 
         .tag-label {
@@ -174,7 +347,7 @@
         }
 
         .tag-value {
-          margin-top: -6px;
+          margin-top: 0;
         }
 
         button {
@@ -222,16 +395,32 @@
       }
     }
 
-    .filter-toggle {
-      color: var(--card-text-color);
-      min-width: 90px;
-      border: none;
-      background-color: transparent;
-      padding-bottom: 10px;
-      padding-top: 8px;
+    .filter-toggle-icon-only {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border-color, #ced4da);
+      background-color: var(--card-background-color, transparent);
+      color: var(--card-text-color, currentColor);
       cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      padding: 0;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 9px;
+      white-space: nowrap;
       z-index: 1;
-      border-radius: 4px;
+
+      nb-icon {
+        font-size: 1.5rem;
+      }
+
+      &:hover {
+        background-color: var(--border-color, #eaf6fb);
+        color: #005c99;
+      }
     }
   }
 
@@ -288,6 +477,7 @@
 }
 
 .card {
+  position: relative;
   background-color: var(--card-background-color);
   border-radius: 8px;
   padding: 5px;
@@ -310,8 +500,13 @@
     display: flex;
     gap: 20px;
     width: 100%;
-    padding: 5px 0 5px 5px;
+    padding: 5px;
     height: 100%;
+    min-height: 75px;
+
+    @media screen and (max-width: 576px) {
+      gap: 10px;
+    }
 
     .spinner-border {
       width: 3rem;
@@ -411,9 +606,10 @@
 
   .text-section {
     display: flex;
-    align-items: end;
+    align-items: center;
     font-size: 11px;
     font-weight: bold;
+    padding-right: 25px;
 
     flex: 1;
     min-width: 0;
@@ -499,5 +695,35 @@
     max-width: 90% !important;
     max-height: 55px !important;
     object-fit: contain;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1366px) {
+  .nav-buttons-container ::ng-deep nb-tag {
+    width: 110px !important;
+    // font-size: 11px !important;
+    // padding: 4px 2px !important;
+  }
+}
+
+::ng-deep nb-sidebar:not(.compacted):not(.collapsed)~.content {
+  .filter-button {
+    @media (max-width: 1200px) {
+      flex-wrap: wrap;
+      gap: 10px;
+
+      .nav-buttons-container {
+        width: 100%;
+
+        .tag-panel {
+          justify-content: center !important;
+        }
+      }
+
+      .d-flex.align-items-center {
+        width: 100%;
+        padding: 0 6px;
+      }
+    }
   }
 }

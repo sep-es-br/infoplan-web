@@ -53,11 +53,11 @@ export enum RequestStatus {
 export interface CustomTableFilteringTrigger {
   source: "InvestmentBy" | "DeliveriesBy";
   newSelectedEntity:
-    | "Área Temática"
-    | "Programa"
-    | "Programas Transversais"
-    | "Projeto"
-    | "Entrega";
+  | "Área Temática"
+  | "Programa"
+  | "Programas Transversais"
+  | "Projeto"
+  | "Entrega";
 }
 
 export interface StrategicProjectsFilter {
@@ -690,6 +690,19 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
     if (this.isFilterModalOpen) this.modalCloseButtonRef.nativeElement.click();
   }
 
+  blurButton(event: Event, tooltip?: any) {
+    if (tooltip && typeof tooltip.hide === 'function') {
+      tooltip.hide();
+    }
+    const target = event.currentTarget as HTMLElement;
+    if (target) {
+      target.blur();
+      target.dispatchEvent(new MouseEvent('mouseleave'));
+      target.dispatchEvent(new MouseEvent('pointerleave'));
+    }
+    (document.activeElement as HTMLElement)?.blur();
+  }
+
   filterOutDisabledDates() {
     // ↳ Essa função controla quais meses e anos, iniciais e finais, devem estar desabilitados para seleção
     const currentDate = this.dateController;
@@ -735,5 +748,21 @@ export class StrategicProjectsComponent implements OnInit, OnDestroy {
         .filter((year) => year.num < currentDate.anoInicial)
         .forEach((year) => (year.disabledFinal = true));
     }
+  }
+
+  trackByTag(index: number, tag: any): string {
+    return tag.key;
+  }
+
+  trackByMonth(index: number, month: any): number {
+    return month.num;
+  }
+
+  trackByYear(index: number, year: any): number {
+    return year.num;
+  }
+
+  trackById(index: number, item: any): number | string {
+    return item.id || index;
   }
 }

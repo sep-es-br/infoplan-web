@@ -155,4 +155,7 @@ body.nb-global-scrollblock {
   width: auto !important;
   height: auto !important;
   overflow: visible !important;
+  touch-action: auto !important;
+  overscroll-behavior: auto !important;
+  -webkit-overflow-scrolling: touch !important;
 }

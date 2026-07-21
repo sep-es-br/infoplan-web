@@ -248,8 +248,8 @@
     </div>
   </div>
 
-  <div class="row g-1 g-md-1">
-    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-2 px-1">
+  <div class="row g-1 g-md-2 px-2">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-2 ">
       <div class="col-12 h-100">
         <div class="card h-100">
           <div class="card-content h-100">
@@ -263,7 +263,7 @@
     </div>
 
     <div class="col-12 col-md-12 col-lg-12 col-xl-10">
-      <div class="row g-1 g-md-1">
+      <div class="row g-1 g-md-2">
         <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1">
           <div class="card">
             <div class="icon-top-right budget-management-indicator" *ngIf="requestStatus.status !== 'Loading'">
@@ -593,7 +593,7 @@
     </div>
   </div>
 
-  <div class="row px-2">
+  <!-- <div class="row px-2">
     <div class="row g-1 g-md-1 px-1">
       <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
         <ng-container>
@@ -659,8 +659,98 @@
         </ng-container>
       </div>
     </div>
-  </div>
+  </div> -->
+  <div class="dashboard-graphs-container position-relative">
+    <div class="dashboard-graphs-container position-relative">
+      <div class="row g-1 g-md-1 py-2 px-1">
+          <ng-container>
+            <div
+              class="chart-container"
+              [class.maximized]="isChartMaximized('availability-por-uo')"
+              [class.col-12]="!isChartMaximized('availability-por-uo')"
+              [class.col-md-12]="!isChartMaximized('availability-por-uo')"
+              [class.col-lg-12]="!isChartMaximized('availability-por-uo')"
+              [class.col-xl-6]="!isChartMaximized('availability-por-uo')"
+              [class.col-xxl-6]="!isChartMaximized('availability-por-uo')"
+              [class.col-xxxl-6]="!isChartMaximized('availability-por-uo')"
+            >
+              <ngx-availability-tu-uo
+                class="w-100"
+                (sendMaximizeButtonClick)="
+                  handleMaximizeButtonClick('availability-por-uo', $event)
+                "
+                [filter]="currentRequestParams"
+              >
+              </ngx-availability-tu-uo>
+            </div>
+          </ng-container>
 
+          <ng-container>
+            <div
+              class="chart-container"
+              [class.maximized]="isChartMaximized('success-of-planned')"
+              [class.col-12]="!isChartMaximized('success-of-planned')"
+              [class.col-md-12]="!isChartMaximized('success-of-planned')"
+              [class.col-lg-12]="!isChartMaximized('success-of-planned')"
+              [class.col-xl-6]="!isChartMaximized('success-of-planned')"
+              [class.col-xxl-6]="!isChartMaximized('success-of-planned')"
+              [class.col-xxxl-6]="!isChartMaximized('success-of-planned')"
+            >
+              <ngx-success-planned
+                class="w-100"
+                (sendMaximizeButtonClick)="
+                  handleMaximizeButtonClick('success-of-planned', $event)
+                "
+                [filter]="currentRequestParams"
+              >
+              </ngx-success-planned>
+            </div>
+          </ng-container>
+
+          <ng-container>
+            <div
+              class="chart-container"
+              [class.maximized]="isChartMaximized('comparative')"
+              [class.col-12]="!isChartMaximized('comparative')"
+              [class.col-md-12]="!isChartMaximized('comparative')"
+              [class.col-lg-12]="!isChartMaximized('comparative')"
+              [class.col-xl-6]="!isChartMaximized('comparative')"
+              [class.col-xxl-6]="!isChartMaximized('comparative')"
+              [class.col-xxxl-6]="!isChartMaximized('comparative')"
+            >
+              <ngx-comparative
+                class="w-100"
+                (sendMaximizeButtonClick)="
+                  handleMaximizeButtonClick('comparative', $event)
+                "
+                [filter]="currentRequestParams"
+              ></ngx-comparative>
+            </div>
+          </ng-container>
+
+          <ng-container>
+            <div
+              class="chart-container"
+              [class.maximized]="isChartMaximized('planned-budgetary')"
+              [class.col-12]="!isChartMaximized('planned-budgetary')"
+              [class.col-md-12]="!isChartMaximized('planned-budgetary')"
+              [class.col-lg-12]="!isChartMaximized('planned-budgetary')"
+              [class.col-xl-6]="!isChartMaximized('planned-budgetary')"
+              [class.col-xxl-6]="!isChartMaximized('planned-budgetary')"
+              [class.col-xxxl-6]="!isChartMaximized('planned-budgetary')"
+            >
+              <ngx-planned-budgetary
+                class="w-100"
+                (sendMaximizeButtonClick)="
+                  handleMaximizeButtonClick('planned-budgetary', $event)
+                "
+                [filter]="currentRequestParams"
+              ></ngx-planned-budgetary>
+            </div>
+          </ng-container>
+      </div>
+    </div>
+  </div>
   <nb-layout-footer class="mt-2">
     <ngx-footer [timestamp]="timesTamp"></ngx-footer>
   </nb-layout-footer>

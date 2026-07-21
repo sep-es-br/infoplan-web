@@ -328,7 +328,7 @@ export class QuantidadeMaiorEntregaComponent
       },
       {
         key: "orgao",
-        label: "Òrgão",
+        label: "Órgão",
       },
       {
         key: "data_conclusao",

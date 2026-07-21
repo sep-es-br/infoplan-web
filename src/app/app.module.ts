@@ -8,7 +8,7 @@ import {
   provideHttpClient,
   withInterceptors,
 } from "@angular/common/http";
-import { NgModule } from "@angular/core";
+import { Injectable, LOCALE_ID, NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import {
@@ -31,8 +31,14 @@ import { authInterceptor } from "./core/interceptors/auth.interceptor";
 
 import { registerLocaleData } from "@angular/common";
 import ptBr from "@angular/common/locales/pt";
-import { LOCALE_ID } from "@angular/core";
 import { QuantidadePorStatusComponent } from './features/painel-obras/layout-painel-obras/visao-geral/data/quantidade-por-status/quantidade-por-status.component';
+
+import { OverlayModule, ScrollStrategyOptions, NoopScrollStrategy } from "@angular/cdk/overlay";
+
+@Injectable()
+export class CustomScrollStrategyOptions extends ScrollStrategyOptions {
+  override block = () => new NoopScrollStrategy() as any;
+}
 
 registerLocaleData(ptBr);
 @NgModule({
@@ -44,6 +50,7 @@ registerLocaleData(ptBr);
     BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,
+    OverlayModule,
     NbSidebarModule.forRoot(),
     NbMenuModule.forRoot(),
     NbDatepickerModule.forRoot(),
@@ -65,6 +72,10 @@ registerLocaleData(ptBr);
   providers: [
     provideHttpClient(withInterceptors([authInterceptor])),
     { provide: LOCALE_ID, useValue: "pt-BR" },
+    {
+      provide: ScrollStrategyOptions,
+      useClass: CustomScrollStrategyOptions,
+    },
   ],
   bootstrap: [AppComponent],
 })

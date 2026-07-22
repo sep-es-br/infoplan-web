@@ -1,0 +1,641 @@
+// Barra global de navegação, chips e filtros dos dashboards.
+:root {
+  --app-header-height: 3.75rem;
+}
+
+.filter-wrapper {
+  position: sticky;
+  top: var(--app-header-height);
+  z-index: 1000;
+  width: 100%;
+  padding: 6px 6px 6px 6px;
+  margin-top: 0;
+  background-color: transparent;
+  transition: top 0.3s ease-in-out;
+
+  @media screen and (max-width: 768px) {
+    top: var(--app-header-height);
+    padding: 6px 0;
+  }
+}
+
+.filter-button.is-sticky {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+  border-radius: 2px;
+  z-index: 1000;
+  display: flex;
+  gap: 0.75rem;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Global Sticky Navigation Tags (Estilo Painel Obras) */
+nb-tag.tag-default:not(.active-tag) {
+  background-color: transparent !important;
+  color: #4bb6d6 !important;
+  border: 1px solid #4bb6d6 !important;
+  border-radius: 10px !important;
+
+  &:hover {
+    background-color: rgba(75, 182, 214, 0.1) !important;
+  }
+}
+
+nb-tag.tag-default.is-sticky:not(.active-tag) {
+  background-color: rgba(21, 26, 48, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: rgb(255, 255, 255) !important;
+  border-radius: 10px !important;
+  box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.3) !important;
+
+  &:hover {
+    background-color: rgba(21, 26, 48, 0.95) !important;
+    color: rgb(255, 255, 255) !important;
+    border-color: rgba(255, 255, 255, 0.932) !important;
+  }
+}
+
+nb-tag.tag-default.is-sticky.active-tag {
+  background-color: #4bb6d6 !important;
+  border: 1px solid #4bb6d6 !important;
+  color: white !important;
+  border-radius: 10px !important;
+  box-shadow: 2px 3px 10px rgba(75, 182, 214, 0.4) !important;
+}
+
+:host-context(.nb-theme-default),
+.nb-theme-default {
+  nb-tag.tag-default:not(.active-tag) {
+    color: rgb(50, 50, 50) !important;
+    border: 1px solid #4bb6d6 !important;
+
+    &:hover {
+      background-color: #eaf6fb !important;
+    }
+  }
+
+  nb-tag.tag-default.is-sticky:not(.active-tag) {
+    background-color: rgb(245, 245, 245) !important;
+    border: 1px solid rgba(102, 102, 102, 0.3) !important;
+    color: rgb(50, 50, 50) !important;
+    border-radius: 10px !important;
+    box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.05) !important;
+
+    &:hover {
+      background-color: rgb(245, 245, 245) !important;
+      color: rgb(50, 50, 50) !important;
+      border-color: rgba(163, 160, 160, 0.6) !important;
+    }
+  }
+
+  nb-tag.tag-default.is-sticky.active-tag {
+    background-color: #4bb6d6 !important;
+    border: 1px solid #4bb6d6 !important;
+    color: white !important;
+    border-radius: 10px !important;
+    box-shadow: 2px 3px 10px rgba(75, 182, 214, 0.4) !important;
+  }
+}
+
+.filter-tag {
+  background-color: var(--card-background-color);
+  color: var(--card-text-color);
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  font-size: 9px;
+  white-space: nowrap;
+  border: 1px solid #ced4da;
+  line-height: normal;
+
+  @media screen and (max-width: 576px) {
+    padding: 2px 12px;
+    // font-size: 9px;
+    font-size: 8px;
+  }
+
+  .tag-label {
+    font-weight: normal;
+  }
+
+  .tag-value {
+    margin-top: 0;
+  }
+
+  button {
+    background: none;
+    border: none;
+    font-weight: bold;
+    margin-left: 4px;
+    font-size: 17px;
+    cursor: pointer;
+    color: #005c99;
+
+    transition: color 0.35s ease;
+
+    &:hover {
+      color: #dc3545;
+    }
+  }
+}
+
+.invisible-tag {
+  display: none !important;
+}
+
+.filter-toggle-icon-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-color, #ced4da);
+  background-color: var(--card-background-color, transparent);
+  color: var(--card-text-color, currentColor);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  padding: 0;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 9px;
+  white-space: nowrap;
+  z-index: 1;
+
+  &:hover {
+    background-color: var(--border-color, #eaf6fb);
+    color: #005c99;
+  }
+}
+
+.filter-container {
+  display: contents;
+  .filter-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    // padding: 0px !important;
+    // width: 100%;
+
+    .d-flex.align-items-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: auto;
+      min-width: 0;
+    }
+
+    @media (max-width: 877px) {
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+
+      .nav-buttons-container {
+        flex: 1 0 100%;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .d-flex.align-items-center {
+        width: auto !important;
+        min-width: 0;
+        padding: 0 !important;
+        margin-top: 0 !important;
+        margin-left: auto !important;
+        justify-content: flex-end !important;
+      }
+    }
+
+    .filter-tags {
+      display: flex;
+      flex: 0 1 auto;
+      min-width: 0;
+      overflow-x: auto;
+      white-space: nowrap;
+      gap: 8px;
+      padding: 6px 0;
+      scrollbar-width: thin;
+      scrollbar-color: #005c99 transparent;
+
+      > div {
+        flex-shrink: 0;
+      }
+    }
+
+    .map-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+
+      @media (max-width: 767px) {
+        display: none !important;
+      }
+
+      .map-icon {
+        width: 24px;
+        height: 50px;
+        vertical-align: middle;
+      }
+
+      &:hover {
+        .map-icon {
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        }
+      }
+
+      &.map-btn-clicked {
+        filter: none;
+
+        .map-icon {
+          filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+            saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%);
+        }
+      }
+    }
+
+    .filter-toggle {
+      color: var(--card-text-color);
+      min-width: 90px;
+      border: none;
+      background-color: transparent;
+      padding-bottom: 10px;
+      padding-top: 8px;
+      cursor: pointer;
+      z-index: 1;
+      border-radius: 4px;
+    }
+
+    ::ng-deep .tag-panel {
+      justify-content: flex-start !important;
+
+      @media (min-width: 685px) {
+        width: 100%;
+
+        nb-tag-list,
+        .custom-tag-list {
+          width: 100% !important;
+
+          .nb-tag-list-tags-wrapper {
+            display: flex !important;
+            width: 100% !important;
+            // gap: 10px !important;
+          }
+        }
+
+        nb-tag {
+          min-width: 140px !important;
+          width: auto !important;
+        }
+      }
+    }
+  }
+
+  .modal {
+    .modal-dialog {
+      max-width: 70vw;
+      justify-self: center;
+
+      .modal-content {
+        width: 70vw;
+        background-color: var(--card-background-color);
+        color: var(--card-text-color);
+
+        .modal-body {
+          .close-filter-button {
+            color: var(--card-text-color);
+          }
+
+          .filter-row {
+            margin-bottom: 0.75em;
+
+            .filter-entity {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+
+              span {
+                font-size: 12px;
+              }
+
+              nb-select,
+              input {
+                width: 100%;
+                max-width: 100%;
+                height: 2.5em;
+                font-size: 12px;
+              }
+            }
+          }
+        }
+
+        .modal-footer {
+          border: none;
+        }
+      }
+    }
+  }
+}
+
+/* Variação usada por formulários com mais campos na mesma linha. */
+.filter-container .modal.dashboard-filter-modal--compact {
+  .modal-body .filter-row .filter-entity {
+    nb-select,
+    input {
+      height: 2.1em !important;
+      font-size: 12px;
+      border-radius: 4px !important;
+      line-height: normal;
+    }
+  }
+}
+
+/* Padrão visual global das barras sticky (navegação, filtros e chips). */
+.filter-wrapper.is-sticky {
+  .filter-button.is-sticky {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .filter-tags.is-sticky {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .filter-tag.is-sticky {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: max-content;
+    max-width: 100%;
+    border-radius: 10px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: none !important;
+  }
+
+  .filter-toggle-icon-only.is-sticky {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50% !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: none !important;
+  }
+
+  .map-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: none !important;
+
+    .map-icon {
+      width: 24px !important;
+      height: 28px !important;
+      object-fit: contain;
+      filter: drop-shadow(1px 0 0 rgba(255, 255, 255, 0.9))
+        drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.9))
+        drop-shadow(0 1px 0 rgba(255, 255, 255, 0.9))
+        drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.9));
+    }
+
+    &.map-btn-clicked .map-icon {
+      filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+        saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%)
+        drop-shadow(1px 0 0 rgba(255, 255, 255, 0.9))
+        drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.9))
+        drop-shadow(0 1px 0 rgba(255, 255, 255, 0.9))
+        drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.9));
+    }
+  }
+
+  /* Compatibilidade com telas que ainda utilizam o botão de filtro textual. */
+  .filter-button-box .filter-toggle,
+  .filter-button.is-sticky > .filter-toggle {
+    border-radius: 10px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: none !important;
+  }
+}
+
+/* Quando navegação e filtros deixam de caber juntos, cada grupo ganha sua linha. */
+@media (max-width: 1200px) {
+  .filter-container
+    .filter-wrapper.is-sticky
+    .filter-button.is-sticky
+    .filter-tags.is-sticky {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .filter-container .filter-button {
+    column-gap: 6px !important;
+    row-gap: 2px !important;
+
+    // Quando há navegação, ela ocupa a primeira linha e precisa de respiro
+    // antes dos chips. Telas sem botões continuam compactas.
+    &:has(.nav-buttons-container) {
+      row-gap: 6px !important;
+    }
+
+    // O Painel de Obras já possui duas linhas internas de navegação.
+    &.multi-row-navigation {
+      row-gap: 6px !important;
+    }
+
+    // Fora do sticky há mais espaço vertical disponível.
+    &.multi-row-navigation:not(.is-sticky) {
+      row-gap: 10px !important;
+    }
+
+    .nav-buttons-container {
+      flex: 1 0 100% !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0;
+
+      ngx-sticky-tag-nav,
+      .tag-panel,
+      nb-tag-list,
+      .custom-tag-list,
+      .nb-tag-list-tags-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      .nb-tag-list-tags-wrapper {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+      }
+
+      nb-tag {
+        flex: 1 1 0 !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        min-height: 28px !important;
+        height: 28px !important;
+        padding: 3px 6px !important;
+        font-size: 9px !important;
+        line-height: 1.1 !important;
+        box-sizing: border-box !important;
+      }
+    }
+
+    .d-flex.align-items-center,
+    .indicator-filter-actions {
+      flex: 0 1 auto !important;
+      width: auto !important;
+      max-width: 100%;
+      margin-left: auto !important;
+      justify-content: flex-end !important;
+    }
+
+    .filter-tags {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+  }
+}
+
+@media (max-width: 684px) {
+  .filter-container .filter-button .nav-buttons-container {
+    .nb-tag-list-tags-wrapper {
+      flex-wrap: wrap !important;
+      gap: 4px !important;
+    }
+
+    nb-tag {
+      flex: 0 0 calc(50% - 2px) !important;
+      width: calc(50% - 2px) !important;
+      max-width: calc(50% - 2px) !important;
+      min-height: 26px !important;
+      height: 26px !important;
+      padding: 2px 4px !important;
+      font-size: 8px !important;
+    }
+  }
+}
+
+/* O Painel de Obras usa quatro opções e preserva botões compactos
+   antes de entrar no layout mobile global. */
+@media (min-width: 1201px) and (max-width: 1366px) {
+  .filter-button.multi-row-navigation .nav-buttons-container nb-tag {
+    width: 110px !important;
+  }
+}
+
+.nb-theme-dark,
+.nb-theme-cosmic {
+  .filter-wrapper.is-sticky {
+    nb-tag.tag-default.is-sticky:not(.active-tag),
+    .filter-tag.is-sticky,
+    .filter-button-box .filter-toggle,
+    .filter-button.is-sticky > .filter-toggle {
+      color: #ffffff !important;
+      background: rgba(21, 26, 48, 0.88) !important;
+      border: 1px solid rgba(255, 255, 255, 0.75) !important;
+      box-shadow: 2px 3px 10px rgba(211, 211, 211, 0.65) !important;
+    }
+
+    nb-tag.tag-default.is-sticky.active-tag {
+      color: #ffffff !important;
+      background: #4bb6d6 !important;
+      border: 1px solid #4bb6d6 !important;
+      box-shadow: 2px 3px 10px rgba(75, 182, 214, 0.45) !important;
+    }
+
+    .filter-toggle-icon-only.is-sticky {
+      color: #ffffff !important;
+      background: rgba(21, 26, 48, 0.88) !important;
+      border: 1px solid rgba(255, 255, 255, 0.9) !important;
+      box-shadow: 2px 3px 12px rgba(211, 211, 211, 0.8) !important;
+    }
+
+    .map-btn {
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+.nb-theme-default {
+  .filter-wrapper.is-sticky {
+    nb-tag.tag-default.is-sticky:not(.active-tag),
+    .filter-tag.is-sticky,
+    .filter-button-box .filter-toggle,
+    .filter-button.is-sticky > .filter-toggle {
+      color: rgb(50, 50, 50) !important;
+      background: rgba(255, 255, 255, 0.9) !important;
+      border: 1px solid rgba(102, 102, 102, 0.45) !important;
+      box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.35) !important;
+    }
+
+    nb-tag.tag-default.is-sticky.active-tag {
+      color: #ffffff !important;
+      background: #4bb6d6 !important;
+      border: 1px solid #4bb6d6 !important;
+      box-shadow: 2px 3px 10px rgba(75, 182, 214, 0.4) !important;
+    }
+
+    .filter-toggle-icon-only.is-sticky {
+      color: rgb(50, 50, 50) !important;
+      background: rgba(255, 255, 255, 0.9) !important;
+      border: 1px solid rgba(102, 102, 102, 0.6) !important;
+      box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.45) !important;
+    }
+
+    .map-btn {
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+
+      .map-icon {
+        filter: drop-shadow(1px 0 0 rgba(50, 50, 50, 0.8))
+          drop-shadow(-1px 0 0 rgba(50, 50, 50, 0.8))
+          drop-shadow(0 1px 0 rgba(50, 50, 50, 0.8))
+          drop-shadow(0 -1px 0 rgba(50, 50, 50, 0.8));
+      }
+
+      &.map-btn-clicked .map-icon {
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+          saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(110%)
+          drop-shadow(1px 0 0 rgba(50, 50, 50, 0.8))
+          drop-shadow(-1px 0 0 rgba(50, 50, 50, 0.8))
+          drop-shadow(0 1px 0 rgba(50, 50, 50, 0.8))
+          drop-shadow(0 -1px 0 rgba(50, 50, 50, 0.8));
+      }
+    }
+  }
+}

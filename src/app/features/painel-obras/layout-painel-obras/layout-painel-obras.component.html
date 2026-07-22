@@ -1,7 +1,7 @@
 <div class="col-12">
   <div class="filter-container">
     <div class="filter-wrapper" [class.is-sticky]="isScrolled">
-      <div class="filter-button px-2" [class.is-sticky]="isScrolled">
+      <div class="filter-button multi-row-navigation px-2" [class.is-sticky]="isScrolled">
         <div class="nav-buttons-container flex-grow-1">
           <ngx-sticky-tag-nav [tags]="menuPortalObras"></ngx-sticky-tag-nav>
         </div>
@@ -111,8 +111,8 @@
       </div>
     </div>
 
-    <div class="row g-1 px-2">
-      <div class="col-12 col-xl-2 px-1">
+    <div class="row g-1 px-2 totalizers-grid">
+      <div class="col-12 col-xl-2 px-1 summary-logo-column">
         <div class="card">
           <div class="card-content h-100">
             <div class="portfolio-content w-100 h-100 d-flex justify-content-start align-items-center">
@@ -122,10 +122,10 @@
         </div>
       </div>
 
-      <div class="col-12 col-xl-10 px-1">
-        <div class="row g-1">
+      <div class="col-12 col-xl-10 px-1 summary-cards-column">
+        <div class="row g-1 summary-cards-grid">
 
-          <div class="col-12 col-sm-6 col-xl-4 px-1">
+          <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <div class="card">
               <div class="icon-top-right totalizador-programas" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-layer-group"></i>
@@ -150,7 +150,7 @@
             </div>
           </div>
 
-          <div class="col-12 col-sm-6 col-xl-4 px-1">
+          <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <div class="card">
               <div class="icon-top-right totalizador-projetos" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-project-diagram"></i>
@@ -175,7 +175,7 @@
             </div>
           </div>
 
-          <div class="col-12 col-sm-6 col-xl-4 px-1">
+          <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <div class="card">
               <div class="icon-top-right contagem-entregas" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-box-open"></i>
@@ -200,7 +200,7 @@
             </div>
           </div>
 
-          <div class="col-12 col-sm-6 col-xl-4 px-1">
+          <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <div class="card">
               <div class="icon-top-right monitoramento-planejado" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-money-check-alt"></i>
@@ -225,7 +225,7 @@
             </div>
           </div>
 
-          <div class="col-12 col-sm-6 col-xl-4 px-1">
+          <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <div class="card">
               <div class="icon-top-right monitoramento-realizado" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-chart-line"></i>
@@ -250,7 +250,7 @@
             </div>
           </div>
 
-          <div class="col-12 col-sm-6 col-xl-4 px-1">
+          <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <div class="card">
               <div class="icon-top-right filtro-temporal-critico" *ngIf="requestStatus.status !== 'Loading'">
                 <i class="fas fa-hourglass-half"></i>

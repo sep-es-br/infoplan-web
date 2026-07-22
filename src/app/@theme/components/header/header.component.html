@@ -13,7 +13,8 @@
   <div class="header-container">
     <nb-actions size="small">
       <nb-action class="user-action" *nbIsGranted="['view', 'user']" >
-        <nb-user [nbContextMenu]="userMenu"
+        <nb-user size="medium"
+                [nbContextMenu]="userMenu"
                 [name]="user?.name">
         </nb-user>
       </nb-action>

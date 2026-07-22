@@ -14,7 +14,8 @@
   }
 
   .icone-info-plan {
-    width: 120px;
+    width: 100px;
+    //120px;
   }
 
   .context-menu {
@@ -31,8 +32,16 @@
     cursor: pointer;
   }
 
-  ::ng-deep nb-user .user-picture {
-    border-color: var(--card-text-color);
+  ::ng-deep nb-user {
+    .user-picture {
+      border-color: var(--card-text-color);
+      width: 2.1rem;
+      height: 2.1rem;
+    }
+
+    .user-name {
+      font-size: 0.9rem;
+    }
   }
 
   ::ng-deep nb-search button {

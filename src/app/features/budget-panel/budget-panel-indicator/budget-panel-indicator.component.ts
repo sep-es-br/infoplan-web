@@ -28,6 +28,7 @@ import { Subject, Subscription } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ChartMaximizeService } from "../../../core/service/chart-maximize/chart-maximize.service";
 import { ScrollService } from "../../../core/service/scroll.service";
+import { NavigationTag } from "../../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
 import { formatNumber } from "../../../@core/utils/uitls";
 
 const DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS: IIndicatorExecutionFilter = {
@@ -107,6 +108,21 @@ export class BudgetPanelIndicatorComponent
 
   isFilterModalOpen: boolean = false;
   isScrolled: boolean = false;
+
+  menuExecucao: NavigationTag[] = [
+    {
+      label: 'Resumo Executivo',
+      route: ['/pages/execucao-orcamentaria/resumo-executivo'],
+      exact: true,
+      visibleIn: ['/pages/execucao-orcamentaria']
+    },
+    {
+      label: 'Indicadores',
+      route: ['/pages/execucao-orcamentaria/indicador'],
+      exact: true,
+      visibleIn: ['/pages/execucao-orcamentaria']
+    }
+  ];
 
   uoList: IBudgetaryUnitResponse[] = [];
   filteredUOList: IBudgetaryUnitResponse[] = [];

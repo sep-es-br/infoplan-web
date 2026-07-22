@@ -1,8 +1,13 @@
 <div class="col-12">
   <div class="filter-container">
     <div class="filter-wrapper" [class.is-sticky]="isScrolled">
-      <div class="filter-button px-2">
-        <div class="filter-tags" [class.is-sticky]="isScrolled">
+      <div class="filter-button px-2" [class.is-sticky]="isScrolled">
+        <div class="nav-buttons-container flex-grow-1">
+          <ngx-sticky-tag-nav [tags]="menuExecucao"></ngx-sticky-tag-nav>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 flex-grow-1">
+        <div class="filter-tags ms-auto" [class.is-sticky]="isScrolled">
           <div *ngFor="let tag of activeFilters; let i = index">
             <div class="filter-tag" [class.is-sticky]="isScrolled">
               <div class="filter-tag-inner" [ngClass]="{ 'invisible-tag': showFilters }">
@@ -45,11 +50,16 @@
           </div>
         </div>
 
-        <div class="filter-button" [class.is-sticky]="isScrolled">
-          <button class="filter-toggle" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal" (click)="blurButton($event)">
-            Filtros
-            <nb-icon [icon]="'funnel-outline'"></nb-icon>
-          </button>
+        <button
+          class="filter-toggle-icon-only"
+          [class.is-sticky]="isScrolled"
+          type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#filtrosModal"
+          (click)="blurButton($event)"
+          nbTooltip="Filtros">
+          <nb-icon [icon]="'funnel-outline'"></nb-icon>
+        </button>
         </div>
       </div>
     </div>
@@ -164,7 +174,7 @@
             <div class="text-section prevista" [style.opacity]="requestStatus.totals === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
               <span>Receita Prevista</span>
             </div>
-          
+
         </div>
       </div>
     </div>
@@ -194,7 +204,7 @@
             <div class="text-section realizada" [style.opacity]="requestStatus.totals === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
               <span>Receita Realizada</span>
             </div>
-          
+
         </div>
       </div>
     </div>

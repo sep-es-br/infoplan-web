@@ -1,11 +1,11 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
-import { NbCardModule } from "@nebular/theme";
-import { CardsComponent } from "./cards.component";
+import { NbTooltipModule } from "@nebular/theme";
+import { DashboardSummaryCardComponent } from "./cards.component";
 
 @NgModule({
-  declarations: [CardsComponent],
-  imports: [CommonModule, NbCardModule],
-  exports: [CardsComponent],
+  declarations: [DashboardSummaryCardComponent],
+  imports: [CommonModule, NbTooltipModule],
+  exports: [DashboardSummaryCardComponent],
 })
 export class CardsModule {}

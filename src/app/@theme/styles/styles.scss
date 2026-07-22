@@ -38,6 +38,24 @@
   text-align: left;
 }
 
+.user-context-menu nb-context-menu,
+nb-context-menu.user-context-menu {
+  transform: translateX(40px);
+}
+
+@media (max-width: 575px) {
+  .user-context-menu nb-context-menu,
+  nb-context-menu.user-context-menu {
+    width: 156px !important;
+    min-width: 156px !important;
+
+    nb-menu {
+      width: 156px !important;
+      min-width: 156px !important;
+    }
+  }
+}
+
 // .box-limited {
 //   overflow-y: auto;
 //   overflow-x: auto;
@@ -164,6 +182,7 @@ body.nb-global-scrollblock {
 }
 
 @import "./dashboard-filter";
+@import "./dashboard-footer";
 
 /* Alinha cards de resumo que possuem uma row aninhada no layout de celular. */
 @media (max-width: 575px) {

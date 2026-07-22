@@ -485,174 +485,54 @@
     </div>
 
     <div class="col-6 col-md-4 col-xxl-2 mb-2 px-1">
-      <div class="card">
-        <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
-          <i class="fas fa-cogs"></i>
-        </div>
-        <div class="card-content">
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else programasContent"
-          >
-            <div class="d-flex justify-content-center align-items-center w-100">
-              <div class="spinner-border qt-programas" role="status">
-                <span class="sr-only">Carregando...</span>
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #programasContent>
-            <div class="number-box">{{ totals.qdeProgramas }}</div>
-
-            <div class="text-section">
-              <span>{{
-                totals.qdeProgramas === 1 ? "Programa" : "Programas"
-              }}</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="totals.qdeProgramas"
+        [label]="totals.qdeProgramas === 1 ? 'Programa' : 'Programas'"
+        icon="fas fa-cogs"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
     <div class="col-6 col-md-4 col-xxl-2 mb-2 px-1">
-      <div class="card">
-        <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
-          <i class="fas fa-cog"></i>
-        </div>
-        <div class="card-content">
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else projetosContent"
-          >
-            <div class="d-flex justify-content-center align-items-center w-100">
-              <div class="spinner-border qt-projetos" role="status">
-                <span class="sr-only">Carregando...</span>
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #projetosContent>
-            <div class="number-box">{{ totals.qdeProjetos }}</div>
-
-            <div class="text-section">
-              <span>{{
-                totals.qdeProjetos === 1 ? "Projeto" : "Projetos"
-              }}</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="totals.qdeProjetos"
+        [label]="totals.qdeProjetos === 1 ? 'Projeto' : 'Projetos'"
+        icon="fas fa-cog"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
     <div class="col-6 col-md-4 col-xxl-2 mb-2 px-1">
-      <div class="card">
-        <div class="icon-top-right" *ngIf="requestStatus.totals !== 'Loading'">
-          <i class="fas fa-cubes"></i>
-        </div>
-        <div class="card-content">
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else entregasContent"
-          >
-            <div class="d-flex justify-content-center align-items-center w-100">
-              <div class="spinner-border total-entregas" role="status">
-                <span class="sr-only">Carregando...</span>
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #entregasContent>
-            <div class="number-box">{{ totals.totalEntregasPE }}</div>
-
-            <div class="text-section">
-              <span>{{
-                totals.totalEntregasPE === 1 ? "Entrega" : "Entregas"
-              }}</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="totals.totalEntregasPE"
+        [label]="totals.totalEntregasPE === 1 ? 'Entrega' : 'Entregas'"
+        icon="fas fa-cubes"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
     <div class="col-6 col-md-4 col-xxl-2 mb-2 px-1">
-      <div class="card" [nbTooltip]="'R$ ' + (totals.totalPrevisto | number: '1.2-2')" nbTooltipPlacement="bottom">
-        <div
-          class="icon-top-right previsto"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
-          <i class="fas fa-calculator"></i>
-        </div>
-        <div class="card-content">
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else previstoContent"
-          >
-            <div class="d-flex justify-content-center align-items-center w-100">
-              <div class="spinner-border total-previsto" role="status">
-                <span class="visually-hidden">Carregando...</span>
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #previstoContent>
-            <div class="number-box previsto">
-              <div
-                class="d-flex"
-                style="flex-direction: column; align-items: start"
-              >
-                <div class="currency">R$</div>
-                <div
-                  class="value"
-                >
-                  {{ formatNumber(totals.totalPrevisto) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section previsto">
-              <span>Previsto</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="formatNumber(totals.totalPrevisto)"
+        label="Previsto"
+        icon="fas fa-calculator"
+        prefix="R$"
+        accentColor="#487d7a"
+        [tooltip]="'R$ ' + (totals.totalPrevisto | number: '1.2-2')"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
     <div class="col-6 col-md-4 col-xxl-2 mb-2 px-1">
-      <div class="card" [nbTooltip]="'R$ ' + (totals.totalRealizado | number: '1.0-2')" nbTooltipPlacement="bottom">
-        <div
-          class="icon-top-right realizado"
-          *ngIf="requestStatus.totals !== 'Loading'"
-        >
-          <i class="fas fa-database"></i>
-        </div>
-        <div class="card-content">
-          <ng-container
-            *ngIf="requestStatus.totals === 'Loading'; else realizadoContent"
-          >
-            <div class="d-flex justify-content-center align-items-center w-100">
-              <div class="spinner-border total-realizado" role="status">
-                <span class="sr-only">Carregando...</span>
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #realizadoContent>
-            <div class="number-box realizado">
-              <div
-                class="d-flex"
-                style="flex-direction: column; align-items: start"
-              >
-                <div class="currency">R$</div>
-                <div
-                  class="value"
-                >
-                  {{ formatNumber(totals.totalRealizado) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section realizado">
-              <span>Realizado</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="formatNumber(totals.totalRealizado)"
+        label="Realizado"
+        icon="fas fa-database"
+        prefix="R$"
+        accentColor="#00b26a"
+        [tooltip]="'R$ ' + (totals.totalRealizado | number: '1.0-2')"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
   </div>
 
@@ -800,6 +680,6 @@
   </div>
 </div>
 
-<nb-layout-footer class="mt-2">
+<nb-layout-footer class="dashboard-footer-wrapper">
   <ngx-footer [timestamp]="timestamp"></ngx-footer>
 </nb-layout-footer>

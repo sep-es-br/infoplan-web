@@ -1011,6 +1011,23 @@ export class BudgetPanelIndicatorComponent
       });
   }
 
+  get budgetManagementNote(): string {
+    const note = this.statusTotal?.budgetManagementIndicator?.nota;
+    return note === null || note === undefined || note === ""
+      ? ""
+      : `Nota ${note}`;
+  }
+
+  get highestSettlementDescription(): string {
+    const settlement = this.statusTotal?.poWithHighestSettlement as any;
+    const code = settlement?.cod_po;
+    const name = settlement?.nome_po;
+
+    return [code, name]
+      .filter((value) => value !== null && value !== undefined && `${value}`.trim() !== "")
+      .join(" - ");
+  }
+
   handleMaximizeButtonClick(chartId: string, event: boolean): void {
     this._chartMaximizeService.handleMaximizeButtonClick(chartId, event);
   }

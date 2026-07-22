@@ -28,7 +28,7 @@ import { LayoutPainelObrasRoutingModule } from "./layout-painel-obras-rounting.m
     ThemeModule,
     NbAutocompleteModule,
     NbTagModule,
-    LayoutPainelObrasRoutingModule
+    LayoutPainelObrasRoutingModule,
   ],
 })
 export class LayoutPainelObrasModule {}

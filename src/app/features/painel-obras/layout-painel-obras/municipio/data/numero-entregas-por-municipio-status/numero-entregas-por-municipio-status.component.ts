@@ -83,7 +83,7 @@ export class NumeroEntregasPorMunicipioStatusComponent implements OnChanges, OnD
         this.numeroEntregasPorMunicipioStatusResponse = response;
         this.assembleFlipTableContent(response);
         this.chartData = this.processChartData(response);
-        this.requestStatus = RequestStatus.SUCCESS;
+        this.requestStatus = response?.length ? RequestStatus.SUCCESS : RequestStatus.EMPTY;
       },
       error(err) {
         console.error(

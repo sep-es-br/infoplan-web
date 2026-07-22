@@ -1,5 +1,6 @@
 <div [ngClass]="{'is-visible-card-filter': (!_filterStateService.showExpensePanel$ | async)}">
-  <nb-card class="outer-card m-0" [style]="{ height: outerCardHeight + 'px' }" [nbSpinner]="loadingStatus === 'Loading'"
+  <nb-card class="outer-card m-0" [class.has-no-data]="loadingStatus === 'Empty'"
+    [style]="{ height: outerCardHeight + 'px' }" [nbSpinner]="loadingStatus === 'Loading'"
     [nbSpinnerStatus]="'success'">
     <nb-card-header class="card-header d-flex justify-content-between align-items-start p-2">
       <ng-container *ngIf="cardTitle; else customHeader">
@@ -75,6 +76,11 @@
         </ng-template>
       </div>
     </nb-card-header>
+
+    <div *ngIf="loadingStatus === 'Empty'" class="no-data-overlay" role="status" aria-live="polite">
+      <nb-icon icon="inbox-outline"></nb-icon>
+      <span>Nenhum dado encontrado para os filtros selecionados.</span>
+    </div>
 
     <div *ngIf="hasToggleContent" class="d-flex justify-content-between align-items-start px-2">
       <ng-container>

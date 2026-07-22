@@ -146,6 +146,7 @@ export class OrgChartVerticalGroupedComponent
     const labelsRaw = this.chart.data.labels || [];
     const datasetsRaw = this.chart.data.datasets;
     const theme = getAvailableThemesStyles(this.currentTheme);
+    const isPhone = typeof window !== "undefined" && window.innerWidth <= 480;
     // Determine whether the grouping mode expects the MAJOR to be
     // the first part of the label (before |#|) or the second part.
     // e.g. labels are produced as `municipio|#|status`.
@@ -352,6 +353,7 @@ export class OrgChartVerticalGroupedComponent
       xAxis: {
         type: "value",
         max: this.valueType === "percent" ? 100 : null,
+        splitNumber: isPhone ? 3 : 5,
         axisLabel: {
           formatter: (value: number) => {
             return this.valueType === "percent"
@@ -359,7 +361,8 @@ export class OrgChartVerticalGroupedComponent
               : this.formatAxisCompact(value);
           },
           color: theme.textPrimaryColor,
-          fontSize: this.isMaximized ? 13 : 10,
+          fontSize: isPhone ? (this.isMaximized ? 10 : 8) : this.isMaximized ? 13 : 10,
+          hideOverlap: true,
         },
         splitLine: {
           show: true,
@@ -376,11 +379,16 @@ export class OrgChartVerticalGroupedComponent
         },
         axisLabel: {
           interval: 0,
-          margin: 10,
+          margin: isPhone ? 6 : 10,
           color: theme.textPrimaryColor,
+          fontSize: isPhone ? 9 : undefined,
+          lineHeight: isPhone ? 11 : undefined,
           rich: {
             mainGroup: {
-              fontSize: this.isMaximized ? 14 : 11,
+              fontSize: isPhone ? 10 : this.isMaximized ? 14 : 11,
+              width: isPhone ? 92 : undefined,
+              lineHeight: isPhone ? 12 : undefined,
+              align: "right",
               padding: [0, 0, 4, 0],
             },
           },
@@ -391,14 +399,19 @@ export class OrgChartVerticalGroupedComponent
             const mainLabel = isMajorFirst ? d.major : d.minor;
 
             if (midpointIndices.has(absoluteIdx)) {
-              return `{mainGroup|${mainLabel}}`;
+              const displayLabel = isPhone
+                ? this.wrapMobileAxisLabel(mainLabel, 13)
+                : mainLabel;
+              return isPhone
+                ? displayLabel
+                : `{mainGroup|${displayLabel}}`;
             }
             return "";
           },
         },
         axisTick: {
           show: true,
-          length: 40,
+          length: isPhone ? 6 : 40,
           lineStyle: { color: theme.textPrimaryColor, opacity: 0.4 },
           interval: (_index: number, val: string) => {
             if (!val) return true;
@@ -507,6 +520,25 @@ export class OrgChartVerticalGroupedComponent
     if (absVal >= 1000)
       return (val / 1000).toFixed(1).replace(".", ",").replace(",0", "") + "K";
     return val.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+  }
+
+  private wrapMobileAxisLabel(label: string, maxLineLength = 16): string {
+    const words = String(label || "").split(/\s+/);
+    const lines: string[] = [];
+    let currentLine = "";
+
+    words.forEach((word) => {
+      const candidate = currentLine ? `${currentLine} ${word}` : word;
+      if (currentLine && candidate.length > maxLineLength) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = candidate;
+      }
+    });
+
+    if (currentLine) lines.push(currentLine);
+    return lines.join("\n");
   }
 
   private formatAxisCompact(val: number): string {

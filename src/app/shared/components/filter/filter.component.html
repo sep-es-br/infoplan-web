@@ -1,9 +1,10 @@
 <!-- generic-filter.component.html -->
 <div class="filter-container">
-  <div class="filter-button px-2">
-    <div class="filter-tags">
+  <div class="filter-wrapper" [class.is-sticky]="isScrolled">
+  <div class="filter-button px-2" [class.is-sticky]="isScrolled">
+    <div class="filter-tags" [class.is-sticky]="isScrolled">
       <div *ngFor="let tag of activeFilters" class="d-inline-block">
-        <div class="filter-tag" [ngClass]="{ 'invisible-tag': showFilters }">
+        <div class="filter-tag" [class.is-sticky]="isScrolled" [ngClass]="{ 'invisible-tag': showFilters }">
           <div class="d-flex align-items-center">
             <span class="tag-label">{{ tag.label }}:</span>
             <div class="tag-value ms-1">
@@ -48,7 +49,7 @@
       </div>
     </div>
 
-    <div class="filter-actions">
+    <div class="filter-actions d-flex align-items-center gap-2">
       <button
         *ngIf="showMapButton"
         (click)="toggleMap()"
@@ -60,14 +61,16 @@
       </button>
 
       <button
-        class="filter-toggle p-0"
+        class="filter-toggle-icon-only"
+        [class.is-sticky]="isScrolled"
         type="button"
         (click)="openFilterModal()"
+        nbTooltip="Filtros"
       >
-        Filtros
         <nb-icon [icon]="'funnel-outline'"></nb-icon>
       </button>
     </div>
+  </div>
   </div>
 
   <!-- Modal de Filtros -->

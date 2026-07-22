@@ -128,7 +128,7 @@ export class QuantidadePorStatusComponent implements OnChanges, OnDestroy {
         }));
 
         this.chartColors = getChartColors(this.chartData.length, this.chartColorPalette);
-        this.requestStatus = RequestStatus.SUCCESS;
+        this.requestStatus = response?.length ? RequestStatus.SUCCESS : RequestStatus.EMPTY;
       },
       error(err) {
         console.error('Erro ao carregar os dados do investimento acumulado:', err);

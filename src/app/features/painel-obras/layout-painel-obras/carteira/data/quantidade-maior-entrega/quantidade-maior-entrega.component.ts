@@ -109,7 +109,7 @@ export class QuantidadeMaiorEntregaComponent
           this.assembleFlipTableContent([]);
           this.chartData = this.processData([]);
         }
-        this.requestStatus = RequestStatus.SUCCESS;
+        this.requestStatus = response?.length ? RequestStatus.SUCCESS : RequestStatus.EMPTY;
       },
       error: (err) => {
         console.error(

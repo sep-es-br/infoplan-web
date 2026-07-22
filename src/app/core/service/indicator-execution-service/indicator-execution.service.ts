@@ -12,6 +12,7 @@ import {
   IActionResponse,
   IBudgetaryUnitResponse,
   IDashAvailabilityToUoResponse,
+  IDashComparativeResponse,
   IDashPlannedBudgetResponse,
   IDashSuccessPlannedResponse,
   IIndicatorExecutionFilter,
@@ -170,6 +171,19 @@ export class IndicatorExecutionService {
   ): Observable<IDashSuccessPlannedResponse[]> {
     return this._http
       .get<IDashSuccessPlannedResponse[]>(
+        `${this._URI}/dash/grupo-de-despesas`,
+        {
+          params: this.paramsFilterGeneral(filter),
+        },
+      )
+      .pipe(catchError((err) => this.handleError(err, this._router)));
+  }
+
+  public getDashComparative(
+    filter: IIndicatorExecutionFilter,
+  ): Observable<IDashComparativeResponse[]> {
+    return this._http
+      .get<IDashComparativeResponse[]>(
         `${this._URI}/dash/grupo-de-despesas`,
         {
           params: this.paramsFilterGeneral(filter),

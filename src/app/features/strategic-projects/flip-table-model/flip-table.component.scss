@@ -32,11 +32,45 @@
 }
 
 .outer-card {
+  position: relative;
   background-color: var(--card-background-color);
   border: none;
   border-radius: 8px;
   padding: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  &.has-no-data {
+    .flip-card,
+    .card-toggle-section {
+      filter: grayscale(1);
+      opacity: 0.28;
+      pointer-events: none;
+    }
+  }
+
+  .no-data-overlay {
+    position: absolute;
+    inset: 4rem 0 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    color: var(--card-text-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    pointer-events: none;
+
+    nb-icon {
+      width: 2rem;
+      height: 2rem;
+      font-size: 2rem;
+      opacity: 0.75;
+    }
+  }
 
   .card-header {
     border: none;

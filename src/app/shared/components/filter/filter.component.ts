@@ -57,6 +57,7 @@ export class FilterComponent implements OnInit {
   @Input() activeFilters: ActiveFilter[] = [];
   @Input() showMapButton: boolean = false;
   @Input() isMapOpen: boolean = false;
+  @Input() isScrolled: boolean = false;
 
   @Output() filterChange = new EventEmitter<any>();
   @Output() filterRemove = new EventEmitter<string>();

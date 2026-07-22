@@ -334,7 +334,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
   }
 
   ngAfterViewInit(): void {
-    // Move o modal para o root do document body para evitar bugs de CSS (position: fixed) 
+    // Move o modal para o root do document body para evitar bugs de CSS (position: fixed)
     // quando engatilhado dentro de layouts com transform/sticky (típico no mobile)
     const modal = document.getElementById("filtrosModal");
     if (modal && modal.parentNode !== document.body) {

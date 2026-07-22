@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { StrategicProjectsComponent } from './strategicProjects.component';
+import { CardsModule } from '../../shared/components/cards/cards.module';
 import { NbButtonModule, NbCardModule, NbDatepickerModule, NbIconModule, NbInputModule, NbLayoutModule, NbSelectModule, NbTooltipModule } from '@nebular/theme';
 import { DeliveriesByStatusComponent } from './data-chart/deliveries-by-status/deliveriesByStatus.component';
 import { CriticalMilestonesForPerformanceComponent } from './data-chart/critical-milestones-for-performance/criticalMilestonesForPerformace.component';
@@ -24,6 +25,7 @@ import { TextTruncatePipe } from '../../@theme/pipes/text-truncate.pipe';
     MapEsComponent
   ],
   imports: [
+    CardsModule,
     FormsModule,
     CommonModule,
     NbCardModule,

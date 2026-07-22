@@ -150,165 +150,57 @@
     </div>
 
     <div class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2  px-1 ">
-      <div class="card">
-        <div class="icon-top-right prevista" *ngIf="requestStatus.totals !== 'Loading'">
-          <i class="fa fa-crosshairs"></i>
-        </div>
-        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalPlannedRevenue | number : '1.0-0')"
-          nbTooltipPlacement="bottom">
-          <div *ngIf="requestStatus.totals === 'Loading'" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-color: rgba(255, 255, 255, 0.7); z-index: 10; border-radius: 4px;">
-            <div class="spinner-border total-prevista" role="status">
-              <span class="sr-only">Carregando...</span>
-            </div>
-          </div>
-
-            <div class="number-box prevista" [style.opacity]="requestStatus.totals === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
-              <div class="d-flex" style="flex-direction: column; align-items: start">
-                <div class="currency">R$</div>
-                <div class="value">
-                  {{ formatNumber(totals.totalPlannedRevenue) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section prevista" [style.opacity]="requestStatus.totals === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
-              <span>Receita Prevista</span>
-            </div>
-
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="formatNumber(totals.totalPlannedRevenue)"
+        prefix="R$"
+        label="Receita Prevista"
+        icon="fa fa-crosshairs"
+        accentColor="var(--receita-prevista)"
+        [tooltip]="'R$ ' + (totals.totalPlannedRevenue | number : '1.0-0')"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
     <div class="col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 px-1 ">
-      <div class="card">
-        <div class="icon-top-right realizada" *ngIf="requestStatus.totals !== 'Loading'">
-          <i class="fa fa-check-circle"></i>
-        </div>
-        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalRealizedRevenue | number : '1.0-2')"
-          nbTooltipPlacement="bottom">
-          <div *ngIf="requestStatus.totals === 'Loading'" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-color: rgba(255, 255, 255, 0.7); z-index: 10; border-radius: 4px;">
-            <div class="spinner-border total-realizada" role="status">
-              <span class="sr-only">Carregando...</span>
-            </div>
-          </div>
-
-            <div class="number-box realizada" [style.opacity]="requestStatus.totals === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
-              <div class="d-flex" style="flex-direction: column; align-items: start">
-                <div class="currency">R$</div>
-                <div class="value">
-                  {{ formatNumber(totals.totalRealizedRevenue) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section realizada" [style.opacity]="requestStatus.totals === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
-              <span>Receita Realizada</span>
-            </div>
-
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="formatNumber(totals.totalRealizedRevenue)"
+        prefix="R$"
+        label="Receita Realizada"
+        icon="fa fa-check-circle"
+        accentColor="var(--receita-realizada)"
+        [tooltip]="'R$ ' + (totals.totalRealizedRevenue | number : '1.0-2')"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 px-1 ">
-      <div class="card">
-        <div class="icon-top-right realizada-prevista" *ngIf="requestStatus.totals !== 'Loading'">
-          <img src="assets/images/app/icone-receita-realizada-prevista.png" style="width: 20px" />
-        </div>
-        <div class="card-content">
-          <ng-container *ngIf="
-              requestStatus.totals === 'Loading';
-              else realizadaPrevistaContent
-            ">
-            <div class="d-flex justify-content-center align-items-center w-100">
-              <div class="spinner-border total-realizada-prevista" role="status">
-                <span class="sr-only">Carregando...</span>
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #realizadaPrevistaContent>
-            <div class="number-box realizada-prevista">
-              <div class="d-flex" style="flex-direction: column; align-items: start">
-                <div class="value">
-                  {{ totals.realizedVsPlannedRevenuePercentage }} %
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section realizada-prevista">
-              <span>Receita Realizada/ Prevista</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="totals.realizedVsPlannedRevenuePercentage + ' %'"
+        label="Receita Realizada/ Prevista"
+        icon="assets/images/app/icone-receita-realizada-prevista.png"
+        accentColor="var(--receita-realizada-prevista)"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2 px-1 ">
-      <div class="card">
-        <div class="icon-top-right empenhada-autorizada" *ngIf="requestStatus.totals !== 'Loading'">
-          <i class="fa fa-handshake"></i>
-        </div>
-        <div class="card-content">
-          <ng-container *ngIf="
-              requestStatus.totals === 'Loading';
-              else empenhadaAutorizadaContent
-            ">
-            <div class="d-flex justify-content-center align-items-center w-100">
-              <div class="spinner-border total-empenhada-autorizada" role="status">
-                <span class="sr-only">Carregando...</span>
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #empenhadaAutorizadaContent>
-            <div class="number-box empenhada-autorizada">
-              <div class="d-flex" style="flex-direction: column; align-items: start">
-                <div class="value">
-                  {{ totals.committedVsAuthorizedExpensePercentage }} %
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section empenhada-autorizada">
-              <span>Despesa Empenhada/ Autorizada</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="totals.committedVsAuthorizedExpensePercentage + ' %'"
+        label="Despesa Empenhada/ Autorizada"
+        icon="fa fa-handshake"
+        accentColor="var(--despesa-empenhada-autorizada)"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-2  px-1">
-      <div class="card">
-        <div class="icon-top-right liquidada-autorizada" *ngIf="requestStatus.totals !== 'Loading'">
-          <i class="fas fa-hand-holding-usd"></i>
-        </div>
-        <div class="card-content">
-          <ng-container *ngIf="
-              requestStatus.totals === 'Loading';
-              else liquidadaAutorizadaContent
-            ">
-            <div class="d-flex justify-content-center align-items-center w-100">
-              <div class="spinner-border total-liquidada-autorizada" role="status">
-                <span class="sr-only">Carregando...</span>
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #liquidadaAutorizadaContent>
-            <div class="number-box liquidada-autorizada">
-              <div class="d-flex" style="flex-direction: column; align-items: start">
-                <div class="value">
-                  {{ totals.liquidatedVsAuthorizedExpensePercentage }} %
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section liquidada-autorizada">
-              <span>Despesa Liquidada/ Autorizada</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="totals.liquidatedVsAuthorizedExpensePercentage + ' %'"
+        label="Despesa Liquidada/ Autorizada"
+        icon="fas fa-hand-holding-usd"
+        accentColor="var(--despesa-liquida-autorizada)"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
   </div>
   <div class="dashboard-graphs-container position-relative">
@@ -447,7 +339,7 @@
     </div>
   </div>
 
-  <nb-layout-footer class="mt-2">
+  <nb-layout-footer class="dashboard-footer-wrapper">
     <ngx-footer [timestamp]="timestamp"></ngx-footer>
   </nb-layout-footer>
 </div>

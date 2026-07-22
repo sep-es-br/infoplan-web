@@ -20,7 +20,7 @@ import { Component } from '@angular/core';
         <ng-content select="router-outlet"></ng-content>
       </nb-layout-column>
 
-      <nb-layout-footer fixed>
+      <nb-layout-footer fixed class="dashboard-footer-wrapper">
         <ngx-footer></ngx-footer>
       </nb-layout-footer>
 

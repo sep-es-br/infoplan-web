@@ -3,9 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'ngx-footer',
-  styleUrls: ['./footer.component.scss'],
   template: `
-    <div class="d-flex flex-column flex-sm-row" id="footer">
+    <div class="dashboard-footer">
       <p>Central de Informações de Planejamento</p>
       <div>
         <span>Fonte: {{ dataSrc }}</span>

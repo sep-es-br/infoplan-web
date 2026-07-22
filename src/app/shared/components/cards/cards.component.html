@@ -1,22 +1,49 @@
-<div class="card-dinamico-wrapper d-flex justify-content-start align-items-end gap-3 h-100"
-  [ngClass]="'theme-' + currentTheme">
-  <nb-card class="card-dinamico mb-0 position-relative" [ngClass]="'card-' + cor">
-    <nb-card-body class="card-dinamico-body d-flex align-items-center" [title]="tooltip">
-      <div class="card-content d-flex align-items-start gap-0 m-2">
-        <span class="currency-symbol">{{ prefixo }}</span>
-        <span class="card-value">{{ value }}</span>
-      </div>
-    </nb-card-body>
-  </nb-card>
-
-  <div class="icon-container position-absolute top-0 end-0 p-2">
-    <!-- Se for imagem -->
-    <img *ngIf="isImage(icone)" [src]="icone" [alt]="description" class="icon-image" [ngClass]="'icon-' + cor" />
-
-    <i *ngIf="!isImage(icone)" [className]="icone" [ngClass]="'icon-' + cor"></i>
+<div
+  class="dashboard-summary-card"
+  [ngClass]="'dashboard-summary-card--' + variant"
+  [style.--summary-card-accent]="accentColor"
+  [nbTooltip]="tooltip || null"
+  [nbTooltipClass]="tooltipClass"
+  nbTooltipPlacement="bottom"
+>
+  <div class="dashboard-summary-card__icon" *ngIf="!loading && icon">
+    <span *ngIf="iconText; else iconAsset" [class]="icon">{{ iconText }}</span>
+    <ng-template #iconAsset>
+    <img *ngIf="isImage(icon); else fontIcon" [src]="icon" [alt]="label" />
+    <ng-template #fontIcon>
+      <i [class]="icon" aria-hidden="true"></i>
+    </ng-template>
+    </ng-template>
   </div>
 
-  <div class="card-description" [ngClass]="'description-' + cor">
-    {{ description }}
+  <div class="dashboard-summary-card__content">
+    <div
+      *ngIf="loading; else cardContent"
+      class="dashboard-summary-card__loading"
+      role="status"
+      aria-live="polite"
+    >
+      <span class="spinner-border" aria-hidden="true"></span>
+      <span class="visually-hidden">Carregando...</span>
+    </div>
+
+    <ng-template #cardContent>
+      <div class="dashboard-summary-card__value-box">
+        <div class="dashboard-summary-card__value-content">
+          <span *ngIf="prefix" class="dashboard-summary-card__prefix">{{ prefix }}</span>
+          <span class="dashboard-summary-card__value">{{ value }}</span>
+        </div>
+      </div>
+
+      <div class="dashboard-summary-card__text">
+        <div class="dashboard-summary-card__label">{{ label }}</div>
+        <div
+          *ngIf="subtitle"
+          class="dashboard-summary-card__subtitle"
+          [nbTooltip]="subtitleTooltip || null"
+          nbTooltipPlacement="bottom"
+        >{{ subtitle }}</div>
+      </div>
+    </ng-template>
   </div>
 </div>

@@ -36,6 +36,7 @@ import { NavigationTag, StickyTagNavComponent } from "../../../shared/components
 import { OrgaoComponent } from "./orgao/orgao.component";
 import { FilterManagementService } from "../../../core/service/filter-management/filter-management.service";
 import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
+import { CardsModule } from "../../../shared/components/cards/cards.module";
 
 type PaginaPainel = "visao-geral" | "orgao" | "municipio" | "carteira";
 
@@ -65,7 +66,8 @@ enum AvailableFilters {
     NbSelectModule,
     NbButtonModule,
     NbTooltipModule,
-    TextTruncatePipe
+    TextTruncatePipe,
+    CardsModule,
   ],
   templateUrl: "./layout-painel-obras.component.html",
   styleUrls: ["./layout-painel-obras.component.scss"],

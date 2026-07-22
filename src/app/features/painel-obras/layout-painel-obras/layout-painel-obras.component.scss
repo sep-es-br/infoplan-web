@@ -43,7 +43,6 @@
 }
 
 .card {
-  position: relative;
   background-color: var(--card-background-color);
   border-radius: 8px;
   padding: 5px;
@@ -51,198 +50,18 @@
   text-align: center;
   height: 100%;
 
-  .delivery-select {
-    min-width: 100px;
-  }
-
-  .icon-top-right {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 18px;
-  }
-
   .card-content {
     display: flex;
-    gap: 20px;
     width: 100%;
     padding: 5px;
     height: 100%;
     min-height: 75px;
-
-    @media screen and (max-width: 576px) {
-      gap: 10px;
-    }
-
-    .spinner-border {
-      width: 3rem;
-      height: 3rem;
-      border-width: 0.35em;
-
-      &.totalizador-programas {
-        color: var(--totalizador-programas) !important;
-      }
-
-      &.totalizador-projetos {
-        color: var(--totalizador-projetos) !important;
-      }
-
-      &.contagem-entregas {
-        color: var(--contagem-entregas) !important;
-      }
-
-      &.monitoramento-planejado {
-        color: var(--monitoramento-planejado) !important;
-      }
-
-      &.monitoramento-realizado {
-        color: var(--monitoramento-realizado) !important;
-      }
-
-      &.filtro-temporal-critico {
-        color: var(--filtro-temporal-critico) !important;
-      }
-    }
-
-    .sr-only,
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
   }
 
   .portfolio-content {
     display: flex;
     align-items: center;
     padding: 10px;
-  }
-
-  .number-box {
-    background-color: #005c99;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 8px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 65px;
-    min-width: 40%;
-
-    &.logo {
-      color: #000480 !important;
-    }
-
-    &.totalizador-programas {
-      background-color: var(--totalizador-programas) !important;
-    }
-
-    &.totalizador-projetos {
-      background-color: var(--totalizador-projetos) !important;
-    }
-
-    &.contagem-entregas {
-      background-color: var(--contagem-entregas) !important;
-    }
-
-    &.monitoramento-planejado {
-      background-color: var(--monitoramento-planejado) !important;
-    }
-
-    &.monitoramento-realizado {
-      background-color: var(--monitoramento-realizado) !important;
-    }
-
-    &.filtro-temporal-critico {
-      background-color: var(--filtro-temporal-critico) !important;
-    }
-
-    .currency {
-      font-size: 14px;
-    }
-  }
-
-  .text-section {
-    display: flex;
-    align-items: center;
-    font-size: 11px;
-    font-weight: bold;
-    padding-right: 25px;
-
-    flex: 1;
-    min-width: 0;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-  }
-}
-
-:host-context(.nb-theme-default, .nb-theme-dark, .nb-theme-cosmic) {
-  .icon-top-right {
-    color: #005c99 !important;
-
-    &.logo {
-      color: #000480 !important;
-    }
-
-    &.totalizador-programas {
-      color: var(--totalizador-programas) !important;
-    }
-
-    &.totalizador-projetos {
-      color: var(--totalizador-projetos) !important;
-    }
-
-    &.contagem-entregas {
-      color: var(--contagem-entregas) !important;
-    }
-
-    &.monitoramento-planejado {
-      color: var(--monitoramento-planejado) !important;
-    }
-
-    &.monitoramento-realizado {
-      color: var(--monitoramento-realizado) !important;
-    }
-
-    &.filtro-temporal-critico {
-      color: var(--filtro-temporal-critico) !important;
-    }
-  }
-
-  .text-section {
-    color: #005c99 !important;
-
-    &.totalizador-programas {
-      color: var(--totalizador-programas) !important;
-    }
-
-    &.totalizador-projetos {
-      color: var(--totalizador-projetos) !important;
-    }
-
-    &.contagem-entregas {
-      color: var(--contagem-entregas) !important;
-    }
-
-    &.monitoramento-planejado {
-      color: var(--monitoramento-planejado) !important;
-    }
-
-    &.monitoramento-realizado {
-      color: var(--monitoramento-realizado) !important;
-    }
-
-    &.filtro-temporal-critico {
-      color: var(--filtro-temporal-critico) !important;
-    }
   }
 }
 

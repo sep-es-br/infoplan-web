@@ -126,153 +126,69 @@
         <div class="row g-1 summary-cards-grid">
 
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
-            <div class="card">
-              <div class="icon-top-right totalizador-programas" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fas fa-layer-group"></i>
-              </div>
-              <div class="card-content" [nbTooltip]="statusTotal.totalizadorProgramas" nbTooltipPlacement="bottom">
-                <div *ngIf="requestStatus.status === 'Loading'" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-color: rgba(255, 255, 255, 0.7); z-index: 10; border-radius: 4px;">
-            <div class="spinner-border totalizador-programas" role="status">
-              <span class="sr-only">Carregando...</span>
-            </div>
-          </div>
-
-                  <div class="number-box totalizador-programas" [style.opacity]="requestStatus.status === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
-                    <div class="d-flex flex-column align-items-start">
-                      <div class="value">{{ statusTotal.totalizadorProgramas }}</div>
-                    </div>
-                  </div>
-                  <div class="text-section totalizador-programas" [style.opacity]="requestStatus.status === 'Loading' ? 0.3 : 1" style="transition: opacity 0.2s;">
-                    <span>Totalizador de Programas</span>
-                  </div>
-                
-              </div>
-            </div>
+            <ngx-dashboard-summary-card
+              [value]="statusTotal.totalizadorProgramas"
+              label="Totalizador de Programas"
+              icon="fas fa-layer-group"
+              accentColor="#137bb9"
+              [tooltip]="statusTotal.totalizadorProgramas"
+              [loading]="requestStatus.status === 'Loading'"
+            ></ngx-dashboard-summary-card>
           </div>
 
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
-            <div class="card">
-              <div class="icon-top-right totalizador-projetos" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fas fa-project-diagram"></i>
-              </div>
-              <div class="card-content" [nbTooltip]="statusTotal.totalizadorProjetos" nbTooltipPlacement="bottom">
-                <ng-container *ngIf="requestStatus.status === 'Loading'; else projetosContent">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border totalizador-projetos" role="status"></div>
-                  </div>
-                </ng-container>
-                <ng-template #projetosContent>
-                  <div class="number-box totalizador-projetos">
-                    <div class="d-flex flex-column align-items-start">
-                      <div class="value">{{ statusTotal.totalizadorProjetos }}</div>
-                    </div>
-                  </div>
-                  <div class="text-section totalizador-projetos">
-                    <span>Totalizador de Projetos</span>
-                  </div>
-                </ng-template>
-              </div>
-            </div>
+            <ngx-dashboard-summary-card
+              [value]="statusTotal.totalizadorProjetos"
+              label="Totalizador de Projetos"
+              icon="fas fa-project-diagram"
+              accentColor="#d0647d"
+              [tooltip]="statusTotal.totalizadorProjetos"
+              [loading]="requestStatus.status === 'Loading'"
+            ></ngx-dashboard-summary-card>
           </div>
 
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
-            <div class="card">
-              <div class="icon-top-right contagem-entregas" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fas fa-box-open"></i>
-              </div>
-              <div class="card-content" [nbTooltip]="statusTotal.contagemEntregas + ' Entregas'" nbTooltipPlacement="bottom">
-                <ng-container *ngIf="requestStatus.status === 'Loading'; else contagemEntregasContent">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border contagem-entregas" role="status"></div>
-                  </div>
-                </ng-container>
-                <ng-template #contagemEntregasContent>
-                  <div class="number-box contagem-entregas">
-                    <div class="d-flex flex-column align-items-start">
-                      <div class="value">{{ statusTotal.contagemEntregas }}</div>
-                    </div>
-                  </div>
-                  <div class="text-section contagem-entregas">
-                    <span>Contagem de Entregas</span>
-                  </div>
-                </ng-template>
-              </div>
-            </div>
+            <ngx-dashboard-summary-card
+              [value]="statusTotal.contagemEntregas"
+              label="Contagem de Entregas"
+              icon="fas fa-box-open"
+              accentColor="#d3913c"
+              [tooltip]="statusTotal.contagemEntregas + ' Entregas'"
+              [loading]="requestStatus.status === 'Loading'"
+            ></ngx-dashboard-summary-card>
           </div>
 
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
-            <div class="card">
-              <div class="icon-top-right monitoramento-planejado" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fas fa-money-check-alt"></i>
-              </div>
-              <div class="card-content" [nbTooltip]="'R$ ' + (statusTotal.monitoramentoPlanejado | number: '1.0-0')" nbTooltipPlacement="bottom">
-                <ng-container *ngIf="requestStatus.status === 'Loading'; else monitoramentoPlanejadoContent">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border monitoramento-planejado" role="status"></div>
-                  </div>
-                </ng-container>
-                <ng-template #monitoramentoPlanejadoContent>
-                  <div class="number-box monitoramento-planejado">
-                    <div class="d-flex flex-column align-items-start">
-                      <div class="value">{{ formatNumber(statusTotal.monitoramentoPlanejado) }}</div>
-                    </div>
-                  </div>
-                  <div class="text-section monitoramento-planejado">
-                    <span>Monitoramento Financeiro Planejado</span>
-                  </div>
-                </ng-template>
-              </div>
-            </div>
+            <ngx-dashboard-summary-card
+              [value]="formatNumber(statusTotal.monitoramentoPlanejado)"
+              label="Monitoramento Financeiro Planejado"
+              icon="fas fa-money-check-alt"
+              accentColor="#62a581"
+              [tooltip]="'R$ ' + (statusTotal.monitoramentoPlanejado | number: '1.0-0')"
+              [loading]="requestStatus.status === 'Loading'"
+            ></ngx-dashboard-summary-card>
           </div>
 
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
-            <div class="card">
-              <div class="icon-top-right monitoramento-realizado" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fas fa-chart-line"></i>
-              </div>
-              <div class="card-content" [nbTooltip]="'R$ ' + (statusTotal.monitoramentoRealizado | number: '1.0-0')" nbTooltipPlacement="bottom">
-                <ng-container *ngIf="requestStatus.status === 'Loading'; else monitoramentoRealizadoContent">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border monitoramento-realizado" role="status"></div>
-                  </div>
-                </ng-container>
-                <ng-template #monitoramentoRealizadoContent>
-                  <div class="number-box monitoramento-realizado">
-                    <div class="d-flex flex-column align-items-start">
-                      <div class="value">{{ formatNumber(statusTotal.monitoramentoRealizado) }}</div>
-                    </div>
-                  </div>
-                  <div class="text-section monitoramento-realizado">
-                    <span>Monitoramento Financeiro Realizado</span>
-                  </div>
-                </ng-template>
-              </div>
-            </div>
+            <ngx-dashboard-summary-card
+              [value]="formatNumber(statusTotal.monitoramentoRealizado)"
+              label="Monitoramento Financeiro Realizado"
+              icon="fas fa-chart-line"
+              accentColor="#8d7fa2"
+              [tooltip]="'R$ ' + (statusTotal.monitoramentoRealizado | number: '1.0-0')"
+              [loading]="requestStatus.status === 'Loading'"
+            ></ngx-dashboard-summary-card>
           </div>
 
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
-            <div class="card">
-              <div class="icon-top-right filtro-temporal-critico" *ngIf="requestStatus.status !== 'Loading'">
-                <i class="fas fa-hourglass-half"></i>
-              </div>
-              <div class="card-content" [nbTooltip]="'R$ ' + (statusTotal?.filtroTemporalCritico | number: '1.0-0')" nbTooltipPlacement="bottom">
-                <ng-container *ngIf="requestStatus.status === 'Loading'; else filtroTemporalCriticoContent">
-                  <div class="d-flex justify-content-center align-items-center w-100">
-                    <div class="spinner-border filtro-temporal-critico" role="status"></div>
-                  </div>
-                </ng-container>
-                <ng-template #filtroTemporalCriticoContent>
-                  <div class="number-box filtro-temporal-critico">
-                    <div class="d-flex flex-column align-items-start">
-                      <div class="value">{{ formatNumber(statusTotal.filtroTemporalCritico) }}</div>
-                    </div>
-                  </div>
-                  <div class="text-section filtro-temporal-critico">
-                    <span>Filtro Temporal Crítico</span>
-                  </div>
-                </ng-template>
-              </div>
-            </div>
+            <ngx-dashboard-summary-card
+              [value]="formatNumber(statusTotal.filtroTemporalCritico)"
+              label="Filtro Temporal Crítico"
+              icon="fas fa-hourglass-half"
+              accentColor="#43a4a6"
+              [tooltip]="'R$ ' + (statusTotal?.filtroTemporalCritico | number: '1.0-0')"
+              [loading]="requestStatus.status === 'Loading'"
+            ></ngx-dashboard-summary-card>
           </div>
 
         </div>

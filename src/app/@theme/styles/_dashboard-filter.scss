@@ -362,6 +362,8 @@ nb-tag.tag-default.is-sticky.active-tag {
 
 /* Padrão visual global das barras sticky (navegação, filtros e chips). */
 .filter-wrapper.is-sticky {
+  top: calc(var(--app-header-height) + 6px);
+
   .filter-button.is-sticky {
     width: 100% !important;
     max-width: 100% !important;

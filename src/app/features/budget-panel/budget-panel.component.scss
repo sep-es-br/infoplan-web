@@ -22,8 +22,10 @@ input:focus {
 }
 
 .img-fluid {
-  width: 100%;
+  width: auto;
+  max-width: 80%;
   max-height: 56px;
+  object-fit: contain;
 }
 
 .execucao-orcamentaria-content {
@@ -53,214 +55,27 @@ input:focus {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   text-align: center;
   height: 100%;
-  line-height: 16px;
-
-  .delivery-select {
-    min-width: 200px;
-  }
-
-  .icon-top-right {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 18px;
-  }
 
   .card-content {
-    position: relative;
     display: flex;
-    gap: 8px;
     width: 100%;
-    padding: 5px;
     height: 100%;
+    min-height: 75px;
+    padding: 5px;
+  }
 
-    .spinner-border {
-      width: 3rem;
-      height: 3rem;
-      border-width: 0.35em;
-
-      &.qt-programas,
-      &.qt-projetos,
-      &.total-prevista {
-        color: var(--receita-prevista) !important;
-      }
-
-      &.total-realizada {
-        color: var(--receita-realizada) !important;
-      }
-
-      &.total-realizada-prevista {
-        color: var(--receita-realizada-prevista) !important;
-      }
-
-      &.total-empenhada-autorizada {
-        color: var(--despesa-empenhada-autorizada) !important;
-      }
-
-      &.total-liquidada-autorizada {
-        color: var(--despesa-liquida-autorizada) !important;
-      }
-
-      .sr-only,
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-    }
-
-    .portfolio-content {
-      display: flex;
-      align-items: center;
-      height: 65px;
-      max-width: 100%;
-      padding: 10px;
-    }
-
-    .number-box {
-      background-color: #005c99;
-      color: white;
-      font-size: 15px;
-      font-weight: bold;
-      padding: 8px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 65px;
-      min-width: 80px;
-
-      &.prevista {
-        background-color: var(--receita-prevista) !important;
-      }
-
-      &.realizada {
-        background-color: var(--receita-realizada) !important;
-      }
-
-      &.realizada-prevista {
-        background-color: var(--receita-realizada-prevista) !important;
-      }
-
-      &.empenhada-autorizada {
-        background-color: var(--despesa-empenhada-autorizada) !important;
-      }
-
-      &.liquidada-autorizada {
-        background-color: var(--despesa-liquida-autorizada) !important;
-      }
-
-      .currency {
-        font-size: 15px;
-      }
-    }
-
-    .text-section {
-      display: flex;
-      align-items: end;
-      font-size: 12px;
-      font-weight: bold;
-      width: 100%;
-      text-align: start;
-      height: 100%;
-      line-height: 16px;
-      padding-right: 33px;
-    }
+  .portfolio-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 65px;
+    padding: 10px;
   }
 }
 
 nb-tooltip {
   pointer-events: none;
-}
-
-:host-context(.nb-theme-default, .nb-theme-dark, .nb-theme-cosmic) {
-  .icon-top-right {
-    color: #005c99 !important;
-
-    &.prevista {
-      color: var(--receita-prevista) !important;
-    }
-
-    &.realizada {
-      color: var(--receita-realizada) !important;
-    }
-
-    &.realizada-prevista {
-      color: var(--receita-realizada-prevista) !important;
-    }
-
-    &.empenhada-autorizada {
-      color: var(--despesa-empenhada-autorizada) !important;
-    }
-
-    &.liquidada-autorizada {
-      color: var(--despesa-liquida-autorizada) !important;
-    }
-  }
-
-  .text-section {
-    color: #005c99 !important;
-
-    &.prevista {
-      color: var(--receita-prevista) !important;
-    }
-
-    &.realizada {
-      color: var(--receita-realizada) !important;
-    }
-
-    &.realizada-prevista {
-      color: var(--receita-realizada-prevista) !important;
-    }
-
-    &.empenhada-autorizada {
-      color: var(--despesa-empenhada-autorizada) !important;
-    }
-
-    &.liquidada-autorizada {
-      color: var(--despesa-liquida-autorizada) !important;
-    }
-  }
-}
-
-:host-context(.nb-theme-default) {
-  .icon-top-right {
-    color: #005c99 !important;
-
-    &.previsto {
-      color: #487d7a !important;
-    }
-
-    &.realizado {
-      color: #00b26a !important;
-    }
-  }
-
-  .text-section {
-    color: #005c99 !important;
-
-    &.previsto {
-      color: #487d7a !important;
-    }
-
-    &.realizado {
-      color: #00b26a !important;
-    }
-  }
-}
-
-:host-context(.nb-theme-dark, .nb-theme-cosmic) {
-
-  .icon-top-right,
-  .text-section {
-    color: #ffffff !important;
-  }
 }
 
 :host {

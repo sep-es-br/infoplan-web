@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { PlanejamentoOrcamentarioComponent } from "./planejamento-orcamentario.component";
+import { CardsModule } from "../../shared/components/cards/cards.module";
 import { NgModule } from "@angular/core";
 import { NbButtonModule, NbCardModule, NbIconModule, NbSelectModule, NbLayoutModule, NbAutocompleteModule, NbTagModule, NbTooltipComponent, NbTooltipModule } from "@nebular/theme";
 import { FormsModule } from "@angular/forms";
@@ -17,6 +18,7 @@ import { GraficoTotalAnoSigefesComponent } from "./data/dashboard/grafico-total-
     PlanejamentoOrcamentarioComponent
   ],
   imports: [
+    CardsModule,
     CommonModule,
     FormsModule,
     NbButtonModule,

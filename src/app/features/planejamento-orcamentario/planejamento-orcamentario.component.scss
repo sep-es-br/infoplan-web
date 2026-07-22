@@ -55,190 +55,17 @@
   text-align: center;
   height: 100%;
 
-  .delivery-select {
-    min-width: 100px;
-  }
-
-  .icon-top-right {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 18px;
-  }
-
   .card-content {
     display: flex;
-    gap: 20px;
     width: 100%;
     padding: 5px;
     height: 100%;
-
-    @media screen and (max-width: 576px) {
-      gap: 10px;
-    }
-
-    .spinner-border {
-      width: 3rem;
-      height: 3rem;
-      border-width: 0.35em;
-
-      &.total-planejado {
-        color: #a970b6 !important;
-      }
-
-      &.total-contratado {
-        color: #9089e7 !important;
-      }
-
-      &.total-autorizado {
-        color: #5e9fcc !important;
-      }
-
-      &.total-empenhado {
-        color: #1bbc9c !important;
-      }
-
-      &.total-liquidado {
-        color: #d9ac21 !important;
-      }
-
-      &.total-pago {
-        color: #f77d00 !important;
-      }
-
-      .sr-only,
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-    }
+    min-height: 75px;
 
     .portfolio-content {
       display: flex;
       align-items: center;
       padding: 10px;
-    }
-
-    .number-box {
-      background-color: #005c99;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      padding: 8px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 65px;
-      min-width: 40%;
-
-      &.logo {
-        color: #000480 !important;
-      }
-
-      &.planejado {
-        background-color: #a970b6 !important;
-      }
-
-      &.contratado {
-        background-color: #9089e7 !important;
-      }
-
-      &.autorizado {
-        background-color: #5e9fcc !important;
-      }
-
-      &.empenhado {
-        background-color: #1bbc9c !important;
-      }
-
-      &.liquidado {
-        background-color: #d9ac21 !important;
-      }
-
-      &.pago {
-        background-color: #f77d00 !important;
-      }
-
-      .currency {
-        font-size: 15px;
-      }
-    }
-
-    .text-section {
-      display: flex;
-      align-items: end;
-      font-size: 13px;
-      font-weight: bold;
-    }
-  }
-}
-
-:host-context(.nb-theme-default, .nb-theme-dark, .nb-theme-cosmic) {
-  .icon-top-right {
-    color: #005c99 !important;
-
-    &.logo {
-      color: #000480 !important;
-    }
-
-    &.planejado {
-      color: #a970b6 !important;
-    }
-
-    &.contratado {
-      color: #9089e7 !important;
-    }
-
-    &.autorizado {
-      color: #5e9fcc !important;
-    }
-
-    &.empenhado {
-      color: #1bbc9c !important;
-    }
-
-    &.liquidado {
-      color: #d9ac21 !important;
-    }
-
-    &.pago {
-      color: #f77d00 !important;
-    }
-  }
-
-  .text-section {
-    color: #005c99 !important;
-
-    &.planejado {
-      color: #a970b6 !important;
-    }
-
-    &.contratado {
-      color: #9089e7 !important;
-    }
-
-    &.autorizado {
-      color: #5e9fcc !important;
-    }
-
-    &.empenhado {
-      color: #1bbc9c !important;
-    }
-
-    &.liquidado {
-      color: #d9ac21 !important;
-    }
-
-    &.pago {
-      color: #f77d00 !important;
     }
   }
 }
@@ -261,9 +88,7 @@
 // Aplica esses estilos sob o tema "dark" e "cosmic"
 :host-context(.nb-theme-dark, .nb-theme-cosmic) {
 
-  .sub-title-po,
-  .icon-top-right,
-  .text-section {
+  .sub-title-po {
     &.logo {
       color: #ffffff !important;
     }
@@ -391,8 +216,4 @@
 :host {
   display: block;
   min-height: 100vh;
-}
-
-.card-content {
-  min-height: 75px;
 }

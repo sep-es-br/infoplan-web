@@ -88,8 +88,19 @@
   }
 
   @media (max-width: 575px) {
-    ::ng-deep nb-user .info-container {
-      display: none;
+    ::ng-deep nb-user {
+      .info-container {
+        display: flex;
+        min-width: 0;
+      }
+
+      .user-name {
+        display: block;
+        max-width: 72px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
   }
 

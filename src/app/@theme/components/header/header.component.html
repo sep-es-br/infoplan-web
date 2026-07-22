@@ -15,6 +15,10 @@
       <nb-action class="user-action" *nbIsGranted="['view', 'user']" >
         <nb-user size="medium"
                 [nbContextMenu]="userMenu"
+                nbContextMenuPlacement="bottom-start"
+                nbContextMenuTag="user-menu"
+                nbContextMenuClass="user-context-menu"
+                (click)="collapseUserMenuOnOpen()"
                 [name]="user?.name">
         </nb-user>
       </nb-action>

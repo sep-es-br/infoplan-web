@@ -184,7 +184,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     isMobile: boolean,
   ): number {
     if (this.showMaximizeButton) {
-      return isPhone ? 10 : isTablet ? 12 : 16;
+      return isPhone ? 12 : isTablet ? 13 : 16;
     } else {
       return isPhone ? 10 : isTablet ? 12 : isMobile ? 10 : 10;
     }
@@ -195,7 +195,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     isTablet: boolean,
   ): number {
     if (this.showMaximizeButton) {
-      return isMobile ? 6 : isTablet ? 12 : 16;
+      return isMobile ? 12 : isTablet ? 12 : 16;
     } else {
       return isMobile ? 8 : 10;
     }
@@ -216,15 +216,15 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
   ): string | [string, string] {
     if (this.showMaximizeButton) {
       if (isPhone) {
-        return ["15%", "40%"];
+        return ["40%", "70%"];
       } else if (isTablet) {
-        return ["20%", "45%"];
+        return ["42%", "72%"];
       } else {
-        return ["25%", "50%"];
+        return ["45%", "75%"];
       }
     } else {
       if (isMobile) {
-        return isPhone ? ["25%", "55%"] : ["30%", "60%"];
+        return isPhone ? ["40%", "70%"] : ["30%", "60%"];
       } else {
         return this.config.radius || ["35%", "65%"];
       }
@@ -263,6 +263,9 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     const isPhone = window.innerWidth <= 575;
     const isTablet = window.innerWidth <= 768;
     const screenWidth = window.innerWidth;
+    const chartCenter: [string, string] = this.showMaximizeButton
+      ? (isMobile ? ["50%", "46%"] : ["60%", "50%"])
+      : (isPhone ? ["66%", "50%"] : config.centerPosition);
 
     const radius = this.calculateRadius(isMobile, isPhone, isTablet);
 
@@ -286,11 +289,11 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     }, 0);
 
     const formattedTotal = this._shortNumber.transform(visibleTotal, 1);
-    const centerX = config.centerPosition
-      ? parseFloat(config.centerPosition[0])
+    const centerX = chartCenter
+      ? parseFloat(chartCenter[0])
       : 50;
-    const centerY = config.centerPosition
-      ? parseFloat(config.centerPosition[1])
+    const centerY = chartCenter
+      ? parseFloat(chartCenter[1])
       : 50;
 
     const offsetX = this.calculateTitleOffsetX(screenWidth, centerX);
@@ -316,9 +319,23 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
         },
         legend: config.showLegend
           ? {
+              left: this.showMaximizeButton && isMobile
+                ? "center"
+                : (isPhone ? "left" : this.getLegendPosition(config.legendPosition).left),
+              top: this.showMaximizeButton && isMobile
+                ? "auto"
+                : (isPhone ? "top" : this.getLegendPosition(config.legendPosition).top),
+              bottom: this.showMaximizeButton && isMobile ? 15 : undefined,
+              right: undefined,
+              orient: this.showMaximizeButton && isMobile
+                ? "horizontal"
+                : (isPhone ? "vertical" : config.legendOrient),
+              type: "scroll",
               textStyle: {
                 color: themeStyles.textPrimaryColor,
                 fontSize: legendFontSize,
+                width: isPhone && !this.showMaximizeButton ? 115 : undefined,
+                overflow: isPhone && !this.showMaximizeButton ? "truncate" : undefined,
               },
               itemWidth: legendItemSize,
               itemHeight: legendItemSize,
@@ -330,6 +347,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
         series: [
           {
             radius: radius,
+            center: chartCenter,
             label: {
               show: true,
               position: "inside",
@@ -367,6 +385,9 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     const isPhone = window.innerWidth <= 575;
     const isTablet = window.innerWidth <= 768;
     const screenWidth = window.innerWidth;
+    const chartCenter: [string, string] = this.showMaximizeButton
+      ? (isMobile ? ["50%", "46%"] : ["60%", "50%"])
+      : (isPhone ? ["66%", "50%"] : config.centerPosition);
 
     const radius = this.calculateRadius(isMobile, isPhone, isTablet);
     const legendFontSize = this.calculateLegendFontSize(
@@ -386,11 +407,11 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
 
     const formattedTotal = this._shortNumber.transform(this.totais, 1);
 
-    const centerX = config.centerPosition
-      ? parseFloat(config.centerPosition[0])
+    const centerX = chartCenter
+      ? parseFloat(chartCenter[0])
       : 50;
-    const centerY = config.centerPosition
-      ? parseFloat(config.centerPosition[1])
+    const centerY = chartCenter
+      ? parseFloat(chartCenter[1])
       : 50;
 
     const offsetX = this.calculateTitleOffsetX(screenWidth, centerX);
@@ -444,13 +465,22 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
 
       legend: config.showLegend
         ? {
-            left: this.getLegendPosition(config.legendPosition).left,
-            top: this.getLegendPosition(config.legendPosition).top,
-            orient: config.legendOrient,
+            left: this.showMaximizeButton && isMobile
+              ? "center"
+              : (isPhone ? "left" : this.getLegendPosition(config.legendPosition).left),
+            top: this.showMaximizeButton && isMobile
+              ? "auto"
+              : (isPhone ? "top" : this.getLegendPosition(config.legendPosition).top),
+            bottom: this.showMaximizeButton && isMobile ? 15 : undefined,
+            orient: this.showMaximizeButton && isMobile
+              ? "horizontal"
+              : (isPhone ? "vertical" : config.legendOrient),
             right: "5%",
             textStyle: {
               color: themeStyles.textPrimaryColor,
               fontSize: legendFontSize,
+              width: isPhone && !this.showMaximizeButton ? 115 : undefined,
+              overflow: isPhone && !this.showMaximizeButton ? "truncate" : undefined,
             },
             type: "scroll",
             pageTextStyle: { color: themeStyles.textPrimaryColor },
@@ -466,7 +496,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
           name: "Dados",
           type: "pie",
           radius: radius,
-          center: config.centerPosition,
+          center: chartCenter,
           data: filteredData,
           minAngle: config.minAngle,
           avoidLabelOverlap: false,

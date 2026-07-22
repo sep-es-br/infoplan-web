@@ -275,329 +275,100 @@
     <div class="col-12 col-md-12 col-lg-12 col-xl-10 indicator-cards-column">
       <div class="row g-1 g-md-2 indicator-cards-grid">
         <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1 indicator-card-column">
-          <div class="card">
-            <div class="icon-top-right budget-management-indicator" *ngIf="requestStatus.status !== 'Loading'">
-              <i class="fa-solid fa-gears"></i>
-            </div>
-            <div class="card-content" [nbTooltip]="
-                '1° Quadrimestre 30,40%\n 2° Quadrimestre 52,87%\n 3° Quadrimestre 65,60%'
-              " nbTooltipClass="tooltip-respeita-linha" nbTooltipPlacement="bottom">
-              <ng-container *ngIf="
-                  requestStatus.status === 'Loading';
-                  else budgetManagementIndicador
-                ">
-                <div class="d-flex justify-content-center align-items-center w-100">
-                  <div class="spinner-border budget-management-indicator" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #budgetManagementIndicador>
-                <div class="number-box budget-management-indicator">
-                  <div class="d-flex" style="flex-direction: column; align-items: start">
-                    <div class="value">
-                      {{ statusTotal?.budgetManagementIndicator.IGO }} %
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section budget-management-indicator">
-                  <div *ngIf="
-                      statusTotal?.budgetManagementIndicator?.nota !== null
-                    ">
-                    <!-- <span class="label-subtitle" [nbTooltip]="
-                        ' Nota ' +
-                        (
-                          statusTotal?.budgetManagementIndicator?.nota
-                        )
-                      ">
-                      Nota
-                      {{
-
-                      statusTotal?.budgetManagementIndicator?.nota
-                      }}
-                    </span> -->
-                    <span *ngIf="
-                        statusTotal?.budgetManagementIndicator?.nota !==
-                          undefined &&
-                        statusTotal?.budgetManagementIndicator?.nota !== null
-                      " class="label-subtitle" [nbTooltip]="
-                        ' Nota ' + statusTotal.budgetManagementIndicator.nota
-                      ">
-                      Nota {{ statusTotal.budgetManagementIndicator.nota }}
-                    </span>
-                  </div>
-                  <span>Indicador de Gestão Orçamentária</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1 indicator-card-column">
-          <div class="card">
-            <div class="icon-top-right planned-success" *ngIf="requestStatus.status !== 'Loading'">
-              <i class="fas fa-chart-line"></i>
-            </div>
-
-            <div class="card-content" [nbTooltip]="
-                '1° Quadrimestre 28,00%\n2° Quadrimestre 60,00%\n3° Quadrimestre 85,00%'
-              " nbTooltipClass="tooltip-respeita-linha" nbTooltipPlacement="bottom">
-              <ng-container *ngIf="requestStatus.status === 'Loading'; else plannedSuccess">
-                <div class="d-flex justify-content-center align-items-center w-100">
-                  <div class="spinner-border planned-success" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #plannedSuccess>
-                <div class="number-box planned-success">
-                  <div class="d-flex" style="flex-direction: column; align-items: start">
-                    <div class="value">
-                      {{ statusTotal?.plannedSuccess?.sucesso }} %
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section planned-success">
-                  <span>Sucesso do Planejamento</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1 indicator-card-column">
-          <div class="card">
-            <div class="icon-top-right budgetary-changes" *ngIf="requestStatus.status !== 'Loading'">
-              <i class="fa fa-exchange-alt"></i>
-            </div>
-            <div class="card-content" [nbTooltip]="
-                '1° Quadrimestre 6,25%\n2° Quadrimestre 15,00%\n3° Quadrimestre 25,00%'
-              " nbTooltipClass="tooltip-respeita-linha" nbTooltipPlacement="bottom">
-              <ng-container *ngIf="
-                  requestStatus.status === 'Loading';
-                  else budgetaryChanges
-                ">
-                <div class="d-flex justify-content-center align-items-center w-100">
-                  <div class="spinner-border budgetary-changes" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #budgetaryChanges>
-                <div class="number-box budgetary-changes">
-                  <div class="d-flex" style="flex-direction: column; align-items: start">
-                    <div class="value">
-                      {{ statusTotal?.budgetaryChanges }} %
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section budgetary-changes">
-                  <span>Alterações Orçamentárias</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
+          <ngx-dashboard-summary-card
+            [value]="(statusTotal?.budgetManagementIndicator?.igo ?? 0) + ' %'"
+            label="Indicador de Gestão Orçamentária"
+            [subtitle]="budgetManagementNote"
+            icon="fa-solid fa-gears"
+            accentColor="var(--budget-management-indicator)"
+            tooltip="1° Quadrimestre 30,40%&#10;2° Quadrimestre 52,87%&#10;3° Quadrimestre 65,60%"
+            tooltipClass="tooltip-respeita-linha"
+            [loading]="requestStatus.status === 'Loading'"
+          ></ngx-dashboard-summary-card>
         </div>
 
         <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1 indicator-card-column">
-          <div class="card">
-            <div class="icon-top-right budgetary-feasibility" *ngIf="requestStatus.status !== 'Loading'">
-              <i class="fa-solid fa-scale-balanced"></i>
-            </div>
-            <div class="card-content" [nbTooltip]="
-                '1° Quadrimestre 47,50%\n2° Quadrimestre 76,00%\n3° Quadrimestre 95,00%'
-              " nbTooltipClass="tooltip-respeita-linha" nbTooltipPlacement="bottom">
-              <ng-container *ngIf="
-                  requestStatus.status === 'Loading';
-                  else budgetaryFeasibility
-                ">
-                <div class="d-flex justify-content-center align-items-center w-100">
-                  <div class="spinner-border budgetary-feasibility" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #budgetaryFeasibility>
-                <div class="number-box budgetary-feasibility">
-                  <div class="d-flex" style="flex-direction: column; align-items: start">
-                    <div class="value">
-                      {{ statusTotal?.budgetaryFeasibility }} %
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section budgetary-feasibility">
-                  <span>Exequibilidade Orçamentária</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
+          <ngx-dashboard-summary-card
+            [value]="statusTotal?.plannedSuccess?.sucesso + ' %'"
+            label="Sucesso do Planejamento"
+            icon="fas fa-chart-line"
+            accentColor="var(--planned-success)"
+            tooltip="1° Quadrimestre 28,00%&#10;2° Quadrimestre 60,00%&#10;3° Quadrimestre 85,00%"
+            tooltipClass="tooltip-respeita-linha"
+            [loading]="requestStatus.status === 'Loading'"
+          ></ngx-dashboard-summary-card>
         </div>
 
         <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1 indicator-card-column">
-          <div class="card">
-            <div class="icon-top-right focus-on-the-mission" *ngIf="requestStatus.status !== 'Loading'">
-              <i class="fa fa-bullseye"></i>
-            </div>
-            <div class="card-content" [nbTooltip]="
-                '1° Quadrimestre 30,00%\n2° Quadrimestre 48,00%\n3° Quadrimestre 60,00%'
-              " nbTooltipClass="tooltip-respeita-linha" nbTooltipPlacement="bottom">
-              <ng-container *ngIf="
-                  requestStatus.status === 'Loading';
-                  else focusOnTheMission
-                ">
-                <div class="d-flex justify-content-center align-items-center w-100">
-                  <div class="spinner-border focus-on-the-mission" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #focusOnTheMission>
-                <div class="number-box focus-on-the-mission">
-                  <div class="d-flex" style="flex-direction: column; align-items: start">
-                    <div class="value">
-                      {{ statusTotal?.focusOnTheMission }} %
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section focus-on-the-mission">
-                  <span>Foco na Missão</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
+          <ngx-dashboard-summary-card
+            [value]="statusTotal?.budgetaryChanges + ' %'"
+            label="Alterações Orçamentárias"
+            icon="fa fa-exchange-alt"
+            accentColor="var(--budgetary-changes)"
+            tooltip="1° Quadrimestre 6,25%&#10;2° Quadrimestre 15,00%&#10;3° Quadrimestre 25,00%"
+            tooltipClass="tooltip-respeita-linha"
+            [loading]="requestStatus.status === 'Loading'"
+          ></ngx-dashboard-summary-card>
         </div>
 
         <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1 indicator-card-column">
-          <div class="card">
-            <div class="icon-top-right available-without-reservation" *ngIf="requestStatus.status !== 'Loading'">
-              <i class="fa-solid fa-wallet"></i>
-            </div>
-
-            <div class="card-content" [nbTooltip]="
-                'R$ ' +
-                (statusTotal?.availableWithoutReservation | number: '1.0-0')
-              " nbTooltipPlacement="bottom">
-              <ng-container *ngIf="
-                  requestStatus.status === 'Loading';
-                  else availableWithoutReservation
-                ">
-                <div class="d-flex justify-content-center align-items-center w-100">
-                  <div class="spinner-border total-reservation" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-
-              <ng-template #availableWithoutReservation>
-                <div class="number-box available-without-reservation">
-                  <div class="d-flex" style="flex-direction: column; align-items: start">
-                    <div class="currency">R$</div>
-                    <div class="value">
-                      {{
-                      formatNumber(statusTotal?.availableWithoutReservation)
-                      }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section available-without-reservation">
-                  <span>Disponível sem Reserva</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
+          <ngx-dashboard-summary-card
+            [value]="statusTotal?.budgetaryFeasibility + ' %'"
+            label="Exequibilidade Orçamentária"
+            icon="fa-solid fa-scale-balanced"
+            accentColor="var(--budgetary-feasibility)"
+            tooltip="1° Quadrimestre 47,50%&#10;2° Quadrimestre 76,00%&#10;3° Quadrimestre 95,00%"
+            tooltipClass="tooltip-respeita-linha"
+            [loading]="requestStatus.status === 'Loading'"
+          ></ngx-dashboard-summary-card>
         </div>
 
         <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1 indicator-card-column">
-          <div class="card">
-            <div class="icon-top-right comparative" *ngIf="requestStatus.status !== 'Loading'">
-              <i class="fas fa-arrows-up-down"></i>
-            </div>
-
-            <div class="card-content">
-              <ng-container *ngIf="requestStatus.status === 'Loading'; else comparative">
-                <div class="d-flex justify-content-center align-items-center w-100">
-                  <div class="spinner-border comparative" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
-              <ng-template #comparative>
-                <div class="number-box comparative">
-                  <div class="d-flex" style="flex-direction: column; align-items: start">
-                    <div class="value">{{ statusTotal?.comparative }} %</div>
-                  </div>
-                </div>
-
-                <div class="text-section comparative">
-                  <span>Comparativo</span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
+          <ngx-dashboard-summary-card
+            [value]="statusTotal?.focusOnTheMission + ' %'"
+            label="Foco na Missão"
+            icon="fa fa-bullseye"
+            accentColor="var(--focus-on-the-mission)"
+            tooltip="1° Quadrimestre 30,00%&#10;2° Quadrimestre 48,00%&#10;3° Quadrimestre 60,00%"
+            tooltipClass="tooltip-respeita-linha"
+            [loading]="requestStatus.status === 'Loading'"
+          ></ngx-dashboard-summary-card>
         </div>
 
         <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1 indicator-card-column">
-          <div class="card">
-            <div class="icon-top-right po-with-highest-settlement" *ngIf="requestStatus.status !== 'Loading'">
-              <i class="fas fa-trophy"></i>
-            </div>
+          <ngx-dashboard-summary-card
+            [value]="formatNumber(statusTotal?.availableWithoutReservation)"
+            prefix="R$"
+            label="Disponível sem Reserva"
+            icon="fa-solid fa-wallet"
+            accentColor="var(--available-without-reservation)"
+            [tooltip]="'R$ ' + (statusTotal?.availableWithoutReservation | number: '1.0-0')"
+            [loading]="requestStatus.status === 'Loading'"
+          ></ngx-dashboard-summary-card>
+        </div>
 
-            <div class="card-content" [nbTooltip]="
-                'R$ ' +
-                (statusTotal?.poWithHighestSettlement?.liquidado
-                  | number: '1.2-2')
-              " nbTooltipPlacement="bottom">
-              <ng-container *ngIf="
-                  requestStatus.status === 'Loading';
-                  else poWithHighestSettlement
-                ">
-                <div class="d-flex justify-content-center align-items-center w-100">
-                  <div class="spinner-border poWith-highest-settlement" role="status">
-                    <span class="sr-only">Carregando...</span>
-                  </div>
-                </div>
-              </ng-container>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1 indicator-card-column">
+          <ngx-dashboard-summary-card
+            [value]="statusTotal?.comparative + ' %'"
+            label="Comparativo"
+            icon="fas fa-arrows-up-down"
+            accentColor="var(--comparative)"
+            [loading]="requestStatus.status === 'Loading'"
+          ></ngx-dashboard-summary-card>
+        </div>
 
-              <ng-template #poWithHighestSettlement>
-                <div class="number-box po-with-highest-settlement">
-                  <div class="d-flex" style="flex-direction: column; align-items: start">
-                    <div class="currency">R$</div>
-                    <div class="value">
-                      {{
-                      formatNumber(
-                      statusTotal?.poWithHighestSettlement?.liquidado
-                      )
-                      }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-section po-with-highest-settlement d-flex flex-column justify-content-end">
-                  <span class="label-title">PO com Maior Liquidação</span>
-                  <span class="label-subtitle" [nbTooltip]="
-                      statusTotal?.poWithHighestSettlement?.cod_po +
-                      ' - ' +
-                      statusTotal?.poWithHighestSettlement?.nome_po
-                    ">
-                    {{ statusTotal?.poWithHighestSettlement?.cod_po }} -
-                    {{
-                    statusTotal?.poWithHighestSettlement?.nome_po
-                    | TextTruncate: 20
-                    }}
-                  </span>
-                </div>
-              </ng-template>
-            </div>
-          </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 px-1 indicator-card-column">
+          <ngx-dashboard-summary-card
+            [value]="formatNumber(statusTotal?.poWithHighestSettlement?.liquidado)"
+            prefix="R$"
+            label="PO com Maior Liquidação"
+            [subtitle]="highestSettlementDescription"
+            [subtitleTooltip]="highestSettlementDescription"
+            icon="fas fa-trophy"
+            accentColor="var(--po-with-highest-settlement)"
+            [tooltip]="'R$ ' + (statusTotal?.poWithHighestSettlement?.liquidado | number: '1.2-2')"
+            [loading]="requestStatus.status === 'Loading'"
+          ></ngx-dashboard-summary-card>
         </div>
       </div>
     </div>
@@ -761,7 +532,7 @@
       </div>
     </div>
   </div>
-  <nb-layout-footer class="mt-2">
+  <nb-layout-footer class="dashboard-footer-wrapper">
     <ngx-footer [timestamp]="timesTamp"></ngx-footer>
   </nb-layout-footer>
 </div>

@@ -102,7 +102,7 @@ export class QuantidadeMaiorPrevistaComponent
       .getQuantidadeMaiorEntregaPrevista(this.filter)
       .subscribe({
         next: (response) => {
-        this.requestStatus = RequestStatus.SUCCESS;
+        this.requestStatus = response?.length ? RequestStatus.SUCCESS : RequestStatus.EMPTY;
         if (response && response.length > 0) {
           this.quantidadeMaiorPorOrgao = response;
           this.assembleFlipTableContent(response);

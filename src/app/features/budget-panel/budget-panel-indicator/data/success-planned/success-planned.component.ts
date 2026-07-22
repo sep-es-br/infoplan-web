@@ -12,7 +12,7 @@ import {
   IDashSuccessPlannedResponse,
   IIndicatorExecutionFilter,
 } from "../../../../../core/interfaces/indicator-execution/indicator-execution";
-import { of, Subject } from "rxjs";
+import { Subject } from "rxjs";
 import { ExportDataService } from "../../../../../core/service/export-data";
 import { UtilitiesService } from "../../../../../core/service/utilities.service";
 import { ChartDataProcessorService } from "../../../../../core/service/budget-panel/chart-data-processor.service";
@@ -27,7 +27,7 @@ import {
   TreeNode,
 } from "../../../../strategic-projects/flip-table-model/flip-table.component";
 import { IChartOptions } from "../../../../../shared/models/budget-panel/IChartOptions";
-import { finalize, takeUntil } from "rxjs/operators";
+import { takeUntil } from "rxjs/operators";
 import {
   converterToNumber,
   replacePorcentage,
@@ -108,19 +108,12 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
 
     this._indicatorExecutionService
       .getDashSuccessPlanned(this.filter)
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.requestStatus = this.dashSuccessOfSuccess
-            ? RequestStatus.SUCCESS
-            : RequestStatus.ERROR;
-          this._cdr.markForCheck();
-        }),
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: IDashSuccessPlannedResponse[]) => {
-          const mostRecentYear = this.getMostRecentYear(res);
-          this.dashSuccessOfSuccess = res
+          const response = Array.isArray(res) ? res : [];
+          const mostRecentYear = this.getMostRecentYear(response);
+          this.dashSuccessOfSuccess = response
             .filter((item) => item.year === mostRecentYear)
             .sort((a, b) => b.year - a.year);
 
@@ -129,17 +122,20 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
             this.dashSuccessOfSuccess.length * 50 + 80,
           );
 
-          this.fullResponseData = res;
-          this.processChartData(res);
-          this.processTableData(res);
+          this.fullResponseData = response;
+          this.processChartData(response);
+          this.processTableData(response);
+          this.requestStatus = response.length
+            ? RequestStatus.SUCCESS
+            : RequestStatus.EMPTY;
           this._cdr.markForCheck();
         },
         error: (err) => {
           console.error("Erro ao carregar Sucesso do Planejamento:", err);
           this.requestStatus = RequestStatus.ERROR;
-          this.dashSuccessOfSuccess = of(
-            [],
-          ) as unknown as IDashSuccessPlannedResponse[]; // Garante que seja um array vazio, mesmo em caso de erro
+          this.dashSuccessOfSuccess = [];
+          this.fullResponseData = [];
+          this._cdr.markForCheck();
         },
       });
   }

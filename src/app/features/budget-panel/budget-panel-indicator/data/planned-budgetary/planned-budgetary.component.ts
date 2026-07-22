@@ -28,7 +28,6 @@ import { RequestStatus } from "../../../../strategic-projects/strategicProjects.
 import { ChartDataConfig } from "../../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { Subject } from "rxjs";
 import {
-  finalize,
   takeUntil,
   debounceTime,
   distinctUntilChanged,
@@ -123,29 +122,25 @@ export class PlannedBudgetaryComponent implements OnInit, OnChanges, OnDestroy {
 
     this._indicatorExecutionService
       .getDashPlannedBudget(this.filter)
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.requestStatus = this.dashPlannedBudget
-            ? RequestStatus.SUCCESS
-            : RequestStatus.ERROR;
-        }),
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: IDashPlannedBudgetResponse[]) => {
-          this.dashPlannedBudget = res;
+          this.dashPlannedBudget = Array.isArray(res) ? res : [];
           this.chartHeight = Math.max(
             400,
             this.dashPlannedBudget.length * 50 + 80,
           );
 
-          this.processChartData(res);
-          this.processTableData(res);
+          this.processChartData(this.dashPlannedBudget);
+          this.processTableData(this.dashPlannedBudget);
+          this.requestStatus = this.dashPlannedBudget.length
+            ? RequestStatus.SUCCESS
+            : RequestStatus.EMPTY;
         },
         error: (err) => {
           console.error("Erro ao carregar Sucesso do Planejado:", err);
           this.requestStatus = RequestStatus.ERROR;
-          this.dashPlannedBudget = null;
+          this.dashPlannedBudget = [];
         },
       });
   }

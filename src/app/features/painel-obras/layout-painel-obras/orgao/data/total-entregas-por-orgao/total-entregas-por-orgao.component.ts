@@ -105,7 +105,7 @@ export class TotalEntregasPorOrgaoComponent
         this.totalEntregasPorOrgaoResponse = response;
         this.assembleFlipTableContent(response);
         this.processChart(response);
-        this.requestStatus = RequestStatus.SUCCESS;
+        this.requestStatus = response?.length ? RequestStatus.SUCCESS : RequestStatus.EMPTY;
       },
       error(err) {
         console.error(

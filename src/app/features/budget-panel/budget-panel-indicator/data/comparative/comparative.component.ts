@@ -25,7 +25,7 @@ import {
   TreeNode,
 } from "../../../../strategic-projects/flip-table-model/flip-table.component";
 import { RequestStatus } from "../../../../strategic-projects/strategicProjects.component";
-import { finalize, takeUntil } from "rxjs/operators";
+import { takeUntil } from "rxjs/operators";
 import { ChartDataConfig } from "../../../org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import {
   converterToNumber,
@@ -104,30 +104,26 @@ export class ComparativeComponent implements OnChanges, OnDestroy {
     this.requestStatus = RequestStatus.LOADING;
 
     this._indicatorExecutionService
-      .getDashSuccessPlanned(this.filter)
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.requestStatus = this.dashComparative
-            ? RequestStatus.SUCCESS
-            : RequestStatus.ERROR;
-        }),
-      )
+      .getDashComparative(this.filter)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: IDashComparativeResponse[]) => {
-          this.dashComparative = res;
+          this.dashComparative = Array.isArray(res) ? res : [];
           this.chartHeight = Math.max(
             400,
             this.dashComparative.length * 50 + 80,
           );
 
-          this.processChartData(res);
-          this.processTableData(res);
+          this.processChartData(this.dashComparative);
+          this.processTableData(this.dashComparative);
+          this.requestStatus = this.dashComparative.length
+            ? RequestStatus.SUCCESS
+            : RequestStatus.EMPTY;
         },
         error: (err) => {
           console.error("Erro ao carregar Sucesso do Planejado:", err);
           this.requestStatus = RequestStatus.ERROR;
-          this.dashComparative = null;
+          this.dashComparative = [];
         },
       });
   }

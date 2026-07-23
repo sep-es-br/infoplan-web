@@ -100,7 +100,9 @@ export class QuantidadeMaiorEntregaComponent
 
     this._painelObrasService.getQuantidadeMaiorEntrega(this.filter).subscribe({
       next: (response) => {
-        this.quantidadeMaiorPorMunicipio = response || [];
+        this.quantidadeMaiorPorMunicipio = [...(response || [])].sort(
+          (a, b) => Number(b.planejado ?? 0) - Number(a.planejado ?? 0),
+        );
 
         if (this.quantidadeMaiorPorMunicipio.length > 0) {
           this.assembleFlipTableContent(this.quantidadeMaiorPorMunicipio);
@@ -128,14 +130,14 @@ export class QuantidadeMaiorEntregaComponent
           labels: ["Sem Registros"],
           datasets: [
             {
-              label: "Município com maior valor",
-              data: [0],
-              backgroundColor: this._chartProcessor.colors[0],
-            },
-            {
               label: "Planejado",
               data: [0],
               backgroundColor: this._chartProcessor.colors[1],
+            },
+            {
+              label: "Município com maior valor",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[0],
             },
           ],
         },
@@ -143,7 +145,9 @@ export class QuantidadeMaiorEntregaComponent
     }
 
     const top10 = [...response]
-      .sort((a, b) => b.totalMaiorMunicipio - a.totalMaiorMunicipio)
+      .sort(
+        (a, b) => Number(b.planejado ?? 0) - Number(a.planejado ?? 0),
+      )
       .slice(0, 10);
 
     const labels = top10.map((item) => item.orgao);
@@ -155,14 +159,14 @@ export class QuantidadeMaiorEntregaComponent
         labels,
         datasets: [
           {
-            label: "Município com maior valor",
-            data: primary,
-            backgroundColor: this._chartProcessor.colors[0],
-          },
-          {
             label: "Planejado",
             data: secondary,
             backgroundColor: this._chartProcessor.colors[1],
+          },
+          {
+            label: "Município com maior valor",
+            data: primary,
+            backgroundColor: this._chartProcessor.colors[0],
           },
         ],
       },
@@ -211,7 +215,11 @@ export class QuantidadeMaiorEntregaComponent
       },
     ];
 
-    const finalData: Array<TreeNode> = data.map((item) => ({
+    const sortedData = [...data].sort(
+      (a, b) => Number(b.planejado ?? 0) - Number(a.planejado ?? 0),
+    );
+
+    const finalData: Array<TreeNode> = sortedData.map((item) => ({
       data: [
         {
           originalPropertyName: "municipio",

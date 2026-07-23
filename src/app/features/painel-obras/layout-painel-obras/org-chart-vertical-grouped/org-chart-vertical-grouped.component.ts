@@ -66,6 +66,8 @@ export class OrgChartVerticalGroupedComponent
   @Input() chartDataConfig!: ChartDataConfig;
   @Input() groupingMode: GroupingMode = "YEAR_STATUS";
   @Input() valueType: "percent" | "currency" = "currency";
+  @Input() sortByEmpDescending: boolean = false;
+  @Input() followPrimaryGroupLabel: boolean = false;
 
   @Input() majorGroupLabel: string = "Exercício";
   @Input() minorGroupLabel: string = "Status";
@@ -115,7 +117,9 @@ export class OrgChartVerticalGroupedComponent
       changes["groupingMode"] ||
       changes["isMaximized"] ||
       changes["chartDataConfig"] ||
-      changes["valueType"]
+      changes["valueType"] ||
+      changes["sortByEmpDescending"] ||
+      changes["followPrimaryGroupLabel"]
     ) {
       this.updateChart();
     }
@@ -185,6 +189,7 @@ export class OrgChartVerticalGroupedComponent
 
     const finalData: any[] = [];
     const isMajorFirst =
+      this.groupingMode === "ANO" ||
       this.groupingMode === "STATUS" ||
       this.groupingMode === "MUNICIPIO" ||
       this.groupingMode.startsWith("MUNICIPIO_") ||
@@ -192,24 +197,46 @@ export class OrgChartVerticalGroupedComponent
       this.groupingMode.startsWith("YEAR_") ||
       this.groupingMode.includes("MAJOR");
 
+    const groupingList = [
+      ...(isMajorFirst ? uniqueMajors : uniqueMinors),
+    ];
+    if (this.sortByEmpDescending) {
+      groupingList.sort((a, b) => {
+        const totalA = dataRecords
+          .filter((item) => (isMajorFirst ? item.major : item.minor) === a)
+          .reduce((sum, item) => sum + item.emp, 0);
+        const totalB = dataRecords
+          .filter((item) => (isMajorFirst ? item.major : item.minor) === b)
+          .reduce((sum, item) => sum + item.emp, 0);
+        return totalB - totalA;
+      });
+    }
+
     if (isMajorFirst) {
-      uniqueMajors.forEach((major) => {
+      groupingList.forEach((major) => {
         const majorGroup = dataRecords
           .filter((r) => r.major === major)
-          .sort((a, b) => a.minor.localeCompare(b.minor));
+          .sort((a, b) =>
+            this.sortByEmpDescending
+              ? b.emp - a.emp
+              : a.minor.localeCompare(b.minor),
+          );
         finalData.push(...majorGroup);
       });
     } else {
-      uniqueMinors.forEach((minor) => {
+      groupingList.forEach((minor) => {
         const minorGroup = dataRecords
           .filter((r) => r.minor === minor)
-          .sort((a, b) => b.major.localeCompare(a.major));
+          .sort((a, b) =>
+            this.sortByEmpDescending
+              ? b.emp - a.emp
+              : b.major.localeCompare(a.major),
+          );
         finalData.push(...minorGroup);
       });
     }
 
     const midpointIndices = new Set<number>();
-    const groupingList = isMajorFirst ? uniqueMajors : uniqueMinors;
     const getKey = (d: any) => (isMajorFirst ? d.major : d.minor);
 
     groupingList.forEach((groupKey) => {
@@ -228,8 +255,8 @@ export class OrgChartVerticalGroupedComponent
       const baseColor = isMajorFirst
         ? this.getGroupColor(d.minor, 1)
         : this.colorPalette[
-        uniqueMajors.indexOf(d.major) % this.colorPalette.length
-        ];
+            uniqueMajors.indexOf(d.major) % this.colorPalette.length
+          ];
 
       const faded = baseColor.startsWith("#")
         ? this.getOpacityColor(baseColor, 0.4)
@@ -251,8 +278,8 @@ export class OrgChartVerticalGroupedComponent
       const baseColor = isMajorFirst
         ? this.getGroupColor(subGroup, 1)
         : this.colorPalette[
-        uniqueMajors.indexOf(subGroup) % this.colorPalette.length
-        ];
+            uniqueMajors.indexOf(subGroup) % this.colorPalette.length
+          ];
 
       const faded = baseColor.startsWith("#")
         ? this.getOpacityColor(baseColor, 0.4)
@@ -398,7 +425,34 @@ export class OrgChartVerticalGroupedComponent
             if (!d) return "";
             const mainLabel = isMajorFirst ? d.major : d.minor;
 
-            if (midpointIndices.has(absoluteIdx)) {
+            let shouldShowLabel = midpointIndices.has(absoluteIdx);
+
+            if (this.followPrimaryGroupLabel && this.echartsInstance) {
+              const currentOptions = this.echartsInstance.getOption() as any;
+              const zoomOptions = currentOptions?.dataZoom?.[0];
+              const startValue = Number(zoomOptions?.startValue ?? 0);
+              const endValue = Number(
+                zoomOptions?.endValue ?? finalData.length - 1,
+              );
+              const visibleGroupIndices = finalData
+                .map((item, index) =>
+                  index >= startValue &&
+                  index <= endValue &&
+                  getKey(item) === getKey(d)
+                    ? index
+                    : -1,
+                )
+                .filter((index) => index !== -1);
+
+              shouldShowLabel =
+                visibleGroupIndices.length > 0 &&
+                absoluteIdx ===
+                  visibleGroupIndices[
+                    Math.floor(visibleGroupIndices.length / 2)
+                  ];
+            }
+
+            if (shouldShowLabel) {
               const displayLabel = isPhone
                 ? this.wrapMobileAxisLabel(mainLabel, 13)
                 : mainLabel;

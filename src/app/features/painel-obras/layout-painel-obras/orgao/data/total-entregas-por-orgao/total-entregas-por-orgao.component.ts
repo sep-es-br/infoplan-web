@@ -102,10 +102,15 @@ export class TotalEntregasPorOrgaoComponent
 
     this._painelObrasService.getTotalEntregasPorOrgao(this.filter).subscribe({
       next: (response) => {
-        this.totalEntregasPorOrgaoResponse = response;
-        this.assembleFlipTableContent(response);
-        this.processChart(response);
-        this.requestStatus = response?.length ? RequestStatus.SUCCESS : RequestStatus.EMPTY;
+        const sortedResponse = [...(response || [])].sort(
+          (a, b) => Number(b.planejado ?? 0) - Number(a.planejado ?? 0),
+        );
+        this.totalEntregasPorOrgaoResponse = sortedResponse;
+        this.assembleFlipTableContent(sortedResponse);
+        this.processChart(sortedResponse);
+        this.requestStatus = sortedResponse.length
+          ? RequestStatus.SUCCESS
+          : RequestStatus.EMPTY;
       },
       error(err) {
         console.error(
@@ -172,7 +177,11 @@ export class TotalEntregasPorOrgaoComponent
       },
     ];
 
-    const finalData: Array<TreeNode> = data.map((item) => ({
+    const sortedData = [...data].sort(
+      (a, b) => Number(b.planejado ?? 0) - Number(a.planejado ?? 0),
+    );
+
+    const finalData: Array<TreeNode> = sortedData.map((item) => ({
       data: [
         {
           originalPropertyName: "orgao",
@@ -218,7 +227,11 @@ export class TotalEntregasPorOrgaoComponent
   }
 
   processChart(data: ITotalEntregasPorOrgao[]): void {
-    const { labels, planejados, realizados } = data.reduce(
+    const sortedData = [...data].sort(
+      (a, b) => Number(b.planejado ?? 0) - Number(a.planejado ?? 0),
+    );
+
+    const { labels, planejados, realizados } = sortedData.reduce(
       (acc, item) => {
         acc.labels.push(item.orgao);
         acc.planejados.push(item.planejado);

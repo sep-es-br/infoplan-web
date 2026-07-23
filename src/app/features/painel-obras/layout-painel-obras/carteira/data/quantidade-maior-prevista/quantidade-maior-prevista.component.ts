@@ -104,9 +104,12 @@ export class QuantidadeMaiorPrevistaComponent
         next: (response) => {
         this.requestStatus = response?.length ? RequestStatus.SUCCESS : RequestStatus.EMPTY;
         if (response && response.length > 0) {
-          this.quantidadeMaiorPorOrgao = response;
-          this.assembleFlipTableContent(response);
-          this.chartData = this.processData(response);
+          const sortedResponse = [...response].sort(
+            (a, b) => Number(b.planejado ?? 0) - Number(a.planejado ?? 0),
+          );
+          this.quantidadeMaiorPorOrgao = sortedResponse;
+          this.assembleFlipTableContent(sortedResponse);
+          this.chartData = this.processData(sortedResponse);
         } else {
           this.requestStatus = RequestStatus.EMPTY;
           this.quantidadeMaiorPorOrgao = [];
@@ -130,14 +133,14 @@ export class QuantidadeMaiorPrevistaComponent
           labels: ["Sem Registros"],
           datasets: [
             {
-              label: "Órgão com maior valor",
-              data: [0],
-              backgroundColor: this._chartProcessor.colors[0],
-            },
-            {
               label: "Planejado",
               data: [0],
               backgroundColor: this._chartProcessor.colors[1],
+            },
+            {
+              label: "Órgão com maior valor",
+              data: [0],
+              backgroundColor: this._chartProcessor.colors[0],
             }
           ],
         },
@@ -145,7 +148,9 @@ export class QuantidadeMaiorPrevistaComponent
     }
 
     const top10 = [...response]
-      .sort((a, b) => b.totalMaiorOrgao - a.totalMaiorOrgao)
+      .sort(
+        (a, b) => Number(b.planejado ?? 0) - Number(a.planejado ?? 0),
+      )
       .slice(0, 10);
 
     const labels = top10.map((item) => item.orgao);
@@ -157,14 +162,14 @@ export class QuantidadeMaiorPrevistaComponent
         labels,
         datasets: [
           {
-            label: "Órgão com maior valor",
-            data: primary,
-            backgroundColor: this._chartProcessor.colors[0],
-          },
-          {
             label: "Planejado",
             data: secondary,
             backgroundColor: this._chartProcessor.colors[1],
+          },
+          {
+            label: "Órgão com maior valor",
+            data: primary,
+            backgroundColor: this._chartProcessor.colors[0],
           }
         ],
       },
@@ -213,7 +218,11 @@ export class QuantidadeMaiorPrevistaComponent
       },
     ];
 
-    const finalData: Array<TreeNode> = data.map((item) => ({
+    const sortedData = [...data].sort(
+      (a, b) => Number(b.planejado ?? 0) - Number(a.planejado ?? 0),
+    );
+
+    const finalData: Array<TreeNode> = sortedData.map((item) => ({
       data: [
         {
           originalPropertyName: "orgao",

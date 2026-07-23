@@ -36,6 +36,7 @@
       [height]="isChartMaximized('total-entregas-por-municipio-status') ? calcMaximizedHeight() : 400"
       [groupingMode]="groupingMode" [isMaximized]="isChartMaximized('total-entregas-por-municipio-status')"
       [chartDataConfig]="chartDataConfig" majorGroupLabel="Exercício" minorGroupLabel="Status" [valueType]="'currency'"
+      [sortByEmpDescending]="true" [followPrimaryGroupLabel]="groupingMode === 'STATUS'"
       empLabel="Planejado" liqLabel="Realizado">
     </ngx-org-chart-vertical-grouped>
   </div>

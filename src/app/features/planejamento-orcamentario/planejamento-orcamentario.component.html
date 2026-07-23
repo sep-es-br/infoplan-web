@@ -1,7 +1,7 @@
 <div class="col-12">
   <div class="filter-container">
     <div class="filter-wrapper" [class.is-sticky]="isScrolled">
-      <div class="filter-button px-2" [class.is-sticky]="isScrolled">
+      <div class="filter-button" [class.is-sticky]="isScrolled">
         <div class="filter-tags" [class.is-sticky]="isScrolled">
           <div *ngFor="let tag of activeFilters; let i = index">
             <div class="filter-tag" [class.is-sticky]="isScrolled">
@@ -59,7 +59,7 @@
     </div>
 
     <!-- Painel de Filtros Simplificado -->
-    <div class="modal fade dashboard-filter-modal--compact" id="filtrosModal" tabindex="-1"
+    <div class="modal fade dashboard-filter-modal dashboard-filter-modal--compact" id="filtrosModal" tabindex="-1"
       aria-labelledby="filtrosModalLabel" role="dialog">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
@@ -122,8 +122,15 @@
                     <span class="mb-1">UO</span>
 
                     <input #uoSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth name="uoSearch"
-                      placeholder="Buscar UO..." autocomplete="off" [nbAutocomplete]="autoUo" [(ngModel)]="uoSearchTerm"
+                      [placeholder]="isUOListLoading ? 'Carregando...' : 'Buscar UO...'" [disabled]="isUOListLoading"
+                      autocomplete="off" [nbAutocomplete]="autoUo" ngxKeepAutocompleteOpen [(ngModel)]="uoSearchTerm"
                       (input)="onUOSearch($event)" fieldSize="tiny" />
+
+                    <div *ngIf="isUOListLoading"
+                      class="text-info-custom small mt-1 d-flex align-items-center gap-1" role="status">
+                      <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                      Buscando unidades orçamentárias...
+                    </div>
 
                     <nb-autocomplete #autoUo (selectedChange)="onUOSelected($event)">
                       <nb-option *ngFor="let uo of filteredUOList" [value]="uo.cod_uo"
@@ -147,8 +154,11 @@
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">PO</span>
 
-                    <nb-select multiple name="po" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.po"
+                    <nb-select multiple name="po"
+                      [placeholder]="isPOListLoading ? 'Carregando POs...' : 'Selecionar'"
+                      size="tiny" [(ngModel)]="filter.po"
                       (selectedChange)="handleFilterChange('po', $event)" [disabled]="
+                        isPOListLoading ||
                         !filter.uo ||
                         filter.uo.length === 0 ||
                         filter.uo.includes(-1) ||
@@ -159,6 +169,12 @@
                         {{ po.cod_po }} - {{ po.nome_po }}
                       </nb-option>
                     </nb-select>
+
+                    <div *ngIf="isPOListLoading"
+                      class="text-info-custom small mt-1 d-flex align-items-center gap-1">
+                      <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                      Buscando POs da UO selecionada...
+                    </div>
 
                     <!-- Mensagem quando não há UOs selecionadas -->
                     <div *ngIf="

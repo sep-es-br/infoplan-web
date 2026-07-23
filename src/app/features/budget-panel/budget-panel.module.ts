@@ -35,6 +35,7 @@ import { ComparativeComponent } from './budget-panel-indicator/data/comparative/
 import { PlannedBudgetaryComponent } from './budget-panel-indicator/data/planned-budgetary/planned-budgetary.component';
 import { OrgChartHorizontalComponent } from "./org-chart-bar/org-chart-horizontal/org-chart-horizontal.component";
 import { StickyTagNavComponent } from "../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
+import { MultiSelectAutocompleteComponent } from "../../shared/components/multi-select-autocomplete/multi-select-autocomplete.component";
 
 @NgModule({
   declarations: [
@@ -80,6 +81,7 @@ import { StickyTagNavComponent } from "../../shared/components/sticky-tag-nav/st
     NbTagModule,
     BudgetPanelRoutingModule,
     NbAutocompleteModule,
+    MultiSelectAutocompleteComponent,
     OrgChartOppositeComponent,
     OrgChartHorizontalComponent,
     StickyTagNavComponent

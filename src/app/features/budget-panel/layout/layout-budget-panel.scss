@@ -2,18 +2,6 @@
   display: block;
 }
 
-@media screen and (min-width: 992px) {
-  :host {
-    margin-top: -15px;
-  }
-}
-
-@media screen and (max-width: 991px) {
-  :host {
-    margin-top: -4px;
-  }
-}
-
 // .tag-panel {
 //   display: flex;
 //   justify-content: center;

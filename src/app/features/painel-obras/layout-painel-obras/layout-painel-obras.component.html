@@ -55,7 +55,7 @@
       </div>
     </div>
 
-    <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
+    <div class="modal fade dashboard-filter-modal" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-body">
@@ -67,8 +67,8 @@
               </div>
               <div class="d-flex flex-column w-100">
                 <!-- Substituído flex-column flex-md-row por uma estrutura 'row' limpa -->
-                <div class="row w-100 m-0">
-                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4 mb-2">
+                <div class="filter-row d-flex flex-column flex-md-row flex-wrap w-100">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Órgão</span>
                     <nb-select name="orgao" placeholder="Selecionar" size="tiny" [(selected)]="filter.orgao" (selectedChange)="handleFilterChange('orgao', $event)" #customSelect>
                       <nb-option *ngFor="let orgao of orgaosList" [value]="orgao.orgaoId">
@@ -77,7 +77,7 @@
                     </nb-select>
                   </div>
 
-                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4 mb-2">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Município</span>
                     <nb-select name="municipio" placeholder="Selecionar" size="tiny" [(selected)]="filter.municipio" (selectedChange)="handleFilterChange('municipio', $event)" #customSelect>
                       <nb-option *ngFor="let municipio of municipiosList" [value]="municipio.id">
@@ -86,7 +86,7 @@
                     </nb-select>
                   </div>
 
-                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4 mb-2">
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
                     <span class="mb-1">Status</span>
                     <nb-select name="status" placeholder="Selecionar" size="tiny" [(selected)]="filter.status" (selectedChange)="handleFilterChange('status', $event)" #customSelect>
                       <nb-option *ngFor="let status of statusList" [value]="status.id">
@@ -128,7 +128,7 @@
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <ngx-dashboard-summary-card
               [value]="statusTotal.totalizadorProgramas"
-              label="Totalizador de Programas"
+              label="Programas"
               icon="fas fa-layer-group"
               accentColor="#137bb9"
               [tooltip]="statusTotal.totalizadorProgramas"
@@ -139,7 +139,7 @@
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <ngx-dashboard-summary-card
               [value]="statusTotal.totalizadorProjetos"
-              label="Totalizador de Projetos"
+              label="Projetos"
               icon="fas fa-project-diagram"
               accentColor="#d0647d"
               [tooltip]="statusTotal.totalizadorProjetos"
@@ -150,7 +150,7 @@
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <ngx-dashboard-summary-card
               [value]="statusTotal.contagemEntregas"
-              label="Contagem de Entregas"
+              label="Entregas"
               icon="fas fa-box-open"
               accentColor="#d3913c"
               [tooltip]="statusTotal.contagemEntregas + ' Entregas'"
@@ -161,7 +161,7 @@
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <ngx-dashboard-summary-card
               [value]="formatNumber(statusTotal.monitoramentoPlanejado)"
-              label="Monitoramento Financeiro Planejado"
+              label="Financeiro Planejado"
               icon="fas fa-money-check-alt"
               accentColor="#62a581"
               [tooltip]="'R$ ' + (statusTotal.monitoramentoPlanejado | number: '1.0-0')"
@@ -172,7 +172,7 @@
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <ngx-dashboard-summary-card
               [value]="formatNumber(statusTotal.monitoramentoRealizado)"
-              label="Monitoramento Financeiro Realizado"
+              label="Financeiro Realizado"
               icon="fas fa-chart-line"
               accentColor="#8d7fa2"
               [tooltip]="'R$ ' + (statusTotal.monitoramentoRealizado | number: '1.0-0')"

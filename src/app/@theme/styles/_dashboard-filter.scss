@@ -3,12 +3,22 @@
   --app-header-height: 3.75rem;
 }
 
+/* O Nebular aplica 2.25rem no layout desktop. Nos dashboards isso cria uma
+   faixa vazia acima dos filtros; no mobile o espaçamento original permanece. */
+@media (min-width: 685px) and (min-height: 600px) {
+  ngx-one-column-layout nb-layout-column {
+    padding-top: 0.375rem !important;
+    padding-bottom: 0.375rem !important;
+  }
+}
+
 .filter-wrapper {
   position: sticky;
   top: var(--app-header-height);
   z-index: 1000;
   width: 100%;
-  padding: 6px 6px 6px 6px;
+  // padding: 6px 6px 6px 6px;
+  padding: 6px 0px 6px 0px;
   margin-top: 0;
   background-color: transparent;
   transition: top 0.3s ease-in-out;
@@ -26,7 +36,7 @@
   border-radius: 2px;
   z-index: 1000;
   display: flex;
-  gap: 0.75rem;
+  // gap: 0.75rem;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
@@ -154,8 +164,15 @@ nb-tag.tag-default.is-sticky.active-tag {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 36px;
   width: 36px;
+  min-width: 36px;
+  max-width: 36px;
   height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  aspect-ratio: 1;
+  box-sizing: border-box;
   border: 1px solid var(--border-color, #ced4da);
   background-color: var(--card-background-color, transparent);
   color: var(--card-text-color, currentColor);
@@ -180,8 +197,8 @@ nb-tag.tag-default.is-sticky.active-tag {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
+    flex-wrap: nowrap;
+    // gap: 15px;
     // padding: 0px !important;
     // width: 100%;
 
@@ -193,10 +210,10 @@ nb-tag.tag-default.is-sticky.active-tag {
       min-width: 0;
     }
 
-    @media (max-width: 877px) {
+    @media (max-width: 684px) {
       flex-direction: row;
       align-items: center;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 6px;
 
       .nav-buttons-container {
@@ -214,16 +231,25 @@ nb-tag.tag-default.is-sticky.active-tag {
         margin-left: auto !important;
         justify-content: flex-end !important;
       }
+
+      &.has-nav-buttons,
+      &.multi-row-navigation {
+        flex-wrap: wrap;
+      }
     }
 
     .filter-tags {
       display: flex;
       flex: 0 1 auto;
+      width: auto;
+      max-width: 100%;
       min-width: 0;
       overflow-x: auto;
+      overflow-y: hidden;
+      flex-wrap: nowrap;
       white-space: nowrap;
       gap: 8px;
-      padding: 6px 0;
+      padding: 10px 8px 12px;
       scrollbar-width: thin;
       scrollbar-color: #005c99 transparent;
 
@@ -232,9 +258,63 @@ nb-tag.tag-default.is-sticky.active-tag {
       }
     }
 
+    .nav-buttons-container {
+      flex: 0 0 auto;
+      min-width: 0;
+      margin-right: 12px;
+    }
+
+    .indicator-filter-actions {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 36px;
+      flex: 1 1 auto;
+      align-items: center !important;
+      column-gap: 10px !important;
+      min-width: 0;
+      max-width: 100%;
+      margin-left: auto;
+      overflow: visible;
+
+      > .d-flex.align-items-center {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 36px !important;
+      }
+
+      .filter-toggle-icon-only {
+        flex: 0 0 36px !important;
+        width: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
+      }
+    }
+
+    // Painéis sem navegação (ex.: Planejamento Orçamentário): os chips
+    // acompanham o botão de filtro no lado direito, como na Execução.
+    &:not(:has(.nav-buttons-container)) {
+      .filter-tags {
+        margin-left: auto;
+      }
+
+      > .filter-toggle-icon-only {
+        flex: 0 0 36px;
+        margin-left: 10px;
+      }
+    }
+
     .map-btn {
-      background: none;
-      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 36px;
+      width: 36px;
+      height: 36px;
+      background-color: var(--card-background-color);
+      border: 1px solid whitesmoke;
+      border-radius: 50%;
       cursor: pointer;
       padding: 0;
 
@@ -243,8 +323,9 @@ nb-tag.tag-default.is-sticky.active-tag {
       }
 
       .map-icon {
-        width: 24px;
-        height: 50px;
+        width: 20px;
+        height: 24px;
+        object-fit: contain;
         vertical-align: middle;
       }
 
@@ -281,15 +362,15 @@ nb-tag.tag-default.is-sticky.active-tag {
       justify-content: flex-start !important;
 
       @media (min-width: 685px) {
-        width: 100%;
+        width: auto;
 
         nb-tag-list,
         .custom-tag-list {
-          width: 100% !important;
+          width: auto !important;
 
           .nb-tag-list-tags-wrapper {
             display: flex !important;
-            width: 100% !important;
+            width: auto !important;
             // gap: 10px !important;
           }
         }
@@ -302,7 +383,7 @@ nb-tag.tag-default.is-sticky.active-tag {
     }
   }
 
-  .modal {
+  .modal.dashboard-filter-modal {
     .modal-dialog {
       max-width: 70vw;
       justify-self: center;
@@ -347,8 +428,64 @@ nb-tag.tag-default.is-sticky.active-tag {
   }
 }
 
+.modal.dashboard-filter-modal {
+  .modal-dialog {
+    max-width: 70vw;
+    margin-right: auto;
+    margin-left: auto;
+
+    .modal-content {
+      width: 70vw;
+      color: var(--card-text-color);
+      background-color: var(--card-background-color);
+
+      .modal-body {
+        .close-filter-button {
+          color: var(--card-text-color);
+        }
+
+        .filter-row {
+          margin-bottom: 0.75em;
+
+          .filter-entity {
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+
+            span {
+              font-size: 12px;
+            }
+
+            nb-select,
+            input {
+              width: 100%;
+              max-width: 100%;
+              height: 2.5em;
+              font-size: 12px;
+            }
+          }
+        }
+      }
+
+      .modal-footer {
+        border: none;
+      }
+    }
+  }
+}
+
+.filter-button.strategic-filter-bar {
+  .filter-tags {
+    margin-right: 0;
+    margin-left: auto;
+  }
+
+  .filter-tags + .d-flex.align-items-center {
+    margin-left: 8px !important;
+  }
+}
+
 /* Variação usada por formulários com mais campos na mesma linha. */
-.filter-container .modal.dashboard-filter-modal--compact {
+.modal.dashboard-filter-modal--compact {
   .modal-body .filter-row .filter-entity {
     nb-select,
     input {
@@ -357,6 +494,152 @@ nb-tag.tag-default.is-sticky.active-tag {
       border-radius: 4px !important;
       line-height: normal;
     }
+  }
+}
+
+/* Autocompletes e tags selecionadas compartilhados pelos filtros. */
+.modal.dashboard-filter-modal {
+  .autocomplete-input-uo {
+    height: 2.1em !important;
+    max-height: 2.1em !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 0.75rem !important;
+    font-size: 12px !important;
+    line-height: normal !important;
+    border-radius: 4px !important;
+
+    &::placeholder {
+      font-size: 11px !important;
+    }
+  }
+
+  .selected-items-row,
+  .chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 6px;
+    gap: 5px;
+  }
+
+  .selected-items-row nb-tag,
+  .chips-container nb-tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: auto !important;
+    max-width: fit-content !important;
+    height: 20px !important;
+    min-height: 20px !important;
+    max-height: 20px !important;
+    padding: 0 8px 0 7px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    border-radius: 10px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+
+    .nb-tag-text {
+      display: inline-block;
+      max-width: 120px;
+      overflow: hidden;
+      font-size: 10px !important;
+      font-weight: 600 !important;
+      line-height: 1 !important;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .nb-tag-remove {
+      display: inline-flex !important;
+      align-items: center !important;
+      flex-shrink: 0;
+      margin-left: 3px !important;
+      font-size: 11px !important;
+      vertical-align: middle;
+      opacity: 0.7;
+    }
+  }
+
+  ngx-multi-select-autocomplete .selected-items-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+
+    nb-tag {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+      justify-content: space-between !important;
+      overflow: hidden !important;
+
+      .nb-tag-text {
+        display: block !important;
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: calc(100% - 16px) !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+      }
+
+      .nb-tag-remove {
+        flex: 0 0 auto;
+      }
+    }
+  }
+}
+
+.cdk-overlay-container nb-option {
+  display: flex !important;
+  align-items: center;
+
+  &.uo-selected {
+    font-size: 12px;
+
+    nb-icon {
+      color: #005c99;
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.nb-theme-default .modal.dashboard-filter-modal {
+  .autocomplete-input-uo {
+    border: 1px solid #f1f4f8 !important;
+  }
+
+  .selected-items-row nb-tag,
+  .chips-container nb-tag {
+    color: #1a56db !important;
+    background-color: #e8f0fe !important;
+    border: 1px solid rgba(26, 86, 219, 0.25) !important;
+  }
+}
+
+.nb-theme-dark .modal.dashboard-filter-modal,
+.nb-theme-cosmic .modal.dashboard-filter-modal {
+  .autocomplete-input-uo {
+    color: #ffffff !important;
+    background-color: #151a30 !important;
+    border: 1px solid #101426 !important;
+
+    &::placeholder {
+      color: #73739a !important;
+    }
+  }
+
+  .selected-items-row nb-tag,
+  .chips-container nb-tag {
+    color: #82aaff !important;
+    background-color: rgba(51, 102, 255, 0.15) !important;
+    border: 1px solid rgba(51, 102, 255, 0.4) !important;
   }
 }
 
@@ -412,11 +695,10 @@ nb-tag.tag-default.is-sticky.active-tag {
     height: 36px;
     padding: 0 !important;
     background: transparent !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    border: 1px solid currentColor !important;
+    border-radius: 50% !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     transition: none !important;
 
     .map-icon {
@@ -449,14 +731,14 @@ nb-tag.tag-default.is-sticky.active-tag {
   }
 }
 
-/* Quando navegação e filtros deixam de caber juntos, cada grupo ganha sua linha. */
-@media (max-width: 1200px) {
+/* Somente no mobile navegação e filtros passam a ocupar linhas separadas. */
+@media (max-width: 684px) {
   .filter-container
     .filter-wrapper.is-sticky
     .filter-button.is-sticky
     .filter-tags.is-sticky {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+    padding-top: 8px !important;
+    padding-bottom: 10px !important;
   }
 
   .filter-container .filter-button {
@@ -465,7 +747,7 @@ nb-tag.tag-default.is-sticky.active-tag {
 
     // Quando há navegação, ela ocupa a primeira linha e precisa de respiro
     // antes dos chips. Telas sem botões continuam compactas.
-    &:has(.nav-buttons-container) {
+    &.has-nav-buttons {
       row-gap: 6px !important;
     }
 
@@ -516,16 +798,34 @@ nb-tag.tag-default.is-sticky.active-tag {
 
     .d-flex.align-items-center,
     .indicator-filter-actions {
-      flex: 0 1 auto !important;
-      width: auto !important;
+      width: 100% !important;
       max-width: 100%;
       margin-left: auto !important;
       justify-content: flex-end !important;
     }
 
+    .indicator-filter-actions {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 36px;
+      flex: 1 0 100% !important;
+      overflow: visible !important;
+    }
+
     .filter-tags {
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
+      padding-top: 8px !important;
+      padding-bottom: 10px !important;
+    }
+
+    &:not(.has-nav-buttons):not(.multi-row-navigation) {
+      .d-flex.align-items-center {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin-left: 0 !important;
+      }
+
+      .filter-tags {
+        margin-left: auto !important;
+      }
     }
   }
 }
@@ -585,9 +885,10 @@ nb-tag.tag-default.is-sticky.active-tag {
     }
 
     .map-btn {
-      background: transparent !important;
-      border: 0 !important;
-      box-shadow: none !important;
+      color: #ffffff !important;
+      background: rgba(21, 26, 48, 0.88) !important;
+      border: 1px solid rgba(255, 255, 255, 0.9) !important;
+      box-shadow: 2px 3px 12px rgba(211, 211, 211, 0.8) !important;
     }
   }
 }
@@ -619,9 +920,10 @@ nb-tag.tag-default.is-sticky.active-tag {
     }
 
     .map-btn {
-      background: transparent !important;
-      border: 0 !important;
-      box-shadow: none !important;
+      color: rgb(50, 50, 50) !important;
+      background: rgba(255, 255, 255, 0.9) !important;
+      border: 1px solid rgba(102, 102, 102, 0.6) !important;
+      box-shadow: 2px 3px 10px rgba(50, 50, 50, 0.45) !important;
 
       .map-icon {
         filter: drop-shadow(1px 0 0 rgba(50, 50, 50, 0.8))

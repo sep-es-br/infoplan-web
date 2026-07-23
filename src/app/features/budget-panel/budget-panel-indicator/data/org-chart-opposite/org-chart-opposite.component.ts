@@ -98,6 +98,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
 
   onChartInit(chartInstance: ECharts) {
     this.echartsInstance = chartInstance;
+    this.updateChart();
     this.resizeChart();
   }
 
@@ -110,6 +111,9 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
     const labelsRaw = this.chart.data.labels || [];
     const datasetsRaw = this.chart.data.datasets;
     const theme = getAvailableThemesStyles(this.currentTheme);
+    const chartWidth = this.echartsInstance?.getWidth() ?? window.innerWidth;
+    const isCompact = !this.isMaximized && chartWidth < 520;
+    const groupLabelMaxLength = isCompact ? 22 : this.isMaximized ? 60 : 38;
     const getYear = (l: string) => l.split("|#|")[0]?.trim() || "";
     const getGnd = (l: string) => l.split("|#|")[1]?.trim() || l.trim();
 
@@ -293,6 +297,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       xAxis: {
         type: "value",
         max: this.valueType === 'percent' ? 100 : null,
+        splitNumber: isCompact ? 3 : 5,
         axisLabel: {
           formatter: (value: number) => {
             return this.valueType === 'percent'
@@ -300,7 +305,8 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
               : this._utilitiesService.formatCurrencyUsingBrazilianStandards(value, "R$");
           },
           color: theme.textPrimaryColor,
-          fontSize: 10,
+          fontSize: isCompact ? 9 : 10,
+          hideOverlap: true,
         },
         splitLine: {
           show: true,
@@ -317,11 +323,18 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         },
         axisLabel: {
           interval: 0,
-          margin: 15,
+          margin: isCompact ? 8 : 15,
           color: theme.textPrimaryColor,
           rich: {
             mainGroup: {
-              fontSize: this.isMaximized ? 14 : 12,
+              fontSize: this.isMaximized
+                ? window.innerWidth <= 575
+                  ? 11
+                  : 13
+                : isCompact
+                  ? 9
+                  : 10,
+              lineHeight: isCompact ? 13 : 15,
               padding: [0, 0, 4, 0],
             },
             subGroup: {
@@ -336,7 +349,11 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
             const mainLabel = this.groupingMode === "YEAR_GND" ? d.year : d.gnd;
 
             if (midpointIndices.has(absoluteIdx)) {
-              return `{mainGroup|${mainLabel}}`;
+              const displayLabel =
+                mainLabel.length > groupLabelMaxLength
+                  ? `${mainLabel.slice(0, groupLabelMaxLength).trimEnd()}...`
+                  : mainLabel;
+              return `{mainGroup|${displayLabel}}`;
             }
             return "";
           },
@@ -381,7 +398,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           left: "97%",
           labelFormatter: "",
           startValue: 0,
-          endValue: 15,
+          endValue: endZoomValue,
         },
         {
           type: "inside",

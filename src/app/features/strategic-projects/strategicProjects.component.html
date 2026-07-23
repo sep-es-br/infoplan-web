@@ -1,7 +1,7 @@
 <div class="col-12">
   <div class="filter-container">
     <div class="filter-wrapper" [class.is-sticky]="isScrolled">
-      <div class="filter-button px-2" [class.is-sticky]="isScrolled">
+      <div class="filter-button strategic-filter-bar px-2" [class.is-sticky]="isScrolled">
         <div class="filter-tags" [class.is-sticky]="isScrolled">
           <div *ngFor="let tag of activeFilters; let i = index; trackBy: trackByTag">
             <div class="filter-tag" [class.is-sticky]="isScrolled">
@@ -98,7 +98,7 @@
 
     <!-- Painel de Filtros -->
     <div
-      class="modal fade"
+      class="modal fade dashboard-filter-modal"
       id="filtrosModal"
       tabindex="-1"
       aria-labelledby="filtrosModalLabel"

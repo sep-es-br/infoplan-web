@@ -1,7 +1,11 @@
-<div class="col-12">
+<div class="col-12 budget-indicator-page">
   <div class="filter-container">
     <div class="filter-wrapper" [class.is-sticky]="isScrolled">
-      <div class="filter-button px-2" [class.is-sticky]="isScrolled">
+      <div
+        class="filter-button"
+        [class.is-sticky]="isScrolled"
+        [class.has-nav-buttons]="menuExecucao?.length > 0"
+      >
         <div class="nav-buttons-container">
           <ngx-sticky-tag-nav [tags]="menuExecucao"></ngx-sticky-tag-nav>
         </div>
@@ -70,7 +74,7 @@
       </div>
     </div>
     <!-- Painel de Filtros -->
-    <div class="modal fade dashboard-filter-modal--compact" id="filtrosModal" tabindex="-1"
+    <div class="modal fade dashboard-filter-modal dashboard-filter-modal--compact" id="filtrosModal" tabindex="-1"
       aria-labelledby="filtrosModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
@@ -140,103 +144,63 @@
                   </div>
 
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
-                    <span class="mb-1">Unidade Orçamentária</span>
-
-                    <input #uoSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth name="uoSearch"
-                      placeholder="Buscar UO..." autocomplete="off" [nbAutocomplete]="uoAutocomplete"
-                      (input)="onUOSearch($event)" fieldSize="tiny" />
-
-                    <div class="selected-items-row" *ngIf="selectedUOs.length > 0">
-                      <nb-tag *ngFor="let uo of selectedUOs" [text]="uo.uo" [removable]="true"
-                        [nbTooltip]="uo.uo + ' - ' + uo.name" (remove)="removeUO(uo.uo)" size="tiny"
-                        appearance="filled">
-                      </nb-tag>
-                    </div>
-
-                    <nb-autocomplete #uoAutocomplete (selectedChange)="onUOSelected($event)">
-                      <nb-option *ngFor="let uo of filteredUOList" [value]="uo.uo"
-                        [class.uo-selected]="isUOSelected(uo)" (mousedown)="$event.preventDefault()">
-                        <div class="option-wrapper d-flex align-items-center w-100 h-100">
-                          <nb-icon *ngIf="isUOSelected(uo)" icon="checkmark-outline" class="me-2"></nb-icon>
-                          {{ uo.uo }} - {{ uo.name }}
-                        </div>
-                      </nb-option>
-                    </nb-autocomplete>
+                    <ngx-multi-select-autocomplete
+                      label="Unidade Orçamentária"
+                      placeholder="Buscar UO..."
+                      name="uoSearch"
+                      [items]="uoList"
+                      [loading]="isUOListLoading"
+                      loadingText="Buscando unidades orçamentárias..."
+                      [selectedValues]="filter.codUo"
+                      valueKey="uo"
+                      labelKey="name"
+                      (selectedValuesChange)="onUOValuesChange($event)"
+                    />
                   </div>
 
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
-                    <span class="mb-1">Ação Orçamentária</span>
-                    <input #actionSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth
-                      name="actionSearch" placeholder="Buscar ação orçamentária..." autocomplete="off"
-                      [nbAutocomplete]="actionAutocomplete" (input)="onActionSearch($event)" fieldSize="tiny" />
-
-                    <div class="selected-items-row" *ngIf="selectedActions.length > 0">
-                      <nb-tag *ngFor="let action of selectedActions" [text]="action.cod_action" [removable]="true"
-                        [nbTooltip]="
-                          action.cod_action + ' - ' + action.name_action
-                        " (remove)="removeAction(action.cod_action)" size="tiny" appearance="filled">
-                      </nb-tag>
-                    </div>
-
-                    <nb-autocomplete #actionAutocomplete (selectedChange)="onActionSelected($event)">
-                      <nb-option *ngFor="let action of filteredActionList" [value]="action.cod_action"
-                        [class.uo-selected]="isActionSelected(action)" (mousedown)="$event.preventDefault()">
-                        <div class="option-wrapper d-flex align-items-center w-100 h-100">
-                          <nb-icon *ngIf="isActionSelected(action)" icon="checkmark-outline" class="me-2"></nb-icon>
-                          {{ action.cod_action }} - {{ action.name_action }}
-                        </div>
-                      </nb-option>
-                    </nb-autocomplete>
+                    <ngx-multi-select-autocomplete
+                      label="Ação Orçamentária"
+                      placeholder="Buscar ação orçamentária..."
+                      name="actionSearch"
+                      [items]="actionList"
+                      [loading]="isActionListLoading"
+                      loadingText="Buscando ações orçamentárias..."
+                      [selectedValues]="filter.codAction"
+                      valueKey="cod_action"
+                      labelKey="name_action"
+                      (selectedValuesChange)="onActionValuesChange($event)"
+                    />
                   </div>
 
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
-                    <span class="mb-1">PO</span>
-                    <input #poSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth name="poSearch"
-                      placeholder="Buscar PO..." autocomplete="off" [nbAutocomplete]="poAutocomplete"
-                      (input)="onPoSearch($event)" fieldSize="tiny" />
-
-                    <div class="selected-items-row" *ngIf="selectedPOs.length > 0">
-                      <nb-tag *ngFor="let po of selectedPOs" [text]="po.codPo" [removable]="true" [nbTooltip]="
-                          po.codPo + ' - ' + po.nomePo
-                        " (remove)="removePO(po.codPo)" size="tiny" appearance="filled">
-                      </nb-tag>
-                    </div>
-
-                    <nb-autocomplete #poAutocomplete (selectedChange)="onPoSelected($event)">
-                      <nb-option *ngFor="let po of filteredPOList" [value]="po.codPo"
-                        [class.uo-selected]="isPOSelected(po)" (mousedown)="$event.preventDefault()">
-                        <div class="option-wrapper d-flex align-items-center w-100 h-100">
-                          <nb-icon *ngIf="isPOSelected(po)" icon="checkmark-outline" class="me-2"></nb-icon>
-                          {{ po.codPo }} - {{ po.nomePo }}
-                        </div>
-                      </nb-option>
-                    </nb-autocomplete>
+                    <ngx-multi-select-autocomplete
+                      label="PO"
+                      placeholder="Buscar PO..."
+                      name="poSearch"
+                      [items]="poList"
+                      [loading]="isPOListLoading"
+                      loadingText="Buscando POs..."
+                      [selectedValues]="filter.codPo"
+                      valueKey="codPo"
+                      labelKey="nomePo"
+                      (selectedValuesChange)="onPOValuesChange($event)"
+                    />
                   </div>
 
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-3 mb-2">
-                    <span class="mb-1">Fonte Completa</span>
-
-                    <input #fullSourceSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth
-                      name="fullSourceSearch" placeholder="Buscar fonte..." autocomplete="off"
-                      [nbAutocomplete]="fullSourceAutocomplete" (input)="onFullSourceSearch($event)" fieldSize="tiny" />
-
-                    <div class="selected-items-row" *ngIf="selectedFullSources.length > 0">
-                      <nb-tag *ngFor="let source of selectedFullSources" [text]="source.cod_source" [removable]="true"
-                        [nbTooltip]="
-                          source.cod_source + ' - ' + source.name_source
-                        " (remove)="removeFullSource(source.cod_source)" size="tiny" appearance="filled">
-                      </nb-tag>
-                    </div>
-
-                    <nb-autocomplete #fullSourceAutocomplete (selectedChange)="onFullSourceSelected($event)">
-                      <nb-option *ngFor="let source of filteredFullSourceList" [value]="source.cod_source"
-                        [class.uo-selected]="isFullSourceSelected(source)" (mousedown)="$event.preventDefault()">
-                        <div class="option-wrapper d-flex align-items-center w-100 h-100">
-                          <nb-icon *ngIf="isFullSourceSelected(source)" icon="checkmark-outline" class="me-2"></nb-icon>
-                          {{ source.cod_source }} - {{ source.name_source }}
-                        </div>
-                      </nb-option>
-                    </nb-autocomplete>
+                    <ngx-multi-select-autocomplete
+                      label="Fonte Completa"
+                      placeholder="Buscar fonte..."
+                      name="fullSourceSearch"
+                      [items]="fullSourceList"
+                      [loading]="isFullSourceListLoading"
+                      loadingText="Buscando fontes..."
+                      [selectedValues]="filter.codSource"
+                      valueKey="cod_source"
+                      labelKey="name_source"
+                      (selectedValuesChange)="onFullSourceValuesChange($event)"
+                    />
                   </div>
                 </div>
               </div>
@@ -258,7 +222,7 @@
     </div>
   </div>
 
-  <div class="row g-1 g-md-2 px-2 indicator-summary-grid">
+  <div class="row g-1 g-md-2 px-1 indicator-summary-grid">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-2 indicator-logo-column">
       <div class="col-12 h-100 indicator-logo-wrapper">
         <div class="card h-100">
@@ -374,73 +338,6 @@
     </div>
   </div>
 
-  <!-- <div class="row px-2">
-    <div class="row g-1 g-md-1 px-1">
-      <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
-        <ng-container>
-          <div class="chart-container" [class.maximized]="isChartMaximized('availability-por-uo')"
-            [class.col-12]="!isChartMaximized('availability-por-uo')"
-            [class.col-md-12]="!isChartMaximized('availability-por-uo')"
-            [class.col-lg-12]="!isChartMaximized('availability-por-uo')"
-            [class.col-xl-12]="!isChartMaximized('availability-por-uo')"
-            [class.col-xxl-12]="!isChartMaximized('availability-por-uo')"
-            [class.col-xxxl-12]="!isChartMaximized('availability-por-uo')">
-            <ngx-availability-tu-uo class="w-100" (sendMaximizeButtonClick)="
-                handleMaximizeButtonClick('availability-por-uo', $event)
-              " [filter]="currentRequestParams">
-            </ngx-availability-tu-uo>
-          </div>
-        </ng-container>
-      </div>
-
-      <div class="col-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
-        <ng-container>
-          <div class="chart-container" [class.maximized]="isChartMaximized('success-of-planned')"
-            [class.col-12]="!isChartMaximized('success-of-planned')"
-            [class.col-md-12]="!isChartMaximized('success-of-planned')"
-            [class.col-lg-12]="!isChartMaximized('success-of-planned')"
-            [class.col-xl-12]="!isChartMaximized('success-of-planned')"
-            [class.col-xxl-12]="!isChartMaximized('success-of-planned')"
-            [class.col-xxxl-12]="!isChartMaximized('success-of-planned')">
-            <ngx-success-planned class="w-100" (sendMaximizeButtonClick)="
-                handleMaximizeButtonClick('success-of-planned', $event)
-              " [filter]="currentRequestParams">
-            </ngx-success-planned>
-          </div>
-        </ng-container>
-      </div>
-
-      <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-        <ng-container>
-          <div class="chart-container" [class.maximized]="isChartMaximized('comparative')"
-            [class.col-12]="!isChartMaximized('comparative')" [class.col-md-12]="!isChartMaximized('comparative')"
-            [class.col-lg-12]="!isChartMaximized('comparative')" [class.col-xl-12]="!isChartMaximized('comparative')"
-            [class.col-xxl-12]="!isChartMaximized('comparative')"
-            [class.col-xxxl-12]="!isChartMaximized('comparative')">
-            <ngx-comparative class="w-100" (sendMaximizeButtonClick)="
-                handleMaximizeButtonClick('comparative', $event)
-              " [filter]="currentRequestParams"></ngx-comparative>
-          </div>
-        </ng-container>
-      </div>
-
-      <div class="col-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-        <ng-container>
-          <div class="chart-container" [class.maximized]="isChartMaximized('planned-budgetary')"
-            [class.col-12]="!isChartMaximized('planned-budgetary')"
-            [class.col-md-12]="!isChartMaximized('planned-budgetary')"
-            [class.col-lg-12]="!isChartMaximized('planned-budgetary')"
-            [class.col-xl-12]="!isChartMaximized('planned-budgetary')"
-            [class.col-xxl-12]="!isChartMaximized('planned-budgetary')"
-            [class.col-xxxl-12]="!isChartMaximized('planned-budgetary')">
-            <ngx-planned-budgetary class="w-100" (sendMaximizeButtonClick)="
-                handleMaximizeButtonClick('planned-budgetary', $event)
-              " [filter]="currentRequestParams"></ngx-planned-budgetary>
-          </div>
-        </ng-container>
-      </div>
-    </div>
-  </div> -->
   <div class="dashboard-graphs-container position-relative">
     <div class="dashboard-graphs-container position-relative">
       <div class="row g-1 g-md-1 py-2 px-1">
@@ -495,9 +392,9 @@
               [class.col-12]="!isChartMaximized('comparative')"
               [class.col-md-12]="!isChartMaximized('comparative')"
               [class.col-lg-12]="!isChartMaximized('comparative')"
-              [class.col-xl-6]="!isChartMaximized('comparative')"
-              [class.col-xxl-6]="!isChartMaximized('comparative')"
-              [class.col-xxxl-6]="!isChartMaximized('comparative')"
+              [class.col-xl-12]="!isChartMaximized('comparative')"
+              [class.col-xxl-12]="!isChartMaximized('comparative')"
+              [class.col-xxxl-12]="!isChartMaximized('comparative')"
             >
               <ngx-comparative
                 class="w-100"
@@ -516,9 +413,9 @@
               [class.col-12]="!isChartMaximized('planned-budgetary')"
               [class.col-md-12]="!isChartMaximized('planned-budgetary')"
               [class.col-lg-12]="!isChartMaximized('planned-budgetary')"
-              [class.col-xl-6]="!isChartMaximized('planned-budgetary')"
-              [class.col-xxl-6]="!isChartMaximized('planned-budgetary')"
-              [class.col-xxxl-6]="!isChartMaximized('planned-budgetary')"
+              [class.col-xl-12]="!isChartMaximized('planned-budgetary')"
+              [class.col-xxl-12]="!isChartMaximized('planned-budgetary')"
+              [class.col-xxxl-12]="!isChartMaximized('planned-budgetary')"
             >
               <ngx-planned-budgetary
                 class="w-100"

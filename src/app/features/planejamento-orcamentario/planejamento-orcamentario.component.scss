@@ -8,22 +8,6 @@
   }
 }
 
-::ng-deep {
-  nb-option {
-    display: flex !important;
-    align-items: center;
-
-    &.uo-selected {
-      font-size: 12px;
-
-      nb-icon {
-        color: #005c99;
-        font-size: 1.2rem;
-      }
-    }
-  }
-}
-
 .text-info-custom {
   font-style: italic;
   font-weight: 500;
@@ -70,146 +54,19 @@
   }
 }
 
-.autocomplete-input-uo {
-  height: 2.1em !important;
-  max-height: 2.1em !important;
-  font-size: 12px !important;
-  border-radius: 4px !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  padding-left: 0.75rem !important;
-  line-height: normal !important;
-
-  &::placeholder {
-    font-size: 11px !important;
-  }
-}
-
-// Aplica esses estilos sob o tema "dark" e "cosmic"
 :host-context(.nb-theme-dark, .nb-theme-cosmic) {
-
   .sub-title-po {
+    color: #ffffff !important;
+
     &.logo {
       color: #ffffff !important;
     }
-
-    color: #ffffff !important;
-  }
-
-  .autocomplete-input-uo {
-    background-color: #2b2b4f !important;
-    border: 1px solid #222241 !important;
-    color: #ffffff !important;
-  }
-
-  .autocomplete-input-uo::placeholder {
-    color: #73739a !important;
-  }
-}
-
-:host-context(.nb-theme-default) {
-  .autocomplete-input-uo {
-    border: 1px solid #f1f4f8 !important;
-  }
-}
-
-:host-context(.nb-theme-dark) {
-  .autocomplete-input-uo {
-    border: 1px solid #191f35 !important;
-    background-color: #1d253e !important;
   }
 }
 
 @media (min-width: 1440px) {
   .container {
     max-width: 95%;
-  }
-}
-
-.chips-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 6px;
-  align-items: center;
-  width: 100%;
-
-  nb-tag {
-    display: inline-flex !important;
-    align-items: center !important;
-    height: 20px !important;
-    min-height: 20px !important;
-    max-height: 20px !important;
-    border-radius: 10px !important;
-    padding: 0 8px 0 7px !important;
-    font-size: 10px !important;
-    font-weight: 600 !important;
-    line-height: 1 !important;
-    white-space: nowrap !important;
-    cursor: default;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-    width: auto !important;
-    max-width: fit-content !important;
-
-    ::ng-deep {
-      .nb-tag-text {
-        font-size: 10px !important;
-        font-weight: 600 !important;
-        line-height: 1 !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 120px;
-        display: inline-block;
-        vertical-align: middle;
-      }
-
-      .nb-tag-remove {
-        font-size: 11px !important;
-        margin-left: 3px !important;
-        flex-shrink: 0;
-        opacity: 0.7;
-        transition: opacity 0.15s ease;
-        display: inline-flex !important;
-        align-items: center !important;
-        vertical-align: middle;
-
-        &:hover {
-          opacity: 1;
-        }
-      }
-    }
-
-    &:hover {
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-      transform: translateY(-1px);
-    }
-  }
-}
-
-:host-context(.nb-theme-dark) {
-  .chips-container nb-tag {
-    background-color: rgba(51, 102, 255, 0.15) !important;
-    color: #82aaff !important;
-    border: 1px solid rgba(51, 102, 255, 0.4) !important;
-
-    ::ng-deep .nb-tag-remove {
-      color: #82aaff !important;
-    }
-  }
-}
-
-:host-context(.nb-theme-default) {
-  .chips-container nb-tag {
-    background-color: #e8f0fe !important;
-    color: #1a56db !important;
-    border: 1px solid rgba(26, 86, 219, 0.25) !important;
-
-    ::ng-deep .nb-tag-remove {
-      color: #1a56db !important;
-    }
   }
 }
 

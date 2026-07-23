@@ -11,7 +11,7 @@ import {
   ViewChild,
   ViewChildren,
 } from "@angular/core";
-import { NbAutocompleteDirective, NbSelectComponent, NbThemeService } from "@nebular/theme";
+import { NbSelectComponent, NbThemeService } from "@nebular/theme";
 import { environment } from "../../../environments/environment";
 import {
   ISPOFiltroPos,
@@ -82,7 +82,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
   @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
   @ViewChild("uoSearchInput") uoSearchInput!: ElementRef<HTMLInputElement>;
   @ViewChildren("customSelect") customSelectRefs!: QueryList<NbSelectComponent>;
-  @ViewChild(NbAutocompleteDirective) autocomplete!: NbAutocompleteDirective<any>;
   @Output() filterChanged = new EventEmitter<IPlanejamentoOrcamentarioFilter>();
 
   activeFilters: {
@@ -158,6 +157,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
   selectedUOs: ISPOFiltroUos[] = [];
   selectedPOs: ISPOFiltroPos[] = [];
   isPOListLoading: boolean = false;
+  isUOListLoading: boolean = false;
 
   uoSearchTerm: string = "";
   poSearchTerm: string = "";
@@ -263,9 +263,13 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
   }
 
   private getListUos() {
+    this.isUOListLoading = true;
     this._planejamentoOrcamentarioService
       .getFiltroUos()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        finalize(() => (this.isUOListLoading = false)),
+        takeUntil(this.destroy$),
+      )
       .subscribe({
         next: (response: ISPOFiltroUos[]) => {
           this.UOList = response;
@@ -591,6 +595,11 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
         });
       }
     }
+
+    const filterOrder = ["ano", "mes", "gnd", "tipoFonte", "uo", "po"];
+    this.activeFilters.sort(
+      (a, b) => filterOrder.indexOf(a.key) - filterOrder.indexOf(b.key),
+    );
   }
 
   filtrar(event?: Event): void {
@@ -754,14 +763,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
 
     setTimeout(() => {
       this._processingUO = false;
-      if (this.uoSearchInput) {
-        this.uoSearchInput.nativeElement.value = "";
-        this.uoSearchInput.nativeElement.focus();
-      }
-      // Força o menu a permanecer aberto (útil para seleção via teclado/Enter)
-      if (this.autocomplete) {
-        this.autocomplete.show();
-      }
     }, 100);
   }
 

@@ -141,7 +141,12 @@ export class ComparativeComponent implements OnChanges, OnDestroy {
     const recentYears = uniqueYears.slice(-2); // Pega os dois anos mais recentes
     const uniqueGnds = [
       ...new Set(response.map((item) => `${item.codGnd} - ${item.nameGnd}`)),
-    ];
+    ].sort((a, b) => {
+      const codeA = Number(a.split(" - ")[0]);
+      const codeB = Number(b.split(" - ")[0]);
+
+      return codeA - codeB;
+    });
 
     const datasets = recentYears.map((year, index) => ({
       label: `Liquidado ${year}`,

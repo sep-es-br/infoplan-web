@@ -1,0 +1,62 @@
+<div class="multi-select-autocomplete-field d-flex flex-column">
+  <span class="mb-1">{{ label }}</span>
+
+  <input
+    class="autocomplete-input-uo"
+    type="text"
+    nbInput
+    fullWidth
+    [name]="name"
+    [placeholder]="inputPlaceholder"
+    [disabled]="loading"
+    autocomplete="off"
+    fieldSize="tiny"
+    [(ngModel)]="searchTerm"
+    [nbAutocomplete]="autocomplete"
+    ngxKeepAutocompleteOpen
+    (ngModelChange)="onSearch($event)"
+  />
+
+  <div
+    *ngIf="loading"
+    class="autocomplete-loading text-info-custom small mt-1 d-flex align-items-center gap-1"
+    role="status"
+  >
+    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+    {{ loadingText }}
+  </div>
+
+  <div class="selected-items-row" *ngIf="selectedItems.length > 0">
+    <nb-tag
+      *ngFor="let item of selectedItems"
+      [text]="chipDisplayOf(item)"
+      [removable]="true"
+      [nbTooltip]="displayOf(item)"
+      size="tiny"
+      appearance="filled"
+      (remove)="remove(valueOf(item))"
+    >
+    </nb-tag>
+  </div>
+
+  <nb-autocomplete #autocomplete (selectedChange)="toggle($event)">
+    <nb-option
+      *ngFor="let item of filteredItems"
+      [value]="valueOf(item)"
+      [class.uo-selected]="isSelected(item)"
+      (mousedown)="$event.preventDefault()"
+    >
+      <div
+        class="option-wrapper d-flex align-items-center w-100 h-100"
+        (click)="toggle(item); $event.stopPropagation()"
+      >
+        <nb-icon
+          *ngIf="isSelected(item)"
+          icon="checkmark-outline"
+          class="me-2"
+        ></nb-icon>
+        {{ displayOf(item) }}
+      </div>
+    </nb-option>
+  </nb-autocomplete>
+</div>

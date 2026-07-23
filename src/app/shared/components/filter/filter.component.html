@@ -1,7 +1,7 @@
 <!-- generic-filter.component.html -->
 <div class="filter-container">
   <div class="filter-wrapper" [class.is-sticky]="isScrolled">
-  <div class="filter-button px-2" [class.is-sticky]="isScrolled">
+  <div class="filter-button" [class.is-sticky]="isScrolled">
     <div class="filter-tags" [class.is-sticky]="isScrolled">
       <div *ngFor="let tag of activeFilters" class="d-inline-block">
         <div class="filter-tag" [class.is-sticky]="isScrolled" [ngClass]="{ 'invisible-tag': showFilters }">

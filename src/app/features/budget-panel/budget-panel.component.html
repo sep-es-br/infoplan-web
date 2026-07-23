@@ -1,7 +1,11 @@
 <div class="col-12">
   <div class="filter-container">
     <div class="filter-wrapper" [class.is-sticky]="isScrolled">
-      <div class="filter-button px-2" [class.is-sticky]="isScrolled">
+      <div
+        class="filter-button"
+        [class.is-sticky]="isScrolled"
+        [class.has-nav-buttons]="menuExecucao?.length > 0"
+      >
         <div class="nav-buttons-container flex-grow-1">
           <ngx-sticky-tag-nav [tags]="menuExecucao"></ngx-sticky-tag-nav>
         </div>
@@ -64,7 +68,7 @@
       </div>
     </div>
     <!-- Painel de Filtros Simplificado -->
-    <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
+    <div class="modal fade dashboard-filter-modal" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-body">
@@ -339,7 +343,7 @@
     </div>
   </div>
 
-  <nb-layout-footer class="dashboard-footer-wrapper">
+  <nb-layout-footer class="dashboard-footer-wrapper px-1">
     <ngx-footer [timestamp]="timestamp"></ngx-footer>
   </nb-layout-footer>
 </div>

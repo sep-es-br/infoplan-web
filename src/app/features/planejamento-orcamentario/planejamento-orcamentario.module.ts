@@ -12,6 +12,7 @@ import { DashboardPoComponent } from './data/dashboard/dashboard-po/dashboard-po
 import { ProgressBarPoComponent } from "./data/total-autorizado-progress-bar/progress-bar-po/progress-bar-po.component";
 import { GraficoTotalAnoComponent } from "./data/dashboard/grafico-total/grafico-total-ano.component";
 import { GraficoTotalAnoSigefesComponent } from "./data/dashboard/grafico-total-ano-sigefes/grafico-total-ano-sigefes.component";
+import { KeepAutocompleteOpenDirective } from "../../shared/directives/keep-autocomplete-open.directive";
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { GraficoTotalAnoSigefesComponent } from "./data/dashboard/grafico-total-
     ThemeModule,
     NbAutocompleteModule,
     NbTagModule,
+    KeepAutocompleteOpenDirective,
     DashboardUoComponent,
     ProgressBarUoComponent,
     DashboardPoComponent,

@@ -45,6 +45,8 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
   @Input() barGap: string = "30";
   @Input() isMaximized!: boolean;
   @Input() charactersPerLine!: number;
+  @Input() xAxisFontSize: number = 11;
+  @Input() xAxisMaxLength: number = 0;
 
   @Input() chartDataConfig!: ChartDataConfig;
 
@@ -212,12 +214,19 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
         data: data.map((d) => d.category),
         axisLabel: {
           color: theme.textPrimaryColor,
-          fontSize: this.isMaximized ? 14 : 11,
+          fontSize: this.isMaximized ? 14 : this.xAxisFontSize,
           interval: 0,
           rotate: (window.innerWidth <= 768 && data.length > 4) ? 45 : 0,
           margin: 10,
           overflow: "truncate",
           width: isPhone ? 40 : isTablet ? 60 : isMobile ? 60 : 130,
+          formatter: (value: string) => {
+            if (!this.xAxisMaxLength || value.length <= this.xAxisMaxLength) {
+              return value;
+            }
+
+            return `${value.slice(0, this.xAxisMaxLength).trimEnd()}...`;
+          },
         },
         axisTick: {
           alignWithLabel: true,
@@ -226,6 +235,8 @@ export class OrgChartVerticalComponent implements OnInit, OnChanges, OnDestroy {
       yAxis: {
         type: "value",
         inverse: false,
+        scale: true,
+        splitNumber: isPhone ? 3 : isTablet ? 4 : 5,
         axisLabel: {
           color: theme.textPrimaryColor,
           fontSize: this.isMaximized ? 13 : 10,

@@ -3,7 +3,7 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpStatusCode } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
-import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, INumeroEntregasPorMunicipioStatus, IPainelObrasRequest, IQuantidadeMaiorEntrega, IQuantidadeMaiorEntregaPrevista, ITotalEntregaPorMes, ITotalEntregasPorOrgao, ITotalEntregasPorOrgaoExecucao, ITotalMunicipioStatus, ITotalTotalizador } from '../../interfaces/painel-obras/painel-obras';
+import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, INumeroEntregasPorMunicipioStatus, IPainelObrasRequest, IPainelObrasTimestamp, IQuantidadeMaiorEntrega, IQuantidadeMaiorEntregaPrevista, ITotalEntregaPorMes, ITotalEntregasPorOrgao, ITotalEntregasPorOrgaoExecucao, ITotalMunicipioStatus, ITotalTotalizador } from '../../interfaces/painel-obras/painel-obras';
 import { catchError } from 'rxjs/operators';
 
 interface IFiltroStatusRequest {
@@ -26,6 +26,12 @@ export class PainelObrasService {
 
   public getOrgaos(): Observable<IFiltroOrgao[]> {
     return this._http.get<IFiltroOrgao[]>(`${this._URI}/filtros/orgaos`).pipe(
+      catchError((err) => this.handleError(err, this._router))
+    );
+  }
+
+  public getTimestamp(): Observable<IPainelObrasTimestamp> {
+    return this._http.get<IPainelObrasTimestamp>(`${this._URI}/timestamp`).pipe(
       catchError((err) => this.handleError(err, this._router))
     );
   }

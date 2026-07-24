@@ -24,4 +24,8 @@ export class DashboardSummaryCardComponent {
   isImage(icon: string): boolean {
     return /\.(png|jpe?g|svg|gif|webp)$/i.test(icon);
   }
+
+  isSvg(icon: string): boolean {
+    return /\.svg$/i.test(icon);
+  }
 }

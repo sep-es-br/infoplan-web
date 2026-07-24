@@ -149,7 +149,7 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
         defaultColumns: [
           {
             propertyName: "valor",
-            displayName: "Valores (R$)",
+            displayName: "Valores",
             alignment: {
               header: FlipTableAlignment.RIGHT,
               data: FlipTableAlignment.RIGHT,
@@ -174,7 +174,7 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
         defaultColumns: [
           {
             propertyName: "valor",
-            displayName: "Valores (R$)",
+            displayName: "Valores",
             alignment: {
               header: FlipTableAlignment.RIGHT,
               data: FlipTableAlignment.RIGHT,
@@ -242,7 +242,7 @@ export class AvailabilityTuUoComponent implements OnChanges, OnDestroy {
       defaultColumns: [
         {
           propertyName: "valor",
-          displayName: "Valores (R$)",
+          displayName: "Valores",
           alignment: {
             header: FlipTableAlignment.RIGHT,
             data: FlipTableAlignment.RIGHT,

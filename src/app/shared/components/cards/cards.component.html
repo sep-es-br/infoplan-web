@@ -3,13 +3,24 @@
   [ngClass]="'dashboard-summary-card--' + variant"
   [style.--summary-card-accent]="accentColor"
   [nbTooltip]="tooltip || null"
+  [nbTooltipDisabled]="!tooltip"
   [nbTooltipClass]="tooltipClass"
   nbTooltipPlacement="bottom"
 >
   <div class="dashboard-summary-card__icon" *ngIf="!loading && icon">
     <span *ngIf="iconText; else iconAsset" [class]="icon">{{ iconText }}</span>
     <ng-template #iconAsset>
-    <img *ngIf="isImage(icon); else fontIcon" [src]="icon" [alt]="label" />
+    <span
+      *ngIf="isSvg(icon); else rasterIcon"
+      class="dashboard-summary-card__svg-icon"
+      [style.mask-image]="'url(' + icon + ')'"
+      [style.webkitMaskImage]="'url(' + icon + ')'"
+      [attr.aria-label]="label"
+      role="img"
+    ></span>
+    <ng-template #rasterIcon>
+      <img *ngIf="isImage(icon); else fontIcon" [src]="icon" [alt]="label" />
+    </ng-template>
     <ng-template #fontIcon>
       <i [class]="icon" aria-hidden="true"></i>
     </ng-template>
@@ -41,6 +52,7 @@
           *ngIf="subtitle"
           class="dashboard-summary-card__subtitle"
           [nbTooltip]="subtitleTooltip || null"
+          [nbTooltipDisabled]="!subtitleTooltip"
           nbTooltipPlacement="bottom"
         >{{ subtitle }}</div>
       </div>

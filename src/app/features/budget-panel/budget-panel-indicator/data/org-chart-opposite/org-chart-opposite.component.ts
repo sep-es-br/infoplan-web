@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import {
   Component,
+  HostBinding,
   HostListener,
   Input,
   OnChanges,
@@ -50,6 +51,11 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chartDataConfig!: ChartDataConfig;
   @Input() groupingMode: GroupingMode = "YEAR_GND";
   @Input() valueType: 'percent' | 'currency' = 'percent';
+
+  @HostBinding("style.height.px")
+  get hostHeight(): number | null {
+    return Number.isFinite(this.height) ? this.height : null;
+  }
 
   private readonly _utilitiesService = inject(UtilitiesService);
 
@@ -112,8 +118,16 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
     const datasetsRaw = this.chart.data.datasets;
     const theme = getAvailableThemesStyles(this.currentTheme);
     const chartWidth = this.echartsInstance?.getWidth() ?? window.innerWidth;
-    const isCompact = !this.isMaximized && chartWidth < 520;
-    const groupLabelMaxLength = isCompact ? 22 : this.isMaximized ? 60 : 38;
+    const isPhone = window.innerWidth <= 575;
+    const isCompact = chartWidth < 520;
+    const isMobileMaximized = isPhone && this.isMaximized;
+    const groupLabelMaxLength = isMobileMaximized
+      ? 28
+      : isCompact
+        ? 22
+        : this.isMaximized
+          ? 60
+          : 38;
     const getYear = (l: string) => l.split("|#|")[0]?.trim() || "";
     const getGnd = (l: string) => l.split("|#|")[1]?.trim() || l.trim();
 
@@ -167,7 +181,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
-    const barWidth = this.isMaximized ? 26 : 15;
+    const barWidth = isMobileMaximized ? 18 : this.isMaximized ? 26 : 15;
     const empSeriesData: any[] = [];
     const liqSeriesData: any[] = [];
 
@@ -227,7 +241,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
       });
     });
 
-    const maxItemsVisible = this.isMaximized ? 25 : 15;
+    const maxItemsVisible = isMobileMaximized ? 8 : this.isMaximized ? 25 : 15;
     const endZoomValue = Math.min(maxItemsVisible, finalData.length - 1);
 
     this.chartOptions = {
@@ -288,9 +302,15 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         },
       },
       grid: {
-        left: this.chartDataConfig?.grid?.left || "5%",
-        right: this.chartDataConfig?.grid?.right || "6%",
-        bottom: this.chartDataConfig?.grid?.bottom || "0%",
+        left: isMobileMaximized
+          ? "2%"
+          : this.chartDataConfig?.grid?.left || "5%",
+        right: isMobileMaximized
+          ? "10%"
+          : this.chartDataConfig?.grid?.right || "6%",
+        bottom: isMobileMaximized
+          ? "7%"
+          : this.chartDataConfig?.grid?.bottom || "0%",
         top: this.chartDataConfig?.grid?.top || "8%",
         containLabel: this.chartDataConfig?.grid?.containLabel ?? true,
       },
@@ -328,13 +348,13 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           rich: {
             mainGroup: {
               fontSize: this.isMaximized
-                ? window.innerWidth <= 575
-                  ? 11
+                ? isPhone
+                  ? 9
                   : 13
                 : isCompact
                   ? 9
                   : 10,
-              lineHeight: isCompact ? 13 : 15,
+              lineHeight: isMobileMaximized ? 11 : isCompact ? 13 : 15,
               padding: [0, 0, 4, 0],
             },
             subGroup: {
@@ -360,7 +380,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
         },
         axisTick: {
           show: true,
-          length: 20, // Reduzido para não invadir muito a área do gráfico
+          length: isMobileMaximized ? 10 : 20,
           lineStyle: { color: theme.textPrimaryColor, opacity: 0.4 },
           interval: (_index: number, val: string) => {
             if (!val) return true;
@@ -413,6 +433,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           name: "Empenhado",
           type: "bar",
           barCategoryGap: "25%",
+          barMaxWidth: barWidth,
           data: empSeriesData,
           z: 1,
           itemStyle: { borderRadius: [0, 4, 4, 0] },
@@ -432,6 +453,7 @@ export class OrgChartOppositeComponent implements OnInit, OnChanges, OnDestroy {
           name: "Liquidado",
           type: "bar",
           barGap: "-100%",
+          barMaxWidth: barWidth,
           data: liqSeriesData,
           z: 2,
           itemStyle: { borderRadius: [0, 4, 4, 0] },

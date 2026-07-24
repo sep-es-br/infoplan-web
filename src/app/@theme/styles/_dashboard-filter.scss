@@ -313,7 +313,7 @@ nb-tag.tag-default.is-sticky.active-tag {
       width: 36px;
       height: 36px;
       background-color: var(--card-background-color);
-      border: 1px solid whitesmoke;
+      border:  1px solid var(--border-color, #ced4da);
       border-radius: 50%;
       cursor: pointer;
       padding: 0;

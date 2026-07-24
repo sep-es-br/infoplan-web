@@ -219,7 +219,7 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
     const grandTotalData = this.buildGrandTotalRow(totalsByYear, allYears);
 
     treeNodes.push({ data: grandTotalData, children: [], expanded: false });
-    this._utilitiesService.sortTreeNodes(treeNodes, "top");
+    this._utilitiesService.sortGndTreeNodes(treeNodes);
 
     // 4. Configuração dinâmica das colunas dependendo do groupingMode
     this.configureTableColumns(this.tableMetrics, this.distinctYears);
@@ -555,5 +555,10 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
 
   calcMaximizedHeight(): number {
     return this._chartMaximizeService.calcMaximizedHeight();
+  }
+
+  calcMaximizedChartHeight(): number {
+    const controlsHeight = 50;
+    return Math.max(this.calcMaximizedHeight() - controlsHeight, 200);
   }
 }

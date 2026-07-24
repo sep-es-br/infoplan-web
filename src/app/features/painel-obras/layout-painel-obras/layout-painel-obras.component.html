@@ -129,9 +129,8 @@
             <ngx-dashboard-summary-card
               [value]="statusTotal.totalizadorProgramas"
               label="Programas"
-              icon="fas fa-layer-group"
+              icon="fas fa-cogs"
               accentColor="#137bb9"
-              [tooltip]="statusTotal.totalizadorProgramas"
               [loading]="requestStatus.status === 'Loading'"
             ></ngx-dashboard-summary-card>
           </div>
@@ -140,9 +139,8 @@
             <ngx-dashboard-summary-card
               [value]="statusTotal.totalizadorProjetos"
               label="Projetos"
-              icon="fas fa-project-diagram"
+              icon="fas fa-cog"
               accentColor="#d0647d"
-              [tooltip]="statusTotal.totalizadorProjetos"
               [loading]="requestStatus.status === 'Loading'"
             ></ngx-dashboard-summary-card>
           </div>
@@ -151,9 +149,8 @@
             <ngx-dashboard-summary-card
               [value]="statusTotal.contagemEntregas"
               label="Entregas"
-              icon="fas fa-box-open"
+              icon="fas fa-cubes"
               accentColor="#d3913c"
-              [tooltip]="statusTotal.contagemEntregas + ' Entregas'"
               [loading]="requestStatus.status === 'Loading'"
             ></ngx-dashboard-summary-card>
           </div>
@@ -162,7 +159,8 @@
             <ngx-dashboard-summary-card
               [value]="formatNumber(statusTotal.monitoramentoPlanejado)"
               label="Financeiro Planejado"
-              icon="fas fa-money-check-alt"
+              prefix="R$"
+              icon="fas fa-calculator"
               accentColor="#62a581"
               [tooltip]="'R$ ' + (statusTotal.monitoramentoPlanejado | number: '1.0-0')"
               [loading]="requestStatus.status === 'Loading'"
@@ -173,7 +171,8 @@
             <ngx-dashboard-summary-card
               [value]="formatNumber(statusTotal.monitoramentoRealizado)"
               label="Financeiro Realizado"
-              icon="fas fa-chart-line"
+              prefix="R$"
+              icon="fas fa-database"
               accentColor="#8d7fa2"
               [tooltip]="'R$ ' + (statusTotal.monitoramentoRealizado | number: '1.0-0')"
               [loading]="requestStatus.status === 'Loading'"
@@ -182,11 +181,10 @@
 
           <div class="col-12 col-sm-6 col-xl-4 px-1 summary-card-column">
             <ngx-dashboard-summary-card
-              [value]="formatNumber(statusTotal.filtroTemporalCritico)"
+              [value]="statusTotal.totalEntregasPE"
               label="Filtro Temporal Crítico"
-              icon="fas fa-hourglass-half"
+              icon="assets/images/app/inauguracao.svg"
               accentColor="#43a4a6"
-              [tooltip]="'R$ ' + (statusTotal?.filtroTemporalCritico | number: '1.0-0')"
               [loading]="requestStatus.status === 'Loading'"
             ></ngx-dashboard-summary-card>
           </div>
@@ -200,3 +198,7 @@
     <router-outlet></router-outlet>
   </ng-container>
 </div>
+
+<nb-layout-footer class="dashboard-footer-wrapper px-2">
+  <ngx-footer [timestamp]="timestamp"></ngx-footer>
+</nb-layout-footer>

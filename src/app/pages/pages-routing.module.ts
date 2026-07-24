@@ -64,7 +64,7 @@ const routes: Routes = [
         loadChildren: () => import('../features/painel-obras/layout-painel-obras/layout-painel-obras.module').then(m => m.LayoutPainelObrasModule),
         canActivate: [OrganizacaoGuardGuard],
         data: {
-          dataSource: "PMO",
+          dataSource: "OpenPMO",
           allowedRoles: [environment.allowedRoles.painelObras, environment.allowedRoles.geral],
           fallbackRoute: '/pages/home'
         },

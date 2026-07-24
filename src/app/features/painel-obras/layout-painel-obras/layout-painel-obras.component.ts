@@ -134,6 +134,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
     monitoramentoPlanejado: 0,
     monitoramentoRealizado: 0,
     filtroTemporalCritico: 0,
+    totalEntregasPE:0
   };
 
   private readonly _scrollService = inject(ScrollService);
@@ -410,12 +411,13 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (value) => {
-          this.statusTotal.contagemEntregas = value.totalEntregasPE;
+          this.statusTotal.contagemEntregas = value.quantidadeEntregas;
           this.statusTotal.monitoramentoPlanejado = value.totalPrevisto;
           this.statusTotal.monitoramentoRealizado = value.totalRealizado;
           this.statusTotal.totalizadorProgramas = value.quantidadeProgramas;
           this.statusTotal.totalizadorProjetos = value.quantidadeProjetos;
           this.statusTotal.filtroTemporalCritico = value.totalProgramado;
+          this.statusTotal.totalEntregasPE = value.totalEntregasPE;
           this.requestStatus.status = RequestStatus.SUCCESS;
         },
         error: () => {
@@ -424,6 +426,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
           this.statusTotal.monitoramentoRealizado = 0;
           this.statusTotal.totalizadorProgramas = 0;
           this.statusTotal.totalizadorProjetos = 0;
+          this.statusTotal.totalEntregasPE = 0;
           this.requestStatus.status = RequestStatus.ERROR;
         }
       });

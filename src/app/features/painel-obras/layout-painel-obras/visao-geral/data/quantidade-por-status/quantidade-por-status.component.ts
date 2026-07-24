@@ -14,7 +14,10 @@ import { RequestStatus } from '../../../../../strategic-projects/strategicProjec
 import { getChartColors } from '../../../../../../@core/utils/functionts/functionts';
 import { NgxChartsModule } from "@swimlane/ngx-charts";
 import { PieChartComponent } from "../../../../../budget-panel/org-chart-pie/org-chart-pie.component";
-import { getStatusCategory } from "../../../../../../shared/models/painel-obras/obra-status-groups";
+import {
+  getStatusCategory,
+  OBRA_STATUS_GROUPS,
+} from "../../../../../../shared/models/painel-obras/obra-status-groups";
 
 @Component({
   selector: 'ngx-quantidade-por-status',
@@ -138,7 +141,7 @@ export class QuantidadePorStatusComponent implements OnChanges, OnDestroy {
   }
 
 
-  assembleFlipTableContent(data: { status: string; quantidadeEntregas: number }[], shouldStartExpanded: boolean = false): void {
+  assembleFlipTableContent(data: { status: string; quantidadeEntregas: number }[], shouldStartExpanded: boolean = true): void {
     const standardAlignment = {
       header: FlipTableAlignment.CENTER,
       data: FlipTableAlignment.RIGHT,
@@ -152,7 +155,9 @@ export class QuantidadePorStatusComponent implements OnChanges, OnDestroy {
       },
     ];
 
-    const finalData: Array<TreeNode> = data.map((item) => ({
+    const createStatusNode = (
+      item: { status: string; quantidadeEntregas: number },
+    ): TreeNode => ({
       data: [
         {
           originalPropertyName: 'status',
@@ -165,8 +170,36 @@ export class QuantidadePorStatusComponent implements OnChanges, OnDestroy {
         },
       ],
       children: [],
-      expanded: shouldStartExpanded,
-    }));
+      expanded: false,
+    });
+
+    const planningStatuses = new Set(OBRA_STATUS_GROUPS.PLANEJAMENTO);
+    const planningItems = data.filter((item) => planningStatuses.has(item.status));
+    const otherItems = data.filter((item) => !planningStatuses.has(item.status));
+    const finalData: Array<TreeNode> = otherItems.map(createStatusNode);
+
+    if (planningItems.length > 0) {
+      const planningTotal = planningItems.reduce(
+        (total, item) => total + item.quantidadeEntregas,
+        0,
+      );
+
+      finalData.push({
+        data: [
+          {
+            originalPropertyName: 'status',
+            propertyName: 'firstColumn',
+            value: 'Planejamento',
+          },
+          {
+            propertyName: 'quantidadeEntregas',
+            value: new Intl.NumberFormat('pt-BR').format(planningTotal),
+          },
+        ],
+        children: planningItems.map(createStatusNode),
+        expanded: shouldStartExpanded,
+      });
+    }
 
     this.flipTableContent = {
       defaultColumns: tableColumns,
@@ -188,6 +221,7 @@ export class QuantidadePorStatusComponent implements OnChanges, OnDestroy {
       const preparedSearchTerm = search.toLowerCase();
       const filteredData = this.quantidadePoStatusResponse.filter((item) =>
         item.status.toLowerCase().includes(preparedSearchTerm) ||
+        getStatusCategory(item.status).toLowerCase().includes(preparedSearchTerm) ||
         item.quantidadeEntregas.toString().toLowerCase().includes(preparedSearchTerm)
       );
       this.assembleFlipTableContent(filteredData);

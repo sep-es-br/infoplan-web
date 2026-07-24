@@ -14,7 +14,7 @@ import { ActivatedRoute } from '@angular/router';
   `,
 })
 export class FooterComponent {
-  @Input() timestamp: string;
+  @Input() timestamp!: string;
 
   dataSrc : string;
 

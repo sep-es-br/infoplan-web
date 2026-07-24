@@ -185,7 +185,7 @@ export class ComparativeComponent implements OnChanges, OnDestroy {
     // 4. Adição da linha de Total Geral
     const grandTotalData = this.buildGrandTotalRow(response, allYears);
     treeNodes.push({ data: grandTotalData, children: [], expanded: false });
-    this._utilitiesService.sortTreeNodes(treeNodes, "top");
+    this._utilitiesService.sortGndTreeNodes(treeNodes);
 
     // 5. Configuração das Colunas do FlipTable
     this.configureTableColumns(this.tableMetrics, this.distinctYears);

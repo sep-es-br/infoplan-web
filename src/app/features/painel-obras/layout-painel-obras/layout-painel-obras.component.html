@@ -159,6 +159,7 @@
             <ngx-dashboard-summary-card
               [value]="formatNumber(statusTotal.monitoramentoPlanejado)"
               label="Financeiro Planejado"
+              prefix="R$"
               icon="fas fa-calculator"
               accentColor="#62a581"
               [tooltip]="'R$ ' + (statusTotal.monitoramentoPlanejado | number: '1.0-0')"
@@ -170,6 +171,7 @@
             <ngx-dashboard-summary-card
               [value]="formatNumber(statusTotal.monitoramentoRealizado)"
               label="Financeiro Realizado"
+              prefix="R$"
               icon="fas fa-database"
               accentColor="#8d7fa2"
               [tooltip]="'R$ ' + (statusTotal.monitoramentoRealizado | number: '1.0-0')"
@@ -181,7 +183,7 @@
             <ngx-dashboard-summary-card
               [value]="statusTotal.totalEntregasPE"
               label="Filtro Temporal Crítico"
-              icon="fas fa-hourglass-half"
+              icon="assets/images/app/filter-circle-clock-solid-full.svg"
               accentColor="#43a4a6"
               [loading]="requestStatus.status === 'Loading'"
             ></ngx-dashboard-summary-card>
@@ -196,3 +198,7 @@
     <router-outlet></router-outlet>
   </ng-container>
 </div>
+
+<nb-layout-footer class="dashboard-footer-wrapper px-2">
+  <ngx-footer [timestamp]="timestamp"></ngx-footer>
+</nb-layout-footer>

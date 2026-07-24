@@ -38,6 +38,19 @@
       height: 18px;
       object-fit: contain;
     }
+
+    .dashboard-summary-card__svg-icon {
+      display: block;
+      width: 18px;
+      height: 18px;
+      background-color: var(--summary-card-accent);
+      mask-repeat: no-repeat;
+      mask-position: center;
+      mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      -webkit-mask-size: contain;
+    }
   }
 
   &__value-box {
@@ -88,7 +101,7 @@
   &__label {
     padding-right: 0;
     color: var(--summary-card-accent);
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 700;
     text-align: left;
     overflow-wrap: normal;

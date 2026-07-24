@@ -161,6 +161,10 @@
 
     .card-back {
       // Height is managed dynamically via [style.height] in the template
+      --flip-table-font-size: 11px;
+      --flip-table-font-size-maximized: 14px;
+      --flip-table-font-size-minimized: 11px;
+      --flip-table-font-size-header: 11px;
 
       .table-container {
         overflow: auto;
@@ -191,6 +195,7 @@
         }
 
         .custom-grouped-table {
+          font-family: var(--text-paragraph-font-family);
           width: 100%;
           min-width: max-content;
           border-collapse: separate;
@@ -342,21 +347,21 @@
 
           &.minimized {
             thead th {
-              font-size: 12px;
+              font-size: var(--flip-table-font-size-minimized);
             }
 
             tbody td {
-              font-size: 11px;
+              font-size: var(--flip-table-font-size-minimized);
             }
           }
 
           &.maximized {
             thead th {
-              font-size: 13px;
+              font-size: var(--flip-table-font-size-maximized);
             }
 
             tbody td {
-              font-size: 12px;
+              font-size: var(--flip-table-font-size-maximized);
             }
           }
         }
@@ -404,7 +409,7 @@
             top: -1px;
             z-index: 10;
             background-color: var(--card-background-color) !important;
-            font-size: 12px !important;
+            font-size: var(--flip-table-font-size) !important;
             padding-left: 0.5em;
             padding-right: 0.5em;
             height: 20px;
@@ -413,7 +418,7 @@
           }
 
           td {
-            font-size: 11px !important;
+            font-size: var(--flip-table-font-size) !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;
@@ -439,7 +444,7 @@
             top: -1px;
             z-index: 10;
             background-color: var(--card-background-color) !important;
-            font-size: 14px !important;
+            font-size: var(--flip-table-font-size-maximized) !important;
             padding-left: 0.5em;
             padding-right: 0.5em;
             height: 40px;
@@ -448,7 +453,7 @@
           }
 
           td {
-            font-size: 14px !important;
+            font-size: var(--flip-table-font-size-maximized) !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;

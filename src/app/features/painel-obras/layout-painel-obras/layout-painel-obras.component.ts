@@ -11,11 +11,12 @@ import {
   ViewChildren,
 } from "@angular/core";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
-import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, IPainelObrasRequest } from "../../../core/interfaces/painel-obras/painel-obras";
+import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, IPainelObrasRequest, IPainelObrasTimestamp } from "../../../core/interfaces/painel-obras/painel-obras";
 import { environment } from "../../../../environments/environment";
 import {
   NbButtonModule,
   NbIconModule,
+  NbLayoutModule,
   NbSelectComponent,
   NbSelectModule,
   NbTagModule,
@@ -37,6 +38,7 @@ import { OrgaoComponent } from "./orgao/orgao.component";
 import { FilterManagementService } from "../../../core/service/filter-management/filter-management.service";
 import { TextTruncatePipe } from "../../../@theme/pipes/text-truncate.pipe";
 import { CardsModule } from "../../../shared/components/cards/cards.module";
+import { ThemeModule } from "../../../@theme/theme.module";
 
 type PaginaPainel = "visao-geral" | "orgao" | "municipio" | "carteira";
 
@@ -68,6 +70,8 @@ enum AvailableFilters {
     NbTooltipModule,
     TextTruncatePipe,
     CardsModule,
+    NbLayoutModule,
+    ThemeModule,
   ],
   templateUrl: "./layout-painel-obras.component.html",
   styleUrls: ["./layout-painel-obras.component.scss"],
@@ -149,6 +153,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
   protected formatNumber = formatNumber;
 
   isScrolled = false;
+  timestamp: string = "";
   isFilterModalOpen: boolean = false;
   orgaosList: IFiltroOrgao[] = [];
   municipiosList: IFiltroMunicipio[] = [];
@@ -182,6 +187,7 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
         this.isScrolled = scrolled;
       });
     this.loadInitialData();
+    this.loadTimestamp();
   }
 
   ngOnDestroy(): void {
@@ -196,6 +202,20 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
     this._filterManagementService.updateFilter(this.currentRequestParams);
     this.getRequisitionData();
     this.getCardExecution();
+  }
+
+  private loadTimestamp(): void {
+    this._painelObrasService
+      .getTimestamp()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: IPainelObrasTimestamp) => {
+          this.timestamp = response.timestamp;
+        },
+        error: (error) => {
+          console.error("Erro ao carregar o timestamp do Painel de Obras:", error);
+        },
+      });
   }
 
   filterManagement(filter: IPainelObrasRequest) {

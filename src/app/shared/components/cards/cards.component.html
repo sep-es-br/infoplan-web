@@ -3,6 +3,7 @@
   [ngClass]="'dashboard-summary-card--' + variant"
   [style.--summary-card-accent]="accentColor"
   [nbTooltip]="tooltip || null"
+  [nbTooltipDisabled]="!tooltip"
   [nbTooltipClass]="tooltipClass"
   nbTooltipPlacement="bottom"
 >
@@ -41,6 +42,7 @@
           *ngIf="subtitle"
           class="dashboard-summary-card__subtitle"
           [nbTooltip]="subtitleTooltip || null"
+          [nbTooltipDisabled]="!subtitleTooltip"
           nbTooltipPlacement="bottom"
         >{{ subtitle }}</div>
       </div>

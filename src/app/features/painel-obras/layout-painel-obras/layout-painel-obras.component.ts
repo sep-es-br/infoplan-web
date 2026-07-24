@@ -11,7 +11,7 @@ import {
   ViewChildren,
 } from "@angular/core";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
-import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, IPainelObrasRequest, IPainelObrasTimestamp } from "../../../core/interfaces/painel-obras/painel-obras";
+import { IFiltroMunicipio, IFiltroOrgao, IFiltroStatus, IPainelObrasRequest, IPainelObrasTimestmp } from "../../../core/interfaces/painel-obras/painel-obras";
 import { environment } from "../../../../environments/environment";
 import {
   NbButtonModule,
@@ -206,11 +206,11 @@ export class LayoutPainelObrasComponent implements OnInit, OnDestroy {
 
   private loadTimestamp(): void {
     this._painelObrasService
-      .getTimestamp()
+      .getTimestmp()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response: IPainelObrasTimestamp) => {
-          this.timestamp = response.timestamp;
+        next: (response: IPainelObrasTimestmp) => {
+          this.timestamp = response.timesTamp || "";
         },
         error: (error) => {
           console.error("Erro ao carregar o timestamp do Painel de Obras:", error);

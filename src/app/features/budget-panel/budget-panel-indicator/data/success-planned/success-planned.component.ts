@@ -556,4 +556,9 @@ export class SuccessPlannedComponent implements OnChanges, OnDestroy {
   calcMaximizedHeight(): number {
     return this._chartMaximizeService.calcMaximizedHeight();
   }
+
+  calcMaximizedChartHeight(): number {
+    const controlsHeight = 50;
+    return Math.max(this.calcMaximizedHeight() - controlsHeight, 200);
+  }
 }

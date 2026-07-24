@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import {
   Component,
+  HostBinding,
   HostListener,
   Input,
   OnChanges,
@@ -73,6 +74,11 @@ export class OrgChartVerticalGroupedComponent
   @Input() minorGroupLabel: string = "Status";
   @Input() empLabel: string = "Planejado";
   @Input() liqLabel: string = "Realizado";
+
+  @HostBinding("style.height.px")
+  get hostHeight(): number | null {
+    return Number.isFinite(this.height) ? this.height : null;
+  }
 
   private readonly _utilitiesService = inject(UtilitiesService);
 

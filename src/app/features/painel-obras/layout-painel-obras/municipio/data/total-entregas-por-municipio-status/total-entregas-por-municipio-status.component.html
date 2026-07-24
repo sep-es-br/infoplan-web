@@ -18,11 +18,15 @@
 </ng-template>
 
 
-<ngx-flip-table [cardTitle]="title" [tableContent]="flipTableContent" [tableOnFront]="true" [showSearchField]="true"
+<ngx-flip-table
+  [cardTitle]="title"
+  [tableContent]="flipTableContent"
+  [tableOnFront]="true"
+  [showSearchField]="true"
   [backCardHeight]="isChartMaximized('total-entregas-por-municipio-status') ? calcMaximizedHeight() : 450"
   [showMaximizeButton]="true" [loadingStatus]="requestStatus" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"
-  (showMaximizeButtonClick)="onMaximizeButtonClick('total-entregas-por-municipio-status', $event)" 
+  (showMaximizeButtonClick)="onMaximizeButtonClick('total-entregas-por-municipio-status', $event)"
   >
 
   <div card-front>
@@ -31,9 +35,9 @@
 
   <div card-back>
     <ng-container *ngTemplateOutlet="controleGrouping"></ng-container>
-    <ngx-org-chart-vertical-grouped [chart]="chartData"
-      [style.height.px]="isChartMaximized('total-entregas-por-municipio-status') ? 630 : 400"
-      [height]="isChartMaximized('total-entregas-por-municipio-status') ? calcMaximizedHeight() : 400"
+    <ngx-org-chart-vertical-grouped
+      [chart]="chartData"
+      [height]="isChartMaximized('total-entregas-por-municipio-status') ? calcMaximizedChartHeight() : 400"
       [groupingMode]="groupingMode" [isMaximized]="isChartMaximized('total-entregas-por-municipio-status')"
       [chartDataConfig]="chartDataConfig" majorGroupLabel="Exercício" minorGroupLabel="Status" [valueType]="'currency'"
       [sortByEmpDescending]="true" [followPrimaryGroupLabel]="groupingMode === 'STATUS'"

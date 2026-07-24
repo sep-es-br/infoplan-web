@@ -8,7 +8,7 @@ import { ActivatedRoute } from '@angular/router';
       <p>Central de Informações de Planejamento</p>
       <div>
         <span>Fonte: {{ dataSrc }}</span>
-        <span *ngIf="timestamp"> - {{ timestamp | date:'dd MMM HH:mm':'pt-BR' }}</span>
+        <span *ngIf="timestamp"> - {{ timestamp | date:'dd MMM HH:mm':undefined:'pt-BR' }}</span>
       </div>
     </div>
   `,

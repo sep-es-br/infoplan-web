@@ -43,8 +43,8 @@ export interface IQuantidadeStatus {
   status: string;
 }
 
-export interface IPainelObrasTimestamp {
-  timestamp: string;
+export interface IPainelObrasTimestmp {
+  timesTamp?: string;
 }
 
 export interface IQuantidadePorAnoEStatus {

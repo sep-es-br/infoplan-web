@@ -131,7 +131,6 @@
               label="Programas"
               icon="fas fa-cogs"
               accentColor="#137bb9"
-              [tooltip]="statusTotal.totalizadorProgramas"
               [loading]="requestStatus.status === 'Loading'"
             ></ngx-dashboard-summary-card>
           </div>
@@ -142,7 +141,6 @@
               label="Projetos"
               icon="fas fa-cog"
               accentColor="#d0647d"
-              [tooltip]="statusTotal.totalizadorProjetos"
               [loading]="requestStatus.status === 'Loading'"
             ></ngx-dashboard-summary-card>
           </div>
@@ -153,7 +151,6 @@
               label="Entregas"
               icon="fas fa-cubes"
               accentColor="#d3913c"
-              [tooltip]="statusTotal.contagemEntregas + ' Entregas'"
               [loading]="requestStatus.status === 'Loading'"
             ></ngx-dashboard-summary-card>
           </div>
@@ -186,7 +183,6 @@
               label="Filtro Temporal Crítico"
               icon="fas fa-hourglass-half"
               accentColor="#43a4a6"
-              [tooltip]="statusTotal.totalEntregasPE + ' EntregasPE'"
               [loading]="requestStatus.status === 'Loading'"
             ></ngx-dashboard-summary-card>
           </div>

@@ -196,12 +196,7 @@ export class TotalEntregasPorAnoEStatusComponent
         propertyName: "realizado",
         displayName: "Realizado",
         alignment: standardAlignment,
-      },
-      {
-        propertyName: "total",
-        displayName: "Total",
-        alignment: standardAlignment,
-      },
+      }
     ];
 
     const isGroupingByYear = this.groupingMode.startsWith('YEAR_') || this.groupingMode === 'ANO';
@@ -301,15 +296,7 @@ export class TotalEntregasPorAnoEStatusComponent
                   totalRealizado,
                   "R$",
                 ),
-            },
-            {
-              propertyName: "total",
-              value:
-                this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-                  totalPlanejado + totalRealizado,
-                  "R$",
-                ),
-            },
+            }
           ],
           children: children,
           expanded: shouldStartExpanded,

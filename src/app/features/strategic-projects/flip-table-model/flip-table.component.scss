@@ -527,6 +527,7 @@
           padding-left: calc(var(--level, 0) * 9px);
 
           .tree-node-spacer {
+            flex: 0 0 24px;
             width: 24px;
             display: inline-block;
           }

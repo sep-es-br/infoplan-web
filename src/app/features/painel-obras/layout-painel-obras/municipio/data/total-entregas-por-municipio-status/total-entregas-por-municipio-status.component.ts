@@ -218,12 +218,7 @@ export class TotalEntregasPorMunicipioStatusComponent
         propertyName: "realizado",
         displayName: "Realizado",
         alignment: standardAlignment,
-      },
-      {
-        propertyName: "total",
-        displayName: "Total",
-        alignment: standardAlignment,
-      },
+      }
     ];
 
 
@@ -304,15 +299,7 @@ export class TotalEntregasPorMunicipioStatusComponent
                   item.realizado,
                   "R$",
                 ),
-            },
-            {
-              propertyName: "total",
-              value:
-                this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-                  item.planejado + item.realizado,
-                  "R$",
-                ),
-            },
+            }
             ],
             children: [],
             expanded: false,

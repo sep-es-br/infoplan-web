@@ -108,7 +108,7 @@
 
                   <!-- Tipo de Fonte -->
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
-                    <span class="mb-1">Tipo de Fonte</span>
+                    <span class="mb-1 pt-1">Tipo de Fonte</span>
                     <nb-select multiple name="tipoFonte" placeholder="Selecionar" size="tiny"
                       [(ngModel)]="filter.tipoFonte" (selectedChange)="handleFilterChange('tipoFonte', $event)"
                       #customSelect>
@@ -118,63 +118,38 @@
                   </div>
 
                   <!-- UO com autocomplete e chips -->
-                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
-                    <span class="mb-1">UO</span>
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4 pt-1">
+                    <ngx-multi-select-autocomplete
+                      label="UO"
+                      placeholder="Buscar UO..."
+                      name="uoSearchGlobal"
+                      [items]="UOList"
+                      [loading]="isUOListLoading"
+                      loadingText="Buscando unidades orçamentárias..."
+                      [selectedValues]="selectedUOValues"
+                      [chipMaxLength]="30"
+                      valueKey="cod_uo"
+                      labelKey="nome_uo"
+                      (selectedValuesChange)="onUOValuesChange($event)"
+                    />
 
-                    <input #uoSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth name="uoSearch"
-                      [placeholder]="isUOListLoading ? 'Carregando...' : 'Buscar UO...'" [disabled]="isUOListLoading"
-                      autocomplete="off" [nbAutocomplete]="autoUo" ngxKeepAutocompleteOpen [(ngModel)]="uoSearchTerm"
-                      (input)="onUOSearch($event)" fieldSize="tiny" />
-
-                    <div *ngIf="isUOListLoading"
-                      class="text-info-custom small mt-1 d-flex align-items-center gap-1" role="status">
-                      <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                      Buscando unidades orçamentárias...
-                    </div>
-
-                    <nb-autocomplete #autoUo (selectedChange)="onUOSelected($event)">
-                      <nb-option *ngFor="let uo of filteredUOList" [value]="uo.cod_uo"
-                        [class.uo-selected]="isUOSelected(uo)" (mousedown)="$event.preventDefault()">
-                        <div (click)="onUOSelected(uo); $event.stopPropagation()"
-                          class="option-wrapper d-flex align-items-center w-100 h-100">
-                          <nb-icon *ngIf="isUOSelected(uo)" icon="checkmark-outline" class="me-2"></nb-icon>
-                          {{ uo.cod_uo }} - {{ uo.nome_uo }}
-                        </div>
-                      </nb-option>
-                    </nb-autocomplete>
-
-                    <div class="chips-container mt-2" *ngIf="selectedUOs.length > 0">
-                      <nb-tag *ngFor="let uo of selectedUOs" [text]="formatUOName(uo)" [removable]="true"
-                        [nbTooltip]="uo.cod_uo + ' - ' + uo.nome_uo" (remove)="removeUO(uo.cod_uo)" size="tiny"
-                        appearance="filled">
-                      </nb-tag>
-                    </div>
                   </div>
                   <!-- PO com multiselect -->
-                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
-                    <span class="mb-1">PO</span>
-
-                    <nb-select multiple name="po"
-                      [placeholder]="isPOListLoading ? 'Carregando POs...' : 'Selecionar'"
-                      size="tiny" [(ngModel)]="filter.po"
-                      (selectedChange)="handleFilterChange('po', $event)" [disabled]="
-                        isPOListLoading ||
-                        !filter.uo ||
-                        filter.uo.length === 0 ||
-                        filter.uo.includes(-1) ||
-                        !POList ||
-                        POList.length === 0
-                      " #customSelect>
-                      <nb-option *ngFor="let po of POList" [value]="po.cod_po">
-                        {{ po.cod_po }} - {{ po.nome_po }}
-                      </nb-option>
-                    </nb-select>
-
-                    <div *ngIf="isPOListLoading"
-                      class="text-info-custom small mt-1 d-flex align-items-center gap-1">
-                      <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                      Buscando POs da UO selecionada...
-                    </div>
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4 pt-1">
+                    <ngx-multi-select-autocomplete
+                      label="PO"
+                      placeholder="Buscar PO..."
+                      name="poSearch"
+                      [items]="POList"
+                      [loading]="isPOListLoading"
+                      [disabled]="isPOAutocompleteDisabled"
+                      loadingText="Buscando POs da UO selecionada..."
+                      [selectedValues]="selectedPOValues"
+                      [chipMaxLength]="30"
+                      valueKey="cod_po"
+                      labelKey="nome_po"
+                      (selectedValuesChange)="onPOValuesChange($event)"
+                    />
 
                     <!-- Mensagem quando não há UOs selecionadas -->
                     <div *ngIf="

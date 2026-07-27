@@ -8,7 +8,7 @@
   nbTooltipPlacement="bottom"
 >
   <div class="dashboard-summary-card__icon" *ngIf="!loading && icon">
-    <span *ngIf="iconText; else iconAsset" [class]="icon">{{ iconText }}</span>
+    <span *ngIf="iconText && materialIconReady; else iconAsset" [class]="icon">{{ iconText }}</span>
     <ng-template #iconAsset>
     <span
       *ngIf="isSvg(icon); else rasterIcon"

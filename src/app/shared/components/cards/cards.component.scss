@@ -30,8 +30,23 @@
     top: 10px;
     right: 10px;
     z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
     color: var(--summary-card-accent);
     font-size: 18px;
+
+    > span,
+    > i {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      line-height: 1;
+    }
 
     img {
       width: 18px;

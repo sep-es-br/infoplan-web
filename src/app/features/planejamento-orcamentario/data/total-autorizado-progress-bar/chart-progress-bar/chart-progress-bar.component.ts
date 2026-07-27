@@ -204,7 +204,7 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
               (dataRef.nomeUO && dataRef.nomeUO[index]) ||
               "UO não identificada";
 
-            tituloTooltip = `${uo} - ${po} &nbsp;&nbsp;`;
+            tituloTooltip = `${uo} - ${po}`;
           } else {
             const labelOriginal = params[0].name || "";
             const codigo = labelOriginal.includes(" - ")
@@ -212,16 +212,24 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
               : labelOriginal;
             const uo = (dataRef.nomeUO && dataRef.nomeUO[index]) || "";
 
-            tituloTooltip = `${codigo} - ${uo} &nbsp;&nbsp;`;
+            tituloTooltip = `${codigo} - ${uo}`;
           }
 
-          let tooltip = `${tituloTooltip} </br>`;
+          let tooltip =
+            `<div style="padding:4px">` +
+            `<b style="font-size:13px">${tituloTooltip}</b><br>`;
+
           params.forEach((p: any) => {
             const valor =
               p.value !== undefined && p.value !== null ? p.value : 0;
-            tooltip += `${p.seriesName}: ${valor} % </br>`;
+
+            tooltip +=
+              `<span style="display:inline-block;width:10px;height:10px;` +
+              `border-radius:50%;background-color:${p.color};margin-right:5px;"></span>` +
+              `<b>${p.seriesName}:</b> ${this.formatPercentage(valor)}<br>`;
           });
 
+          tooltip += "</div>";
           return tooltip;
         },
       },
@@ -311,6 +319,13 @@ export class ChartProgressBarComponent implements OnInit, OnChanges, OnDestroy {
         this.echartsInstance.resize();
       }, 100);
     }
+  }
+
+  private formatPercentage(value: number): string {
+    return `${Number(value || 0).toLocaleString("pt-BR", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })} %`;
   }
 
 }

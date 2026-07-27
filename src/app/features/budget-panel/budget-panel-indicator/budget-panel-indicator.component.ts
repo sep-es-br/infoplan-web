@@ -283,8 +283,8 @@ export class BudgetPanelIndicatorComponent
         } else if (res.cardBudgetChanges !== undefined) {
           this.statusTotal.budgetaryChanges = res.cardBudgetChanges;
           this.requestStatus.status = RequestStatus.SUCCESS;
-        } else if (res.cardIGO !== undefined) {
-          this.statusTotal.budgetManagementIndicator = res.cardIGO;
+        } else if (res.cardIGO?.IGO !== undefined) {
+          this.statusTotal.budgetManagementIndicator = { igo: res.cardIGO.IGO || 0, nota: res.cardIGO.nota || "" };
           this.requestStatus.status = RequestStatus.SUCCESS;
         }
       });
@@ -694,7 +694,7 @@ export class BudgetPanelIndicatorComponent
           label: "UO",
           displayValue: this.finalFilter.codUo.map((code) => {
             const item = this.uoList.find((i) => i.uo === code);
-            return { name: item ? `${item.uo} - ${item.name}` : code };
+            return { name: item ? `${item.uo}` : code };
           }),
         });
       }
@@ -723,7 +723,7 @@ export class BudgetPanelIndicatorComponent
           displayValue: this.finalFilter.codAction.map((code) => {
             const item = this.actionList.find((i) => i.cod_action === code);
             return {
-              name: item ? `${item.cod_action} - ${item.name_action}` : code,
+              name: item ? `${item.cod_action}` : code,
             };
           }),
         });
@@ -738,7 +738,7 @@ export class BudgetPanelIndicatorComponent
           displayValue: this.finalFilter.codSource.map((code) => {
             const item = this.fullSourceList.find((i) => i.cod_source === code);
             return {
-              name: item ? `${item.cod_source} - ${item.name_source}` : code,
+              name: item ? `${item.cod_source}` : code,
             };
           }),
         });
@@ -752,7 +752,7 @@ export class BudgetPanelIndicatorComponent
           label: "PO",
           displayValue: this.finalFilter.codPo.map((code) => {
             const item = this.poList.find((i) => i.codPo === code);
-            return { name: item ? `${item.codPo} - ${item.nomePo}` : code };
+            return { name: item ? `${item.codPo}` : code };
           }),
         });
       }

@@ -168,7 +168,7 @@
                   <nb-tree-grid-row-toggle *ngIf="row.hasChildren()" [expanded]="row.expanded">
                   </nb-tree-grid-row-toggle>
                   <span
-                    *ngIf="!row.hasChildren() && row.level > 0 && !(tableContent.customColumn.enableEventClick && !isRowTotal(row))"
+                    *ngIf="!row.hasChildren() && !(tableContent.customColumn.enableEventClick && !isRowTotal(row))"
                     class="tree-node-spacer"></span>
                   <nb-icon *ngIf="!row.hasChildren() && tableContent.customColumn.enableEventClick && !isRowTotal(row)"
                     [icon]="'chevron-right-outline'" class="me-1">

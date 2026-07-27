@@ -1,12 +1,12 @@
 <div class="col-12">
   <div class="filter-container">
     <div class="filter-wrapper" [class.is-sticky]="isScrolled">
-      <div class="filter-button multi-row-navigation px-2" [class.is-sticky]="isScrolled">
-        <div class="nav-buttons-container flex-grow-1">
+      <div class="filter-button multi-row-navigation works-filter-bar px-2" [class.is-sticky]="isScrolled">
+        <div class="nav-buttons-container">
           <ngx-sticky-tag-nav [tags]="menuPortalObras"></ngx-sticky-tag-nav>
         </div>
 
-        <div class="d-flex align-items-center gap-2 flex-grow-1">
+        <div class="indicator-filter-actions d-flex align-items-center gap-2">
           <div class="filter-tags ms-auto" [class.is-sticky]="isScrolled">
             <div *ngFor="let tag of activeFilters; let i = index">
               <div class="filter-tag" [class.is-sticky]="isScrolled">

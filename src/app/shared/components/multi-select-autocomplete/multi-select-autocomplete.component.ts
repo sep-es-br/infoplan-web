@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -10,13 +11,11 @@ import {
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import {
-  NbAutocompleteModule,
   NbIconModule,
-  NbInputModule,
+  NbSelectWithAutocompleteModule,
   NbTagModule,
   NbTooltipModule,
 } from "@nebular/theme";
-import { KeepAutocompleteOpenDirective } from "../../directives/keep-autocomplete-open.directive";
 
 @Component({
   selector: "ngx-multi-select-autocomplete",
@@ -24,12 +23,10 @@ import { KeepAutocompleteOpenDirective } from "../../directives/keep-autocomplet
   imports: [
     CommonModule,
     FormsModule,
-    NbAutocompleteModule,
+    NbSelectWithAutocompleteModule,
     NbIconModule,
-    NbInputModule,
     NbTagModule,
     NbTooltipModule,
-    KeepAutocompleteOpenDirective,
   ],
   templateUrl: "./multi-select-autocomplete.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,14 +40,16 @@ export class MultiSelectAutocompleteComponent implements OnChanges {
   @Input() valueKey = "value";
   @Input() labelKey = "label";
   @Input() loading = false;
+  @Input() disabled = false;
+  @Input() chipMaxLength = 22;
   @Input() loadingText = "Carregando opções...";
 
   @Output() selectedValuesChange = new EventEmitter<string[]>();
 
   searchTerm = "";
   filteredItems: any[] = [];
-  private processingSelection = false;
 
+  constructor(private readonly changeDetectorRef: ChangeDetectorRef) {}
   get selectedItems(): any[] {
     const selected = new Set(this.selectedValues || []);
     return (this.items || []).filter((item) =>
@@ -69,32 +68,15 @@ export class MultiSelectAutocompleteComponent implements OnChanges {
   }
 
   onSearch(term: string): void {
+    this.searchTerm = term;
     this.filterItems(term);
+    this.changeDetectorRef.markForCheck();
   }
 
-  toggle(selection: any | string): void {
-    if (!selection || this.processingSelection) return;
-
-    const value = typeof selection === "string"
-      ? selection
-      : this.valueOf(selection);
-    if (!value) return;
-
-    this.processingSelection = true;
-    const current = (this.selectedValues || []).filter(
-      (selected) => selected !== "-1",
+  onSelectionChange(values: string[]): void {
+    this.selectedValuesChange.emit(
+      (values || []).map(String).filter((value) => value !== "-1"),
     );
-    const values = current.includes(value)
-      ? current.filter((selected) => selected !== value)
-      : [...current, value];
-
-    this.selectedValuesChange.emit(values);
-    this.searchTerm = "";
-    this.filteredItems = [...(this.items || [])];
-
-    setTimeout(() => {
-      this.processingSelection = false;
-    }, 100);
   }
 
   remove(value: string): void {
@@ -107,6 +89,14 @@ export class MultiSelectAutocompleteComponent implements OnChanges {
 
   isSelected(item: any): boolean {
     return (this.selectedValues || []).includes(this.valueOf(item));
+  }
+
+  trackByValue = (_index: number, item: any): string => this.valueOf(item);
+
+  isSearchMatch(item: any): boolean {
+    const normalizedTerm = this.normalizeSearchText(this.searchTerm);
+    return !normalizedTerm ||
+      this.normalizeSearchText(this.displayOf(item)).includes(normalizedTerm);
   }
 
   valueOf(item: any): string {
@@ -125,7 +115,7 @@ export class MultiSelectAutocompleteComponent implements OnChanges {
 
   chipDisplayOf(item: any): string {
     const text = this.displayOf(item);
-    const maxLength = 22;
+    const maxLength = Math.max(this.chipMaxLength, 4);
 
     return text.length > maxLength
       ? `${text.slice(0, maxLength - 3).trimEnd()}...`
@@ -133,11 +123,22 @@ export class MultiSelectAutocompleteComponent implements OnChanges {
   }
 
   private filterItems(term: string): void {
-    const normalizedTerm = (term || "").toLocaleLowerCase().trim();
+    const normalizedTerm = this.normalizeSearchText(term);
     this.filteredItems = normalizedTerm
       ? (this.items || []).filter((item) =>
-          this.displayOf(item).toLocaleLowerCase().includes(normalizedTerm),
+          this.normalizeSearchText(this.displayOf(item)).includes(normalizedTerm) ||
+          this.isSelected(item),
         )
       : [...(this.items || [])];
+  }
+
+  private normalizeSearchText(value: string): string {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLocaleLowerCase("pt-BR")
+      .replace(/[^a-z0-9\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 }

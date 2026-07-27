@@ -1,10 +1,7 @@
-// Barra global de navegação, chips e filtros dos dashboards.
 :root {
   --app-header-height: 3.75rem;
 }
 
-/* O Nebular aplica 2.25rem no layout desktop. Nos dashboards isso cria uma
-   faixa vazia acima dos filtros; no mobile o espaçamento original permanece. */
 @media (min-width: 685px) and (min-height: 600px) {
   ngx-one-column-layout nb-layout-column {
     padding-top: 0.375rem !important;
@@ -526,6 +523,7 @@ nb-tag.tag-default.is-sticky.active-tag {
   }
 
   .selected-items-row nb-tag,
+  .selected-items-row .filter-chip,
   .chips-container nb-tag {
     display: inline-flex !important;
     align-items: center !important;
@@ -534,7 +532,8 @@ nb-tag.tag-default.is-sticky.active-tag {
     height: 20px !important;
     min-height: 20px !important;
     max-height: 20px !important;
-    padding: 0 8px 0 7px !important;
+    // padding: 0 8px 0 7px !important;
+    padding: 0 14px 0px 8px !important;
     font-size: 10px !important;
     font-weight: 600 !important;
     line-height: 1 !important;
@@ -542,7 +541,8 @@ nb-tag.tag-default.is-sticky.active-tag {
     border-radius: 10px !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 
-    .nb-tag-text {
+    .nb-tag-text,
+    .filter-chip__text {
       display: inline-block;
       max-width: 120px;
       overflow: hidden;
@@ -554,7 +554,8 @@ nb-tag.tag-default.is-sticky.active-tag {
       white-space: nowrap;
     }
 
-    .nb-tag-remove {
+    .nb-tag-remove,
+    .filter-chip__remove {
       display: inline-flex !important;
       align-items: center !important;
       flex-shrink: 0;
@@ -563,22 +564,37 @@ nb-tag.tag-default.is-sticky.active-tag {
       vertical-align: middle;
       opacity: 0.7;
     }
+
+    .filter-chip__remove {
+      width: 14px;
+      min-width: 14px;
+      height: 14px;
+      padding: 0;
+      color: inherit;
+      line-height: 12px;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
   }
 
   ngx-multi-select-autocomplete .selected-items-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     align-items: stretch;
 
-    nb-tag {
-      width: 100% !important;
+    nb-tag,
+    .filter-chip {
+      flex: 0 0 calc(50% - 2.5px);
+      width: auto !important;
       max-width: 100% !important;
       min-width: 0 !important;
       box-sizing: border-box !important;
       justify-content: space-between !important;
       overflow: hidden !important;
 
-      .nb-tag-text {
+      .nb-tag-text,
+      .filter-chip__text {
         display: block !important;
         flex: 1 1 auto !important;
         width: auto !important;
@@ -589,11 +605,13 @@ nb-tag.tag-default.is-sticky.active-tag {
         white-space: nowrap !important;
       }
 
-      .nb-tag-remove {
+      .nb-tag-remove,
+      .filter-chip__remove {
         flex: 0 0 auto;
       }
     }
   }
+
 }
 
 .cdk-overlay-container nb-option {
@@ -605,7 +623,19 @@ nb-tag.tag-default.is-sticky.active-tag {
 
     nb-icon {
       color: #005c99;
+      flex: 0 0 1.2rem;
+      width: 1.2rem;
+      min-width: 1.2rem;
+      height: 1.2rem;
       font-size: 1.2rem;
+    }
+  }
+
+  .option-wrapper {
+    min-width: 0;
+
+    nb-icon {
+      flex-shrink: 0;
     }
   }
 }
@@ -616,6 +646,7 @@ nb-tag.tag-default.is-sticky.active-tag {
   }
 
   .selected-items-row nb-tag,
+  .selected-items-row .filter-chip,
   .chips-container nb-tag {
     color: #1a56db !important;
     background-color: #e8f0fe !important;
@@ -636,6 +667,7 @@ nb-tag.tag-default.is-sticky.active-tag {
   }
 
   .selected-items-row nb-tag,
+  .selected-items-row .filter-chip,
   .chips-container nb-tag {
     color: #82aaff !important;
     background-color: rgba(51, 102, 255, 0.15) !important;

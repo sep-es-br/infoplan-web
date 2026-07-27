@@ -541,7 +541,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
       } else {
         const tiposSelecionados = this.finalFilter.tipoFonte.map((tipoNum) => {
           const tipo = this.tipoFonteList.find((t) => t.id === tipoNum);
-          return { name: tipo ? tipo.name : `Tipo ${tipoNum}` };
+          return { name: tipo ? `${tipo.id}  - ${tipo.name}` : `Tipo ${tipoNum}` };
         });
         this.activeFilters.push({
           key: "tipoFonte",
@@ -556,7 +556,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
       } else {
         const uosSelecionados = this.finalFilter.uo.map((uoId) => {
           const uo = this.UOList?.find((u) => u.cod_uo === uoId);
-          return { name: uo ? uo.nome_uo : uoId };
+          return { name: uo ? uo.cod_uo : uoId };
         });
         this.activeFilters.push({
           key: "uo",
@@ -571,7 +571,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
       } else {
         const posSelecionados = this.finalFilter.po.map((poId) => {
           const po = this.POList?.find((p) => p.cod_po === poId);
-          return { name: po ? po.nome_po : poId };
+          return { name: po ? po.cod_po : poId };
         });
         this.activeFilters.push({
           key: "po",
@@ -590,7 +590,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
           label: "GND",
           displayValue: this.finalFilter.gnd.map((gndNum) => {
             const gnd = this.GNDList.find((g) => g.id === gndNum);
-            return { name: gnd ? gnd.name : `GND ${gndNum}` };
+            return { name: gnd ? `${gnd.id} - ${gnd.name}` : `GND ${gndNum}` };
           }),
         });
       }
@@ -600,6 +600,48 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
     this.activeFilters.sort(
       (a, b) => filterOrder.indexOf(a.key) - filterOrder.indexOf(b.key),
     );
+  }
+
+  get selectedUOValues(): string[] {
+    if (!Array.isArray(this.filter.uo)) return [];
+
+    return this.filter.uo
+      .map((value) => String(value))
+      .filter((value) => value !== "-1");
+  }
+
+  onUOValuesChange(values: string[]): void {
+    this.filter.uo = values.length ? values : ["-1"];
+    this.updateSelectedUOs();
+
+    this.filter.po = ["-1"];
+    this.POList = [];
+    this.filteredPOList = [];
+    this.selectedPOs = [];
+
+    if (values.length) {
+      this.getListPos(this.filter.ano, values);
+    }
+  }
+
+  get selectedPOValues(): string[] {
+    if (!Array.isArray(this.filter.po)) return [];
+
+    return this.filter.po
+      .map((value) => String(value))
+      .filter((value) => value !== "-1");
+  }
+
+  get isPOAutocompleteDisabled(): boolean {
+    return !Array.isArray(this.filter.uo) ||
+      this.filter.uo.length === 0 ||
+      this.filter.uo.some((value) => String(value) === "-1") ||
+      (!this.isPOListLoading && this.POList.length === 0);
+  }
+
+  onPOValuesChange(values: string[]): void {
+    this.filter.po = values.length ? values : ["-1"];
+    this.updateSelectedPOs();
   }
 
   filtrar(event?: Event): void {

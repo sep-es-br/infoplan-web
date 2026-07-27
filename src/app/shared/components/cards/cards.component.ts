@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 
 export type DashboardSummaryCardVariant = "default" | "compact" | "wide";
 
@@ -7,7 +7,7 @@ export type DashboardSummaryCardVariant = "default" | "compact" | "wide";
   templateUrl: "./cards.component.html",
   styleUrls: ["./cards.component.scss"],
 })
-export class DashboardSummaryCardComponent {
+export class DashboardSummaryCardComponent implements OnInit {
   @Input() value: string | number | null = "";
   @Input() label = "";
   @Input() subtitle = "";
@@ -20,6 +20,20 @@ export class DashboardSummaryCardComponent {
   @Input() tooltipClass = "";
   @Input() loading = false;
   @Input() variant: DashboardSummaryCardVariant = "default";
+
+  materialIconReady = false;
+
+  ngOnInit(): void {
+    if ("fonts" in document) {
+      document.fonts
+        .load('18px "Material Symbols Outlined"')
+        .then(() => {
+          this.materialIconReady = document.fonts.check(
+            '18px "Material Symbols Outlined"',
+          );
+        });
+    }
+  }
 
   isImage(icon: string): boolean {
     return /\.(png|jpe?g|svg|gif|webp)$/i.test(icon);

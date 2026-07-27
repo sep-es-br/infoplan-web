@@ -147,10 +147,10 @@ chart-container.maximized::before:hover {
   transform: scale(1.1);
 }
 
-:host {
-  display: block;
-  min-height: 100vh;
-}
+// :host {
+//   display: block;
+//   min-height: 100vh;
+// }
 
 .card-content {
   min-height: 75px;

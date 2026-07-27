@@ -3,6 +3,51 @@
   min-height: 100vh;
 }
 
+@media (min-width: 685px) {
+  :host ::ng-deep .works-filter-bar {
+    .nav-buttons-container {
+      flex: 1 1 60%;
+      min-width: 0;
+      margin-right: 12px;
+
+      ngx-sticky-tag-nav,
+      .tag-panel,
+      nb-tag-list,
+      .custom-tag-list,
+      .nb-tag-list-tags-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+      }
+
+      .nb-tag-list-tags-wrapper {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+      }
+
+      nb-tag {
+        flex: 1 1 0 !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        padding: 3px 4px !important;
+        font-size: clamp(8px, 0.75vw, 10px) !important;
+        white-space: nowrap !important;
+      }
+
+      nb-tag .text {
+        white-space: nowrap !important;
+      }
+    }
+
+    > .indicator-filter-actions {
+      flex: 1 1 40%;
+      min-width: 46px;
+    }
+  }
+}
+
 // @media screen and (min-width: 992px) {
 //   :host {
 //     margin-top: -15px;

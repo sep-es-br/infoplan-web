@@ -33,31 +33,31 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
+    // width: 24px;
     height: 24px;
     color: var(--summary-card-accent);
-    font-size: 18px;
+    font-size: 24px;
 
     > span,
     > i {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 18px;
-      height: 18px;
+      // width: 18px;
+      height: 24px;
       line-height: 1;
     }
 
     img {
-      width: 18px;
-      height: 18px;
+      // width: 18px;
+      height: 24px;
       object-fit: contain;
     }
 
     .dashboard-summary-card__svg-icon {
       display: block;
-      width: 18px;
-      height: 18px;
+      width: 24px;
+      height: 24px;
       background-color: var(--summary-card-accent);
       mask-repeat: no-repeat;
       mask-position: center;

@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import {
   Component,
+  HostBinding,
   HostListener,
   Input,
   OnChanges,
@@ -66,11 +67,18 @@ export class OrgChartVerticalGroupedComponent
   @Input() chartDataConfig!: ChartDataConfig;
   @Input() groupingMode: GroupingMode = "YEAR_STATUS";
   @Input() valueType: "percent" | "currency" = "currency";
+  @Input() sortByEmpDescending: boolean = false;
+  @Input() followPrimaryGroupLabel: boolean = false;
 
   @Input() majorGroupLabel: string = "Exercício";
   @Input() minorGroupLabel: string = "Status";
   @Input() empLabel: string = "Planejado";
   @Input() liqLabel: string = "Realizado";
+
+  @HostBinding("style.height.px")
+  get hostHeight(): number | null {
+    return Number.isFinite(this.height) ? this.height : null;
+  }
 
   private readonly _utilitiesService = inject(UtilitiesService);
 
@@ -115,7 +123,9 @@ export class OrgChartVerticalGroupedComponent
       changes["groupingMode"] ||
       changes["isMaximized"] ||
       changes["chartDataConfig"] ||
-      changes["valueType"]
+      changes["valueType"] ||
+      changes["sortByEmpDescending"] ||
+      changes["followPrimaryGroupLabel"]
     ) {
       this.updateChart();
     }
@@ -146,6 +156,7 @@ export class OrgChartVerticalGroupedComponent
     const labelsRaw = this.chart.data.labels || [];
     const datasetsRaw = this.chart.data.datasets;
     const theme = getAvailableThemesStyles(this.currentTheme);
+    const isPhone = typeof window !== "undefined" && window.innerWidth <= 480;
     // Determine whether the grouping mode expects the MAJOR to be
     // the first part of the label (before |#|) or the second part.
     // e.g. labels are produced as `municipio|#|status`.
@@ -184,6 +195,7 @@ export class OrgChartVerticalGroupedComponent
 
     const finalData: any[] = [];
     const isMajorFirst =
+      this.groupingMode === "ANO" ||
       this.groupingMode === "STATUS" ||
       this.groupingMode === "MUNICIPIO" ||
       this.groupingMode.startsWith("MUNICIPIO_") ||
@@ -191,24 +203,46 @@ export class OrgChartVerticalGroupedComponent
       this.groupingMode.startsWith("YEAR_") ||
       this.groupingMode.includes("MAJOR");
 
+    const groupingList = [
+      ...(isMajorFirst ? uniqueMajors : uniqueMinors),
+    ];
+    if (this.sortByEmpDescending) {
+      groupingList.sort((a, b) => {
+        const totalA = dataRecords
+          .filter((item) => (isMajorFirst ? item.major : item.minor) === a)
+          .reduce((sum, item) => sum + item.emp, 0);
+        const totalB = dataRecords
+          .filter((item) => (isMajorFirst ? item.major : item.minor) === b)
+          .reduce((sum, item) => sum + item.emp, 0);
+        return totalB - totalA;
+      });
+    }
+
     if (isMajorFirst) {
-      uniqueMajors.forEach((major) => {
+      groupingList.forEach((major) => {
         const majorGroup = dataRecords
           .filter((r) => r.major === major)
-          .sort((a, b) => a.minor.localeCompare(b.minor));
+          .sort((a, b) =>
+            this.sortByEmpDescending
+              ? b.emp - a.emp
+              : a.minor.localeCompare(b.minor),
+          );
         finalData.push(...majorGroup);
       });
     } else {
-      uniqueMinors.forEach((minor) => {
+      groupingList.forEach((minor) => {
         const minorGroup = dataRecords
           .filter((r) => r.minor === minor)
-          .sort((a, b) => b.major.localeCompare(a.major));
+          .sort((a, b) =>
+            this.sortByEmpDescending
+              ? b.emp - a.emp
+              : b.major.localeCompare(a.major),
+          );
         finalData.push(...minorGroup);
       });
     }
 
     const midpointIndices = new Set<number>();
-    const groupingList = isMajorFirst ? uniqueMajors : uniqueMinors;
     const getKey = (d: any) => (isMajorFirst ? d.major : d.minor);
 
     groupingList.forEach((groupKey) => {
@@ -227,8 +261,8 @@ export class OrgChartVerticalGroupedComponent
       const baseColor = isMajorFirst
         ? this.getGroupColor(d.minor, 1)
         : this.colorPalette[
-        uniqueMajors.indexOf(d.major) % this.colorPalette.length
-        ];
+            uniqueMajors.indexOf(d.major) % this.colorPalette.length
+          ];
 
       const faded = baseColor.startsWith("#")
         ? this.getOpacityColor(baseColor, 0.4)
@@ -250,8 +284,8 @@ export class OrgChartVerticalGroupedComponent
       const baseColor = isMajorFirst
         ? this.getGroupColor(subGroup, 1)
         : this.colorPalette[
-        uniqueMajors.indexOf(subGroup) % this.colorPalette.length
-        ];
+            uniqueMajors.indexOf(subGroup) % this.colorPalette.length
+          ];
 
       const faded = baseColor.startsWith("#")
         ? this.getOpacityColor(baseColor, 0.4)
@@ -352,6 +386,7 @@ export class OrgChartVerticalGroupedComponent
       xAxis: {
         type: "value",
         max: this.valueType === "percent" ? 100 : null,
+        splitNumber: isPhone ? 3 : 5,
         axisLabel: {
           formatter: (value: number) => {
             return this.valueType === "percent"
@@ -359,7 +394,8 @@ export class OrgChartVerticalGroupedComponent
               : this.formatAxisCompact(value);
           },
           color: theme.textPrimaryColor,
-          fontSize: this.isMaximized ? 13 : 10,
+          fontSize: isPhone ? (this.isMaximized ? 10 : 8) : this.isMaximized ? 13 : 10,
+          hideOverlap: true,
         },
         splitLine: {
           show: true,
@@ -376,11 +412,16 @@ export class OrgChartVerticalGroupedComponent
         },
         axisLabel: {
           interval: 0,
-          margin: 10,
+          margin: isPhone ? 6 : 10,
           color: theme.textPrimaryColor,
+          fontSize: isPhone ? 9 : undefined,
+          lineHeight: isPhone ? 11 : undefined,
           rich: {
             mainGroup: {
-              fontSize: this.isMaximized ? 14 : 11,
+              fontSize: isPhone ? 10 : this.isMaximized ? 14 : 11,
+              width: isPhone ? 92 : undefined,
+              lineHeight: isPhone ? 12 : undefined,
+              align: "right",
               padding: [0, 0, 4, 0],
             },
           },
@@ -390,15 +431,47 @@ export class OrgChartVerticalGroupedComponent
             if (!d) return "";
             const mainLabel = isMajorFirst ? d.major : d.minor;
 
-            if (midpointIndices.has(absoluteIdx)) {
-              return `{mainGroup|${mainLabel}}`;
+            let shouldShowLabel = midpointIndices.has(absoluteIdx);
+
+            if (this.followPrimaryGroupLabel && this.echartsInstance) {
+              const currentOptions = this.echartsInstance.getOption() as any;
+              const zoomOptions = currentOptions?.dataZoom?.[0];
+              const startValue = Number(zoomOptions?.startValue ?? 0);
+              const endValue = Number(
+                zoomOptions?.endValue ?? finalData.length - 1,
+              );
+              const visibleGroupIndices = finalData
+                .map((item, index) =>
+                  index >= startValue &&
+                  index <= endValue &&
+                  getKey(item) === getKey(d)
+                    ? index
+                    : -1,
+                )
+                .filter((index) => index !== -1);
+
+              shouldShowLabel =
+                visibleGroupIndices.length > 0 &&
+                absoluteIdx ===
+                  visibleGroupIndices[
+                    Math.floor(visibleGroupIndices.length / 2)
+                  ];
+            }
+
+            if (shouldShowLabel) {
+              const displayLabel = isPhone
+                ? this.wrapMobileAxisLabel(mainLabel, 13)
+                : mainLabel;
+              return isPhone
+                ? displayLabel
+                : `{mainGroup|${displayLabel}}`;
             }
             return "";
           },
         },
         axisTick: {
           show: true,
-          length: 40,
+          length: isPhone ? 6 : 40,
           lineStyle: { color: theme.textPrimaryColor, opacity: 0.4 },
           interval: (_index: number, val: string) => {
             if (!val) return true;
@@ -507,6 +580,25 @@ export class OrgChartVerticalGroupedComponent
     if (absVal >= 1000)
       return (val / 1000).toFixed(1).replace(".", ",").replace(",0", "") + "K";
     return val.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+  }
+
+  private wrapMobileAxisLabel(label: string, maxLineLength = 16): string {
+    const words = String(label || "").split(/\s+/);
+    const lines: string[] = [];
+    let currentLine = "";
+
+    words.forEach((word) => {
+      const candidate = currentLine ? `${currentLine} ${word}` : word;
+      if (currentLine && candidate.length > maxLineLength) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = candidate;
+      }
+    });
+
+    if (currentLine) lines.push(currentLine);
+    return lines.join("\n");
   }
 
   private formatAxisCompact(val: number): string {

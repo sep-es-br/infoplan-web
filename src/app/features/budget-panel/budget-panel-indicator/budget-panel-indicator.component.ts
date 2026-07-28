@@ -25,9 +25,10 @@ import { environment } from "../../../../environments/environment";
 import { IndicatorExecutionService } from "../../../core/service/indicator-execution-service/indicator-execution.service";
 import { ComunicationCardsService } from "../../../core/service/comunication-cards/comunication-cards.service";
 import { Subject, Subscription } from "rxjs";
-import { takeUntil } from "rxjs/operators";
+import { finalize, takeUntil } from "rxjs/operators";
 import { ChartMaximizeService } from "../../../core/service/chart-maximize/chart-maximize.service";
 import { ScrollService } from "../../../core/service/scroll.service";
+import { NavigationTag } from "../../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
 import { formatNumber } from "../../../@core/utils/uitls";
 
 const DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS: IIndicatorExecutionFilter = {
@@ -108,6 +109,21 @@ export class BudgetPanelIndicatorComponent
   isFilterModalOpen: boolean = false;
   isScrolled: boolean = false;
 
+  menuExecucao: NavigationTag[] = [
+    {
+      label: 'Resumo Executivo',
+      route: ['/pages/execucao-orcamentaria/resumo-executivo'],
+      exact: true,
+      visibleIn: ['/pages/execucao-orcamentaria']
+    },
+    {
+      label: 'Indicadores',
+      route: ['/pages/execucao-orcamentaria/indicador'],
+      exact: true,
+      visibleIn: ['/pages/execucao-orcamentaria']
+    }
+  ];
+
   uoList: IBudgetaryUnitResponse[] = [];
   filteredUOList: IBudgetaryUnitResponse[] = [];
   actionList: IActionResponse[] = [];
@@ -115,6 +131,10 @@ export class BudgetPanelIndicatorComponent
   fullSourceList: IFullSourceResponse[] = [];
   filteredFullSourceList: IFullSourceResponse[] = [];
   poList: IPO[] = [];
+  isUOListLoading = false;
+  isActionListLoading = false;
+  isFullSourceListLoading = false;
+  isPOListLoading = false;
   filteredPOList: IPO[] = [];
   timesTamp: string = "";
 
@@ -126,6 +146,7 @@ export class BudgetPanelIndicatorComponent
 
   private subscriptionCard!: Subscription;
   private destroy$ = new Subject<void>();
+  private processingUO = false;
 
   yearsList = Array.from(
     { length: new Date().getFullYear() - 2014 + 1 },
@@ -262,8 +283,8 @@ export class BudgetPanelIndicatorComponent
         } else if (res.cardBudgetChanges !== undefined) {
           this.statusTotal.budgetaryChanges = res.cardBudgetChanges;
           this.requestStatus.status = RequestStatus.SUCCESS;
-        } else if (res.cardIGO !== undefined) {
-          this.statusTotal.budgetManagementIndicator = res.cardIGO;
+        } else if (res.cardIGO?.IGO !== undefined) {
+          this.statusTotal.budgetManagementIndicator = { igo: res.cardIGO.IGO || 0, nota: res.cardIGO.nota || "" };
           this.requestStatus.status = RequestStatus.SUCCESS;
         }
       });
@@ -278,8 +299,10 @@ export class BudgetPanelIndicatorComponent
   }
 
   loadUOList() {
+    this.isUOListLoading = true;
     this.indicatorExecutionService
       .getSearchBugataryUnit(this.filter)
+      .pipe(finalize(() => (this.isUOListLoading = false)))
       .subscribe((res) => {
         this.uoList = res || [];
         this.filteredUOList = res || [];
@@ -288,12 +311,15 @@ export class BudgetPanelIndicatorComponent
 
   loadActionList() {
     if (!this.filter.codUo || this.filter.codUo.length === 0) {
+      this.isActionListLoading = false;
       this.actionList = [];
       this.filteredActionList = [];
       return;
     }
+    this.isActionListLoading = true;
     this.indicatorExecutionService
       .getSearchAction(this.filter)
+      .pipe(finalize(() => (this.isActionListLoading = false)))
       .subscribe((res) => {
         this.actionList = res || [];
         this.filteredActionList = res || [];
@@ -302,12 +328,15 @@ export class BudgetPanelIndicatorComponent
 
   loadFullSourceList() {
     if (!this.filter.codAction || this.filter.codAction.length === 0) {
+      this.isFullSourceListLoading = false;
       this.fullSourceList = [];
       this.filteredFullSourceList = [];
       return;
     }
+    this.isFullSourceListLoading = true;
     this.indicatorExecutionService
       .getSearchFullSource(this.filter)
+      .pipe(finalize(() => (this.isFullSourceListLoading = false)))
       .subscribe((res) => {
         this.fullSourceList = (res as any) || [];
         this.filteredFullSourceList = (res as any) || [];
@@ -316,13 +345,16 @@ export class BudgetPanelIndicatorComponent
 
   loadCodPoList() {
     if (!this.filter.codAction || this.filter.codAction.length === 0) {
+      this.isPOListLoading = false;
       this.poList = [];
       this.filteredPOList = [];
       return;
     }
 
+    this.isPOListLoading = true;
     this.indicatorExecutionService
       .getSearchPo(this.filter)
+      .pipe(finalize(() => (this.isPOListLoading = false)))
       .subscribe((res) => {
         this.poList = (res as any) || [];
         this.filteredPOList = (res as any) || [];
@@ -345,13 +377,17 @@ export class BudgetPanelIndicatorComponent
     return this.filter.codPo?.includes(source.codPo);
   }
 
-  onUOSearch(event: any) {
-    const term = event.target.value.toLowerCase();
-    this.filteredUOList = (this.uoList || []).filter(
-      (uo) =>
-        uo.uo.toLowerCase().includes(term) ||
-        uo.name.toLowerCase().includes(term),
-    );
+  onUOSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const term = (input?.value || "").toLowerCase().trim();
+
+    this.filteredUOList = term
+      ? (this.uoList || []).filter(
+          (uo) =>
+            `${uo.uo}`.toLowerCase().includes(term) ||
+            `${uo.name}`.toLowerCase().includes(term),
+        )
+      : [...(this.uoList || [])];
   }
 
   onActionSearch(event: any) {
@@ -417,10 +453,37 @@ export class BudgetPanelIndicatorComponent
     return `${source.cod_source} - ${source.name_source}`;
   }
 
+  onUOValuesChange(values: string[]): void {
+    this.filter.codUo = this.withDefaultValue(values);
+    this.loadActionList();
+    this.loadFullSourceList();
+    this.loadCodPoList();
+  }
+
+  onActionValuesChange(values: string[]): void {
+    this.filter.codAction = this.withDefaultValue(values);
+    this.loadFullSourceList();
+    this.loadCodPoList();
+  }
+
+  onPOValuesChange(values: string[]): void {
+    this.filter.codPo = this.withDefaultValue(values);
+    this.loadFullSourceList();
+    this.loadCodPoList();
+  }
+
+  onFullSourceValuesChange(values: string[]): void {
+    this.filter.codSource = this.withDefaultValue(values);
+  }
+
+  private withDefaultValue(values: string[]): string[] {
+    return values.length ? values : ["-1"];
+  }
+
   removeUO(code: string) {
     this.filter.codUo = this.filter.codUo.filter((c) => c !== code);
     if (this.filter.codUo.length === 0) this.filter.codUo = ["-1"];
-    this.loadActionList();
+    // this.loadActionList();
     this.loadFullSourceList();
     this.loadCodPoList();
   }
@@ -442,7 +505,18 @@ export class BudgetPanelIndicatorComponent
     if (this.filter.codSource.length === 0) this.filter.codSource = ["-1"];
   }
 
-  onUOSelected(selectedCode: string) {
+  onUOSelected(selection: IBudgetaryUnitResponse | string): void {
+    if (!selection || this.processingUO) return;
+
+    const selectedUO = typeof selection === "string"
+      ? this.filteredUOList.find((uo) => uo.uo === selection)
+        || this.uoList.find((uo) => uo.uo === selection)
+      : selection;
+    if (!selectedUO) return;
+
+    const selectedCode = selectedUO.uo;
+    this.processingUO = true;
+
     if (this.filter.codUo.includes("-1")) {
       this.filter.codUo = this.filter.codUo.filter((code) => code !== "-1");
     }
@@ -458,14 +532,11 @@ export class BudgetPanelIndicatorComponent
       this.filter.codUo = ["-1"];
     }
 
-    // Limpa o campo e recarrega lista completa para permitir nova busca
+    this.filteredUOList = [...this.uoList];
+
     setTimeout(() => {
-      if (this.uoSearchInput) {
-        this.uoSearchInput.nativeElement.value = "";
-        this.filteredUOList = [...this.uoList];
-        this.uoSearchInput.nativeElement.focus();
-      }
-    }, 50);
+      this.processingUO = false;
+    }, 100);
 
     this.loadActionList();
     this.loadFullSourceList();
@@ -490,14 +561,7 @@ export class BudgetPanelIndicatorComponent
       this.filter.codAction = ["-1"];
     }
 
-    // Limpa o campo e recarrega lista completa para permitir nova busca
-    setTimeout(() => {
-      if (this.actionSearchInput) {
-        this.actionSearchInput.nativeElement.value = "";
-        this.filteredActionList = [...this.actionList];
-        this.actionSearchInput.nativeElement.focus();
-      }
-    }, 50);
+    this.filteredActionList = [...this.actionList];
 
     this.loadFullSourceList();
     this.loadCodPoList();
@@ -521,13 +585,7 @@ export class BudgetPanelIndicatorComponent
       this.filter.codSource = ["-1"];
     }
 
-    setTimeout(() => {
-      if (this.fullSourceSearchInput) {
-        this.fullSourceSearchInput.nativeElement.value = "";
-        this.filteredFullSourceList = [...this.fullSourceList];
-        this.fullSourceSearchInput.nativeElement.focus();
-      }
-    }, 50);
+    this.filteredFullSourceList = [...this.fullSourceList];
   }
 
   onPoSelected(selectedCode: string) {
@@ -546,13 +604,7 @@ export class BudgetPanelIndicatorComponent
       this.filter.codPo = ["-1"];
     }
 
-    setTimeout(() => {
-      if (this.poSearchInput) {
-        this.poSearchInput.nativeElement.value = "";
-        this.filteredPOList = [...this.poList];
-        this.poSearchInput.nativeElement.focus();
-      }
-    }, 50);
+    this.filteredPOList = [...this.poList];
 
     this.loadFullSourceList();
     this.loadCodPoList();
@@ -642,7 +694,7 @@ export class BudgetPanelIndicatorComponent
           label: "UO",
           displayValue: this.finalFilter.codUo.map((code) => {
             const item = this.uoList.find((i) => i.uo === code);
-            return { name: item ? `${item.uo} - ${item.name}` : code };
+            return { name: item ? `${item.uo}` : code };
           }),
         });
       }
@@ -671,7 +723,7 @@ export class BudgetPanelIndicatorComponent
           displayValue: this.finalFilter.codAction.map((code) => {
             const item = this.actionList.find((i) => i.cod_action === code);
             return {
-              name: item ? `${item.cod_action} - ${item.name_action}` : code,
+              name: item ? `${item.cod_action}` : code,
             };
           }),
         });
@@ -686,7 +738,7 @@ export class BudgetPanelIndicatorComponent
           displayValue: this.finalFilter.codSource.map((code) => {
             const item = this.fullSourceList.find((i) => i.cod_source === code);
             return {
-              name: item ? `${item.cod_source} - ${item.name_source}` : code,
+              name: item ? `${item.cod_source}` : code,
             };
           }),
         });
@@ -700,7 +752,7 @@ export class BudgetPanelIndicatorComponent
           label: "PO",
           displayValue: this.finalFilter.codPo.map((code) => {
             const item = this.poList.find((i) => i.codPo === code);
-            return { name: item ? `${item.codPo} - ${item.nomePo}` : code };
+            return { name: item ? `${item.codPo}` : code };
           }),
         });
       }
@@ -731,6 +783,21 @@ export class BudgetPanelIndicatorComponent
         });
       }
     }
+
+    const filterOrder = [
+      "year",
+      "month",
+      "typeSource",
+      "codGnd",
+      "codAmendment",
+      "codUo",
+      "codAction",
+      "codPo",
+      "codSource",
+    ];
+    this.activeFilters.sort(
+      (a, b) => filterOrder.indexOf(a.key) - filterOrder.indexOf(b.key),
+    );
   }
 
   handleFilterChange(origin: AvailableFilters | string, newValue: any) {
@@ -847,21 +914,18 @@ export class BudgetPanelIndicatorComponent
       this.filter.typeSource = environment.indicatorExecutionFilter.typeSource;
     } else if (filterKey === "codUo") {
       this.filter.codUo = ["-1"];
-      this.filter.codAction = ["-1"];
-      this.filter.codSource = ["-1"];
       this.loadActionList();
       this.loadFullSourceList();
       this.loadCodPoList();
     } else if (filterKey === "codAction") {
       this.filter.codAction = ["-1"];
-      this.filter.codSource = ["-1"];
       this.loadFullSourceList();
       this.loadCodPoList();
     } else if (filterKey === "codSource") {
       this.filter.codSource = ["-1"];
     } else if (filterKey === "codAmendment") {
       this.filter.codAmendment = "-1";
-    } else if (filterKey === "groupExpense") {
+    } else if (filterKey === "codGnd") {
       this.filter.codGnd = ["-1"];
     } else if (filterKey === "codPo") {
       this.filter.codPo = ["-1"];
@@ -993,6 +1057,23 @@ export class BudgetPanelIndicatorComponent
           this.requestStatus.status = RequestStatus.SUCCESS;
         },
       });
+  }
+
+  get budgetManagementNote(): string {
+    const note = this.statusTotal?.budgetManagementIndicator?.nota;
+    return note === null || note === undefined || note === ""
+      ? ""
+      : `Nota ${note}`;
+  }
+
+  get highestSettlementDescription(): string {
+    const settlement = this.statusTotal?.poWithHighestSettlement as any;
+    const code = settlement?.cod_po;
+    const name = settlement?.nome_po;
+
+    return [code, name]
+      .filter((value) => value !== null && value !== undefined && `${value}`.trim() !== "")
+      .join(" - ");
   }
 
   handleMaximizeButtonClick(chartId: string, event: boolean): void {

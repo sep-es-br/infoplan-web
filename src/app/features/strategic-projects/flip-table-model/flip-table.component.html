@@ -1,5 +1,6 @@
 <div [ngClass]="{'is-visible-card-filter': (!_filterStateService.showExpensePanel$ | async)}">
-  <nb-card class="outer-card m-0" [style]="{ height: outerCardHeight + 'px' }" [nbSpinner]="loadingStatus === 'Loading'"
+  <nb-card class="outer-card m-0" [class.has-no-data]="loadingStatus === 'Empty'"
+    [style]="{ height: outerCardHeight + 'px' }" [nbSpinner]="loadingStatus === 'Loading'"
     [nbSpinnerStatus]="'success'">
     <nb-card-header class="card-header d-flex justify-content-between align-items-start p-2">
       <ng-container *ngIf="cardTitle; else customHeader">
@@ -76,6 +77,11 @@
       </div>
     </nb-card-header>
 
+    <div *ngIf="loadingStatus === 'Empty'" class="no-data-overlay" role="status" aria-live="polite">
+      <nb-icon icon="inbox-outline"></nb-icon>
+      <span>Nenhum dado encontrado para os filtros selecionados.</span>
+    </div>
+
     <div *ngIf="hasToggleContent" class="d-flex justify-content-between align-items-start px-2">
       <ng-container>
         <!-- <div class="card-toggle-section"> -->
@@ -91,15 +97,17 @@
       " class="flip-card" [showToggleButton]="false" [flipped]="isFlipCardFlipped">
       <ng-template #tableTemplate>
         <!-- Tabela com Cabeçalho Agrupado (HTML Puro para Suporte a Colspan/Rowspan) -->
-        <div class="table-container" *ngIf="tableContent.groupedColumns && tableContent.groupedColumns.length > 0">
+        <div class="table-container grouped-table-container"
+          *ngIf="tableContent.groupedColumns && tableContent.groupedColumns.length > 0">
           <table class="flip-table custom-grouped-table" [ngClass]="isMaximized ? 'maximized' : 'minimized'">
             <thead>
               <tr>
                 <th [attr.rowspan]="2" class="align-middle text-left font-weight-bold first-column">
                   {{ tableContent.customColumn.displayName }}
                 </th>
-                <th *ngFor="let group of tableContent.groupedColumns; trackBy: trackByGroup"
-                  [attr.colspan]="subColumnsCount" class="text-center font-weight-bold">
+                <th *ngFor="let group of tableContent.groupedColumns; let gIdx = index; trackBy: trackByGroup"
+                  [attr.colspan]="subColumnsCount" class="text-center font-weight-bold"
+                  [ngClass]="{ 'metric-group-divider': gIdx > 0 }">
                   {{ group.metricLabel }}
                 </th>
               </tr>
@@ -160,7 +168,7 @@
                   <nb-tree-grid-row-toggle *ngIf="row.hasChildren()" [expanded]="row.expanded">
                   </nb-tree-grid-row-toggle>
                   <span
-                    *ngIf="!row.hasChildren() && row.level > 0 && !(tableContent.customColumn.enableEventClick && !isRowTotal(row))"
+                    *ngIf="!row.hasChildren() && !(tableContent.customColumn.enableEventClick && !isRowTotal(row))"
                     class="tree-node-spacer"></span>
                   <nb-icon *ngIf="!row.hasChildren() && tableContent.customColumn.enableEventClick && !isRowTotal(row)"
                     [icon]="'chevron-right-outline'" class="me-1">

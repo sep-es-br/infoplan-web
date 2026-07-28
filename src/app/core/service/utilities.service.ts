@@ -79,4 +79,25 @@ export class UtilitiesService {
       return maxA - maxB ;
     });
   }
+
+  sortGndTreeNodes(treeNodes: TreeNode[]): void {
+    treeNodes.sort((a, b) => {
+      const labelA = String(a.data[0]?.value ?? "");
+      const labelB = String(b.data[0]?.value ?? "");
+
+      if (labelA === "Total") return -1;
+      if (labelB === "Total") return 1;
+
+      const gndA = Number(labelA.match(/^\s*(\d+)/)?.[1]);
+      const gndB = Number(labelB.match(/^\s*(\d+)/)?.[1]);
+
+      if (Number.isFinite(gndA) && Number.isFinite(gndB)) {
+        return gndA - gndB;
+      }
+      if (Number.isFinite(gndA)) return -1;
+      if (Number.isFinite(gndB)) return 1;
+
+      return labelA.localeCompare(labelB, "pt-BR", { numeric: true });
+    });
+  }
 }

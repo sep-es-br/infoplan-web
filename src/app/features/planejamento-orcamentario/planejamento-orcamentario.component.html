@@ -1,7 +1,7 @@
 <div class="col-12">
   <div class="filter-container">
     <div class="filter-wrapper" [class.is-sticky]="isScrolled">
-      <div class="filter-button px-2">
+      <div class="filter-button" [class.is-sticky]="isScrolled">
         <div class="filter-tags" [class.is-sticky]="isScrolled">
           <div *ngFor="let tag of activeFilters; let i = index">
             <div class="filter-tag" [class.is-sticky]="isScrolled">
@@ -38,25 +38,29 @@
                   </div>
                 </div>
               </div>
-              <button *ngIf="tag.key !== 'year'" class="remove-button" (click)="removeFilter(tag.key)">
+              <button *ngIf="tag.key !== 'ano'" class="remove-button" (click)="removeFilter(tag.key)">
                 x
               </button>
             </div>
           </div>
         </div>
 
-        <div class="filter-button" [class.is-sticky]="isScrolled">
-          <button class="filter-toggle" type="button" data-bs-toggle="modal" data-bs-target="#filtrosModal" (click)="blurButton($event)">
-            Filtros
-            <nb-icon [icon]="'funnel-outline'"></nb-icon>
-          </button>
-        </div>
+        <button
+          class="filter-toggle-icon-only"
+          [class.is-sticky]="isScrolled"
+          type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#filtrosModal"
+          (click)="blurButton($event)"
+          nbTooltip="Filtros">
+          <nb-icon [icon]="'funnel-outline'"></nb-icon>
+        </button>
       </div>
     </div>
 
     <!-- Painel de Filtros Simplificado -->
-    <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" tabindex="-1"
-      role="dialog">
+    <div class="modal fade dashboard-filter-modal dashboard-filter-modal--compact" id="filtrosModal" tabindex="-1"
+      aria-labelledby="filtrosModalLabel" role="dialog">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-body">
@@ -104,7 +108,7 @@
 
                   <!-- Tipo de Fonte -->
                   <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
-                    <span class="mb-1">Tipo de Fonte</span>
+                    <span class="mb-1 pt-1">Tipo de Fonte</span>
                     <nb-select multiple name="tipoFonte" placeholder="Selecionar" size="tiny"
                       [(ngModel)]="filter.tipoFonte" (selectedChange)="handleFilterChange('tipoFonte', $event)"
                       #customSelect>
@@ -114,47 +118,38 @@
                   </div>
 
                   <!-- UO com autocomplete e chips -->
-                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
-                    <span class="mb-1">UO</span>
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4 pt-1">
+                    <ngx-multi-select-autocomplete
+                      label="UO"
+                      placeholder="Buscar UO..."
+                      name="uoSearchGlobal"
+                      [items]="UOList"
+                      [loading]="isUOListLoading"
+                      loadingText="Buscando unidades orçamentárias..."
+                      [selectedValues]="selectedUOValues"
+                      [chipMaxLength]="30"
+                      valueKey="cod_uo"
+                      labelKey="nome_uo"
+                      (selectedValuesChange)="onUOValuesChange($event)"
+                    />
 
-                    <input #uoSearchInput class="autocomplete-input-uo" type="text" nbInput fullWidth name="uoSearch"
-                      placeholder="Buscar UO..." autocomplete="off" [nbAutocomplete]="autoUo" [(ngModel)]="uoSearchTerm"
-                      (input)="onUOSearch($event)" fieldSize="tiny" />
-
-                    <nb-autocomplete #autoUo (selectedChange)="onUOSelected($event)">
-                      <nb-option *ngFor="let uo of filteredUOList" [value]="uo.cod_uo"
-                        [class.uo-selected]="isUOSelected(uo)" (mousedown)="$event.preventDefault()">
-                        <div (click)="onUOSelected(uo); $event.stopPropagation()"
-                          class="option-wrapper d-flex align-items-center w-100 h-100">
-                          <nb-icon *ngIf="isUOSelected(uo)" icon="checkmark-outline" class="me-2"></nb-icon>
-                          {{ uo.cod_uo }} - {{ uo.nome_uo }}
-                        </div>
-                      </nb-option>
-                    </nb-autocomplete>
-
-                    <div class="chips-container mt-2" *ngIf="selectedUOs.length > 0">
-                      <nb-tag *ngFor="let uo of selectedUOs" [text]="formatUOName(uo)" [removable]="true"
-                        [nbTooltip]="uo.cod_uo + ' - ' + uo.nome_uo" (remove)="removeUO(uo.cod_uo)" size="tiny"
-                        appearance="filled">
-                      </nb-tag>
-                    </div>
                   </div>
                   <!-- PO com multiselect -->
-                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4">
-                    <span class="mb-1">PO</span>
-
-                    <nb-select multiple name="po" placeholder="Selecionar" size="tiny" [(ngModel)]="filter.po"
-                      (selectedChange)="handleFilterChange('po', $event)" [disabled]="
-                        !filter.uo ||
-                        filter.uo.length === 0 ||
-                        filter.uo.includes(-1) ||
-                        !POList ||
-                        POList.length === 0
-                      " #customSelect>
-                      <nb-option *ngFor="let po of POList" [value]="po.cod_po">
-                        {{ po.cod_po }} - {{ po.nome_po }}
-                      </nb-option>
-                    </nb-select>
+                  <div class="filter-entity d-flex flex-column col-12 col-md-6 col-xl-4 pt-1">
+                    <ngx-multi-select-autocomplete
+                      label="PO"
+                      placeholder="Buscar PO..."
+                      name="poSearch"
+                      [items]="POList"
+                      [loading]="isPOListLoading"
+                      [disabled]="isPOAutocompleteDisabled"
+                      loadingText="Buscando POs da UO selecionada..."
+                      [selectedValues]="selectedPOValues"
+                      [chipMaxLength]="30"
+                      valueKey="cod_po"
+                      labelKey="nome_po"
+                      (selectedValuesChange)="onPOValuesChange($event)"
+                    />
 
                     <!-- Mensagem quando não há UOs selecionadas -->
                     <div *ngIf="
@@ -209,212 +204,85 @@
       </div>
     </div>
 
-    <!-- Card 2: Planejado -->
+    <!-- Cards métricos -->
     <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xxl-4 col-xxxl">
-      <div class="card h-100">
-        <div class="icon-top-right planejado" *ngIf="requestStatus.totals !== 'Loading'">
-          <span class="material-symbols-outlined">monitoring</span>
-        </div>
-        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalPlanejado | number: '1.2-2')"
-          nbTooltipPlacement="bottom">
-          <ng-container *ngIf="requestStatus.totals === 'Loading'; else planejadoContent">
-            <div class="d-flex justify-content-center align-items-center w-100 h-100">
-              <div class="spinner-border total-planejado" role="status">
-                <span class="sr-only">Carregando...</span>
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #planejadoContent>
-            <div class="number-box planejado">
-              <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
-                <div class="value">
-                  {{ formatNumber(totals.totalPlanejado) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section planejado">
-              <span>Planejado</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="formatNumber(totals.totalPlanejado)"
+        label="Planejado"
+        icon="material-symbols-outlined"
+        iconText="monitoring"
+        prefix="R$"
+        accentColor="#a970b6"
+        [tooltip]="'R$ ' + (totals.totalPlanejado | number: '1.2-2')"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
-    <!-- Card 3: Contratado -->
     <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xxl-4 col-xxxl">
-      <div class="card h-100">
-        <div class="icon-top-right contratado" *ngIf="requestStatus.totals !== 'Loading'">
-          <span class="material-symbols-outlined">handshake</span>
-        </div>
-        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalContratado | number: '1.2-2')"
-          nbTooltipPlacement="bottom">
-          <ng-container *ngIf="requestStatus.totals === 'Loading'; else contratadoContent">
-            <div class="d-flex justify-content-center align-items-center w-100 h-100">
-              <div class="spinner-border total-contratado" role="status">
-                <!-- <span class="sr-only">Carregando...</span> -->
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #contratadoContent>
-            <div class="number-box contratado">
-              <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
-                <div class="value">
-                  {{ formatNumber(totals.totalContratado) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section contratado">
-              <span>Contratado</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="formatNumber(totals.totalContratado)"
+        label="Contratado"
+        icon="material-symbols-outlined"
+        iconText="handshake"
+        prefix="R$"
+        accentColor="#9089e7"
+        [tooltip]="'R$ ' + (totals.totalContratado | number: '1.2-2')"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
-    <!-- Card 4: Autorizado -->
     <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
-      <div class="card h-100">
-        <div class="icon-top-right autorizado" *ngIf="requestStatus.totals !== 'Loading'">
-          <span class="material-symbols-outlined">check_circle</span>
-        </div>
-        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalAutorizado | number: '1.2-2')"
-          nbTooltipPlacement="bottom">
-          <ng-container *ngIf="requestStatus.totals === 'Loading'; else autorizadoContent">
-            <div class="d-flex justify-content-center align-items-center w-100 h-100">
-              <div class="spinner-border total-autorizado" role="status">
-                <!-- <span class="sr-only">Carregando...</span> -->
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #autorizadoContent>
-            <div class="number-box autorizado">
-              <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
-                <div class="value">
-                  {{ formatNumber(totals.totalAutorizado) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section autorizado">
-              <span>Autorizado</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
-    </div>
-    <!-- Card 5: Empenhado -->
-    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
-      <div class="card h-100">
-        <div class="icon-top-right empenhado" *ngIf="requestStatus.totals !== 'Loading'">
-          <span class="material-symbols-outlined">gavel</span>
-        </div>
-        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalEmpenhado | number: '1.2-2')"
-          nbTooltipPlacement="bottom">
-          <ng-container *ngIf="requestStatus.totals === 'Loading'; else empenhadoContent">
-            <div class="d-flex justify-content-center align-items-center w-100 h-100">
-              <div class="spinner-border total-empenhado" role="status">
-                <!-- <span class="sr-only">Carregando...</span> -->
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #empenhadoContent>
-            <div class="number-box empenhado">
-              <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
-                <div class="value">
-                  {{ formatNumber(totals.totalEmpenhado) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section empenhado">
-              <span>Empenhado</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="formatNumber(totals.totalAutorizado)"
+        label="Autorizado"
+        icon="material-symbols-outlined"
+        iconText="check_circle"
+        prefix="R$"
+        accentColor="#5e9fcc"
+        [tooltip]="'R$ ' + (totals.totalAutorizado | number: '1.2-2')"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
-    <!-- Card 6: Liquidado -->
     <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
-      <div class="card h-100">
-        <div class="icon-top-right liquidado" *ngIf="requestStatus.totals !== 'Loading'">
-          <span class="material-symbols-outlined">checkbook</span>
-        </div>
-        <div class="card-content" [nbTooltip]="'R$ ' + (totals.totalLiquidado | number: '1.2-2')"
-          nbTooltipPlacement="bottom">
-          <ng-container *ngIf="requestStatus.totals === 'Loading'; else liquidadoContent">
-            <div class="d-flex justify-content-center align-items-center w-100 h-100">
-              <div class="spinner-border total-liquidado" role="status">
-                <!-- <span class="sr-only">Carregando...</span> -->
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-template #liquidadoContent>
-            <div class="number-box liquidado">
-              <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
-                <div class="value">
-                  {{ formatNumber(totals.totalLiquidado) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section liquidado">
-              <span>Liquidado</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+      <ngx-dashboard-summary-card
+        [value]="formatNumber(totals.totalEmpenhado)"
+        label="Empenhado"
+        icon="material-symbols-outlined"
+        iconText="gavel"
+        prefix="R$"
+        accentColor="#1bbc9c"
+        [tooltip]="'R$ ' + (totals.totalEmpenhado | number: '1.2-2')"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
 
-    <!-- Card 7: Pago -->
     <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
-      <div class="card h-100">
-        <div class="icon-top-right pago" *ngIf="requestStatus.totals !== 'Loading'">
-          <span class="material-symbols-outlined">paid</span>
-        </div>
-        <div class="card-content" [nbTooltip]="
-            'Pago R$ ' +
-            (totals.totalPago | number: '1.2-2') +
-            '\n' +
-            'Pago com Rap R$ ' +
-            (totals.totalRestosAPagar | number: '1.2-2')
-          " nbTooltipPlacement="bottom" nbTooltipClass="tooltip-respeita-linha">
-          <ng-container *ngIf="requestStatus.totals === 'Loading'; else pagoContent">
-            <div class="d-flex justify-content-center align-items-center w-100 h-100">
-              <div class="spinner-border total-pago" role="status">
-                <!-- <span class="sr-only">Carregando...</span> -->
-              </div>
-            </div>
-          </ng-container>
+      <ngx-dashboard-summary-card
+        [value]="formatNumber(totals.totalLiquidado)"
+        label="Liquidado"
+        icon="material-symbols-outlined"
+        iconText="checkbook"
+        prefix="R$"
+        accentColor="#d9ac21"
+        [tooltip]="'R$ ' + (totals.totalLiquidado | number: '1.2-2')"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
+    </div>
 
-          <ng-template #pagoContent>
-            <div class="number-box pago">
-              <div class="d-flex flex-column align-items-start">
-                <div class="currency">R$</div>
-                <div class="value">
-                  {{ formatNumber(totals.totalPago) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="text-section pago">
-              <span>Pago</span>
-            </div>
-          </ng-template>
-        </div>
-      </div>
+    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xxl-3 col-xxxl">
+      <ngx-dashboard-summary-card
+        [value]="formatNumber(totals.totalPago)"
+        label="Pago"
+        icon="material-symbols-outlined"
+        iconText="paid"
+        prefix="R$"
+        accentColor="#f77d00"
+        [tooltip]="'Pago R$ ' + (totals.totalPago | number: '1.2-2') + '\n' +
+          'Pago com Rap R$ ' + (totals.totalRestosAPagar | number: '1.2-2')"
+        tooltipClass="tooltip-respeita-linha"
+        [loading]="requestStatus.totals === 'Loading'"
+      ></ngx-dashboard-summary-card>
     </div>
   </div>
 
@@ -464,6 +332,6 @@
   <div class="col-12 col-md-6 px-x1 mb-1 align-self-start"></div>
 </div>
 
-<nb-layout-footer class="mt-2">
+<nb-layout-footer class="dashboard-footer-wrapper px-1">
   <ngx-footer [timestamp]="timesTamp"></ngx-footer>
 </nb-layout-footer>

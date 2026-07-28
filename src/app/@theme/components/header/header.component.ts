@@ -77,6 +77,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
+  collapseUserMenuOnOpen(): void {
+    setTimeout(() => this.menuService.collapseAll('user-menu'));
+  }
+
   ngOnInit() {
     this.currentTheme = this.themeService.currentTheme;
     this.setImageForTheme(this.currentTheme);

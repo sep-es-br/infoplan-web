@@ -104,10 +104,15 @@ export class TotalEntregasPorMunicipioStatusComponent
       .getTotalEntregasPorMunicipioStatus(this.filter)
       .subscribe({
         next: (response) => {
-          this.totalEntregasPorMunicipioStatusResponse = response;
-          this.assembleFlipTableContent(response);
-          this.chartData = this.processChartData(response);
-          this.requestStatus = RequestStatus.SUCCESS;
+          const sortedResponse = [...(response || [])].sort(
+            (a, b) => Number(b.planejado ?? 0) - Number(a.planejado ?? 0),
+          );
+          this.totalEntregasPorMunicipioStatusResponse = sortedResponse;
+          this.assembleFlipTableContent(sortedResponse);
+          this.chartData = this.processChartData(sortedResponse);
+          this.requestStatus = sortedResponse.length
+            ? RequestStatus.SUCCESS
+            : RequestStatus.EMPTY;
         },
         error(err) {
           console.error(
@@ -213,12 +218,7 @@ export class TotalEntregasPorMunicipioStatusComponent
         propertyName: "realizado",
         displayName: "Realizado",
         alignment: standardAlignment,
-      },
-      {
-        propertyName: "total",
-        displayName: "Total",
-        alignment: standardAlignment,
-      },
+      }
     ];
 
 
@@ -254,13 +254,31 @@ export class TotalEntregasPorMunicipioStatusComponent
     //   {} as Record<string, ITotalMunicipioStatus[]>,
     // );
 
-    const finalData: Array<TreeNode> = Object.entries(groupedData).map(
+    const sortedGroups = Object.entries(groupedData).sort(
+      ([, itemsA], [, itemsB]) => {
+        const totalA = itemsA.reduce(
+          (sum, item) => sum + item.planejado,
+          0,
+        );
+        const totalB = itemsB.reduce(
+          (sum, item) => sum + item.planejado,
+          0,
+        );
+        return totalB - totalA;
+      },
+    );
+
+    const finalData: Array<TreeNode> = sortedGroups.map(
       ([groupKey, items]) => {
         const totalPlanejado = items.reduce((sum, i) => sum + i.planejado, 0);
         const totalRealizado = items.reduce((sum, i) => sum + i.realizado, 0);
 
-        const children = items.map((item: any) => ({
-          data: [
+        const children = [...items]
+          .sort(
+            (a, b) => Number(b.planejado ?? 0) - Number(a.planejado ?? 0),
+          )
+          .map((item: any) => ({
+            data: [
             {
               originalPropertyName: childField,
               propertyName: "firstColumn",
@@ -281,19 +299,11 @@ export class TotalEntregasPorMunicipioStatusComponent
                   item.realizado,
                   "R$",
                 ),
-            },
-            {
-              propertyName: "total",
-              value:
-                this._utilitiesService.formatCurrencyUsingBrazilianStandards(
-                  item.planejado + item.realizado,
-                  "R$",
-                ),
-            },
-          ],
-          children: [],
-          expanded: false,
-        }));
+            }
+            ],
+            children: [],
+            expanded: false,
+          }));
 
         return {
           data: [
@@ -385,5 +395,10 @@ export class TotalEntregasPorMunicipioStatusComponent
 
   calcMaximizedHeight(): number {
     return this._chartMaximizeService.calcMaximizedHeight();
+  }
+
+  calcMaximizedChartHeight(): number {
+    const controlsHeight = 50;
+    return Math.max(this.calcMaximizedHeight() - controlsHeight, 200);
   }
 }

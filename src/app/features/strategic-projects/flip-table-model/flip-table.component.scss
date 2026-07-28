@@ -32,11 +32,45 @@
 }
 
 .outer-card {
+  position: relative;
   background-color: var(--card-background-color);
   border: none;
   border-radius: 8px;
   padding: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  &.has-no-data {
+    .flip-card,
+    .card-toggle-section {
+      filter: grayscale(1);
+      opacity: 0.28;
+      pointer-events: none;
+    }
+  }
+
+  .no-data-overlay {
+    position: absolute;
+    inset: 4rem 0 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    color: var(--card-text-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    pointer-events: none;
+
+    nb-icon {
+      width: 2rem;
+      height: 2rem;
+      font-size: 2rem;
+      opacity: 0.75;
+    }
+  }
 
   .card-header {
     border: none;
@@ -127,12 +161,17 @@
 
     .card-back {
       // Height is managed dynamically via [style.height] in the template
+      --flip-table-font-size: 11px;
+      --flip-table-font-size-maximized: 14px;
+      --flip-table-font-size-minimized: 11px;
+      --flip-table-font-size-header: 11px;
 
       .table-container {
         overflow: auto;
         max-height: 100%;
         width: 100%;
-        flex: 1;
+        flex: 0 1 auto;
+        align-self: flex-start;
         min-height: 0;
         border: 1px solid var(--divider-color);
         border-radius: 4px;
@@ -156,6 +195,7 @@
         }
 
         .custom-grouped-table {
+          font-family: var(--text-paragraph-font-family);
           width: 100%;
           min-width: max-content;
           border-collapse: separate;
@@ -221,13 +261,11 @@
 
               &:first-child th:first-child {
                 position: sticky;
-                left: 0;
                 top: 0;
-                z-index: 30;
+                z-index: 21;
                 background-color: var(--card-background-color) !important;
-                min-width: 200px;
-                max-width: 350px;
-                box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+                min-width: 190px;
+                max-width: 280px;
                 border-right: 2px solid var(--divider-color);
                 height: auto;
               }
@@ -241,7 +279,7 @@
                 background-color: var(--card-background-color) !important;
 
                 &.sub-header {
-                  color: var(--text-hint-color);
+                  // color: var(--text-hint-color);
                 }
               }
             }
@@ -281,15 +319,12 @@
                 background-color: transparent;
 
                 &:first-child {
-                  position: sticky;
-                  left: 0;
-                  z-index: 10;
+                  position: static;
                   background-color: var(--card-background-color);
-                  min-width: 250px;
-                  max-width: 350px;
+                  min-width: 190px;
+                  max-width: 280px;
                   overflow: hidden;
                   text-overflow: ellipsis;
-                  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
                   font-weight: 500;
                   border-right: 2px solid var(--divider-color);
                 }
@@ -312,21 +347,21 @@
 
           &.minimized {
             thead th {
-              font-size: 12px;
+              font-size: var(--flip-table-font-size-minimized);
             }
 
             tbody td {
-              font-size: 11px;
+              font-size: var(--flip-table-font-size-minimized);
             }
           }
 
           &.maximized {
             thead th {
-              font-size: 16px;
+              font-size: var(--flip-table-font-size-maximized);
             }
 
             tbody td {
-              font-size: 14px;
+              font-size: var(--flip-table-font-size-maximized);
             }
           }
         }
@@ -374,7 +409,7 @@
             top: -1px;
             z-index: 10;
             background-color: var(--card-background-color) !important;
-            font-size: 12px !important;
+            font-size: var(--flip-table-font-size) !important;
             padding-left: 0.5em;
             padding-right: 0.5em;
             height: 20px;
@@ -383,7 +418,7 @@
           }
 
           td {
-            font-size: 11px !important;
+            font-size: var(--flip-table-font-size) !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;
@@ -409,7 +444,7 @@
             top: -1px;
             z-index: 10;
             background-color: var(--card-background-color) !important;
-            font-size: 16px !important;
+            font-size: var(--flip-table-font-size-maximized) !important;
             padding-left: 0.5em;
             padding-right: 0.5em;
             height: 40px;
@@ -418,7 +453,7 @@
           }
 
           td {
-            font-size: 16px !important;
+            font-size: var(--flip-table-font-size-maximized) !important;
             line-height: 125%;
             padding-top: 0;
             padding-bottom: 0;
@@ -492,6 +527,7 @@
           padding-left: calc(var(--level, 0) * 9px);
 
           .tree-node-spacer {
+            flex: 0 0 24px;
             width: 24px;
             display: inline-block;
           }

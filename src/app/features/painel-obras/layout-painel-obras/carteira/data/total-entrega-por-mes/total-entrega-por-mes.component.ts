@@ -105,7 +105,7 @@ export class TotalEntregaPorMesComponent
           this.assembleFlipTableContent([]);
           this.chartData = this.processData([]);
         }
-        this.requestStatus = RequestStatus.SUCCESS;
+        this.requestStatus = response?.length ? RequestStatus.SUCCESS : RequestStatus.EMPTY;
       },
       error(err) {
         console.error("Erro ao carregar os dados das entregas por mês: ", err);

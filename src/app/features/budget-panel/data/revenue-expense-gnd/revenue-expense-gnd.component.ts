@@ -195,7 +195,6 @@ export class RevenueExpenseGndComponent implements OnChanges, OnDestroy {
     }
 
     const mapaValores = new Map();
-    const totaisPorCategoria = new Map<string, number>();
 
     dados.forEach((item) => {
       const chave = `${item.gndName}_${item.year}`;
@@ -205,14 +204,12 @@ export class RevenueExpenseGndComponent implements OnChanges, OnDestroy {
       const atual = mapaValores.get(chave) || { liq: 0, pago: 0 };
       mapaValores.set(chave, { liq: atual.liq + liq, pago: atual.pago + pago });
 
-      const totalLiq = totaisPorCategoria.get(item.gndName) || 0;
-      totaisPorCategoria.set(item.gndName, totalLiq + liq);
     });
 
     const categoriasOrdenadas = categoriasBase.sort((a, b) => {
-      return (
-        (totaisPorCategoria.get(b) || 0) - (totaisPorCategoria.get(a) || 0)
-      );
+      const gndA = Number(String(a).match(/^\s*(\d+)/)?.[1]);
+      const gndB = Number(String(b).match(/^\s*(\d+)/)?.[1]);
+      return gndA - gndB;
     });
 
     const treeNodes: TreeNode[] = categoriasOrdenadas.map((categoria) => {
@@ -355,6 +352,7 @@ export class RevenueExpenseGndComponent implements OnChanges, OnDestroy {
       children: [],
       expanded: false,
     });
+    this._utilitiesService.sortGndTreeNodes(treeNodes);
 
     const defaultColumns: FlipTableColumn[] = [];
 

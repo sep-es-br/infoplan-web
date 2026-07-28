@@ -1,7 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { NavigationTag } from "../../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
 import { AuthenticationService } from "../../../core/service/authentication.service";
 import { ActivatedRoute } from "@angular/router";
+import { ScrollService } from "../../../core/service/scroll.service";
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 
 export const APP_ROUTES = {
   EXECUCAO: {
@@ -15,15 +18,23 @@ export const APP_ROUTES = {
   styleUrls: ["./layout-budget-panel.scss"],
 })
 // eslint-disable-next-line @angular-eslint/component-class-suffix
-export class LayoutBudgetPanel implements OnInit {
+export class LayoutBudgetPanel implements OnInit, OnDestroy {
   menuExecucao: NavigationTag[] = [];
+  isScrolled = false;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private authService: AuthenticationService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private _scrollService: ScrollService
   ) { }
 
   ngOnInit(): void {
+    this._scrollService.isScrolled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((scrolled) => {
+        this.isScrolled = scrolled;
+      });
     const usuario = this.authService.getUsuarioLogado();
     const childRoutes = this.route.routeConfig?.children || [];
 
@@ -111,5 +122,10 @@ export class LayoutBudgetPanel implements OnInit {
 
       return true;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

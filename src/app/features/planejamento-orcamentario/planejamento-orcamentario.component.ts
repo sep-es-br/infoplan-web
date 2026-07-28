@@ -11,7 +11,7 @@ import {
   ViewChild,
   ViewChildren,
 } from "@angular/core";
-import { NbAutocompleteDirective, NbSelectComponent, NbThemeService } from "@nebular/theme";
+import { NbSelectComponent, NbThemeService } from "@nebular/theme";
 import { environment } from "../../../environments/environment";
 import {
   ISPOFiltroPos,
@@ -82,7 +82,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
   @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
   @ViewChild("uoSearchInput") uoSearchInput!: ElementRef<HTMLInputElement>;
   @ViewChildren("customSelect") customSelectRefs!: QueryList<NbSelectComponent>;
-  @ViewChild(NbAutocompleteDirective) autocomplete!: NbAutocompleteDirective<any>;
   @Output() filterChanged = new EventEmitter<IPlanejamentoOrcamentarioFilter>();
 
   activeFilters: {
@@ -158,6 +157,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
   selectedUOs: ISPOFiltroUos[] = [];
   selectedPOs: ISPOFiltroPos[] = [];
   isPOListLoading: boolean = false;
+  isUOListLoading: boolean = false;
 
   uoSearchTerm: string = "";
   poSearchTerm: string = "";
@@ -263,9 +263,13 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
   }
 
   private getListUos() {
+    this.isUOListLoading = true;
     this._planejamentoOrcamentarioService
       .getFiltroUos()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        finalize(() => (this.isUOListLoading = false)),
+        takeUntil(this.destroy$),
+      )
       .subscribe({
         next: (response: ISPOFiltroUos[]) => {
           this.UOList = response;
@@ -334,7 +338,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
   }
 
   ngAfterViewInit(): void {
-    // Move o modal para o root do document body para evitar bugs de CSS (position: fixed) 
+    // Move o modal para o root do document body para evitar bugs de CSS (position: fixed)
     // quando engatilhado dentro de layouts com transform/sticky (típico no mobile)
     const modal = document.getElementById("filtrosModal");
     if (modal && modal.parentNode !== document.body) {
@@ -537,7 +541,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
       } else {
         const tiposSelecionados = this.finalFilter.tipoFonte.map((tipoNum) => {
           const tipo = this.tipoFonteList.find((t) => t.id === tipoNum);
-          return { name: tipo ? tipo.name : `Tipo ${tipoNum}` };
+          return { name: tipo ? `${tipo.id}  - ${tipo.name}` : `Tipo ${tipoNum}` };
         });
         this.activeFilters.push({
           key: "tipoFonte",
@@ -552,7 +556,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
       } else {
         const uosSelecionados = this.finalFilter.uo.map((uoId) => {
           const uo = this.UOList?.find((u) => u.cod_uo === uoId);
-          return { name: uo ? uo.nome_uo : uoId };
+          return { name: uo ? uo.cod_uo : uoId };
         });
         this.activeFilters.push({
           key: "uo",
@@ -567,7 +571,7 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
       } else {
         const posSelecionados = this.finalFilter.po.map((poId) => {
           const po = this.POList?.find((p) => p.cod_po === poId);
-          return { name: po ? po.nome_po : poId };
+          return { name: po ? po.cod_po : poId };
         });
         this.activeFilters.push({
           key: "po",
@@ -586,11 +590,58 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
           label: "GND",
           displayValue: this.finalFilter.gnd.map((gndNum) => {
             const gnd = this.GNDList.find((g) => g.id === gndNum);
-            return { name: gnd ? gnd.name : `GND ${gndNum}` };
+            return { name: gnd ? `${gnd.id} - ${gnd.name}` : `GND ${gndNum}` };
           }),
         });
       }
     }
+
+    const filterOrder = ["ano", "mes", "gnd", "tipoFonte", "uo", "po"];
+    this.activeFilters.sort(
+      (a, b) => filterOrder.indexOf(a.key) - filterOrder.indexOf(b.key),
+    );
+  }
+
+  get selectedUOValues(): string[] {
+    if (!Array.isArray(this.filter.uo)) return [];
+
+    return this.filter.uo
+      .map((value) => String(value))
+      .filter((value) => value !== "-1");
+  }
+
+  onUOValuesChange(values: string[]): void {
+    this.filter.uo = values.length ? values : ["-1"];
+    this.updateSelectedUOs();
+
+    this.filter.po = ["-1"];
+    this.POList = [];
+    this.filteredPOList = [];
+    this.selectedPOs = [];
+
+    if (values.length) {
+      this.getListPos(this.filter.ano, values);
+    }
+  }
+
+  get selectedPOValues(): string[] {
+    if (!Array.isArray(this.filter.po)) return [];
+
+    return this.filter.po
+      .map((value) => String(value))
+      .filter((value) => value !== "-1");
+  }
+
+  get isPOAutocompleteDisabled(): boolean {
+    return !Array.isArray(this.filter.uo) ||
+      this.filter.uo.length === 0 ||
+      this.filter.uo.some((value) => String(value) === "-1") ||
+      (!this.isPOListLoading && this.POList.length === 0);
+  }
+
+  onPOValuesChange(values: string[]): void {
+    this.filter.po = values.length ? values : ["-1"];
+    this.updateSelectedPOs();
   }
 
   filtrar(event?: Event): void {
@@ -754,14 +805,6 @@ export class PlanejamentoOrcamentarioComponent implements OnInit, OnDestroy, Aft
 
     setTimeout(() => {
       this._processingUO = false;
-      if (this.uoSearchInput) {
-        this.uoSearchInput.nativeElement.value = "";
-        this.uoSearchInput.nativeElement.focus();
-      }
-      // Força o menu a permanecer aberto (útil para seleção via teclado/Enter)
-      if (this.autocomplete) {
-        this.autocomplete.show();
-      }
     }, 100);
   }
 

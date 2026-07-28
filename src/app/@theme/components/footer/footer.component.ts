@@ -3,19 +3,18 @@ import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'ngx-footer',
-  styleUrls: ['./footer.component.scss'],
   template: `
-    <div class="d-flex flex-column flex-sm-row" id="footer">
+    <div class="dashboard-footer">
       <p>Central de Informações de Planejamento</p>
       <div>
         <span>Fonte: {{ dataSrc }}</span>
-        <span *ngIf="timestamp"> - {{ timestamp | date:'dd MMM HH:mm':'pt-BR' }}</span>
+        <span *ngIf="timestamp"> - {{ timestamp | date:'dd MMM HH:mm':undefined:'pt-BR' }}</span>
       </div>
     </div>
   `,
 })
 export class FooterComponent {
-  @Input() timestamp: string;
+  @Input() timestamp!: string;
 
   dataSrc : string;
 

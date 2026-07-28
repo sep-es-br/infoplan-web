@@ -38,6 +38,24 @@
   text-align: left;
 }
 
+.user-context-menu nb-context-menu,
+nb-context-menu.user-context-menu {
+  transform: translateX(40px);
+}
+
+@media (max-width: 575px) {
+  .user-context-menu nb-context-menu,
+  nb-context-menu.user-context-menu {
+    width: 156px !important;
+    min-width: 156px !important;
+
+    nb-menu {
+      width: 156px !important;
+      min-width: 156px !important;
+    }
+  }
+}
+
 // .box-limited {
 //   overflow-y: auto;
 //   overflow-x: auto;
@@ -92,10 +110,12 @@ nb-menu .menu-section-divider {
     content: "";
     flex: 1;
     height: 2px;
-    background: linear-gradient(90deg,
-        transparent,
-        rgba(0, 0, 0, 0.7),
-        transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(0, 0, 0, 0.7),
+      transparent
+    );
     // rgba(0, 0, 0, 0.7)
     // rgba(83, 106, 209, 0.8)
   }
@@ -120,17 +140,18 @@ nb-sidebar.compacted .section-title {
 
 .nb-theme-dark,
 .nb-theme-cosmic {
-
   .divisor,
   nb-menu .menu-section-divider .divisor {
     color: rgba(255, 255, 255, 0.9);
 
     &::before,
     &::after {
-      background: linear-gradient(90deg,
-          transparent,
-          rgba(255, 255, 255, 0.6),
-          transparent) !important;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.6),
+        transparent
+      ) !important;
     }
   }
 
@@ -158,4 +179,23 @@ body.nb-global-scrollblock {
   touch-action: auto !important;
   overscroll-behavior: auto !important;
   -webkit-overflow-scrolling: touch !important;
+}
+
+@import "./dashboard-filter";
+@import "./dashboard-footer";
+
+/* Alinha cards de resumo que possuem uma row aninhada no layout de celular. */
+@media (max-width: 575px) {
+  .summary-cards-grid,
+  .indicator-cards-grid {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  .summary-card-column,
+  .indicator-logo-wrapper,
+  .indicator-card-column {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
 }

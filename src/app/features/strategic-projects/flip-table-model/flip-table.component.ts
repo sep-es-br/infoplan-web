@@ -139,6 +139,8 @@ export class FlipTableComponent implements OnChanges {
 
   @Input() distinctYears: number[] = [];
 
+  @Input() reserveTreeToggleSpace: boolean = false;
+
   @Input() height: number = 400;
 
   @Input() outerCardHeight: number;

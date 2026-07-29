@@ -1,4 +1,5 @@
 <ngx-flip-table [cardTitle]="title" [tableContent]="flipTableContent" [tableOnFront]="true" [showSearchField]="true"
+  [reserveTreeToggleSpace]="true"
   [backCardHeight]="isChartMaximized('quantidade-por-status') ? calcMaximizedHeight() : 350" [showMaximizeButton]="true"
   [loadingStatus]="requestStatus" (executeSearch)="handleUserTableSearch($event)"
   (executeDownload)="handleUserTableDownload()"

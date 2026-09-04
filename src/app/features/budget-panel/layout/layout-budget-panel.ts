@@ -1,3 +1,4 @@
+import { possuiPapelOrgaoIndicadores } from '../../../core/utils/indicadores-permission';
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { NavigationTag } from "../../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
 import { AuthenticationService } from "../../../core/service/authentication.service";
@@ -95,6 +96,10 @@ export class LayoutBudgetPanel implements OnInit, OnDestroy {
 
       const allowedRoles = routeConfig.data?.['allowedRoles'] as string[];
       const roleOnly = routeConfig.data?.['roleOnly'] as boolean;
+
+      if (routeConfig.data?.['allowIndicadoresOrgao'] && possuiPapelOrgaoIndicadores(usuario?.role)) {
+        return true;
+      }
 
       if (!allowedRoles) {
         return true;

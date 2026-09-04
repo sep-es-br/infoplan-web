@@ -4,7 +4,7 @@ import { NbIconLibraries, NbMenuService, NbThemeService } from "@nebular/theme";
 import { filter } from "rxjs/operators";
 import { menulinks } from "../@core/utils/menuLinks";
 import { icones } from "../core/config/icon/icone";
-import { CustomNbMenuItem, MENU_ITEMS } from "./pages-menu";
+import { CustomNbMenuItem, buildMenuItems } from "./pages-menu";
 
 @Component({
   selector: "ngx-pages",
@@ -76,7 +76,7 @@ export class PagesComponent implements OnInit {
     const mergedIcons = { ...customIcons, ...icones };
     this.iconsLibrary.registerSvgPack("custom-icons", mergedIcons, icones);
 
-    this.menu = [...MENU_ITEMS].sort((a, b) => {
+    this.menu = buildMenuItems().sort((a, b) => {
       return a.id - b.id;
     });
 

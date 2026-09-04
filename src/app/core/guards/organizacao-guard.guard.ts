@@ -1,3 +1,4 @@
+import { possuiPapelOrgaoIndicadores } from '../utils/indicadores-permission';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -27,6 +28,10 @@ export class OrganizacaoGuardGuard implements CanActivate {
     const allowedRoles = route.data['allowedRoles'] as Array<string>;
     const roleOnly = route.data['roleOnly'] as boolean;
 
+    if (route.data['allowIndicadoresOrgao'] && possuiPapelOrgaoIndicadores(usuario.role)) {
+      return true;
+    }
+
     // Se a rota não possui nenhuma restrição de role, permite acesso
     if (!allowedRoles) {
       return true;
@@ -34,7 +39,9 @@ export class OrganizacaoGuardGuard implements CanActivate {
 
     // 1. Verifica as Roles primeiro
     if (allowedRoles && allowedRoles.length > 0) {
-      const userRoles = usuario.role || [];
+      const userRoles = Array.isArray(usuario.role)
+        ? usuario.role
+        : (usuario.role ? [usuario.role] : []);
       const temRole = allowedRoles.some(role => userRoles.includes(role));
       if (temRole) {
         return true; // Se tem a role necessária, tem acesso total garantido!

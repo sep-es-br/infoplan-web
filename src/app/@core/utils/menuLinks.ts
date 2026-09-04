@@ -2,6 +2,8 @@ import { NbMenuItem } from "@nebular/theme";
 import { environment } from "../../../environments/environment";
 import { MyCustomMenuItem } from "../../core/interfaces/menu-links.interface";
 
+import { possuiPapelOrgaoIndicadores } from "../../core/utils/indicadores-permission";
+
 type userInfo = {
   name: string;
   email: string;
@@ -18,6 +20,15 @@ function checkRoles(allowedRole: string): boolean {
   if (userInfos.role && userInfos.role.find((value) => value == allowedRole)) return true;
 
   return false;
+}
+
+function checkIndicadoresOrgao(): boolean {
+  try {
+    const profile = JSON.parse(sessionStorage.getItem("user-profile") || "{}");
+    return possuiPapelOrgaoIndicadores(profile.role);
+  } catch {
+    return false;
+  }
 }
 
 function checkOrgs(allowedOrgs: string[]): boolean {
@@ -80,7 +91,7 @@ export const menulinks: MyCustomMenuItem[] = [
     name: "Execução Orçamentária",
     icon: "painelOrcamento.svg",
     link: "/pages/execucao-orcamentaria",
-    status: checkRoles(environment.allowedRoles.execucaoOrcamentaria) || hasAnySigla(),
+    status: true,
     url: "",
     src: "Sigefes",
     menuIcon: "",

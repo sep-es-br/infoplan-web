@@ -30,6 +30,7 @@ import { ChartMaximizeService } from "../../../core/service/chart-maximize/chart
 import { ScrollService } from "../../../core/service/scroll.service";
 import { NavigationTag } from "../../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
 import { formatNumber } from "../../../@core/utils/uitls";
+import { AuthenticationService } from "../../../core/service/authentication.service";
 
 const DEFAULT_BUDGET_EXECUTION_REQUEST_PARAMS: IIndicatorExecutionFilter = {
   year: environment.indicatorExecutionFilter.year,
@@ -83,6 +84,7 @@ export class BudgetPanelIndicatorComponent
   private comunicationCardsService = inject(ComunicationCardsService);
   private _chartMaximizeService = inject(ChartMaximizeService);
   private _scrollService = inject(ScrollService);
+  private authService = inject(AuthenticationService);
 
   @ViewChild("modalCloseButton") modalCloseButtonRef!: ElementRef;
   @ViewChild("uoSearchInput") uoSearchInput!: ElementRef<HTMLInputElement>;
@@ -222,6 +224,17 @@ export class BudgetPanelIndicatorComponent
   };
 
   ngOnInit(): void {
+    const usuario = this.authService.getUsuarioLogado();
+    const roles = Array.isArray(usuario?.role)
+      ? usuario.role
+      : (usuario?.role ? [usuario.role] : []);
+
+    if (!roles.includes(environment.allowedRoles.execucaoOrcamentaria)) {
+      this.menuExecucao = this.menuExecucao.filter(
+        item => item.route[0] !== '/pages/execucao-orcamentaria/resumo-executivo',
+      );
+    }
+
     this.loadInitialData();
     this.loadUOList();
     this.loadActionList();

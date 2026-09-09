@@ -20,6 +20,7 @@ import {
 } from "../../interfaces/indicator-execution/indicator-execution";
 import { catchError } from "rxjs/operators";
 import { AuthenticationService } from "../authentication.service";
+import { obterSiglaPapelOrgaoIndicadores } from "../../utils/indicadores-permission";
 
 @Injectable({
   providedIn: "root",
@@ -206,8 +207,13 @@ export class IndicatorExecutionService {
   }
 
   private getCommonParams(): HttpParams {
-    const orgao = this._authService.getUsuarioLogado()?.sigla || "";
-    return new HttpParams().set("orgao", orgao);
+    const usuario = this._authService.getUsuarioLogado();
+    const orgao = usuario?.sigla?.trim()
+      || obterSiglaPapelOrgaoIndicadores(usuario?.role);
+
+    return orgao
+      ? new HttpParams().set("orgao", orgao)
+      : new HttpParams();
   }
 
   private params(filter: IIndicatorExecutionFilter): HttpParams {

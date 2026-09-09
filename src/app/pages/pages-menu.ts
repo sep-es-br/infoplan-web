@@ -8,6 +8,7 @@ export interface CustomNbMenuItem extends NbMenuItem {
   id: number
 }
 
+export function buildMenuItems(): CustomNbMenuItem[] {
 const dynamicMenuItems: CustomNbMenuItem[] = menulinks
   .filter(menu => menu.status) // Filtra apenas itens ativos
   .map(menu => ({
@@ -24,7 +25,7 @@ const dynamicMenuItems: CustomNbMenuItem[] = menulinks
     tooltip: menu.name
   }));
 
-export const MENU_ITEMS: CustomNbMenuItem[] = [
+return [
   {
     title: 'Home',
     icon: 'home-outline',
@@ -34,3 +35,6 @@ export const MENU_ITEMS: CustomNbMenuItem[] = [
   },
   ...dynamicMenuItems
 ];
+}
+
+export const MENU_ITEMS: CustomNbMenuItem[] = buildMenuItems();

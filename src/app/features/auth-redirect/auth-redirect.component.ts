@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { possuiPapelOrgaoIndicadores } from '../../core/utils/indicadores-permission';
 import { Router } from '@angular/router';
 
 
@@ -47,11 +48,17 @@ export class AuthRedirectComponent {
             sigla: response.sigla,
           };
 
-          const userRoles = response.role ?? [];
+          const userRoles = Array.isArray(response.role)
+            ? response.role
+            : (response.role ? [response.role] : []);
 
-          const allowedRoles = Object.values(environment.allowedRoles).filter(role => role);
+          // Prefixos configurados não são papéis completos de autorização.
+          const allowedRoles = Object.entries(environment.allowedRoles)
+            .filter(([key, role]) => key !== 'indicadoresOrgaoPrefixo' && !!role)
+            .map(([, role]) => role);
 
-          const hasAccess = userRoles.some(role => allowedRoles.includes(role));
+          const hasAccess = userRoles.some(role => allowedRoles.includes(role))
+            || possuiPapelOrgaoIndicadores(userRoles);
 
           const hasOrgs = response.sigla && response.sigla.trim() !== '';
 

@@ -91,7 +91,7 @@ export const menulinks: MyCustomMenuItem[] = [
     name: "Execução Orçamentária",
     icon: "painelOrcamento.svg",
     link: "/pages/execucao-orcamentaria",
-    status: true,
+    status: checkRoles(environment.allowedRoles.execucaoOrcamentaria) || hasAnySigla(),
     url: "",
     src: "Sigefes",
     menuIcon: "",

@@ -33,13 +33,8 @@ const routes: Routes = [
         canActivate: [OrganizacaoGuardGuard],
         data: {
           dataSource: "Sigefes",
-          allowedRoles: [
-            environment.allowedRoles.execucaoOrcamentaria,
-            environment.allowedRoles.geral,
-            environment.allowedRoles.indicadores,
-          ],
-          allowIndicadoresOrgao: true,
-          fallbackRoute: '/pages/home'
+          allowedRoles: [environment.allowedRoles.execucaoOrcamentaria],
+          fallbackRoute: '/pages/execucao-orcamentaria/resumo-executivo'
         }
       }
     ]

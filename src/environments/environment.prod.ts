@@ -7,6 +7,7 @@ export const environment = {
   production: true,
   apiUrl: 'http://localhost:8080/infoplan',
   baseUrl: 'http://localhost:4200/',
+  indicadoresOrgaoPrefixo: 'PAINEL_EXEC_ORC_IND_',
   allowedRoles: {
     geral: "",
     capitacao: "",

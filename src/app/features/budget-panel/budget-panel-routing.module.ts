@@ -34,9 +34,8 @@ const routes: Routes = [
         data: {
           dataSource: "Sigefes",
           allowedRoles: [
-            environment.allowedRoles.execucaoOrcamentaria,
-            environment.allowedRoles.geral,
             environment.allowedRoles.indicadores,
+            environment.allowedRoles.execucaoOrcamentaria
           ],
           allowIndicadoresOrgao: true,
           fallbackRoute: '/pages/home'

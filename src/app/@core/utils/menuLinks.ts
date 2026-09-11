@@ -52,11 +52,11 @@ function hasAnySigla(): boolean {
     if (!userProfile) return false;
     const userInfos = JSON.parse(userProfile);
     const userSigla = userInfos?.sigla || userInfos?.orgao;
-    return !!(userSigla && String(userSigla).trim() !== '');
+    return !!String(userSigla || '').trim();
   } catch (e) {
     console.error("Erro ao verificar sigla do usuário:", e);
+    return false;
   }
-  return false;
 }
 
 export const menulinks: MyCustomMenuItem[] = [
@@ -91,7 +91,10 @@ export const menulinks: MyCustomMenuItem[] = [
     name: "Execução Orçamentária",
     icon: "painelOrcamento.svg",
     link: "/pages/execucao-orcamentaria",
-    status: checkRoles(environment.allowedRoles.execucaoOrcamentaria) || hasAnySigla(),
+    status: checkRoles(environment.allowedRoles.execucaoOrcamentaria)
+      || checkRoles(environment.allowedRoles.indicadores)
+      || checkIndicadoresOrgao()
+      || hasAnySigla(),
     url: "",
     src: "Sigefes",
     menuIcon: "",

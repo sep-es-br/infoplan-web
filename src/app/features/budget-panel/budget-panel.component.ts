@@ -32,6 +32,8 @@ import { FilterStateService } from "../../core/service/filter-state/filter-state
 import { ScrollService } from "../../core/service/scroll.service";
 import { takeUntil } from "rxjs/operators";
 import { NavigationTag } from "../../shared/components/sticky-tag-nav/sticky-tag-nav.component";
+import { AuthenticationService } from "../../core/service/authentication.service";
+import { possuiPapelOrgaoIndicadores } from "../../core/utils/indicadores-permission";
 
 interface IDataCard {
   RevenueTotal?: IRevenueTotalBudgetExecutionResponse;
@@ -95,6 +97,7 @@ export class BudgetPanelComponent implements OnInit, OnDestroy {
   private readonly _chartMaximizeService = inject(ChartMaximizeService);
   private readonly _execucaoOrcamentariaService = inject(BudgetPanelService);
   private readonly _scrollService = inject(ScrollService);
+  private readonly _authService = inject(AuthenticationService);
 
   readonly _filterStateService = inject(FilterStateService);
 
@@ -195,6 +198,22 @@ export class BudgetPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const usuario = this._authService.getUsuarioLogado();
+    const roles = Array.isArray(usuario?.role)
+      ? usuario.role
+      : (usuario?.role ? [usuario.role] : []);
+    const siglaUsuario = usuario?.sigla || (usuario as any)?.orgao;
+    const possuiAcessoIndicadores = roles.includes(environment.allowedRoles.execucaoOrcamentaria)
+      || roles.includes(environment.allowedRoles.indicadores)
+      || possuiPapelOrgaoIndicadores(roles)
+      || !!String(siglaUsuario || '').trim();
+
+    if (!possuiAcessoIndicadores) {
+      this.menuExecucao = this.menuExecucao.filter(
+        item => item.route[0] !== '/pages/execucao-orcamentaria/indicador',
+      );
+    }
+
     this.subscriptionMaximizeState =
       this._chartMaximizeService.maximizeState$.subscribe(
         (state: ChartMaximizeState) => {

@@ -45,7 +45,7 @@ export class AuthRedirectComponent {
             name: response.name,
             email: response.email,
             role: response.role,
-            sigla: response.sigla,
+            guidOrganizacao: response.guidOrganizacao,
           };
 
           const userRoles = Array.isArray(response.role)
@@ -60,7 +60,7 @@ export class AuthRedirectComponent {
           const hasAccess = userRoles.some(role => allowedRoles.includes(role))
             || possuiPapelOrgaoIndicadores(userRoles);
 
-          const hasOrgs = response.sigla && response.sigla.trim() !== '';
+          const hasOrgs = !!response.guidOrganizacao?.trim();
 
           if (!hasAccess && !hasOrgs) {
             sessionStorage.clear();

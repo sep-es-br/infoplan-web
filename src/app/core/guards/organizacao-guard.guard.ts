@@ -55,9 +55,8 @@ export class OrganizacaoGuardGuard implements CanActivate {
       return false;
     }
 
-    // 2. Se não tem role, verifica a Sigla. Se a sigla for vazia, não mostra nada
-    const siglaUsuario = usuario.sigla || (usuario as any).orgao;
-    if (!siglaUsuario || String(siglaUsuario).trim() === '') {
+    // 2. Se não tem role, verifica se há uma organização associada ao usuário
+    if (!usuario.guidOrganizacao?.trim()) {
       const fallback = route.data['fallbackRoute'] || '/pages/home';
       this.router.navigate([fallback]);
       return false;

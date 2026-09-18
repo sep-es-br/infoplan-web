@@ -31,30 +31,14 @@ function checkIndicadoresOrgao(): boolean {
   }
 }
 
-function checkOrgs(allowedOrgs: string[]): boolean {
+function hasGuidOrganizacao(): boolean {
   try {
     const userProfile = sessionStorage.getItem("user-profile");
     if (!userProfile) return false;
     const userInfos = JSON.parse(userProfile);
-    const userSigla = userInfos?.sigla || userInfos?.orgao;
-    if (userSigla && String(userSigla).trim() !== '') {
-      return allowedOrgs.includes(String(userSigla).trim());
-    }
+    return !!String(userInfos?.guidOrganizacao || '').trim();
   } catch (e) {
-    console.error("Erro ao verificar siglas do usuário:", e);
-  }
-  return false;
-}
-
-function hasAnySigla(): boolean {
-  try {
-    const userProfile = sessionStorage.getItem("user-profile");
-    if (!userProfile) return false;
-    const userInfos = JSON.parse(userProfile);
-    const userSigla = userInfos?.sigla || userInfos?.orgao;
-    return !!String(userSigla || '').trim();
-  } catch (e) {
-    console.error("Erro ao verificar sigla do usuário:", e);
+    console.error("Erro ao verificar GUID da organização do usuário:", e);
     return false;
   }
 }
@@ -94,7 +78,7 @@ export const menulinks: MyCustomMenuItem[] = [
     status: checkRoles(environment.allowedRoles.execucaoOrcamentaria)
       || checkRoles(environment.allowedRoles.indicadores)
       || checkIndicadoresOrgao()
-      || hasAnySigla(),
+      || hasGuidOrganizacao(),
     url: "",
     src: "Sigefes",
     menuIcon: "",

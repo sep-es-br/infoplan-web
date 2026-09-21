@@ -3,13 +3,13 @@ export interface IProfile {
     name: string;
     email: string;
     role: string[];
-    sigla: string;
+    guidOrganizacao: string;
 }
 
 export interface IUsuarioLogado {
     name: string;
     email: string;
     role: string[];
-    sigla: string;
+    guidOrganizacao: string;
 }
 

@@ -202,11 +202,11 @@ export class BudgetPanelComponent implements OnInit, OnDestroy {
     const roles = Array.isArray(usuario?.role)
       ? usuario.role
       : (usuario?.role ? [usuario.role] : []);
-    const siglaUsuario = usuario?.sigla || (usuario as any)?.orgao;
+    const guidOrganizacao = usuario?.guidOrganizacao;
     const possuiAcessoIndicadores = roles.includes(environment.allowedRoles.execucaoOrcamentaria)
       || roles.includes(environment.allowedRoles.indicadores)
       || possuiPapelOrgaoIndicadores(roles)
-      || !!String(siglaUsuario || '').trim();
+      || !!guidOrganizacao?.trim();
 
     if (!possuiAcessoIndicadores) {
       this.menuExecucao = this.menuExecucao.filter(

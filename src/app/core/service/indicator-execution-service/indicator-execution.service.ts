@@ -36,7 +36,7 @@ export class IndicatorExecutionService {
   ): Observable<IBudgetaryUnitResponse[]> {
     return this._http
       .get<IBudgetaryUnitResponse[]>(this._URI + "/buscar-uo", {
-        params: this.params(filter),
+        params: this.paramsBudgetaryUnit(filter),
       })
       .pipe(catchError((err) => this.handleError(err, this._router)));
   }
@@ -208,16 +208,15 @@ export class IndicatorExecutionService {
 
   private getCommonParams(): HttpParams {
     const usuario = this._authService.getUsuarioLogado();
-    const orgao = usuario?.sigla?.trim()
-      || obterSiglaPapelOrgaoIndicadores(usuario?.role);
+    const orgao = obterSiglaPapelOrgaoIndicadores(usuario?.role);
 
     return orgao
       ? new HttpParams().set("orgao", orgao)
       : new HttpParams();
   }
 
-  private params(filter: IIndicatorExecutionFilter): HttpParams {
-    return this.getCommonParams().set(
+  private paramsBudgetaryUnit(filter: IIndicatorExecutionFilter): HttpParams {
+    return new HttpParams().set(
       "year",
       Array.isArray(filter.year) ? filter.year.join(",") : filter.year,
     );

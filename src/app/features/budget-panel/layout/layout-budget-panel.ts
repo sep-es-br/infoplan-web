@@ -120,8 +120,7 @@ export class LayoutBudgetPanel implements OnInit, OnDestroy {
         return false;
       }
 
-      const siglaUsuario = usuario?.sigla || (usuario as any)?.orgao;
-      if (!usuario || !siglaUsuario || String(siglaUsuario).trim() === '') {
+      if (!usuario?.guidOrganizacao?.trim()) {
         return false;
       }
 

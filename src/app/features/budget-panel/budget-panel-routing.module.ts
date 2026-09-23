@@ -34,7 +34,6 @@ const routes: Routes = [
         data: {
           dataSource: "Sigefes",
           allowedRoles: [
-            environment.allowedRoles.indicadores,
             environment.allowedRoles.execucaoOrcamentaria
           ],
           allowIndicadoresOrgao: true,

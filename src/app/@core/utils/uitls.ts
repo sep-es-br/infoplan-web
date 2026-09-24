@@ -1,16 +1,17 @@
   export const formatNumber = (value: number): string => {
-    if (!value || value === 0) return "R$ 0,00";
+    if (!value || value === 0) return "0,00";
 
     let v: number;
     let unit = "";
+    const absoluteValue = Math.abs(value);
 
-    if (value >= 1_000_000_000) {
+    if (absoluteValue >= 1_000_000_000) {
       v = value / 1_000_000_000;
       unit = " B";
-    } else if (value >= 1_000_000) {
+    } else if (absoluteValue >= 1_000_000) {
       v = value / 1_000_000;
       unit = " M";
-    } else if (value >= 1_000) {
+    } else if (absoluteValue >= 1_000) {
       v = value / 1_000;
       unit = " K";
     } else {
